@@ -1,0 +1,7435 @@
+{
+  "A-C Central High School": {
+    "school_urls": {
+      "base_url": "http://www.a-ccentral.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.a-ccentral.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Anthony Mansur",
+        "title": "HS\\MS Principal",
+        "dept": "Administration",
+        "phone": "217-476-3312 x1107",
+        "email": "amansur@a-ccentral.us"
+      },
+      {
+        "name": "Deb Rogers",
+        "title": "Principal",
+        "dept": "Administration",
+        "phone": "217-458-2224",
+        "email": "drogers@a-ccentral.us"
+      },
+      {
+        "name": "Chloe Fitzgerald",
+        "title": "High School Guidance Counselor",
+        "dept": "Administration",
+        "phone": "217-476-3312 x1113",
+        "email": "cfitzgerald@a-ccentral.us"
+      }
+    ]
+  },
+  "Franklin Jr/Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.franklinhigh.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.franklinhigh.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Braxton Stewart",
+        "title": "PK-12 Principal",
+        "dept": "District Staff",
+        "phone": "217-675-2395",
+        "email": "Send Message"
+      },
+      {
+        "name": "Megan Rennolds",
+        "title": "Guidance Counselor",
+        "dept": "District Staff",
+        "phone": "Send Message",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Meredosia-Chambersburg High Sch": {
+    "school_urls": {
+      "base_url": "http://www.mcsd11.net",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.mcsd11.net/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Kirk Graham",
+        "title": "JH/HS Principal",
+        "phone": "217-584-1291",
+        "email": "kgraham@mcsd11.net"
+      }
+    ]
+  },
+  "Triopia Jr-Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.triopiacusd27.org/",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.triopiacusd27.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Joe Kuhlmann",
+        "title": "Jr. Sr. High School Principal",
+        "phone": "217-457-2281 x116",
+        "email": null
+      }
+    ]
+  },
+  "Pittsfield High School": {
+    "school_urls": {
+      "base_url": "http://www.phs.net",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.phs.net/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Angie Greger",
+        "title": "Principal",
+        "phone": null,
+        "email": "agreger@pikeland.org"
+      }
+    ]
+  },
+  "Western High School": {
+    "school_urls": {
+      "base_url": "http://www.westerncusd12.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.westerncusd12.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Ryan Sharkey",
+        "title": "High School Principal",
+        "phone": null,
+        "email": "rsharkey@westerncusd12.org"
+      }
+    ]
+  },
+  "Winchester High School": {
+    "school_urls": {
+      "base_url": "http://www.winchesterschools.net",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.winchesterschools.net/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Denny\u00a0 Vortman",
+        "title": "High School Principal",
+        "dept": "Winchester High School",
+        "phone": "(217) 742-3151 ext. 201",
+        "email": "dvortman@winchesterschools.net"
+      },
+      {
+        "name": "Dakota\u00a0 Chumley",
+        "title": "High School School Counselor",
+        "dept": "Winchester High School",
+        "phone": "(217) 742-3151 ext. 204",
+        "email": "dchumley@winchesterschools.net"
+      }
+    ]
+  },
+  "Bluffs High School": {
+    "school_urls": {
+      "base_url": "http://www.bluffs-school.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.bluffs-school.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Brandi Pennock",
+        "title": "Superintendent/Principal",
+        "dept": "District",
+        "phone": "Send Message",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Mulberry Grove Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.mgschools.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.mgschools.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Samantha Rydgig",
+        "title": "Jr/Sr High Principal",
+        "dept": "Jr/Sr HS",
+        "phone": "618-326-8221",
+        "email": "srydgig@mgschools.com"
+      }
+    ]
+  },
+  "Morrisonville High School": {
+    "school_urls": {
+      "base_url": "http://www.mohawks.net",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.mohawks.net/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Tim Chapman",
+        "title": "Jr./Sr. High School Principal",
+        "dept": "MJR/SRHS",
+        "phone": "(217) 707-6880  ext. 1001",
+        "email": "tchapman@mohawks.net"
+      },
+      {
+        "name": "Kiley Halbrook",
+        "title": "School Counselor",
+        "dept": "MJR/SRHS",
+        "phone": "(217) 707-6880 ext. 1003",
+        "email": "khalbrook@mohawks.net"
+      }
+    ]
+  },
+  "Pana Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.panaschools.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.panaschools.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Lisa Mayhall",
+        "title": "Principal",
+        "dept": "Junior High",
+        "phone": "(217) 562 - 6500",
+        "email": "Send Message"
+      },
+      {
+        "name": "Kevin  McDonald",
+        "title": "Principal",
+        "dept": "High School",
+        "phone": "(217) 562 - 6600",
+        "email": "Send Message"
+      },
+      {
+        "name": "Adam Metzger",
+        "title": "Principal",
+        "dept": "Elementary School",
+        "phone": "(217) 562 - 1510",
+        "email": "Send Message"
+      },
+      {
+        "name": "Andrea Livingston",
+        "title": "HS Guidance Counselor",
+        "dept": "High School",
+        "phone": "217-562-6600",
+        "email": "Send Message"
+      },
+      {
+        "name": "Bonnie Sowarsh",
+        "title": "6th - 9th Guidance Counselor",
+        "dept": "Junior High",
+        "phone": "(217) 562 - 6500",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Altamont High School": {
+    "school_urls": {
+      "base_url": "http://www.altamontschools.org",
+      "contacts_url": null,
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.altamontschools.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Peggy  Bueker",
+        "title": "High School Principal",
+        "dept": "Administration",
+        "phone": "618-483-6193",
+        "email": "pbueker@altamontschools.org"
+      }
+    ]
+  },
+  "Beecher City Jr-Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.beechercity.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.beechercity.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "CARRIE BURKS  x1006",
+        "title": "JR SR HIGH PRINCIPAL",
+        "dept": "JR. SR. HIGH SCHOOL",
+        "phone": "618-487-5100",
+        "email": "cburks@beechercity.org"
+      },
+      {
+        "name": "HEIDI HOUSE x 1028",
+        "title": "DEAN OF STUDENTS",
+        "dept": "GRADE SCHOOL",
+        "phone": "6184875100",
+        "email": "hhouse@beechercity.org"
+      }
+    ]
+  },
+  "Dieterich Jr/Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.dieterichschools.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.dieterichschools.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Mike McCollum",
+        "title": "Jr./Sr. High School Principal",
+        "dept": "Secondary",
+        "phone": "2179255247",
+        "email": "mmccollum@dieterichschools.org"
+      },
+      {
+        "name": "Tammy  Bloemer",
+        "title": "Jr./Sr. High School Guidance Counselor",
+        "dept": "Secondary",
+        "phone": "2179255247",
+        "email": "tbloemer@dieterichschools.org"
+      }
+    ]
+  },
+  "Brownstown High School": {
+    "school_urls": {
+      "base_url": "http://www.bcusd201.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.bcusd201.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Sam Alli",
+        "title": "Principal",
+        "dept": "Administration",
+        "phone": "618-427-3839",
+        "email": "Send Message"
+      },
+      {
+        "name": "Megan Hanke",
+        "title": "Counselor",
+        "dept": "BES",
+        "phone": "618-427-3868",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "St Elmo Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.stelmo.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.stelmo.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Brian Garrard",
+        "title": "Jr/Sr High School Principal",
+        "dept": "St. Elmo Jr./Sr. High School",
+        "phone": "618-829-3227",
+        "email": "bgarrard@stelmo.org"
+      },
+      {
+        "name": "Cassidy O'Brien",
+        "title": "District Counselor",
+        "dept": "District",
+        "phone": "618-829-3263",
+        "email": "cobrien@stelmo.org"
+      },
+      {
+        "name": "Morgan Stremming",
+        "title": "High School Guidance Counselor",
+        "dept": "St. Elmo Jr./Sr. High School",
+        "phone": "618-829-3227",
+        "email": "mstremming@stelmo.org"
+      }
+    ]
+  },
+  "Ramsey High School": {
+    "school_urls": {
+      "base_url": "http://www.ramsey.fayette.k12.il.us",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.ramsey.fayette.k12.il.us/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Becky Eddy",
+        "title": "High School Principal",
+        "dept": "Administration",
+        "phone": "618-423-2335",
+        "email": "beddy@ramseycusd.org"
+      }
+    ]
+  },
+  "Nokomis Jr/Sr High Sch": {
+    "school_urls": {
+      "base_url": "http://www.nokomis.k12.il.us",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.nokomis.k12.il.us/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Lindsey DeFevers",
+        "title": "JH/HS Principal",
+        "dept": "(217) 563-4323",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "Ryan Lightle",
+        "title": "Asst. Principal/ AD",
+        "dept": "Nokomis Jr High",
+        "phone": "(217) 563-2014",
+        "email": "Send Message"
+      },
+      {
+        "name": "Jana Masten",
+        "title": "Principal",
+        "dept": "North Elementary School",
+        "phone": "(217) 563-8521",
+        "email": "Send Message"
+      },
+      {
+        "name": "Lisa DeWerff",
+        "title": "Counselor",
+        "dept": "Nokomis High School",
+        "phone": "(217) 563-2014",
+        "email": "Send Message"
+      },
+      {
+        "name": "Darci Harrison",
+        "title": "Counselor",
+        "dept": "North Elementary School",
+        "phone": "(217) 563-8521",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "North Boone High School": {
+    "school_urls": {
+      "base_url": "http://www.nbcusd.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.nbcusd.org/contact-us"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Marc Eckmann",
+        "title": ", Principal",
+        "phone": "815-765-3311",
+        "email": null
+      }
+    ]
+  },
+  "Auburn High School": {
+    "school_urls": {
+      "base_url": "http://www.rps205.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.rps205.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Mickey               Ryall",
+        "title": "DEAN OF MTSS",
+        "dept": "MTSS IMPROVE OF INSTRUCTION",
+        "phone": "(815)490-7416",
+        "email": "mickey.ryall@rps205.com"
+      }
+    ]
+  },
+  "Rockford East High School": {
+    "school_urls": {
+      "base_url": "http://www.rps205.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.rps205.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Mickey               Ryall",
+        "title": "DEAN OF MTSS",
+        "dept": "MTSS IMPROVE OF INSTRUCTION",
+        "phone": "(815)490-7416",
+        "email": "mickey.ryall@rps205.com"
+      }
+    ]
+  },
+  "Guilford High School": {
+    "school_urls": {
+      "base_url": "http://www.rps205.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.rps205.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Mickey               Ryall",
+        "title": "DEAN OF MTSS",
+        "dept": "MTSS IMPROVE OF INSTRUCTION",
+        "phone": "(815)490-7416",
+        "email": "mickey.ryall@rps205.com"
+      }
+    ]
+  },
+  "Jefferson High School": {
+    "school_urls": {
+      "base_url": "http://www.rps205.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.rps205.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Mickey               Ryall",
+        "title": "DEAN OF MTSS",
+        "dept": "MTSS IMPROVE OF INSTRUCTION",
+        "phone": "(815)490-7416",
+        "email": "mickey.ryall@rps205.com"
+      }
+    ]
+  },
+  "Roosevelt Center": {
+    "school_urls": {
+      "base_url": "http://www.rps205.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.rps205.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Mickey               Ryall",
+        "title": "DEAN OF MTSS",
+        "dept": "MTSS IMPROVE OF INSTRUCTION",
+        "phone": "(815)490-7416",
+        "email": "mickey.ryall@rps205.com"
+      }
+    ]
+  },
+  "Hononegah CHD High School": {
+    "school_urls": {
+      "base_url": "http://www.hononegah.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.hononegah.org/staffdirectory"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Dougherty, Chad",
+        "title": "Principal",
+        "phone": "815.624.2070 x5005",
+        "email": null
+      },
+      {
+        "name": "Eckmann, Kathy",
+        "title": "Associate Principal",
+        "phone": "815.624.2070 x5058",
+        "email": null
+      },
+      {
+        "name": "Juno, Taci",
+        "title": "Student Support Services - Guidance Counselor",
+        "phone": "815.624.2070 x5057",
+        "email": null
+      },
+      {
+        "name": "French, Lisa",
+        "title": "Student Support Services - Guidance Counselor",
+        "phone": "815.624.2070 x5079",
+        "email": null
+      },
+      {
+        "name": "Olson, Sarah",
+        "title": "Student Support Services - Guidance Counselor",
+        "phone": "815.624.2070 x5036",
+        "email": null
+      }
+    ]
+  },
+  "Pecatonica High School": {
+    "school_urls": {
+      "base_url": "http://www.pecschools.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.pecschools.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Kevin Kunkel",
+        "title": "High School Principal",
+        "dept": "High School",
+        "phone": "815-239-2611 x1305",
+        "email": "Send Message"
+      },
+      {
+        "name": "Valerie Abel",
+        "title": "School Counselor",
+        "dept": "High School",
+        "phone": "815-239-2611 x1306",
+        "email": "Send Message"
+      },
+      {
+        "name": "Brooke Jacobs",
+        "title": "School Counselor",
+        "dept": "Middle School",
+        "phone": "815-239-2612 x1206",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Winnebago High School": {
+    "school_urls": {
+      "base_url": "http://www.winnebagoschools.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.winnebagoschools.org/staff-directory"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Heather Baker",
+        "title": "Principal, SIM",
+        "phone": null,
+        "email": "bakerh@winnebagoschools.org"
+      }
+    ]
+  },
+  "Elk Grove High School": {
+    "school_urls": {
+      "base_url": "http://www.d214.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.d214.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "LESLIE ALVAREZ",
+        "title": "SCHOOL COUNSELOR",
+        "phone": null,
+        "email": "leslie.alvarez@d214.org"
+      }
+    ]
+  },
+  "John Hersey High School": {
+    "school_urls": {
+      "base_url": "http://www.d214.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.d214.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "LESLIE ALVAREZ",
+        "title": "SCHOOL COUNSELOR",
+        "phone": null,
+        "email": "leslie.alvarez@d214.org"
+      }
+    ]
+  },
+  "Prospect High School": {
+    "school_urls": {
+      "base_url": "http://www.d214.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.d214.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "LESLIE ALVAREZ",
+        "title": "SCHOOL COUNSELOR",
+        "phone": null,
+        "email": "leslie.alvarez@d214.org"
+      }
+    ]
+  },
+  "Wheeling High School": {
+    "school_urls": {
+      "base_url": "http://www.d214.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.d214.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "LESLIE ALVAREZ",
+        "title": "SCHOOL COUNSELOR",
+        "phone": null,
+        "email": "leslie.alvarez@d214.org"
+      }
+    ]
+  },
+  "Rolling Meadows High School": {
+    "school_urls": {
+      "base_url": "http://www.d214.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.d214.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "LESLIE ALVAREZ",
+        "title": "SCHOOL COUNSELOR",
+        "phone": null,
+        "email": "leslie.alvarez@d214.org"
+      }
+    ]
+  },
+  "Buffalo Grove High School": {
+    "school_urls": {
+      "base_url": "http://www.d214.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.d214.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "LESLIE ALVAREZ",
+        "title": "SCHOOL COUNSELOR",
+        "phone": null,
+        "email": "leslie.alvarez@d214.org"
+      }
+    ]
+  },
+  "The Academy at Forest View": {
+    "school_urls": {
+      "base_url": "http://www.d214.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.d214.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "LESLIE ALVAREZ",
+        "title": "SCHOOL COUNSELOR",
+        "phone": null,
+        "email": "leslie.alvarez@d214.org"
+      }
+    ]
+  },
+  "Young Adult Program": {
+    "school_urls": {
+      "base_url": "http://www.d214.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.d214.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "LESLIE ALVAREZ",
+        "title": "SCHOOL COUNSELOR",
+        "phone": null,
+        "email": "leslie.alvarez@d214.org"
+      }
+    ]
+  },
+  "Vanguard School": {
+    "school_urls": {
+      "base_url": "http://www.d214.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.d214.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "LESLIE ALVAREZ",
+        "title": "SCHOOL COUNSELOR",
+        "phone": null,
+        "email": "leslie.alvarez@d214.org"
+      }
+    ]
+  },
+  "Lyons Twp High Sch": {
+    "school_urls": {
+      "base_url": "http://www.lths.net",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.lths.net/staff-directory"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Lauren Beran",
+        "title": "Counselor",
+        "phone": null,
+        "email": "lberan@lths.net"
+      },
+      {
+        "name": "Jane Bauer",
+        "title": "Counselor",
+        "phone": null,
+        "email": "jbauer@lths.net"
+      }
+    ]
+  },
+  "Elmwood Park High School": {
+    "school_urls": {
+      "base_url": "http://www.epcusd401.org/ephs",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.epcusd401.org/ephs/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Inquiries regarding the identification, assessment and placement of children with disabilities should be directed to",
+        "title": "Department for Student Services",
+        "phone": "708-583-5854",
+        "email": null
+      }
+    ]
+  },
+  "Argo Community High School": {
+    "school_urls": {
+      "base_url": "http://www.argohs.net",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.argohs.net/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Mary Bergman",
+        "title": "Counselor A-De",
+        "phone": "(708) 467-5813",
+        "email": "mbergman@argohs.net"
+      }
+    ]
+  },
+  "Reavis High School": {
+    "school_urls": {
+      "base_url": "http://www.reavisd220.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.reavisd220.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Julie Schultz",
+        "title": "Principal",
+        "dept": "Administration",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "Katarzyna Arnold",
+        "title": "Counselor",
+        "dept": "Student Services",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "Kelly Bleakley",
+        "title": "Counselor",
+        "dept": "Student Services",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "Lindsay O'Donnell",
+        "title": "College & Career Counselor",
+        "dept": "Student Services",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "Rachael Pearson",
+        "title": "Counselor",
+        "dept": "Student Services",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "Alicia Romig",
+        "title": "Counselor",
+        "dept": "Student Services",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "Robert White",
+        "title": "Counselor",
+        "dept": "Student Services",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "Tim Zasada",
+        "title": "Counselor",
+        "dept": "Student Services",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "Michael Gonzalez",
+        "title": "Dean",
+        "dept": "Student Services",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "Jamie Johnson",
+        "title": "Dean",
+        "dept": "Student Services",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "William Lauer",
+        "title": "Director of Deans & Security",
+        "dept": "Administration",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "Charles Manning",
+        "title": "Dean",
+        "dept": "Student Services",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "Kelly Miller",
+        "title": "Dean",
+        "dept": "Student Services",
+        "phone": "Send Message",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Rich Township High School": {
+    "school_urls": {
+      "base_url": "https://www.rich227.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "https://www.rich227.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Lynn Fields Jr.",
+        "title": "Co-Principal",
+        "dept": "FAC Campus",
+        "phone": "708-679-3117",
+        "email": "lfields@rich227.org"
+      },
+      {
+        "name": "S. Matt Graham",
+        "title": "Associate Principal of Operations",
+        "dept": "FAC Campus",
+        "phone": "708-679-3024",
+        "email": "sgraham@rich227.org"
+      },
+      {
+        "name": "Dr. Tiffany Lowery",
+        "title": "Associate Principal of Operations",
+        "dept": "STEM Campus",
+        "phone": "708-679-5776",
+        "email": "tlowery@rich227.org"
+      },
+      {
+        "name": "Marissa  Martin",
+        "title": "Associate Principal Secretary",
+        "dept": "FAC Campus",
+        "phone": "708-679-3068",
+        "email": "mmartin2@rich227.org"
+      },
+      {
+        "name": "Janice Wells",
+        "title": "Co-Principal",
+        "dept": "STEM Campus",
+        "phone": "708-679-5927",
+        "email": "jwells@rich227.org"
+      },
+      {
+        "name": "LaShanna Clark",
+        "title": "Counselor",
+        "dept": "FAC Campus",
+        "phone": "708-679-3029",
+        "email": "lclark@rich227.org"
+      },
+      {
+        "name": "Dana Cudjoe",
+        "title": "Counselor",
+        "dept": "FAC Campus",
+        "phone": "708-659-3338",
+        "email": "dcudjoe@rich227.org"
+      },
+      {
+        "name": "Christine Drabick",
+        "title": "Counselor",
+        "dept": "STEM Campus",
+        "phone": "708-659-3458",
+        "email": "cdrabick@rich227.org"
+      },
+      {
+        "name": "Karina Herrera",
+        "title": "Counselor",
+        "dept": "STEM Campus",
+        "phone": "708-679-5651",
+        "email": "kherrera@rich227.org"
+      },
+      {
+        "name": "Stacye Hopkins",
+        "title": "Guidance Counselor",
+        "dept": "STEM Campus",
+        "phone": "708-659-3480",
+        "email": "shopkins@rich227.org"
+      },
+      {
+        "name": "Paul Jurges",
+        "title": "Guidance Counselor",
+        "dept": "FAC Campus",
+        "phone": "708-679-3057",
+        "email": "pjurges@rich227.org"
+      },
+      {
+        "name": "Amy Kwiat",
+        "title": "Counselor",
+        "dept": "STEM Campus",
+        "phone": "708-679-5012",
+        "email": "akwiat@rich227.org"
+      },
+      {
+        "name": "Samuel Payan",
+        "title": "School Counselor",
+        "dept": "FAC Campus",
+        "phone": "708-659-3405",
+        "email": "spayan@rich227.org"
+      },
+      {
+        "name": "Josephine Pulido",
+        "title": "Guidance Counselor",
+        "dept": "FAC Campus",
+        "phone": "708-659-3397",
+        "email": "jpulido@rich227.org"
+      },
+      {
+        "name": "Sherita Sabbat",
+        "title": "Guidance Counselor",
+        "dept": "FAC Campus",
+        "phone": "708-679-3107",
+        "email": "ssabbat@rich227.org"
+      },
+      {
+        "name": "Debra Wright",
+        "title": "Guidance Counselor",
+        "dept": "STEM Campus",
+        "phone": "708-659-3553",
+        "email": "dwright@rich227.org"
+      },
+      {
+        "name": "Eva Dixon",
+        "title": "Dean's Secretary",
+        "dept": "FAC Campus",
+        "phone": "708-679-3062",
+        "email": "edixon@rich227.org"
+      },
+      {
+        "name": "Kimberly Gales",
+        "title": "Dean of Students",
+        "dept": "STEM Campus",
+        "phone": "708-679-5624",
+        "email": "kgales@rich227.org"
+      },
+      {
+        "name": "Nick Ochoa",
+        "title": "Dean of Students",
+        "dept": "STEM Campus",
+        "phone": "708-679-5897",
+        "email": "nochoa@rich227.org"
+      },
+      {
+        "name": "Matthew Reihel",
+        "title": "Dean of Students",
+        "dept": "FAC Campus",
+        "phone": "708-659-3390",
+        "email": "mreihel@rich227.org"
+      },
+      {
+        "name": "Stephen Walker",
+        "title": "Dean of Students",
+        "dept": "STEM Campus",
+        "phone": "708-679-5827",
+        "email": "swalker1@rich227.org"
+      },
+      {
+        "name": "Takema White",
+        "title": "Dean of Students",
+        "dept": "FAC Campus",
+        "phone": "708-659-3418",
+        "email": "tawhite@rich227.org"
+      },
+      {
+        "name": "Lionell Williams",
+        "title": "Dean of Students",
+        "dept": "FAC Campus",
+        "phone": "708-679-3083",
+        "email": "lwilliams@rich227.org"
+      }
+    ]
+  },
+  "Tinley Park High School": {
+    "school_urls": {
+      "base_url": "http://www.bhsd228.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.bhsd228.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "ERIN A COLLINS",
+        "title": "Principal",
+        "phone": null,
+        "email": "ercollins@bhsd228.com"
+      }
+    ]
+  },
+  "Oak Forest High School": {
+    "school_urls": {
+      "base_url": "http://www.bhsd228.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.bhsd228.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "ERIN A COLLINS",
+        "title": "Principal",
+        "phone": null,
+        "email": "ercollins@bhsd228.com"
+      }
+    ]
+  },
+  "Eastland Jr/Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.eastland308.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.eastland308.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Monica Burkholder",
+        "title": "Principal",
+        "dept": "Jr/Sr High School",
+        "phone": "8154936341",
+        "email": "Send Message"
+      },
+      {
+        "name": "Kayleigh King",
+        "title": "Principal",
+        "dept": "Elementary School",
+        "phone": "8158642300",
+        "email": "Send Message"
+      },
+      {
+        "name": "Anne Pilgrim",
+        "title": "Counselor",
+        "dept": "Jr/Sr High School",
+        "phone": "8154936341",
+        "email": "Send Message"
+      },
+      {
+        "name": "Scott Hartman",
+        "title": "AD/Dean",
+        "dept": "Jr/Sr High School",
+        "phone": "8154936341",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Scales Mound High School": {
+    "school_urls": {
+      "base_url": "http://www.scalesmound.net",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.scalesmound.net/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Matt Wiederholt",
+        "title": "Principal",
+        "dept": "Administration",
+        "phone": "815-845-2215,112",
+        "email": "mattwiederholt@scalesmound.net"
+      }
+    ]
+  },
+  "Orangeville High School": {
+    "school_urls": {
+      "base_url": "http://orangevillecusd.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://orangevillecusd.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Travis Hartman",
+        "title": "PK-5 Principal & Transportation Dir.",
+        "dept": "Elementary",
+        "phone": "815-789-4450 *302",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Centennial High School": {
+    "school_urls": {
+      "base_url": "http://www.champaignschools.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.champaignschools.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "JEFFERY BUHNERKEMPE",
+        "title": "ASSOCIATE MS PRINCIPAL",
+        "dept": "FRANKLIN MIDDLE",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "TOMISHA CARTER",
+        "title": "ASST MIDDLE PRINCIPAL",
+        "dept": "EDISON MIDDLE",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "DARIENNE CIURO SANCHEZ",
+        "title": "ASST MIDDLE PRINCIPAL",
+        "dept": "INTL PREP ACADEMY",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "MONTIA GARDNER",
+        "title": "HIGH SCHOOL PRINCIPAL",
+        "dept": "CENTRAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "MICHAEL HALLDEN",
+        "title": "ASST HIGH SCHOOL PRINCIPAL",
+        "dept": "CENTENNIAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "CHRISTINA JORDAHL",
+        "title": "ASST HIGH SCHOOL PRINCIPAL",
+        "dept": "CENTRAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "SHEVON BROWN WALKER",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "EDISON MIDDLE",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "MACKENZIE CALABRESE",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "EDISON MIDDLE",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "MAKAYLA CASTLE",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "CENTENNIAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "GWI CHUN",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "CENTENNIAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "ANNA COVEY",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "CENTENNIAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "JULIE DECKER",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "COLUMBIA",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "JOSHUA DENNEY-CARLISLE",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "JEFFERSON MIDDLE",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "NATHAN EPTON",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "FRANKLIN MIDDLE",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "ABIGAIL FADELLE",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "JEFFERSON MIDDLE",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "DANIELLE GRAY",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "FRANKLIN MIDDLE",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "TODD GRIFFITH",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "JEFFERSON MIDDLE",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "LYNDEL HOLMES-MAY",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "CENTENNIAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "BRIDGETTE JONES",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "EDISON MIDDLE",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "JESSICA JOYNER",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "JEFFERSON MIDDLE",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "GILLIAN KINNEY",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "CENTRAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "KIRSTEN KIRKWOOD",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "CENTRAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "LEANN KNIGHT",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "IPA MIDDLE",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "LYNDSEY LANCE",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "CENTENNIAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "MEGHAN MCGREEVY",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "EDISON MIDDLE",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "JAMIE MEAGHER",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "CENTENNIAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "CYTHEANNE COHORST",
+        "title": "HIGH SCHOOL DEAN",
+        "dept": "CENTENNIAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "DEVIN CURRY",
+        "title": "HIGH SCHOOL DEAN",
+        "dept": "CENTRAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "MEGHAN SIWECKI",
+        "title": "HIGH SCHOOL DEAN",
+        "dept": "CENTENNIAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "NASHLA VEGA ZAMORA",
+        "title": "HIGH SCHOOL DEAN",
+        "dept": "CENTRAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Central High School": {
+    "school_urls": {
+      "base_url": "http://www.central301.net",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.central301.net/staff-directory"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "ANDREW GIBBS",
+        "title": "Principal",
+        "phone": null,
+        "email": "andrew.gibbs@central301.net"
+      },
+      {
+        "name": "HAROLD HARTWIG",
+        "title": "GUIDANCE COUNSELOR",
+        "phone": null,
+        "email": "harold.hartwig@central301.net"
+      }
+    ]
+  },
+  "Novak Academy": {
+    "school_urls": {
+      "base_url": "http://www.champaignschools.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.champaignschools.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "JEFFERY BUHNERKEMPE",
+        "title": "ASSOCIATE MS PRINCIPAL",
+        "dept": "FRANKLIN MIDDLE",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "TOMISHA CARTER",
+        "title": "ASST MIDDLE PRINCIPAL",
+        "dept": "EDISON MIDDLE",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "DARIENNE CIURO SANCHEZ",
+        "title": "ASST MIDDLE PRINCIPAL",
+        "dept": "INTL PREP ACADEMY",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "MONTIA GARDNER",
+        "title": "HIGH SCHOOL PRINCIPAL",
+        "dept": "CENTRAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "MICHAEL HALLDEN",
+        "title": "ASST HIGH SCHOOL PRINCIPAL",
+        "dept": "CENTENNIAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "CHRISTINA JORDAHL",
+        "title": "ASST HIGH SCHOOL PRINCIPAL",
+        "dept": "CENTRAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "SHEVON BROWN WALKER",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "EDISON MIDDLE",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "MACKENZIE CALABRESE",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "EDISON MIDDLE",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "MAKAYLA CASTLE",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "CENTENNIAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "GWI CHUN",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "CENTENNIAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "ANNA COVEY",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "CENTENNIAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "JULIE DECKER",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "COLUMBIA",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "JOSHUA DENNEY-CARLISLE",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "JEFFERSON MIDDLE",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "NATHAN EPTON",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "FRANKLIN MIDDLE",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "ABIGAIL FADELLE",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "JEFFERSON MIDDLE",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "DANIELLE GRAY",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "FRANKLIN MIDDLE",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "TODD GRIFFITH",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "JEFFERSON MIDDLE",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "LYNDEL HOLMES-MAY",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "CENTENNIAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "BRIDGETTE JONES",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "EDISON MIDDLE",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "JESSICA JOYNER",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "JEFFERSON MIDDLE",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "GILLIAN KINNEY",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "CENTRAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "KIRSTEN KIRKWOOD",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "CENTRAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "LEANN KNIGHT",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "IPA MIDDLE",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "LYNDSEY LANCE",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "CENTENNIAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "MEGHAN MCGREEVY",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "EDISON MIDDLE",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "JAMIE MEAGHER",
+        "title": "SCHOOL COUNSELOR",
+        "dept": "CENTENNIAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "CYTHEANNE COHORST",
+        "title": "HIGH SCHOOL DEAN",
+        "dept": "CENTENNIAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "DEVIN CURRY",
+        "title": "HIGH SCHOOL DEAN",
+        "dept": "CENTRAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "MEGHAN SIWECKI",
+        "title": "HIGH SCHOOL DEAN",
+        "dept": "CENTENNIAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "NASHLA VEGA ZAMORA",
+        "title": "HIGH SCHOOL DEAN",
+        "dept": "CENTRAL HIGH",
+        "phone": "Send Message",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Unity High School": {
+    "school_urls": {
+      "base_url": "http://unityrockets.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://unityrockets.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Bill Behrends",
+        "title": "Principal",
+        "dept": "Send Message",
+        "phone": "to Bill Behrends",
+        "email": "Send Message"
+      },
+      {
+        "name": "Julie Decker",
+        "title": "Guidance Counselor",
+        "dept": "-",
+        "phone": "Send Message",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Heritage High School": {
+    "school_urls": {
+      "base_url": "http://www.heritage8.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.heritage8.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Corey White",
+        "title": "HS Principal",
+        "dept": "Administrator",
+        "phone": "(217) 834-3392",
+        "email": "Send Message"
+      },
+      {
+        "name": "Patricia Knott",
+        "title": "Guidance Counselor",
+        "dept": "Counselor",
+        "phone": "(217) 834-3392",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "St Joseph-Ogden High School": {
+    "school_urls": {
+      "base_url": "http://www.sjo.k12.il.us",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.sjo.k12.il.us/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Gary Page",
+        "title": "Principal",
+        "dept": "217-469-2332, Ext. 308",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "Terri Rein",
+        "title": "Guidance Counselor",
+        "dept": "217-469-2332",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "Kaylee Butler",
+        "title": "Guidance Counselor",
+        "dept": "217-469-2332, Ext. 310",
+        "phone": "Send Message",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Martinsville Jr-Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.martinsville.k12.il.us",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.martinsville.k12.il.us/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Sheri Cooper",
+        "title": "Principal",
+        "dept": "Elementary",
+        "phone": "(217) 382-4116",
+        "email": "mrscooper@martinsville.k12.il.us"
+      },
+      {
+        "name": "Todd Evers",
+        "title": "Principal",
+        "dept": "Jr-Sr High School",
+        "phone": "217-382-4132",
+        "email": "everst@martinsville.k12.il.us"
+      },
+      {
+        "name": "Teresa Carver",
+        "title": "School Counselor",
+        "dept": "Elementary",
+        "phone": "(217) 382-4116",
+        "email": "carvert@martinsville.k12.il.us"
+      },
+      {
+        "name": "Alisha Lowry",
+        "title": "Guidance Counselor",
+        "dept": "Jr-Sr High School",
+        "phone": "(217) 382-4132",
+        "email": "lowrya@martinsville.k12.il.us"
+      }
+    ]
+  },
+  "Casey-Westfield Jr/Sr HS": {
+    "school_urls": {
+      "base_url": "https://www.caseywestfield.org/o/jr-sr-high",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "https://www.caseywestfield.org/o/jr-sr-high/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "James Sullivan",
+        "title": "Principal",
+        "dept": "Jr-Sr High School",
+        "phone": "217-932-2175",
+        "email": "Send Message"
+      },
+      {
+        "name": "Lisa Parker",
+        "title": "Guidance Counselor",
+        "dept": "Jr-Sr High School",
+        "phone": "217-932-2175",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Oakland High School": {
+    "school_urls": {
+      "base_url": "https://www.oakland5.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "https://www.oakland5.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Kendall Huffman",
+        "title": "Principal",
+        "dept": "Office Staff",
+        "phone": "217-346-2166",
+        "email": "kendall.huffman@oakland5.org"
+      },
+      {
+        "name": "Cory  Jones",
+        "title": "Counselor",
+        "dept": "Office Staff",
+        "phone": "217-346-2166",
+        "email": "cory.jones@oakland5.org"
+      }
+    ]
+  },
+  "Neoga Jr/Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.neoga.k12.il.us",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.neoga.k12.il.us/vnews/display.v/StaffDirectory"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Jennifer Bridges",
+        "title": "Jr/Sr High School Principal",
+        "phone": "217-775-6049 ext 1004",
+        "email": null
+      }
+    ]
+  },
+  "Cumberland High School": {
+    "school_urls": {
+      "base_url": "http://www.cumberland.k12.il.us",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.cumberland.k12.il.us/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Andy Glosser, x1200",
+        "title": "Principal",
+        "dept": "Cumberland Middle School",
+        "phone": "217-923-3132",
+        "email": "Send Message"
+      },
+      {
+        "name": "Daniel Huffman, x1300",
+        "title": "Principal",
+        "dept": "Cumberland High School",
+        "phone": "217-923-3132",
+        "email": "Send Message"
+      },
+      {
+        "name": "DeDe McElravy, x1100",
+        "title": "Principal",
+        "dept": "Cumberland Elementary School",
+        "phone": "217-923-3132",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Tuscola High School": {
+    "school_urls": {
+      "base_url": "http://www.cusd301.org/",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.cusd301.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Justin Bozarth",
+        "title": "High School Principal",
+        "phone": "217-253-2377",
+        "email": "jbozarth@cusd301.org"
+      },
+      {
+        "name": "Neal Garrison",
+        "title": "Guidance Counselor",
+        "phone": "217-253-2377",
+        "email": "ngarrison@cusd301.org"
+      },
+      {
+        "name": "Breanna Yantis",
+        "title": "Guidance Counselor",
+        "phone": "217-253-2712",
+        "email": "yantisb@cusd301.org"
+      }
+    ]
+  },
+  "Villa Grove High School": {
+    "school_urls": {
+      "base_url": "http://www.vg302.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.vg302.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Caleb Sims",
+        "title": "High School Guidance Counselor",
+        "dept": "Teachers",
+        "phone": "217-832-2321",
+        "email": "csims@vg302.org"
+      }
+    ]
+  },
+  "Shiloh High School": {
+    "school_urls": {
+      "base_url": "http://www.shiloh1.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.shiloh1.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Amy Jones",
+        "title": "Principal; Title IX Coordinator",
+        "dept": "District",
+        "phone": "Ext. 3005",
+        "email": "Send Message"
+      },
+      {
+        "name": "Megan Evans",
+        "title": "Counselor",
+        "dept": "District",
+        "phone": "Ext. 1020",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Chrisman High School": {
+    "school_urls": {
+      "base_url": "http://www.chrisman.k12.il.us",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.chrisman.k12.il.us/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Samantha Pettry",
+        "title": "Principal",
+        "dept": "Chrisman Elementary",
+        "phone": "217-269-2022",
+        "email": "pettrys@chrisman.k12.il.us"
+      },
+      {
+        "name": "Nicole Cox",
+        "title": "Principal",
+        "dept": "Chrisman High School",
+        "phone": "217-269-2823",
+        "email": "coxn@chrisman.k12.il.us"
+      },
+      {
+        "name": "Kate Pillen",
+        "title": "Guidance Counselor",
+        "dept": "District",
+        "phone": "217-269-2823",
+        "email": "pillenk@chrisman.k12.il.us"
+      }
+    ]
+  },
+  "Windsor Jr & Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.windsorcusd.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.windsorcusd.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Liz King",
+        "title": ", Principal",
+        "phone": "(217) 459-2447",
+        "email": null
+      }
+    ]
+  },
+  "Cowden-Herrick Jr/Sr High School": {
+    "school_urls": {
+      "base_url": "http://cowden-herrick.k12.il.us",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://cowden-herrick.k12.il.us/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Kerrie Coughlin",
+        "title": "Counselor",
+        "phone": "217-783-2137",
+        "email": "kcoughlin@cowdenherrick.org"
+      }
+    ]
+  },
+  "Shelbyville High School": {
+    "school_urls": {
+      "base_url": "http://shelbyville.k12.il.us",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://shelbyville.k12.il.us/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Kyle Ladd",
+        "title": "High School Principal",
+        "dept": "High School",
+        "phone": "217-774-3926",
+        "email": "Send Message"
+      },
+      {
+        "name": "Ryan  Scott",
+        "title": "Main Street Principal",
+        "dept": "Main Street School",
+        "phone": "217-774-4731",
+        "email": "Send Message"
+      },
+      {
+        "name": "Nick Caldwell",
+        "title": "Guidance Counselor",
+        "dept": "High School",
+        "phone": "217-774-3926",
+        "email": "Send Message"
+      },
+      {
+        "name": "Kate Mathis",
+        "title": "Guidance Counselor",
+        "dept": "Moulton",
+        "phone": "217-774-2169",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Stewardson-Strasburg High School": {
+    "school_urls": {
+      "base_url": "http://www.stew-stras.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.stew-stras.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Sara Kramer",
+        "title": "Guidance Counselor",
+        "phone": "217-682-3355",
+        "email": "skramer@stew-stras.org"
+      }
+    ]
+  },
+  "Central A & M High School": {
+    "school_urls": {
+      "base_url": "http://www.camraiders.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.camraiders.com/vnews/display.v/StaffDirectory"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Larry Daly",
+        "title": "High School Principal",
+        "phone": "217-768-3866",
+        "email": null
+      }
+    ]
+  },
+  "Clay City High School": {
+    "school_urls": {
+      "base_url": "http://claycityschools.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://claycityschools.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Brian Wattles",
+        "title": "PK-12 Principal",
+        "dept": "Admin",
+        "phone": "618-676-1431",
+        "email": "bwattles@claycityschools.org"
+      },
+      {
+        "name": "Teacher Aide",
+        "title": "Deanna Brake",
+        "dept": "Title",
+        "phone": "618-676-1431",
+        "email": "dbrake@claycityschools.org"
+      }
+    ]
+  },
+  "Hutsonville High School": {
+    "school_urls": {
+      "base_url": "http://www.hutsonvilletigers.net",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.hutsonvilletigers.net/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Jason  Blankenbaker",
+        "title": "High School Principal",
+        "dept": "Administrative",
+        "phone": "618-563-4912",
+        "email": "Send Message"
+      },
+      {
+        "name": "Shawna Smith",
+        "title": "GS/JH Principal",
+        "dept": "Administrative",
+        "phone": "618-563-4812",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Oblong High School": {
+    "school_urls": {
+      "base_url": "http://www.oblongschools.net",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.oblongschools.net/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Andy Julian",
+        "title": "High School Principal",
+        "dept": "High School",
+        "phone": "618-592-4235",
+        "email": "ajulian@oblongschools.net"
+      },
+      {
+        "name": "Mandy  Lewis",
+        "title": "High School Guidance Counselor",
+        "dept": "High School",
+        "phone": "618-592-4235",
+        "email": "alewis@oblongschools.net"
+      }
+    ]
+  },
+  "Red Hill Jr/Sr High School": {
+    "school_urls": {
+      "base_url": "http://cusd10.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://cusd10.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Megan Seaton",
+        "title": "Principal",
+        "dept": "Red Hill Jr/Sr High School",
+        "phone": "6189546895",
+        "email": "mseaton@cusd10.org"
+      },
+      {
+        "name": "Kacey Strange",
+        "title": "Principal",
+        "dept": "Bridgeport Grade School",
+        "phone": "618-945-2521",
+        "email": "kstrange@cusd10.org"
+      },
+      {
+        "name": "Clarence Gross",
+        "title": "Principal",
+        "dept": "Sumner Attendance Center",
+        "phone": "618-945-2521",
+        "email": "cgross@cusd10.org"
+      },
+      {
+        "name": "Jana Roark",
+        "title": "Guidance Counselor",
+        "dept": "Red Hill Jr/Sr High School",
+        "phone": "618-945-2521",
+        "email": "jroark@cusd10.org"
+      }
+    ]
+  },
+  "Richland County High School": {
+    "school_urls": {
+      "base_url": "http://rchs.rccu1.net",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://rchs.rccu1.net/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "JEFF THOMPSON",
+        "title": "Principal",
+        "dept": "Administration",
+        "phone": "618-393-2191 x 3127",
+        "email": "Send Message"
+      },
+      {
+        "name": "SUZANNA RIDGELY",
+        "title": "Counselor",
+        "dept": "Counselor",
+        "phone": "618-393-2191 x 3136",
+        "email": "Send Message"
+      },
+      {
+        "name": "SHERRY SLANKARD",
+        "title": "Counselor",
+        "dept": "Counselor",
+        "phone": "618-395-2191 x 3140",
+        "email": "Send Message"
+      },
+      {
+        "name": "MADISON YOUNG",
+        "title": "Counselor",
+        "dept": "Counselor",
+        "phone": "618-393-2191 x 3140",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Carlyle High School": {
+    "school_urls": {
+      "base_url": "http://www.carlyle1.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.carlyle1.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Nicole Weh",
+        "title": "Director of Student Services",
+        "phone": "618-594-8292",
+        "email": null
+      }
+    ]
+  },
+  "Mount Vernon High School": {
+    "school_urls": {
+      "base_url": "http://www.mvths.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.mvths.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Rowdy Fatheree",
+        "title": "Principal",
+        "dept": "Administration",
+        "phone": "246-1757",
+        "email": "Send Message"
+      },
+      {
+        "name": "Robert Grider",
+        "title": "Principal of Discipline",
+        "dept": "Administration",
+        "phone": "246-1198",
+        "email": "Send Message"
+      },
+      {
+        "name": "Steve Shifflet",
+        "title": "Vice Principal - MVTHS-East",
+        "dept": "Administration",
+        "phone": "246-2763",
+        "email": "Send Message"
+      },
+      {
+        "name": "Kara Tinsley",
+        "title": "Vice Principal",
+        "dept": "CTE/AVC Director",
+        "phone": "246-1813",
+        "email": "Send Message"
+      },
+      {
+        "name": "Annette Gullidge",
+        "title": "School Counselor",
+        "dept": "Student Services",
+        "phone": "246-1733",
+        "email": "Send Message"
+      },
+      {
+        "name": "Nealy Hamson",
+        "title": "School Counselor",
+        "dept": "Student Services",
+        "phone": "246-1737",
+        "email": "Send Message"
+      },
+      {
+        "name": "Kim Lichtenfels",
+        "title": "School Counselor",
+        "dept": "Student Services",
+        "phone": "246-1734",
+        "email": "Send Message"
+      },
+      {
+        "name": "Sarah Watts",
+        "title": "School Counselor",
+        "dept": "Student Services",
+        "phone": "246-1732",
+        "email": "Send Message"
+      },
+      {
+        "name": "Robert Kiefer",
+        "title": "Dean Truancy Advocate",
+        "dept": "Supervision",
+        "phone": "246-1755",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Woodlawn High School": {
+    "school_urls": {
+      "base_url": "https://www.woodlawnschools.org/",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "https://www.woodlawnschools.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Chris Braden",
+        "title": "Principal",
+        "dept": "WGS",
+        "phone": "735-2661 x103",
+        "email": "cbraden@woodlawnschools.org"
+      },
+      {
+        "name": "Leslie Witzel",
+        "title": "Guidance Counselor",
+        "dept": "WHS",
+        "phone": "735-2631 x301",
+        "email": "lwitzel@woodlawnschools.org"
+      },
+      {
+        "name": "Brian Gamber",
+        "title": "Dean of Students",
+        "dept": "WHS",
+        "phone": "735-2631 x307",
+        "email": "bgamber@woodlawnschools.org"
+      }
+    ]
+  },
+  "Webber High School": {
+    "school_urls": {
+      "base_url": "https://www.blufordschools.org/",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "https://www.blufordschools.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Jenny Allen",
+        "title": "HS Principal",
+        "phone": "618-732-8242",
+        "email": "jallen@blufordschools.org"
+      }
+    ]
+  },
+  "South Central High School": {
+    "school_urls": {
+      "base_url": "http://southcentralschools.org/",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://southcentralschools.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "HS - Michael Koehnke",
+        "title": "High School Principal",
+        "dept": "High School",
+        "phone": "618-245-3363",
+        "email": "mkoehnke@southcentralschools.org"
+      }
+    ]
+  },
+  "Sandoval Sr High School": {
+    "school_urls": {
+      "base_url": "http://sandoval501.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://sandoval501.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Scott Bunting",
+        "title": "Principal",
+        "dept": "Administration",
+        "phone": "EXT. 314",
+        "email": "Send Message"
+      },
+      {
+        "name": "Adam Hanks",
+        "title": "Principal",
+        "dept": "Administration",
+        "phone": "EXT. 402",
+        "email": "Send Message"
+      },
+      {
+        "name": "Christonia Saddler",
+        "title": "Guidance Counselor",
+        "dept": "Support Staff",
+        "phone": "EXT. 338",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Odin Attendance Center 9-12": {
+    "school_urls": {
+      "base_url": "http://odinpublicschools.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://odinpublicschools.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Ryan Williams",
+        "title": "Dean of Students",
+        "dept": "Administration",
+        "phone": "618-740-4183",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Genoa-Kingston High School": {
+    "school_urls": {
+      "base_url": "http://www.gkschools.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.gkschools.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Rhonda Andrews",
+        "title": "Principal",
+        "dept": "High School",
+        "phone": "815-784-3742",
+        "email": "Send Message"
+      },
+      {
+        "name": "Kristen Aviles",
+        "title": "Principal's Secretary",
+        "dept": "Middle School",
+        "phone": "815-784-5222",
+        "email": "Send Message"
+      },
+      {
+        "name": "Katie Bohne",
+        "title": "Principals Secretary",
+        "dept": "Genoa Elementary",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "Craig Butcher",
+        "title": "Principal",
+        "dept": "Middle School",
+        "phone": "815-784-5222",
+        "email": "Send Message"
+      },
+      {
+        "name": "Ruth Kleba",
+        "title": "Principal's Secretary",
+        "dept": "High School",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "Pam  Morgan",
+        "title": "Principal's Secretary",
+        "dept": "Kingston Elementary",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "Sandy Uecker",
+        "title": "Principal",
+        "dept": "Kingston Elementary",
+        "phone": "815-784-5246",
+        "email": "Send Message"
+      },
+      {
+        "name": "Alapati Uili",
+        "title": "Principal",
+        "dept": "Genoa Elementary",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "Katherine  Albano",
+        "title": "School Counselor",
+        "dept": "High School",
+        "phone": "815-784-5111",
+        "email": "Send Message"
+      },
+      {
+        "name": "Jennifer Franz",
+        "title": "Guidance Counselor",
+        "dept": "Middle School",
+        "phone": "815-784-5222",
+        "email": "Send Message"
+      },
+      {
+        "name": "Anna  Lini",
+        "title": "School Counselor",
+        "dept": "High School",
+        "phone": "815-784-5111",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Somonauk High School": {
+    "school_urls": {
+      "base_url": "http://www.somonauk.net",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.somonauk.net/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Angie Koontz",
+        "title": "5-8 School Counselor",
+        "dept": "Student Services",
+        "phone": "815-498-1866 ext. 1238",
+        "email": "Send Message"
+      },
+      {
+        "name": "John Korso",
+        "title": "9-12  School Counselor",
+        "dept": "Student Services",
+        "phone": "815-498-2314 ext. 1104",
+        "email": "Send Message"
+      },
+      {
+        "name": "Melissa Peterson",
+        "title": "K-4 School Counselor",
+        "dept": "Student Services",
+        "phone": "815-498-2314 ext. 1232",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Blue Ridge High School": {
+    "school_urls": {
+      "base_url": "http://www.blueridge18.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.blueridge18.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Sunny McMurry",
+        "title": "Principal",
+        "dept": "Schneider Elementary",
+        "phone": "3099282611",
+        "email": "smcmurry@blueridge18.org"
+      },
+      {
+        "name": "Brian Easter",
+        "title": "BRHS Principal",
+        "dept": "Blue Ridge High School",
+        "phone": "3099282622",
+        "email": "beaster@blueridge18.org"
+      },
+      {
+        "name": "Burton Huddleston",
+        "title": "Principal",
+        "dept": "BRIJH",
+        "phone": "2174895201",
+        "email": "bhuddleston@blueridge18.org"
+      },
+      {
+        "name": "Kristine Donaldson",
+        "title": "Counselor",
+        "dept": "BRIJH",
+        "phone": "2174895201",
+        "email": "kdonaldson@blueridge18.org"
+      },
+      {
+        "name": "Cheyenne Clayton",
+        "title": "School Counselor",
+        "dept": "Schneider Elementary",
+        "phone": "309-928-2611",
+        "email": "cclayton@blueridge18.org"
+      },
+      {
+        "name": "Leslie Hieronymus",
+        "title": "Counselor",
+        "dept": "Blue Ridge High School",
+        "phone": "3099282622",
+        "email": "lhieronymus@blueridge18.org"
+      }
+    ]
+  },
+  "Tri-Point High School": {
+    "school_urls": {
+      "base_url": "http://www.tripointschools.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.tripointschools.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Cara Eckersley",
+        "title": "Principal",
+        "dept": "Elementary School Administrator",
+        "phone": "815-253-6299 ext 114",
+        "email": "Send Message"
+      },
+      {
+        "name": "Alison Buckley",
+        "title": "Principal",
+        "dept": "High School",
+        "phone": "815-689-2110 ext 302",
+        "email": "Send Message"
+      },
+      {
+        "name": "Sam Schmale",
+        "title": "Principal/Athletic Director",
+        "dept": "Upper Elementary/Junior High School Administrator",
+        "phone": "815-686-2247 ext 201",
+        "email": "Send Message"
+      },
+      {
+        "name": "Dave Luhrsen",
+        "title": "High School Counselor",
+        "dept": "High School",
+        "phone": "815-689-2110 ext. 373",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Prairie Central High School": {
+    "school_urls": {
+      "base_url": "http://www.prairiecentral.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.prairiecentral.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Amy Bachtold",
+        "title": "Principal",
+        "dept": "PCJH",
+        "phone": "815-657-8660",
+        "email": "abachtold@prairiecentral.org"
+      },
+      {
+        "name": "Brandon Burke",
+        "title": "Principal",
+        "dept": "PCUE",
+        "phone": "815-657-8238",
+        "email": "bburke@prairiecentral.org"
+      },
+      {
+        "name": "Wade  Czerwonka",
+        "title": "Principal",
+        "dept": "PCHS",
+        "phone": "815-692-2355",
+        "email": "wczerwonka@prairiecentral.org"
+      },
+      {
+        "name": "Brittany  Masching",
+        "title": "Principal",
+        "dept": "PCPE",
+        "phone": "815-635-3555",
+        "email": "bmasching@prairiecentral.org"
+      },
+      {
+        "name": "Emily Wenger",
+        "title": "Principal",
+        "dept": "PCE",
+        "phone": "815-692-2623",
+        "email": "ewenger@prairiecentral.org"
+      },
+      {
+        "name": "Josh  Creek",
+        "title": "Guidance Counselor",
+        "dept": "PCHS",
+        "phone": "815-692-2355",
+        "email": "jcreek@prairiecentral.org"
+      },
+      {
+        "name": "Andrew Quain",
+        "title": "Guidance Counselor",
+        "dept": "PCHS",
+        "phone": "815-692-2355",
+        "email": "aquain@prairiecentral.org"
+      }
+    ]
+  },
+  "Flanagan-Cornell High School": {
+    "school_urls": {
+      "base_url": "http://www.fc74.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.fc74.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Mrs. Kelli Stanley",
+        "title": "High School Principal",
+        "dept": "Administration",
+        "phone": "815-796-2291",
+        "email": "kstanley@fc74.org"
+      }
+    ]
+  },
+  "Tri-Valley High School": {
+    "school_urls": {
+      "base_url": "http://www.tri-valley3.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.tri-valley3.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Frank Arnolts",
+        "title": "High School Principal",
+        "dept": "Tri-Valley High School",
+        "phone": "309-378-2911",
+        "email": "Send Message"
+      },
+      {
+        "name": "Emily Howse",
+        "title": "Guidance Counselor",
+        "dept": "Tri-Valley High School",
+        "phone": "309-378-2911",
+        "email": "Send Message"
+      },
+      {
+        "name": "Kari Prochnow",
+        "title": "Guidance Counselor",
+        "dept": "Tri-Valley Middle School",
+        "phone": "309-378-3414",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Normal Community High School": {
+    "school_urls": {
+      "base_url": "http://www.unit5.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.unit5.org/directory"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Amanda Styck",
+        "title": "Principal",
+        "phone": null,
+        "email": "stycka@unit5.org"
+      },
+      {
+        "name": "Rebecca Frangella",
+        "title": "Associate Principal",
+        "phone": null,
+        "email": "franger@unit5.org"
+      },
+      {
+        "name": "Megan Bozarth",
+        "title": "Principal",
+        "phone": null,
+        "email": "bozartm@unit5.org"
+      },
+      {
+        "name": "Lyndell Taylor",
+        "title": "Principal",
+        "phone": null,
+        "email": "taylorly@unit5.org"
+      },
+      {
+        "name": "Julia Knepler",
+        "title": "Principal",
+        "phone": null,
+        "email": "kneplej@unit5.org"
+      },
+      {
+        "name": "Jennifer Mangruem",
+        "title": "Principal",
+        "phone": null,
+        "email": "mangruj@unit5.org"
+      },
+      {
+        "name": "Courtney McClure",
+        "title": "Associate Principal",
+        "phone": null,
+        "email": "mcclurc@unit5.org"
+      },
+      {
+        "name": "Robert Battey",
+        "title": "Principal",
+        "phone": null,
+        "email": "batteyr@unit5.org"
+      },
+      {
+        "name": "Christina Ellis",
+        "title": "Principal",
+        "phone": null,
+        "email": "ellisc@unit5.org"
+      },
+      {
+        "name": "Christina Mables",
+        "title": "Principal",
+        "phone": null,
+        "email": "mablesc@unit5.org"
+      },
+      {
+        "name": "Scott Peters",
+        "title": "Principal",
+        "phone": null,
+        "email": "peterssd@unit5.org"
+      },
+      {
+        "name": "Cameo Williams",
+        "title": "Principal",
+        "phone": null,
+        "email": "williamc@unit5.org"
+      },
+      {
+        "name": "Matthew Harr",
+        "title": "Principal",
+        "phone": null,
+        "email": "harrm@unit5.org"
+      },
+      {
+        "name": "Terry Gliege",
+        "title": "Associate Principal",
+        "phone": null,
+        "email": "gliegeta@unit5.org"
+      },
+      {
+        "name": "Daniel Gibler",
+        "title": "Principal",
+        "phone": null,
+        "email": "giblerd@unit5.org"
+      },
+      {
+        "name": "Leslie Davenport",
+        "title": "Principal",
+        "phone": null,
+        "email": "davenportla@unit5.org"
+      },
+      {
+        "name": "Sylvester Davis",
+        "title": "Associate Principal",
+        "phone": null,
+        "email": "davissy@unit5.org"
+      },
+      {
+        "name": "Alison Kohler",
+        "title": "Principal",
+        "phone": null,
+        "email": "kohlera@unit5.org"
+      },
+      {
+        "name": "Gina Tenuta",
+        "title": "Principal",
+        "phone": null,
+        "email": "tenutagj@unit5.org"
+      },
+      {
+        "name": "Brandon Caffey",
+        "title": "Director of Student Services",
+        "phone": null,
+        "email": "caffeyb@unit5.org"
+      },
+      {
+        "name": "Scott Vogel",
+        "title": "Principal",
+        "phone": null,
+        "email": "vogels@unit5.org"
+      },
+      {
+        "name": "Daniel Tripp",
+        "title": "Associate Principal",
+        "phone": null,
+        "email": "trippd@unit5.org"
+      },
+      {
+        "name": "Andrea Lockhart",
+        "title": "Principal",
+        "phone": null,
+        "email": "lockharta@unit5.org"
+      }
+    ]
+  },
+  "Normal Community West High School": {
+    "school_urls": {
+      "base_url": "http://www.unit5.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.unit5.org/directory"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Amanda Styck",
+        "title": "Principal",
+        "phone": null,
+        "email": "stycka@unit5.org"
+      },
+      {
+        "name": "Rebecca Frangella",
+        "title": "Associate Principal",
+        "phone": null,
+        "email": "franger@unit5.org"
+      },
+      {
+        "name": "Megan Bozarth",
+        "title": "Principal",
+        "phone": null,
+        "email": "bozartm@unit5.org"
+      },
+      {
+        "name": "Lyndell Taylor",
+        "title": "Principal",
+        "phone": null,
+        "email": "taylorly@unit5.org"
+      },
+      {
+        "name": "Julia Knepler",
+        "title": "Principal",
+        "phone": null,
+        "email": "kneplej@unit5.org"
+      },
+      {
+        "name": "Jennifer Mangruem",
+        "title": "Principal",
+        "phone": null,
+        "email": "mangruj@unit5.org"
+      },
+      {
+        "name": "Courtney McClure",
+        "title": "Associate Principal",
+        "phone": null,
+        "email": "mcclurc@unit5.org"
+      },
+      {
+        "name": "Robert Battey",
+        "title": "Principal",
+        "phone": null,
+        "email": "batteyr@unit5.org"
+      },
+      {
+        "name": "Christina Ellis",
+        "title": "Principal",
+        "phone": null,
+        "email": "ellisc@unit5.org"
+      },
+      {
+        "name": "Christina Mables",
+        "title": "Principal",
+        "phone": null,
+        "email": "mablesc@unit5.org"
+      },
+      {
+        "name": "Scott Peters",
+        "title": "Principal",
+        "phone": null,
+        "email": "peterssd@unit5.org"
+      },
+      {
+        "name": "Cameo Williams",
+        "title": "Principal",
+        "phone": null,
+        "email": "williamc@unit5.org"
+      },
+      {
+        "name": "Matthew Harr",
+        "title": "Principal",
+        "phone": null,
+        "email": "harrm@unit5.org"
+      },
+      {
+        "name": "Terry Gliege",
+        "title": "Associate Principal",
+        "phone": null,
+        "email": "gliegeta@unit5.org"
+      },
+      {
+        "name": "Daniel Gibler",
+        "title": "Principal",
+        "phone": null,
+        "email": "giblerd@unit5.org"
+      },
+      {
+        "name": "Leslie Davenport",
+        "title": "Principal",
+        "phone": null,
+        "email": "davenportla@unit5.org"
+      },
+      {
+        "name": "Sylvester Davis",
+        "title": "Associate Principal",
+        "phone": null,
+        "email": "davissy@unit5.org"
+      },
+      {
+        "name": "Alison Kohler",
+        "title": "Principal",
+        "phone": null,
+        "email": "kohlera@unit5.org"
+      },
+      {
+        "name": "Gina Tenuta",
+        "title": "Principal",
+        "phone": null,
+        "email": "tenutagj@unit5.org"
+      },
+      {
+        "name": "Brandon Caffey",
+        "title": "Director of Student Services",
+        "phone": null,
+        "email": "caffeyb@unit5.org"
+      },
+      {
+        "name": "Scott Vogel",
+        "title": "Principal",
+        "phone": null,
+        "email": "vogels@unit5.org"
+      },
+      {
+        "name": "Daniel Tripp",
+        "title": "Associate Principal",
+        "phone": null,
+        "email": "trippd@unit5.org"
+      },
+      {
+        "name": "Andrea Lockhart",
+        "title": "Principal",
+        "phone": null,
+        "email": "lockharta@unit5.org"
+      }
+    ]
+  },
+  "Lexington High School": {
+    "school_urls": {
+      "base_url": "http://www.lexington.k12.il.us",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.lexington.k12.il.us/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Dr Jennifer McCoy",
+        "title": "JH/HS Principal",
+        "dept": "Junior High/High School",
+        "phone": "(309) 365-2711",
+        "email": "jmccoy@lexington.k12.il.us"
+      },
+      {
+        "name": "Melissa King",
+        "title": "JH/HS School Counselor",
+        "dept": "Junior High/High School",
+        "phone": "(309) 365-2711",
+        "email": "mking@lexington.k12.il.us"
+      }
+    ]
+  },
+  "Olympia High School": {
+    "school_urls": {
+      "base_url": "http://www.olympia.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.olympia.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Caitlin Loughary",
+        "title": "Outreach Counselor",
+        "dept": "(708) 966-9881",
+        "phone": "Send Message",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Ridgeview High School": {
+    "school_urls": {
+      "base_url": "http://www.ridgeview19.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.ridgeview19.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Sara Fidlow",
+        "title": "Embedded Counselor",
+        "dept": "Counselor",
+        "phone": "309-723-2951",
+        "email": "sfidlow@ridgeview19.org"
+      }
+    ]
+  },
+  "Hinsdale South High School": {
+    "school_urls": {
+      "base_url": "http://south.hinsdale86.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://south.hinsdale86.org/staff-directory"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Amanda Burton",
+        "title": "Dean of Students",
+        "phone": "630-468-4221",
+        "email": "aburton@hinsdale86.org"
+      }
+    ]
+  },
+  "Westmont High School": {
+    "school_urls": {
+      "base_url": "http://www.cusd201.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.cusd201.org/directory",
+        "http://www.cusd201.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Lisa Grippo",
+        "title": "Administrative Specialist for Student Services and Early Childhood",
+        "phone": "630-468-8015",
+        "email": "lgrippo@cusd201.org"
+      },
+      {
+        "name": "Tiffanie Torrisi",
+        "title": "Director of Student Services and Early Childhood",
+        "phone": "630-468-8015",
+        "email": "ttorrisi@cusd201.org"
+      },
+      {
+        "name": "Kevin Weck",
+        "title": "Principal",
+        "phone": "630-468-8100",
+        "email": null
+      },
+      {
+        "name": "Samantha Sinovich",
+        "title": "Principal",
+        "phone": "630-468-8300",
+        "email": null
+      }
+    ]
+  },
+  "York Comm High School": {
+    "school_urls": {
+      "base_url": "http://www.elmhurst205.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.elmhurst205.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Colleen Cook",
+        "title": "Director of Student Services",
+        "phone": null,
+        "email": "ccook@elmhurst205.org"
+      },
+      {
+        "name": "Anna Bahramis",
+        "title": "Director of Student Services",
+        "phone": null,
+        "email": "abahramis@elmhurst205.org"
+      },
+      {
+        "name": "Kevin Rubenstein",
+        "title": "Asst Supt of Student Services",
+        "phone": null,
+        "email": "krubenstein@elmhurst205.org"
+      }
+    ]
+  },
+  "Gallatin High School": {
+    "school_urls": {
+      "base_url": "http://gallatincusd7.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://gallatincusd7.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Dave Cruson",
+        "title": "Counselor",
+        "phone": "618 272 3821 ext.  1240",
+        "email": null
+      },
+      {
+        "name": "Jara Mitchell",
+        "title": "High School Principal",
+        "phone": "618 272 3821 ext.  1224",
+        "email": null
+      }
+    ]
+  },
+  "Galatia High School": {
+    "school_urls": {
+      "base_url": "http:www.galatiak12.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http:www.galatiak12.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Sarah Prather",
+        "title": "School Counselor",
+        "dept": "District",
+        "phone": "(618) 297-4571",
+        "email": "sprather@galatiak12.org"
+      },
+      {
+        "name": "Danyelle Douglass",
+        "title": "Guidance Counselor Support Specialist",
+        "dept": "High School",
+        "phone": "(618) 297-4199",
+        "email": "ddouglass@galatiak12.org"
+      }
+    ]
+  },
+  "Carrier Mills-Stonefort H S": {
+    "school_urls": {
+      "base_url": "http://www.cmsfcats.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.cmsfcats.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Bryce K. Jerrell",
+        "title": "Superintendent/HS Principal",
+        "dept": "High School",
+        "phone": "618-994-2392",
+        "email": "Send Message"
+      },
+      {
+        "name": "Melissa Kuhlmann",
+        "title": "GS Principal",
+        "dept": "Grade School",
+        "phone": "618-994-2413",
+        "email": "Send Message"
+      },
+      {
+        "name": "Samantha Craig",
+        "title": "College and Career Counselor/English Teacher",
+        "dept": "High School",
+        "phone": "618-994-2392",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Eldorado High School": {
+    "school_urls": {
+      "base_url": "http://www.eld4.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.eld4.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Cody Cusic",
+        "title": "High School Principal",
+        "dept": "Eldorado High School",
+        "phone": "618-273-2881",
+        "email": "ccusic@eld4.org"
+      }
+    ]
+  },
+  "Mount Carmel High School": {
+    "school_urls": {
+      "base_url": "http://www.wabash348.com/o/mchs",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.wabash348.com/o/mchs/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Amy Duckworth",
+        "title": "Principal",
+        "dept": "ADMINISTRATION",
+        "phone": "618-262-5104",
+        "email": "aduckworth@wabash348.com"
+      }
+    ]
+  },
+  "Fairfield Comm High School": {
+    "school_urls": {
+      "base_url": "http://www.fchsmules.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.fchsmules.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Tiffany Lyons",
+        "title": "Principal",
+        "dept": "Administration",
+        "phone": "618.842.2649",
+        "email": "tlyons@fchsmules.com"
+      },
+      {
+        "name": "Roberta Biggs",
+        "title": "Career Counselor",
+        "dept": "Guidance",
+        "phone": "618-842-2649",
+        "email": "rbiggs@fchsmules.com"
+      },
+      {
+        "name": "Meghan Pearce",
+        "title": "Guidance Counselor",
+        "dept": "Guidance",
+        "phone": "618-842-2649",
+        "email": "mpearce@fchsmules.com"
+      }
+    ]
+  },
+  "Christopher High": {
+    "school_urls": {
+      "base_url": "http://www.cpher99.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.cpher99.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Gabe Sveda",
+        "title": "High School Principal",
+        "dept": "Administration",
+        "phone": "(618) 724-9461 Ext 203",
+        "email": "gsveda@cpher99.org"
+      },
+      {
+        "name": "Eric Stallman",
+        "title": "High School Dean of Students",
+        "dept": "Administration",
+        "phone": "(618) 724-9461",
+        "email": "estallman@cpher99.org"
+      }
+    ]
+  },
+  "Benton Cons High School": {
+    "school_urls": {
+      "base_url": "http://www.bentonhighschool.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.bentonhighschool.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Sean Docherty",
+        "title": "Principal",
+        "dept": "Administration",
+        "phone": "618-439-3103",
+        "email": "sdocherty@bchs103.org"
+      }
+    ]
+  },
+  "Thompsonville High School": {
+    "school_urls": {
+      "base_url": "http://www.tvilleschools.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.tvilleschools.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Keisha McFarland",
+        "title": "Principal/McKinney Vento Liaison",
+        "dept": "Administration",
+        "phone": "618 627-2301",
+        "email": "kmcfarland@tvilleschools.org"
+      },
+      {
+        "name": "Mike Nguyen",
+        "title": "Dean of Students",
+        "dept": "Administration",
+        "phone": "618 627 2301",
+        "email": "mnguyen@tvilleschools.org"
+      }
+    ]
+  },
+  "Zeigler-Royalton High School": {
+    "school_urls": {
+      "base_url": "http://www.zr188.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.zr188.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Matt Morgan",
+        "title": "High School - Principal - Administrative",
+        "dept": "Principal",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "Garrett Wingo",
+        "title": "K8 - Principal - Administrative",
+        "dept": "Principal",
+        "phone": "Send Message",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Goreville High School": {
+    "school_urls": {
+      "base_url": "http://www.gorevilleschools.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.gorevilleschools.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Allison Robison",
+        "title": "Guidance Counselor",
+        "dept": "High School Office",
+        "phone": "618.995.2142 ext. 204",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Vienna High School": {
+    "school_urls": {
+      "base_url": "http://www.viennahighschool.com/",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.viennahighschool.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "John Giffin",
+        "title": "Principal",
+        "dept": "Administrative",
+        "phone": "6186584461 ext 205",
+        "email": "johnrgiffin@viennahs.com"
+      },
+      {
+        "name": "Rebecca Guest",
+        "title": "Dean of Instruction",
+        "dept": "Administrative",
+        "phone": "6186584461 ext 203",
+        "email": "rebeccadguest@viennahs.com"
+      },
+      {
+        "name": "Phillip Hosfeldt",
+        "title": "Dean of System Programs",
+        "dept": "Administrative",
+        "phone": "6186584461",
+        "email": "phillipmhosfeldt@viennahs.com"
+      }
+    ]
+  },
+  "Massac County High School": {
+    "school_urls": {
+      "base_url": "http://mchs.massac.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://mchs.massac.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Parker Windhorst",
+        "title": "Principal",
+        "dept": "Administration",
+        "phone": "618.524.3440",
+        "email": "pwindhorst@massac.org"
+      },
+      {
+        "name": "Lisa Aly",
+        "title": "School Counselor",
+        "dept": "School Counseling",
+        "phone": "618.524.3440",
+        "email": "laly@massac.org"
+      },
+      {
+        "name": "Leslie Downs",
+        "title": "School Counselor",
+        "dept": "School Counseling",
+        "phone": "618.524.3440",
+        "email": "ldowns@massac.org"
+      },
+      {
+        "name": "Leslie Goines",
+        "title": "School Counselor",
+        "dept": "School Counseling",
+        "phone": "618.524.3440",
+        "email": "lgoines@massac.org"
+      }
+    ]
+  },
+  "Joppa Jr & Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.joppa38.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.joppa38.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Stephanie  Wood",
+        "title": "District Principal",
+        "dept": "Admin",
+        "phone": "(618) 543-7589 Ext. 1103",
+        "email": "swood@joppa38.com"
+      }
+    ]
+  },
+  "Gardner-South Wilmington Twp H S": {
+    "school_urls": {
+      "base_url": "http://www.gswhs73.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.gswhs73.org/vnews/display.v/StaffDirectory"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Patrick Halloran",
+        "title": "Interim Principal",
+        "phone": "(815) 237-2176",
+        "email": null
+      },
+      {
+        "name": "Chris Ruddy",
+        "title": "Director of Student Services",
+        "phone": "815-237-2176 ext. 5117",
+        "email": null
+      }
+    ]
+  },
+  "Morris Community High School": {
+    "school_urls": {
+      "base_url": "http://morrishs.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://morrishs.org/apps/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Liz Lee-Pluskota",
+        "title": "School Social Worker (Last Names P-Z) and Student Services Department Chair",
+        "phone": "815-941-5333",
+        "email": null
+      },
+      {
+        "name": "Joshua Williamson",
+        "title": "School Counselor (Last Names A -Gn)",
+        "phone": "815-941-5323",
+        "email": null
+      },
+      {
+        "name": "Derek Babson",
+        "title": "School Counselor (Last Names Go-Pe)",
+        "phone": "815-941-5324",
+        "email": null
+      },
+      {
+        "name": "Lori Dite",
+        "title": "Director of Student Services",
+        "phone": "815-941-5456",
+        "email": null
+      },
+      {
+        "name": "Michele Flanagan",
+        "title": "Principal",
+        "phone": "815-941-5435",
+        "email": null
+      }
+    ]
+  },
+  "Minooka Community High School": {
+    "school_urls": {
+      "base_url": "http://www.mchs.net",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.mchs.net/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Jamie Soliman",
+        "title": "Principal",
+        "dept": "Administration",
+        "phone": "District Office - 815-521-4118",
+        "email": "Send Message"
+      },
+      {
+        "name": "Angela Ferro",
+        "title": "Counselor (JRS/SRS Rh-Z)",
+        "dept": "Student Services Office",
+        "phone": "815-521-2303",
+        "email": "Send Message"
+      },
+      {
+        "name": "Bobbi White",
+        "title": "Counselor (JRS/SRS A-E)",
+        "dept": "Student Services Office",
+        "phone": "Central Campus - 815-521-2339",
+        "email": "Send Message"
+      },
+      {
+        "name": "Jessica Hopkins",
+        "title": "Counselor (JRS/SRS Le-Q)",
+        "dept": "Student Services Office",
+        "phone": "Central Campus - 815-521-2321",
+        "email": "Send Message"
+      },
+      {
+        "name": "Katie Cassidy",
+        "title": "Counselor (FR/SO A-E)",
+        "dept": "Student Services Office",
+        "phone": "South Campus - 815-521-4164",
+        "email": "Send Message"
+      },
+      {
+        "name": "Kristin Carlson",
+        "title": "Counselor (JRS/SRS F-La)",
+        "dept": "Student Services Office",
+        "phone": "Central Campus - 815-521-2302",
+        "email": "Send Message"
+      },
+      {
+        "name": "Kristina Brown",
+        "title": "Counselor (FR/SO Lf-Re)",
+        "dept": "Student Services Office",
+        "phone": "815-521-4165",
+        "email": "Send Message"
+      },
+      {
+        "name": "Meghan Bednarz",
+        "title": "Counselor (FR/SO F-Le)",
+        "dept": "Student Services Office",
+        "phone": "815-521-4190",
+        "email": "Send Message"
+      },
+      {
+        "name": "Michelle Schoolman",
+        "title": "Counselor",
+        "dept": "Student Services Office",
+        "phone": "(815) 521-4155",
+        "email": "Send Message"
+      },
+      {
+        "name": "Brai Munson",
+        "title": "Deans Office Receptionist",
+        "dept": "Dean's Office",
+        "phone": "815-521-2354",
+        "email": "Send Message"
+      },
+      {
+        "name": "Brooke Brenczewski",
+        "title": "Deans Office Secretary",
+        "dept": "Dean's Office",
+        "phone": "815-521-2325",
+        "email": "Send Message"
+      },
+      {
+        "name": "Melanie Safarcyk",
+        "title": "Deans Office Secretary",
+        "dept": "Dean's Office",
+        "phone": "South Campus - 815-521-4249",
+        "email": "Send Message"
+      },
+      {
+        "name": "Pat Watson",
+        "title": "Dean (FR/SO Li-Z)",
+        "dept": "Dean's Office",
+        "phone": "South Campus - 815-521-4167",
+        "email": "Send Message"
+      },
+      {
+        "name": "Renee Ebel",
+        "title": "Dean (FR/SO A-Le)",
+        "dept": "Dean's Office",
+        "phone": "South Campus - 815-521-4136",
+        "email": "Send Message"
+      },
+      {
+        "name": "Ryan Flanagan",
+        "title": "Dean (JRS/SRS A-L)",
+        "dept": "Dean's Office",
+        "phone": "Central Campus - 815-521-2736",
+        "email": "Send Message"
+      },
+      {
+        "name": "Susanne Madding",
+        "title": "Dean (JRS/SRS M-Z)",
+        "dept": "Dean's Office",
+        "phone": "Central Campus - 815-521-2306",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "V I T Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.vit2.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.vit2.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Mark Darr",
+        "title": "Principal",
+        "dept": "Jr.-Sr. High",
+        "phone": "3097585136",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Cuba Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.cusd3.net",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.cusd3.net/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Cassie Nelson",
+        "title": "MS/HS Principal",
+        "dept": "309-785-7122",
+        "phone": "Send Message",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Spoon River Valley Sr High Sch": {
+    "school_urls": {
+      "base_url": "http://www.spoonrivervalley.us",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.spoonrivervalley.us/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Jody Collier",
+        "title": "PK-12 Principal",
+        "dept": "Administration",
+        "phone": "309-778-2201",
+        "email": "jcollier@spoonrivervalley.us"
+      },
+      {
+        "name": "Joey Brewer",
+        "title": "PreK-12 Dean of Students/Athletic Director",
+        "dept": "Administration",
+        "phone": "309-778-2201",
+        "email": "jbrewer@spoonrivervalley.us"
+      }
+    ]
+  },
+  "Canton High School": {
+    "school_urls": {
+      "base_url": "http://cantonusd.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://cantonusd.org/staff-directory"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Jason Pollitt",
+        "title": "Principal",
+        "phone": "309-647-0136",
+        "email": null
+      }
+    ]
+  },
+  "Illini West High School": {
+    "school_urls": {
+      "base_url": "http://www.illiniwest.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.illiniwest.org/vnews/display.v/StaffDirectory"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Jessica Knicl",
+        "title": "Asst. Principal/Special Education Coordinator",
+        "phone": "217-357-2136",
+        "email": null
+      }
+    ]
+  },
+  "West Prairie Senior High School": {
+    "school_urls": {
+      "base_url": "http://www.wp103.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.wp103.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Mandi Clark",
+        "title": "Student Services/Psychologist",
+        "phone": "(309) 776-3790",
+        "email": null
+      }
+    ]
+  },
+  "Rushville-Industry High School": {
+    "school_urls": {
+      "base_url": "http://www.sid5.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.sid5.com/directory"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Leigh Bickerman",
+        "title": "Asst Principal",
+        "phone": null,
+        "email": "lbickerman@sid5.com"
+      },
+      {
+        "name": "Jeff Ackman",
+        "title": "Principal",
+        "phone": null,
+        "email": "jeff.ackman@sid5.com"
+      },
+      {
+        "name": "Noah Willis",
+        "title": "Principal",
+        "phone": null,
+        "email": "nwillis@sid5.com"
+      },
+      {
+        "name": "Kyle Estes",
+        "title": "Principal",
+        "phone": null,
+        "email": "kestes@sid5.com"
+      },
+      {
+        "name": "Emily Hynek",
+        "title": "Counselor",
+        "phone": null,
+        "email": "emily.hynek@sid5.com"
+      }
+    ]
+  },
+  "Galva Jr-Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.galva224.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.galva224.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Kurtis Smyth",
+        "title": "High School Principal",
+        "dept": "Junior/Senior High",
+        "phone": "309-932-2151",
+        "email": "Send Message"
+      },
+      {
+        "name": "Vicki Conner",
+        "title": "Guidance Counselor",
+        "dept": "Junior/Senior High",
+        "phone": "309-932-2151",
+        "email": "Send Message"
+      },
+      {
+        "name": "Marland Rachel",
+        "title": "HS Dean/Athletic Director",
+        "dept": "Junior/Senior High",
+        "phone": "309-932-2151",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "AlWood  Middle/High School": {
+    "school_urls": {
+      "base_url": "http://www.alwood.net",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.alwood.net/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Reggie Larson",
+        "title": "Elem Principal",
+        "dept": "Elem School",
+        "phone": "309-629-5011",
+        "email": "larsonr@alwood.net"
+      },
+      {
+        "name": "Dawn Lewis",
+        "title": "MHS Principal",
+        "dept": "MHS",
+        "phone": "309-334-2102",
+        "email": "lewisd@alwood.net"
+      },
+      {
+        "name": "Tawny DeKezel",
+        "title": "Counselor",
+        "dept": "Elem School",
+        "phone": "309-629-5011",
+        "email": "dekezelt@alwood.net"
+      },
+      {
+        "name": "Jocelyne Mendoza",
+        "title": "Counselor",
+        "dept": "MHS",
+        "phone": "309-334-2102",
+        "email": "mendozaj@alwood.net"
+      }
+    ]
+  },
+  "Annawan High School": {
+    "school_urls": {
+      "base_url": "http://annawan226.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://annawan226.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Dawn Heitzler",
+        "title": "PRINCIPAL - GS",
+        "dept": "ADMINISTRATION",
+        "phone": "309-935-6623",
+        "email": "dheitzler@annawan226.org"
+      },
+      {
+        "name": "Matt Huber",
+        "title": "PRINCIPAL - HS - Athletic Director",
+        "dept": "HS",
+        "phone": "309-935-6781",
+        "email": "mhuber@annawan226.org"
+      },
+      {
+        "name": "Amanda Attig",
+        "title": "COUNSELOR - GS / TEACHER - HS",
+        "dept": "HS",
+        "phone": "309-935-6781",
+        "email": "aattig@annawan226.org"
+      },
+      {
+        "name": "Tammy Celus",
+        "title": "COUNSELOR - HS / TEACHER - HS",
+        "dept": "HS",
+        "phone": "309-935-6781",
+        "email": "tcelus@annawan226.org"
+      }
+    ]
+  },
+  "Geneseo High School": {
+    "school_urls": {
+      "base_url": "http://www.geneseoschools.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.geneseoschools.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Jeremy Mosier",
+        "title": "Assitant Principal",
+        "dept": "High School",
+        "phone": "(309) 945-0309",
+        "email": "jmosier@geneseoschools.org"
+      }
+    ]
+  },
+  "Wethersfield Jr/Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.geese230.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.geese230.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Tyler Nichols",
+        "title": "JH/HS Principal",
+        "dept": "Junior/Senior High",
+        "phone": "3098534205",
+        "email": "Send Message"
+      },
+      {
+        "name": "Jessica Seiden",
+        "title": "Guidance Counselor",
+        "dept": "Junior/Senior High",
+        "phone": "3098534205",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Carbondale Comm H S": {
+    "school_urls": {
+      "base_url": "http://www.cchs165.jacksn.k12.il.us",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.cchs165.jacksn.k12.il.us/administration"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Ryan Thomas",
+        "title": "Principal",
+        "phone": null,
+        "email": "ryan.thomas@cchs165.com"
+      },
+      {
+        "name": "Lena Dierks",
+        "title": "Dean of Students",
+        "phone": null,
+        "email": "lena.dierks@cchs165.com"
+      }
+    ]
+  },
+  "Pinckneyville Comm High School": {
+    "school_urls": {
+      "base_url": "http://www.pchspanthers.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.pchspanthers.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Haven Hicks x150",
+        "title": "Principal",
+        "dept": "Administration",
+        "phone": "618-357-5013",
+        "email": "hhicks@pchspanthers.com"
+      },
+      {
+        "name": "Meg Haggard, x152",
+        "title": "School Counselor",
+        "dept": "School Counselor",
+        "phone": "618-357-5013",
+        "email": "mhaggard@pchspanthers.com"
+      },
+      {
+        "name": "Heather Wilkin, x153",
+        "title": "School Counselor",
+        "dept": "School Counselor",
+        "phone": "618-357-5013",
+        "email": "hwilkin@pchspanthers.com"
+      }
+    ]
+  },
+  "Du Quoin High School": {
+    "school_urls": {
+      "base_url": "http://www.duquoinschools.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.duquoinschools.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Amanda Milam",
+        "title": "Principal",
+        "dept": "Du Quoin Elementary School",
+        "phone": "(618) 542-2646",
+        "email": "Send Message"
+      },
+      {
+        "name": "Eric Kirkpatrick",
+        "title": "Principal",
+        "dept": "Du Quoin High School",
+        "phone": "(618) 542-4744",
+        "email": "Send Message"
+      },
+      {
+        "name": "Denise Woodsides",
+        "title": "Principal",
+        "dept": "Du Quoin Middle School",
+        "phone": "(618) 542-2646",
+        "email": "Send Message"
+      },
+      {
+        "name": "Ryan Summers",
+        "title": "Dean of Student",
+        "dept": "Du Quoin Elementary School",
+        "phone": "(618) 542-2646",
+        "email": "Send Message"
+      },
+      {
+        "name": "Jeremy Cornett",
+        "title": "Dean of Students/Athletic Director",
+        "dept": "Du Quoin Middle School",
+        "phone": "(618) 542-2646",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Meridian High School": {
+    "school_urls": {
+      "base_url": "http://www.meridian101.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.meridian101.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Maryanne Boren",
+        "title": "Jr. High/ High School Principal",
+        "dept": "High School",
+        "phone": "618-342-6778",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Cobden High School": {
+    "school_urls": {
+      "base_url": "http://cobdenappleknockers.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://cobdenappleknockers.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Edwin Shoemate",
+        "title": "Superintendent/ Jr. Sr. High School Principal",
+        "dept": "Cobden High School",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "Jordan Parr",
+        "title": "Counselor",
+        "dept": "Cobden High School",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "Haley Anderson",
+        "title": "Counselor",
+        "dept": "Cobden Elem School",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "April Reiman",
+        "title": "Counselor",
+        "dept": "Cobden High School",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "Wendell Wheeler",
+        "title": "Dean of Students",
+        "dept": "District",
+        "phone": "Send Message",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Dongola High School": {
+    "school_urls": {
+      "base_url": "http://www.dongolaschool.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.dongolaschool.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Contact Us",
+        "title": "Principal's Office",
+        "dept": "Phone: (618) 827-3524",
+        "phone": "Fax: (618) 827-4422",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Hope D Wall TMH Child Dev Ctr": {
+    "school_urls": {
+      "base_url": "http://www.sd129.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.sd129.org/directory"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "David Aguilar",
+        "title": "Principal",
+        "phone": "630-301-5011",
+        "email": "david.aguilar@sd129.org"
+      }
+    ]
+  },
+  "Watseka Comm High School": {
+    "school_urls": {
+      "base_url": "http://www.watsekaschools.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.watsekaschools.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Stephen Rigsby",
+        "title": "WJHS Principal",
+        "dept": "Watseka Junior High",
+        "phone": "815.432.2115",
+        "email": "stephen.rigsby@watsekaschools.org"
+      },
+      {
+        "name": "Erika Sterrenberg",
+        "title": "Principal-Glenn Raymond School",
+        "dept": "Watseka Elementary",
+        "phone": "815.432.4581",
+        "email": "erika.sterrenberg@watsekaschools.org"
+      },
+      {
+        "name": "Jonathan Cruz",
+        "title": "School Counselor - Wanda Kendall & Glenn Raymond",
+        "dept": "Watseka Elementary",
+        "phone": "815-432-2112",
+        "email": "jonathan.cruz@watsekaschools.org"
+      }
+    ]
+  },
+  "St Charles East High School": {
+    "school_urls": {
+      "base_url": "http://east.d303.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://east.d303.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "JB Bialeschki, Jeff",
+        "title": "Counselor",
+        "phone": "331-228-5518",
+        "email": null
+      },
+      {
+        "name": "SB Burke, Shawn",
+        "title": "Dean of Students",
+        "phone": "331-228-5534",
+        "email": null
+      },
+      {
+        "name": "MM Meehan, Maura",
+        "title": "Counselor",
+        "phone": "331-228-6126",
+        "email": null
+      },
+      {
+        "name": "JH Hawkins, James",
+        "title": "Counselor",
+        "phone": "331-228-5596",
+        "email": null
+      },
+      {
+        "name": "Wingard Blomquist",
+        "title": "Dean of Students",
+        "phone": "331-228-5632",
+        "email": null
+      },
+      {
+        "name": "JR Richter, James",
+        "title": "Principal",
+        "phone": "331-228-5704",
+        "email": null
+      },
+      {
+        "name": "JS Swenson, Jamie",
+        "title": "Counselor",
+        "phone": "331-228-5109",
+        "email": null
+      },
+      {
+        "name": "MP Pereda, Mark",
+        "title": "Counselor",
+        "phone": "331-228-6148",
+        "email": null
+      },
+      {
+        "name": "KP Perkins, Katie (Mary)",
+        "title": "Counselor",
+        "phone": "331-228-5729",
+        "email": null
+      },
+      {
+        "name": "OM Mayszak, Olivia",
+        "title": "Student Services Coordinator for RISE- District",
+        "phone": "331-228-2385",
+        "email": null
+      }
+    ]
+  },
+  "St Charles North High School": {
+    "school_urls": {
+      "base_url": "http://north.d303.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://north.d303.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "KK Keith, Kelsey",
+        "title": "Dean of Students (Per-Z)",
+        "phone": "331-228-6506",
+        "email": null
+      },
+      {
+        "name": "SL Lewis, Shanna",
+        "title": "Principal",
+        "phone": "331-228-4400",
+        "email": null
+      },
+      {
+        "name": "MT Tomczak, Michael",
+        "title": "Dean of Students (A-Gr)",
+        "phone": "331-228-6016",
+        "email": null
+      },
+      {
+        "name": "JK Kempf, Jonathan",
+        "title": "Guidance Counselor",
+        "phone": "331-228-5995",
+        "email": null
+      },
+      {
+        "name": "AF Ford, Amy",
+        "title": "Guidance Counselor",
+        "phone": "331-228-6235",
+        "email": null
+      },
+      {
+        "name": "TG Gebhardt, Teresa",
+        "title": "Guidance Counselor",
+        "phone": "331-228-6772",
+        "email": null
+      },
+      {
+        "name": "SO O'Donnell, Stephany",
+        "title": "Guidance Counselor (Pat-So)",
+        "phone": "331-228-3376",
+        "email": null
+      },
+      {
+        "name": "AH Herrera, Andrew",
+        "title": "Dean of Students (Gu-Peo)",
+        "phone": "331-228-6339",
+        "email": null
+      }
+    ]
+  },
+  "Knoxville Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.bluebullets.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.bluebullets.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Adam Mize",
+        "title": "KHS Principal",
+        "dept": "Knoxville High School",
+        "phone": "(309) 289-2324",
+        "email": "Send Message"
+      },
+      {
+        "name": "Matt Maaske",
+        "title": "KJHS Principal",
+        "dept": "Knoxville Jr High School",
+        "phone": "(309) 289-4126",
+        "email": "Send Message"
+      },
+      {
+        "name": "Brandy Nolan",
+        "title": "KHS Guidance Counselor",
+        "dept": "Knoxville High School",
+        "phone": "(309) 289-2324",
+        "email": "Send Message"
+      },
+      {
+        "name": "Sydney Ingle",
+        "title": "KJHS Guidance Counselor",
+        "dept": "Knoxville Jr High School",
+        "phone": "(309) 289-4126",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Galesburg Senior High School": {
+    "school_urls": {
+      "base_url": "https://ghs.galesburg205.org/o/ghs",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "https://ghs.galesburg205.org/o/ghs/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Jeff Ewing",
+        "title": "Principal",
+        "dept": "Administration",
+        "phone": "309-973-2001",
+        "email": "Send Message"
+      },
+      {
+        "name": "Benjamin Bredemeier",
+        "title": "Counselor",
+        "dept": "Galesburg Senior High School",
+        "phone": "309-973-2259",
+        "email": "Send Message"
+      },
+      {
+        "name": "Gretchen Gonzalez",
+        "title": "Counselor, Sophomore Class Co-Advisor",
+        "dept": "Galesburg Senior High School",
+        "phone": "309-973-2262",
+        "email": "Send Message"
+      },
+      {
+        "name": "Rachel Johnson",
+        "title": "Counselor, Department Chair",
+        "dept": "Galesburg Senior High School",
+        "phone": "309-973-2260",
+        "email": "Send Message"
+      },
+      {
+        "name": "Sarah McDermott",
+        "title": "Counselor",
+        "dept": "Galesburg Senior High School",
+        "phone": "309-973-2263",
+        "email": "Send Message"
+      },
+      {
+        "name": "Jody Chapman",
+        "title": "Dean of Students,  Boys/Girls Cross Country, Girls Track",
+        "dept": "Galesburg Senior High School",
+        "phone": "309-973-2001",
+        "email": "Send Message"
+      },
+      {
+        "name": "Lexi  Demott",
+        "title": "Dean of Students, Varsity Girls Basketball",
+        "dept": "Galesburg Junior High School",
+        "phone": "309-973-2277",
+        "email": "Send Message"
+      },
+      {
+        "name": "Mark Harden",
+        "title": "Dean of Students,  Boys Golf Coach",
+        "dept": "Galesburg Senior High School",
+        "phone": "309-973-2001",
+        "email": "Send Message"
+      },
+      {
+        "name": "Chad Thompson",
+        "title": "Dean of Students, Cross County, Spelling Bee Coordinator",
+        "dept": "Galesburg Senior High School",
+        "phone": "309-973-2667",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "R O W V A Jr and  Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.rowva.k12.il.us",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.rowva.k12.il.us/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Ben Rees",
+        "title": "JH/HS Principal",
+        "dept": "Administration",
+        "phone": "(309) 483-6371",
+        "email": "brees@rowva.k12.il.us"
+      },
+      {
+        "name": "Whitney Cleair",
+        "title": "JH/HS Counselor",
+        "dept": "Jr/Sr High School",
+        "phone": "(309) 483-6371",
+        "email": "wcleair@rowva.k12.il.us"
+      }
+    ]
+  },
+  "Williamsfield High School": {
+    "school_urls": {
+      "base_url": "http://billtown.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://billtown.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Jeff Hannam",
+        "title": "Dean of Student Services/Athletic Director/Health Teacher",
+        "phone": null,
+        "email": "jeff.hannam@billtown.org"
+      }
+    ]
+  },
+  "Antioch Comm High School": {
+    "school_urls": {
+      "base_url": "http://www.chsd117.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.chsd117.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Jennifer Ballard",
+        "title": "PSP to the Director of Student Services",
+        "phone": "(847) 838-7288",
+        "email": "jennifer.ballard@chsd117.org"
+      }
+    ]
+  },
+  "Lakes Community High School": {
+    "school_urls": {
+      "base_url": "http://www.chsd117.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.chsd117.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Jennifer Ballard",
+        "title": "PSP to the Director of Student Services",
+        "phone": "(847) 838-7288",
+        "email": "jennifer.ballard@chsd117.org"
+      }
+    ]
+  },
+  "Adlai E Stevenson High School": {
+    "school_urls": {
+      "base_url": "http://www.d125.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.d125.org/directory"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Anderson Student",
+        "title": "Student Services Manager",
+        "phone": null,
+        "email": "reanderson@d125.org"
+      }
+    ]
+  },
+  "Grayslake Central High School": {
+    "school_urls": {
+      "base_url": "http://www.d127.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.d127.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Kelly Brittan",
+        "title": "Director of Student Services",
+        "phone": "847-986-3446",
+        "email": "kbrittan@d127.org"
+      }
+    ]
+  },
+  "Libertyville High School": {
+    "school_urls": {
+      "base_url": "http://www.d128.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.d128.org/staff-directory"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Juan Avila",
+        "title": "Counselor",
+        "phone": null,
+        "email": "juan.avila@d128.org"
+      },
+      {
+        "name": "Kelly Angelos",
+        "title": "Counselor",
+        "phone": null,
+        "email": "kelly.angelos@d128.org"
+      },
+      {
+        "name": "Ray Albin",
+        "title": "Principal",
+        "phone": null,
+        "email": "raymond.albin@d128.org"
+      }
+    ]
+  },
+  "Vernon Hills High School": {
+    "school_urls": {
+      "base_url": "http://www.d128.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.d128.org/staff-directory"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Juan Avila",
+        "title": "Counselor",
+        "phone": null,
+        "email": "juan.avila@d128.org"
+      },
+      {
+        "name": "Kelly Angelos",
+        "title": "Counselor",
+        "phone": null,
+        "email": "kelly.angelos@d128.org"
+      },
+      {
+        "name": "Ray Albin",
+        "title": "Principal",
+        "phone": null,
+        "email": "raymond.albin@d128.org"
+      }
+    ]
+  },
+  "Barrington High School": {
+    "school_urls": {
+      "base_url": "http://www.barrington220.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.barrington220.org/directory"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Michelle Acosta",
+        "title": "Principal",
+        "dept": "Barrington Early Learning Center",
+        "phone": "ELC Main Office",
+        "email": "macosta@barrington220.org"
+      }
+    ]
+  },
+  "Leland High School": {
+    "school_urls": {
+      "base_url": "http://www.leland1.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.leland1.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Chris Bickel",
+        "title": "K-12 Principal",
+        "dept": "Elementary",
+        "phone": "(815) 495-3231 x100",
+        "email": "cbickel@leland1.org"
+      },
+      {
+        "name": "Melissa  Pierson-Hall",
+        "title": "Guidance Counselor",
+        "dept": "High School",
+        "phone": "815-495-3231 x200",
+        "email": "mpierson-hall@leland1.org"
+      }
+    ]
+  },
+  "Serena High School": {
+    "school_urls": {
+      "base_url": "http://www.unit2.net",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.unit2.net/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Susan McNelis",
+        "title": "Student Services Director",
+        "phone": "815-496-2361",
+        "email": "smcnelis@unit2.net"
+      }
+    ]
+  },
+  "Earlville Jr/Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.earlvillecusd9.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.earlvillecusd9.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Jenette Fruit",
+        "title": "Principal",
+        "dept": "ADMINISTRATION",
+        "phone": "(815)246-8361",
+        "email": "Send Message"
+      },
+      {
+        "name": "Rhiannon Pfaff",
+        "title": "Principal Secretary",
+        "dept": "OFFICE STAFF",
+        "phone": "(815)246-8361 Ext 10",
+        "email": "Send Message"
+      },
+      {
+        "name": "Brandon Skolek",
+        "title": "K-5 Principal",
+        "dept": "ADMINISTRATION",
+        "phone": "(815)246-8361    Ext. 21",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Streator Twp High School": {
+    "school_urls": {
+      "base_url": "http://streatorhs.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://streatorhs.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "BRAD BRITTIN",
+        "title": "Counselor",
+        "phone": null,
+        "email": "bbrittin@streatorhs.org"
+      },
+      {
+        "name": "ALLI HOEKSTRA",
+        "title": "Counselor",
+        "phone": null,
+        "email": "ahoekstra@streatorhs.org"
+      },
+      {
+        "name": "AMY JO LOTSHAW",
+        "title": "Principal",
+        "phone": null,
+        "email": "ajlotshaw@streatorhs.org"
+      },
+      {
+        "name": "TIMOTHY SCHLUND",
+        "title": "Counselor",
+        "phone": null,
+        "email": "tschlund@streatorhs.org"
+      }
+    ]
+  },
+  "Midland High School": {
+    "school_urls": {
+      "base_url": "http://www.midland-7.net",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.midland-7.net/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "DANIELLE WINKLER",
+        "title": "Counselor",
+        "phone": null,
+        "email": "DWINKLER@MIDLAND-7.NET"
+      },
+      {
+        "name": "Joe Mintus",
+        "title": "Principal",
+        "phone": null,
+        "email": "jmintus@midland-7.net"
+      },
+      {
+        "name": "DANA JAMES",
+        "title": "Counselor",
+        "phone": null,
+        "email": "DJAMES@MIDLAND-7.NET"
+      },
+      {
+        "name": "JORDAN FARRIS",
+        "title": "High School Principal",
+        "phone": null,
+        "email": "jfarris@midland-7.net"
+      }
+    ]
+  },
+  "Greenfield High School": {
+    "school_urls": {
+      "base_url": "http://www.greenfieldschools.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.greenfieldschools.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Beth Bettis",
+        "title": "High School Principal",
+        "dept": "Administration",
+        "phone": "217-368-2219",
+        "email": "Send Message"
+      },
+      {
+        "name": "Julie  Williams",
+        "title": "Dean of Students",
+        "dept": "Administration",
+        "phone": "217-368-2551",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Jersey Comm High School": {
+    "school_urls": {
+      "base_url": "http://www.jersey100.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.jersey100.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "KIM ANDERSON",
+        "title": "Principal",
+        "phone": "618-498-3814",
+        "email": null
+      }
+    ]
+  },
+  "Mt Olive High School": {
+    "school_urls": {
+      "base_url": "http://www.mtoliveschools.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.mtoliveschools.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Karrie Scheller",
+        "title": "Principal",
+        "dept": "Elementary",
+        "phone": "217-999-4241",
+        "email": "schellerprin@mtoliveschools.org"
+      }
+    ]
+  },
+  "Staunton High School": {
+    "school_urls": {
+      "base_url": "http://www.stauntonschools.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.stauntonschools.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Carrie Griffith, ext. 237",
+        "title": "High School Principal",
+        "dept": "High School",
+        "phone": "(618) 635-3838",
+        "email": "Send Message"
+      },
+      {
+        "name": "Ryan Pirok, ext. 240",
+        "title": "Jr. High Principal",
+        "dept": "Junior High School",
+        "phone": "(618) 635-3831",
+        "email": "Send Message"
+      },
+      {
+        "name": "Stephanie Schwappach, ext. 225",
+        "title": "6th-12th Grade Dean of Students",
+        "dept": "District",
+        "phone": "(618) 635-3838",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Triad High School": {
+    "school_urls": {
+      "base_url": "https://triadhs.tcusd2.org/",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "https://triadhs.tcusd2.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Kelli BARBOUR",
+        "title": "Building Principal",
+        "dept": "Administrator",
+        "phone": "618-667-5409,7067",
+        "email": "kelli.barbour@tcusd2.org"
+      },
+      {
+        "name": "Kate BRENDEL",
+        "title": "Guidance Counselor",
+        "dept": "Student Support",
+        "phone": "618-667-8851,7428",
+        "email": "kate.brendel@tcusd2.org"
+      },
+      {
+        "name": "Holly DORTCH",
+        "title": "School Counselor",
+        "dept": "Student Support",
+        "phone": "618-667-5409",
+        "email": "holly.dortch@tcusd2.org"
+      },
+      {
+        "name": "Heidi HOUCHINS",
+        "title": "Guidance Counselor",
+        "dept": "Student Support",
+        "phone": "618-667-5409,7426",
+        "email": "heidi.houchins@tcusd2.org"
+      },
+      {
+        "name": "Jason KAPP",
+        "title": "Guidance Counselor",
+        "dept": "Student Support",
+        "phone": "618-667-5409,7427",
+        "email": "jason.kapp@tcusd2.org"
+      },
+      {
+        "name": "Chelsea ZELASKO",
+        "title": "School Counselor",
+        "dept": "Student Support",
+        "phone": "618-667-5409,7429",
+        "email": "chelsea.zelasko@tcusd2.org"
+      }
+    ]
+  },
+  "Madison Senior High School": {
+    "school_urls": {
+      "base_url": "http://www.madisoncusd12.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.madisoncusd12.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Chris Diddlebock",
+        "title": "Principal",
+        "dept": "Madison Student Support Center",
+        "phone": "618.877.1712 x7008",
+        "email": "Send Message"
+      },
+      {
+        "name": "Betty  Roy",
+        "title": "High School Counselor",
+        "dept": "Madison Senior High School",
+        "phone": "618-877-1712 ext 6267",
+        "email": "Send Message"
+      },
+      {
+        "name": "Cherise Williams",
+        "title": "Counselor",
+        "dept": "Madison Senior High School",
+        "phone": "618-877-1712",
+        "email": "Send Message"
+      },
+      {
+        "name": "Cassandra Johnson",
+        "title": "Dean of Students",
+        "dept": "Madison Senior High School",
+        "phone": "Send Message",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Madison Student Support Center": {
+    "school_urls": {
+      "base_url": "http://www.madisoncusd12.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.madisoncusd12.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Chris Diddlebock",
+        "title": "Principal",
+        "dept": "Madison Student Support Center",
+        "phone": "618.877.1712 x7008",
+        "email": "Send Message"
+      },
+      {
+        "name": "Betty  Roy",
+        "title": "High School Counselor",
+        "dept": "Madison Senior High School",
+        "phone": "618-877-1712 ext 6267",
+        "email": "Send Message"
+      },
+      {
+        "name": "Cherise Williams",
+        "title": "Counselor",
+        "dept": "Madison Senior High School",
+        "phone": "618-877-1712",
+        "email": "Send Message"
+      },
+      {
+        "name": "Cassandra Johnson",
+        "title": "Dean of Students",
+        "dept": "Madison Senior High School",
+        "phone": "Send Message",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "East Alton-Wood River High Sch": {
+    "school_urls": {
+      "base_url": "http://www.eawr.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.eawr.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "LEIGH ROBINSON",
+        "title": "Principal",
+        "dept": "Office",
+        "phone": "(618) 254-3151",
+        "email": "Send Message"
+      },
+      {
+        "name": "MELISSA STRUIF",
+        "title": "Counselor",
+        "dept": "Guidance",
+        "phone": "(618) 254-3151",
+        "email": "Send Message"
+      },
+      {
+        "name": "STACY VAMBAKETES",
+        "title": "Counselor",
+        "dept": "Guidance",
+        "phone": "(618) 254-3151",
+        "email": "Send Message"
+      },
+      {
+        "name": "MARK BEATTY",
+        "title": "Athletic Director/Dean",
+        "dept": "Office",
+        "phone": "(618) 254-3151",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Johnsburg High School": {
+    "school_urls": {
+      "base_url": "http://www.johnsburg12.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.johnsburg12.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Frances Milewski",
+        "title": "Director of Student Services",
+        "phone": null,
+        "email": "fmilewski@johnsburg12.org"
+      }
+    ]
+  },
+  "Alden-Hebron High School": {
+    "school_urls": {
+      "base_url": "http://www.alden-hebron.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.alden-hebron.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Aaron Butler",
+        "title": "MS/HS School Principal",
+        "phone": "815-648-2442",
+        "email": "abutler@ah19.org"
+      },
+      {
+        "name": "Scott Skwarek",
+        "title": "Guidance Counselor",
+        "phone": "815-648-2442",
+        "email": "sskwarek@ah19.org"
+      }
+    ]
+  },
+  "Marengo High School": {
+    "school_urls": {
+      "base_url": "http://www.mchs154.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.mchs154.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Jay Mullens",
+        "title": "Principal ext. 1312",
+        "dept": "Administration Office",
+        "phone": "8155686511",
+        "email": "Send Message"
+      },
+      {
+        "name": "Maureen Olson",
+        "title": "School Counselor ext. 1343",
+        "dept": "Student Services Office",
+        "phone": "815-568-6511",
+        "email": "Send Message"
+      },
+      {
+        "name": "Nick Rode",
+        "title": "School Counselor ext. 1363",
+        "dept": "Student Services Office",
+        "phone": "815-568-6511",
+        "email": "Send Message"
+      },
+      {
+        "name": "Sean Walker",
+        "title": "School Counselor ext. 1353",
+        "dept": "Student Services Office",
+        "phone": "815-568-6511",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Richmond-Burton High School": {
+    "school_urls": {
+      "base_url": "http://www.rbchs.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.rbchs.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "MICHAEL BAIRD",
+        "title": "Principal",
+        "dept": "Richmond-Burton High School",
+        "phone": "815-678-7580",
+        "email": "mbaird@rb157.org"
+      },
+      {
+        "name": "CHRIS NOLEN",
+        "title": "Associate Principal",
+        "dept": "Richmond-Burton High School",
+        "phone": "815-678-6589",
+        "email": "cnolen@rb157.org"
+      },
+      {
+        "name": "REBECCA BOTTS",
+        "title": "School Counselor",
+        "dept": "Richmond-Burton High School",
+        "phone": "815-678-7576",
+        "email": "rbotts@rb157.org"
+      },
+      {
+        "name": "JORDAN RODGERS",
+        "title": "Counselor",
+        "dept": "Richmond-Burton High School",
+        "phone": "815-678-7587",
+        "email": "jrodgers@rb157.org"
+      }
+    ]
+  },
+  "Coulterville High School": {
+    "school_urls": {
+      "base_url": "http://www.cvillecusd1.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.cvillecusd1.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Jamie McDougal",
+        "title": "Counselor, High School Science",
+        "phone": "(618) 758-2881 ext 104",
+        "email": "jmcdougal@cvillecusd1.org"
+      },
+      {
+        "name": "Karen Carter",
+        "title": "Principal",
+        "phone": "(618) 758-2881 ext. 100",
+        "email": "carter@cvillecusd1.org"
+      }
+    ]
+  },
+  "Sparta High School": {
+    "school_urls": {
+      "base_url": "https://www.sparta140.org/",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "https://www.sparta140.org/administration"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Jackie Smith",
+        "title": "SHS Principal",
+        "phone": "(618) 443-5331",
+        "email": null
+      }
+    ]
+  },
+  "Ashton-Franklin Center HS": {
+    "school_urls": {
+      "base_url": "http://www.afcschools.net",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.afcschools.net/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Jenah Burkitt",
+        "title": "Principal",
+        "dept": "AFCES",
+        "phone": "815-456-2325",
+        "email": "Send Message"
+      },
+      {
+        "name": "Malinda Hurt",
+        "title": "7-12 Principal",
+        "dept": "AFCHS",
+        "phone": "815-453-7461",
+        "email": "Send Message"
+      },
+      {
+        "name": "Sarah Lave",
+        "title": "7-12 School Counselor",
+        "dept": "815-453-7461",
+        "phone": "Send Message",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Oregon  Jr/Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.ocusd.net",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.ocusd.net/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Joanna Cermak",
+        "title": "Counselor (7th-9th)",
+        "phone": null,
+        "email": "jcermak@ocusd.net"
+      },
+      {
+        "name": "Ryan Huels",
+        "title": "Principal",
+        "phone": null,
+        "email": "rhuels@ocusd.net"
+      }
+    ]
+  },
+  "Forreston Jr/Sr High Sch": {
+    "school_urls": {
+      "base_url": "http://www.fvdistrict221.org/",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.fvdistrict221.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Christina Bergin",
+        "title": "School Counselor",
+        "dept": "Forreston Jr/Sr High School",
+        "phone": "cbergin@fvdistrict221.org",
+        "email": "Send Message"
+      },
+      {
+        "name": "Lorie Parker-Weinrich",
+        "title": "School Counselor",
+        "dept": "Forreston Jr/Sr High School",
+        "phone": "lparker-weinrich@fvdistrict221.org",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Polo Comm High School": {
+    "school_urls": {
+      "base_url": "http://www.poloschools.net",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.poloschools.net/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Andy Faivre",
+        "title": "High School Principal",
+        "dept": "Administration",
+        "phone": "815-946-3314",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Erie High School": {
+    "school_urls": {
+      "base_url": "http://www.ecusd.info",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.ecusd.info/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Tim  McConnell",
+        "title": "High School Principal",
+        "dept": "High School",
+        "phone": "309.659.2239",
+        "email": "tmcconnell@ecusd.info"
+      },
+      {
+        "name": "Amanda Abbott",
+        "title": "Guidance Counselor",
+        "dept": "Elementary School",
+        "phone": "309.659.2239",
+        "email": "aabbott@ecusd.info"
+      },
+      {
+        "name": "Alex Ator",
+        "title": "Guidance Counselor",
+        "dept": "High School",
+        "phone": "309.659.2239",
+        "email": "aator@ecusd.info"
+      },
+      {
+        "name": "Jon Birdsall",
+        "title": "Guidance Counselor",
+        "dept": "Middle School",
+        "phone": "309.659.2239",
+        "email": "jbirdsall@ecusd.info"
+      }
+    ]
+  },
+  "Sterling High School": {
+    "school_urls": {
+      "base_url": "http://www.sterlingpublicschools.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.sterlingpublicschools.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Julie Penne",
+        "title": "Student Services Coordinator",
+        "phone": "815-626-5050",
+        "email": null
+      },
+      {
+        "name": "Becky Haas",
+        "title": "Director of Student Services",
+        "phone": "815-626-5050",
+        "email": null
+      }
+    ]
+  },
+  "Morrison High School": {
+    "school_urls": {
+      "base_url": "http://www.morrisonschools.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.morrisonschools.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Dusti Markham",
+        "title": "HS Principal",
+        "dept": "High School",
+        "phone": "Send Message",
+        "email": "Send Message"
+      },
+      {
+        "name": "Andy Harridge",
+        "title": "Northside Principal",
+        "dept": "Northside",
+        "phone": "(815) 772-2153",
+        "email": "Send Message"
+      },
+      {
+        "name": "Matt McCormick",
+        "title": "SS Principal/Athletic Director",
+        "dept": "Southside",
+        "phone": "815-772-2183",
+        "email": "Send Message"
+      },
+      {
+        "name": "Luke Lawson",
+        "title": "HS Guidance Counselor",
+        "dept": "High School",
+        "phone": "815-772-4071",
+        "email": "Send Message"
+      },
+      {
+        "name": "Hanna Brown",
+        "title": "JH Counselor",
+        "dept": "Junior High",
+        "phone": "815-772-7264",
+        "email": "Send Message"
+      },
+      {
+        "name": "Taija Robinson",
+        "title": "NS Counselor",
+        "dept": "Northside",
+        "phone": "815-772-2183",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Farmington Central High Sch": {
+    "school_urls": {
+      "base_url": "http://www.dist265.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.dist265.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Dennis McMillin",
+        "title": "FCHS Principal",
+        "dept": "Administration",
+        "phone": "(309) 245-1000",
+        "email": "dmcmillin@dist265.com"
+      },
+      {
+        "name": "Chris Uptmor",
+        "title": "FCJHS Principal",
+        "dept": "Administration",
+        "phone": "(309) 245-1000",
+        "email": "cuptmor@dist265.com"
+      },
+      {
+        "name": "Katie Nimtz",
+        "title": "School Counselor",
+        "dept": "FCJHS",
+        "phone": "309-245-1000",
+        "email": "knimtz@dist265.com"
+      },
+      {
+        "name": "Amara White",
+        "title": "School Counselor",
+        "dept": "FCHS",
+        "phone": "(309) 245-1000",
+        "email": "awhite@dist265.com"
+      },
+      {
+        "name": "Kaiti Murphy",
+        "title": "Dean of Students",
+        "dept": "FCHS",
+        "phone": "309-245-1000",
+        "email": "kmurphy@dist265.com"
+      }
+    ]
+  },
+  "Limestone Community High School": {
+    "school_urls": {
+      "base_url": "http://www.limestone310.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.limestone310.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Erin Vietti x1412",
+        "title": "Principal",
+        "dept": "Principal's Office",
+        "phone": "309-697-6271",
+        "email": "evietti@limestone310.org"
+      },
+      {
+        "name": "Brian Clausen x1440",
+        "title": "Asst. Principal and Athletic Director",
+        "dept": "Principal's Office",
+        "phone": "309-697-6271",
+        "email": "bclausen@limestone310.org"
+      },
+      {
+        "name": "Cory Bielema x1430",
+        "title": "Dean of Students",
+        "dept": "Deans' Office",
+        "phone": "309-697-6271",
+        "email": "cbielema@limestone310.org"
+      },
+      {
+        "name": "Darin Driscoll x1403",
+        "title": "Dean of Students",
+        "dept": "Deans' Office",
+        "phone": "309-697-6271",
+        "email": "ddriscoll@limestone310.org"
+      },
+      {
+        "name": "Katie  Marshall x1441",
+        "title": "Dean of Students",
+        "dept": "Deans' Office",
+        "phone": "309-697-6271",
+        "email": "kmarshall@limestone310.org"
+      }
+    ]
+  },
+  "Peoria Cty Jvnl Det Ctr 9-12": {
+    "school_urls": {
+      "base_url": "http://www.limestone310.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.limestone310.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Erin Vietti x1412",
+        "title": "Principal",
+        "dept": "Principal's Office",
+        "phone": "309-697-6271",
+        "email": "evietti@limestone310.org"
+      },
+      {
+        "name": "Brian Clausen x1440",
+        "title": "Asst. Principal and Athletic Director",
+        "dept": "Principal's Office",
+        "phone": "309-697-6271",
+        "email": "bclausen@limestone310.org"
+      },
+      {
+        "name": "Cory Bielema x1430",
+        "title": "Dean of Students",
+        "dept": "Deans' Office",
+        "phone": "309-697-6271",
+        "email": "cbielema@limestone310.org"
+      },
+      {
+        "name": "Darin Driscoll x1403",
+        "title": "Dean of Students",
+        "dept": "Deans' Office",
+        "phone": "309-697-6271",
+        "email": "ddriscoll@limestone310.org"
+      },
+      {
+        "name": "Katie  Marshall x1441",
+        "title": "Dean of Students",
+        "dept": "Deans' Office",
+        "phone": "309-697-6271",
+        "email": "kmarshall@limestone310.org"
+      }
+    ]
+  },
+  "Peoria Heights High School": {
+    "school_urls": {
+      "base_url": "http://www.ph325.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.ph325.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Sam Alvarado",
+        "title": "GS Principal",
+        "dept": "Peoria Heights Grade School",
+        "phone": "1116",
+        "email": "Send Message"
+      },
+      {
+        "name": "Terry Mooney",
+        "title": "HS Principal",
+        "dept": "Peoria Heights High School",
+        "phone": "1203",
+        "email": "Send Message"
+      },
+      {
+        "name": "Shanna Beard",
+        "title": "HS Guidance Counselor",
+        "dept": "Peoria Heights High School",
+        "phone": "1205",
+        "email": "Send Message"
+      },
+      {
+        "name": "Kirsten Miller",
+        "title": "GS Mental Health Counselor",
+        "dept": "Peoria Heights Grade School",
+        "phone": "1126",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Illini Bluffs High School": {
+    "school_urls": {
+      "base_url": "http://www.illinibluffs.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.illinibluffs.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Josiah Martin",
+        "title": "High School Principal",
+        "dept": "Leadership",
+        "phone": "309.389.5681",
+        "email": "jmartin@ib327.com"
+      },
+      {
+        "name": "Maureen Marvin",
+        "title": "Guidance Counselor",
+        "dept": "Student Services",
+        "phone": "309.389.5681",
+        "email": "mmarvin@ib327.com"
+      }
+    ]
+  },
+  "United Twp High School": {
+    "school_urls": {
+      "base_url": "http://uths.net",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://uths.net/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "STACEY DRISH",
+        "title": "COUNSELOR",
+        "phone": null,
+        "email": "SDRISH@uths.net"
+      },
+      {
+        "name": "MATHEW WRIGHT",
+        "title": "PRINCIPAL",
+        "phone": null,
+        "email": "mwright@uths.net"
+      },
+      {
+        "name": "ALLISON WHITCHER",
+        "title": "COUNSELOR",
+        "phone": null,
+        "email": "awhitcher@uths.net"
+      }
+    ]
+  },
+  "Rock Island High School": {
+    "school_urls": {
+      "base_url": "http://www.rimsd41.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.rimsd41.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "ROCIO AMBRIZ",
+        "title": "SECRETARY/DIR STUDENT SERVICES",
+        "phone": null,
+        "email": "rosie.ambriz@rimsd41.org"
+      },
+      {
+        "name": "ROXANNA CLAUDE",
+        "title": "SECRETARY/DIR STUDENT SERVICES",
+        "phone": null,
+        "email": "roxanna.claude@rimsd41.org"
+      },
+      {
+        "name": "ALICIA SIERRA-SANDERS",
+        "title": "DIRECTOR OF STUDENT SERVICES",
+        "phone": null,
+        "email": "alicia.sanders@rimsd41.org"
+      }
+    ]
+  },
+  "Thurgood Marshall Learning Ctr": {
+    "school_urls": {
+      "base_url": "http://www.rimsd41.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.rimsd41.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "ROCIO AMBRIZ",
+        "title": "SECRETARY/DIR STUDENT SERVICES",
+        "phone": null,
+        "email": "rosie.ambriz@rimsd41.org"
+      },
+      {
+        "name": "ROXANNA CLAUDE",
+        "title": "SECRETARY/DIR STUDENT SERVICES",
+        "phone": null,
+        "email": "roxanna.claude@rimsd41.org"
+      },
+      {
+        "name": "ALICIA SIERRA-SANDERS",
+        "title": "DIRECTOR OF STUDENT SERVICES",
+        "phone": null,
+        "email": "alicia.sanders@rimsd41.org"
+      }
+    ]
+  },
+  "Lebanon High School": {
+    "school_urls": {
+      "base_url": "http://lcusd9.org/",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://lcusd9.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Kimberly Emrick",
+        "title": "LJHS/LHS Principal",
+        "dept": "Principal",
+        "phone": "618-537-4423",
+        "email": "Send Message"
+      },
+      {
+        "name": "Christine Taylor",
+        "title": "Dean of Students",
+        "dept": "LHS Staff",
+        "phone": "618-537-4423",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Mascoutah High School": {
+    "school_urls": {
+      "base_url": "http://mhs.msd19.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://mhs.msd19.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Amy Kelly Johnson",
+        "title": "Principal",
+        "dept": "Administration",
+        "phone": "618-566-8523",
+        "email": "Send Message"
+      },
+      {
+        "name": "Brett Kolweier",
+        "title": "Counselor",
+        "dept": "Counseling",
+        "phone": "618-566-8523",
+        "email": "Send Message"
+      },
+      {
+        "name": "Janelle Kozsdiy",
+        "title": "Counselor",
+        "dept": "Counseling",
+        "phone": "618-566-8523",
+        "email": "Send Message"
+      },
+      {
+        "name": "Caitlin Morrell",
+        "title": "Counselor",
+        "dept": "Counseling",
+        "phone": "618-566-8523",
+        "email": "Send Message"
+      },
+      {
+        "name": "Christine Renth",
+        "title": "Counselor",
+        "dept": "Counseling",
+        "phone": "618-566-8523",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Porta High School": {
+    "school_urls": {
+      "base_url": "http://www.porta202.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.porta202.org/directory"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Brett Leischner",
+        "title": "JH/HS Asst. Principal, Boys Baseball Head Coach",
+        "phone": null,
+        "email": "BLeischner@porta202.org"
+      }
+    ]
+  },
+  "Lanphier High School": {
+    "school_urls": {
+      "base_url": "http://www.sps186.org/o/lanphier/",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.sps186.org/o/lanphier/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Alicia Miller",
+        "title": "Principal",
+        "dept": "Administration",
+        "phone": "217-525-3073",
+        "email": "Send Message"
+      },
+      {
+        "name": "Erica West",
+        "title": "Dean",
+        "dept": "Administration",
+        "phone": "217-525-3080",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Springfield High School": {
+    "school_urls": {
+      "base_url": "http://www.sps186.org/o/springfield/",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.sps186.org/o/springfield/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Lisa Leardi",
+        "title": "Principal",
+        "dept": "Administration",
+        "phone": "217-525-3100",
+        "email": "Send Message"
+      },
+      {
+        "name": "Jamie Impson",
+        "title": "Dean",
+        "dept": "Administration",
+        "phone": "217-525-3100",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Springfield Southeast High Sch": {
+    "school_urls": {
+      "base_url": "http://www.sps186.org/o/southeast/",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.sps186.org/o/southeast/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Cody Trigg",
+        "title": "Principal",
+        "dept": "Administration",
+        "phone": "217-525-3130",
+        "email": "Send Message"
+      },
+      {
+        "name": "Brad Leininger",
+        "title": "Dean",
+        "dept": "Administration",
+        "phone": "217-525-3130",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Edwin A Lee Elementary School": {
+    "school_urls": {
+      "base_url": "http://www.sps186.org/o/lee/",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.sps186.org/o/lee/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Lindsey Rudd",
+        "title": "Principal",
+        "dept": "Teacher",
+        "phone": "217-585-5828",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Springfield Learning Academy": {
+    "school_urls": {
+      "base_url": "http://www.sps186.org/o/sla",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.sps186.org/o/sla/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Reiko Hurd",
+        "title": "Principal",
+        "dept": "Administration",
+        "phone": "217-525-3358",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Havana High School": {
+    "school_urls": {
+      "base_url": "http://www.havana126.net",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.havana126.net/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Phil Foster",
+        "title": "HS  Principal",
+        "dept": "High School",
+        "phone": "309-543-3337, Ext. 425",
+        "email": "pfoster@havana126.net"
+      },
+      {
+        "name": "Nathan Brady",
+        "title": "JH Principal",
+        "dept": "District Office",
+        "phone": "309-543-3384, Ext. 432",
+        "email": "nbrady@havana126.net"
+      },
+      {
+        "name": "Samantha Bryant",
+        "title": "NC  Principal/Counselor",
+        "dept": "Elementary",
+        "phone": "(309)543-3384 Ext 230",
+        "email": "sbryant@havana126.net"
+      },
+      {
+        "name": "Amy McMahan",
+        "title": "HS Counselor",
+        "dept": "High School",
+        "phone": "309-543-3384",
+        "email": "amcmahan@havana126.net"
+      },
+      {
+        "name": "Carly  Taylor",
+        "title": "JH Counselor/Athletic Director",
+        "dept": "Junior High",
+        "phone": "309-543-3384",
+        "email": "ctaylor@havana126.net"
+      }
+    ]
+  },
+  "Illini Central High School": {
+    "school_urls": {
+      "base_url": "http://www.illinicentral.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.illinicentral.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Annie Baugher",
+        "title": "High School Principal",
+        "dept": "High School",
+        "phone": "217-482-5180",
+        "email": "abaugher@illinicentral.org"
+      },
+      {
+        "name": "Cassy Carey",
+        "title": "ICGS Principal",
+        "dept": "Grade School",
+        "phone": "217-482-5180",
+        "email": "ccarey@illinicentral.org"
+      },
+      {
+        "name": "Adrian Gonzalez",
+        "title": "HS/MS Counselor",
+        "dept": "High School",
+        "phone": "2174825180",
+        "email": "agonzalez@illinicentral.org"
+      },
+      {
+        "name": "Valerie Henning",
+        "title": "School Counselor",
+        "dept": "Grade School",
+        "phone": "217-482-5180",
+        "email": "vhenning@illinicentral.org"
+      },
+      {
+        "name": "Lynsey Means",
+        "title": "HS/MS Counselor",
+        "dept": "High School",
+        "phone": "2174825180",
+        "email": "lmeans@illinicentral.org"
+      }
+    ]
+  },
+  "Pekin Community High School": {
+    "school_urls": {
+      "base_url": "http://www.pekinhigh.net",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.pekinhigh.net/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Janira Del Valle, Ext. 4330",
+        "title": "Asst. Principal",
+        "dept": "Principal's Office",
+        "phone": "309-347-4101",
+        "email": "jdelvalle@pekinhigh.net"
+      },
+      {
+        "name": "Shayla Ewing,  Ext. 4331",
+        "title": "Principal",
+        "dept": "Principal's Office",
+        "phone": "309-347-4101",
+        "email": "sewing@pekinhigh.net"
+      },
+      {
+        "name": "Dan Hiles,  Ext. 4220",
+        "title": "Asst. Principal",
+        "dept": "Principal's Office",
+        "phone": "309-347-4101",
+        "email": "dhiles@pekinhigh.net"
+      },
+      {
+        "name": "Jennifer  Puckett, Ext 4332",
+        "title": "Principal's Office Clerk",
+        "dept": "Principal's Office",
+        "phone": "309-347-4101",
+        "email": "jpuckett@pekinhigh.net"
+      },
+      {
+        "name": "Andrea Arms, Ext. 4338",
+        "title": "Counselor, Cb-E",
+        "dept": "Counselors Office",
+        "phone": "309-347-4101",
+        "email": "aarms@pekinhigh.net"
+      },
+      {
+        "name": "Theresa Black, Ext. 4287",
+        "title": "Counselor, S-Tn",
+        "dept": "Counselors Office",
+        "phone": "309-347-4101",
+        "email": "tblack@pekinhigh.net"
+      },
+      {
+        "name": "Tonya Culver, Ext. 4210",
+        "title": "Children's Home Counselor",
+        "dept": "Counselors Office",
+        "phone": "309-347-4101",
+        "email": "tculver@pekinhigh.net"
+      },
+      {
+        "name": "Ann Gallinger, Ext. 4339",
+        "title": "Counselor, A-Ca",
+        "dept": "Counselors Office",
+        "phone": "309-347-4101",
+        "email": "agallinger@pekinhigh.net"
+      },
+      {
+        "name": "Jacquelyn Johnson, Ext. 4340",
+        "title": "Counselor , F - Ha",
+        "dept": "Counselors Office",
+        "phone": "309-347-4101",
+        "email": "jjohnson@pekinhigh.net"
+      },
+      {
+        "name": "Hannah  Oplt, Ext. 4243",
+        "title": "Counselor",
+        "dept": "Counselors Office",
+        "phone": "309-347-4101",
+        "email": "hoplt@pekinhigh.net"
+      },
+      {
+        "name": "Megan Reed, Ext. 4239",
+        "title": "Counselor, Hb-K",
+        "dept": "Counselors Office",
+        "phone": "309-347-4101",
+        "email": "mreed@pekinhigh.net"
+      },
+      {
+        "name": "Theresa Slover, Ext. 4237",
+        "title": "Counselor, To-Z",
+        "dept": "Counselors Office",
+        "phone": "309-347-4101",
+        "email": "tslover@pekinhigh.net"
+      },
+      {
+        "name": "Adam Wherley, Ext. 4238",
+        "title": "Counselor , L-Mo",
+        "dept": "Counselors Office",
+        "phone": "309-347-4101",
+        "email": "awherley@pekinhigh.net"
+      },
+      {
+        "name": "Dawn Allen, Ext. 4248",
+        "title": "Dean's Secretary",
+        "dept": "Deans Office",
+        "phone": "309-347-4101",
+        "email": "dallen@pekinhigh.net"
+      },
+      {
+        "name": "Julie Gilles, Ext. 4335",
+        "title": "Dean , A - E",
+        "dept": "Deans Office",
+        "phone": "309-347-4101",
+        "email": "jgilles@pekinhigh.net"
+      },
+      {
+        "name": "Chris Lang,  Ext. 4249",
+        "title": "Dean, L-R",
+        "dept": "Deans Office",
+        "phone": "309-347-4101",
+        "email": "clang@pekinhigh.net"
+      },
+      {
+        "name": "Lisa Richmond, Ext. 4247",
+        "title": "Dean's Office Secretary",
+        "dept": "Deans Office",
+        "phone": "309-347-4101",
+        "email": "lrichmond@pekinhigh.net"
+      },
+      {
+        "name": "Jessica Siefken, Ext. 4230",
+        "title": "Dean, S-Z",
+        "dept": "Deans Office",
+        "phone": "309-347-4101",
+        "email": "jsiefken@pekinhigh.net"
+      },
+      {
+        "name": "Myles Stambaugh, Ext. 4333",
+        "title": "Dean,  F - K",
+        "dept": "Deans Office",
+        "phone": "309-347-4101",
+        "email": "mstambaugh@pekinhigh.net"
+      }
+    ]
+  },
+  "Washington Comm High School": {
+    "school_urls": {
+      "base_url": "http://www.wacohi.net",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.wacohi.net/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Kim Barth",
+        "title": "Dean of Students -Students Hf-Mn & Activities Director",
+        "phone": null,
+        "email": "ksbarth@wacohi.net"
+      },
+      {
+        "name": "Michael Damery",
+        "title": "Counselor",
+        "phone": null,
+        "email": "mdamery@wacohi.net"
+      },
+      {
+        "name": "Thomas Fuller",
+        "title": "Dean of Students- Students A-He",
+        "phone": null,
+        "email": "tcfuller@wacohi.net"
+      },
+      {
+        "name": "Allan Gresham",
+        "title": "Dean of Students - Students Mo-Z",
+        "phone": null,
+        "email": "asgresham@wacohi.net"
+      },
+      {
+        "name": "Deanna Zehr",
+        "title": "Counselor - Special Programs",
+        "phone": null,
+        "email": "dczehr@wacohi.net"
+      },
+      {
+        "name": "Holly Raubach-Davis",
+        "title": "Associate Principal",
+        "phone": null,
+        "email": "hraubachdavis@wacohi.net"
+      },
+      {
+        "name": "Carrie Schmidt",
+        "title": "Counselor",
+        "phone": null,
+        "email": "caschmidt@wacohi.net"
+      },
+      {
+        "name": "Kimberly McFarlen",
+        "title": "Counselor and Wellness Intervention - Dept. Chair",
+        "phone": null,
+        "email": "kkmcfarlen@wacohi.net"
+      },
+      {
+        "name": "Karen Stevens",
+        "title": "Principal",
+        "phone": null,
+        "email": "kstevens@wacohi.net"
+      }
+    ]
+  },
+  "Delavan High School": {
+    "school_urls": {
+      "base_url": "http://www.delavanschools.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.delavanschools.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Kevin Knaggs",
+        "title": "Guidance Counselor",
+        "phone": null,
+        "email": "knaggsk@delavanschools.com"
+      }
+    ]
+  },
+  "Roanoke-Benson High School": {
+    "school_urls": {
+      "base_url": "http://www.rb60.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.rb60.com/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Amanda Gurdian",
+        "title": "RBHS Principal",
+        "dept": "RBHS",
+        "phone": "309-923-8401",
+        "email": "agurdian@rb60.com"
+      },
+      {
+        "name": "Tyler Severson",
+        "title": "Principal- RBJHS",
+        "dept": "Adminstration",
+        "phone": "(309) 394-2233",
+        "email": "tseverson@rb60.com"
+      }
+    ]
+  },
+  "Metamora High School": {
+    "school_urls": {
+      "base_url": "http://www.mths.us",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.mths.us/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Charlie Zimmerman",
+        "title": "Principal",
+        "dept": "Administration",
+        "phone": "309-367-4151 ext. 522",
+        "email": "czimmerman@mths.us"
+      }
+    ]
+  },
+  "Georgetown-Ridge Farm High School": {
+    "school_urls": {
+      "base_url": "http://www.grf.k12.il.us",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.grf.k12.il.us/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Ashley Vaughn",
+        "title": "Director of Student Services",
+        "phone": "217-662-8488",
+        "email": "avaughn@gobuffaloes.org"
+      }
+    ]
+  },
+  "Armstrong High School": {
+    "school_urls": {
+      "base_url": "http://armstrong.k12.il.us",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://armstrong.k12.il.us/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Amber Cluver",
+        "title": "Principal/McKinney Vento Liaison",
+        "dept": "Administration",
+        "phone": "217-569-2122",
+        "email": "acluver@aths225.org"
+      },
+      {
+        "name": "Billie Hayes",
+        "title": "School Counselor/Social work",
+        "dept": "Guidance",
+        "phone": "217-569-2122",
+        "email": "bhayes@armstrong.k12.il.us"
+      }
+    ]
+  },
+  "Lockport Township High Sch East": {
+    "school_urls": {
+      "base_url": "http://www.lths.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.lths.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Ann Gardiner",
+        "title": "Executive Secretary to the Principal",
+        "dept": "Principal's Office",
+        "phone": "815-588-8301",
+        "email": "agardiner@lths.org"
+      },
+      {
+        "name": "Dr. Kerri Green",
+        "title": "Principal - Central Campus",
+        "dept": "Principal's Office",
+        "phone": "(815)588-8210",
+        "email": "kgreen@lths.org"
+      },
+      {
+        "name": "Jacqueline Johnson",
+        "title": "Principal East Campus",
+        "dept": "Principal's Office",
+        "phone": "815-588-8310",
+        "email": "jjohnson@lths.org"
+      },
+      {
+        "name": "Tammy Baranowski",
+        "title": "Counselor",
+        "dept": "Student Services",
+        "phone": "(815)588-8260",
+        "email": "tbaranowski@lths.org"
+      },
+      {
+        "name": "Denise Curtis",
+        "title": "Counselor",
+        "dept": "Student Services",
+        "phone": "(815)588-8363",
+        "email": "dcurtis@lths.org"
+      },
+      {
+        "name": "Beth Czako",
+        "title": "Counselor",
+        "dept": "Student Services",
+        "phone": "(815)588-8375",
+        "email": "bczako@lths.org"
+      },
+      {
+        "name": "Adam Decaire",
+        "title": "Counselor",
+        "dept": "Student Services",
+        "phone": "815-588-8373",
+        "email": "adecaire@lths.org"
+      },
+      {
+        "name": "Kathy Fields",
+        "title": "Counselor",
+        "dept": "Student Services",
+        "phone": "(815)588-8369",
+        "email": "kfields@lths.org"
+      },
+      {
+        "name": "Dan Kelly",
+        "title": "Counselor",
+        "dept": "Student Services",
+        "phone": "(815)588-8360",
+        "email": "dkelly@lths.org"
+      },
+      {
+        "name": "Amy Kelly",
+        "title": "Counselor",
+        "dept": "Student Services",
+        "phone": "815-588-8362",
+        "email": "akelly@lths.org"
+      },
+      {
+        "name": "Matt Major",
+        "title": "Counselor",
+        "dept": "Student Services",
+        "phone": "(815)588-8366",
+        "email": "mmajor@lths.org"
+      },
+      {
+        "name": "Tim O'Malley",
+        "title": "Counselor",
+        "dept": "Student Services",
+        "phone": "(815)588-8264",
+        "email": "tomalley@lths.org"
+      },
+      {
+        "name": "Kelliann Paluch",
+        "title": "Counselor",
+        "dept": "Student Services",
+        "phone": "(815)588-8262",
+        "email": "kpaluch@lths.org"
+      },
+      {
+        "name": "David Pammer",
+        "title": "Counselor",
+        "dept": "Student Services",
+        "phone": "(815)588-8370",
+        "email": "dpammer@lths.org"
+      },
+      {
+        "name": "Sandra Riley",
+        "title": "Contracted Counselor",
+        "dept": "Student Services",
+        "phone": "(815)588-8350",
+        "email": "sriley@lths.org"
+      },
+      {
+        "name": "Christina Rodriguez",
+        "title": "Counselor",
+        "dept": "Student Services",
+        "phone": "815-588-8334",
+        "email": "crodriguez@lths.org"
+      },
+      {
+        "name": "Stephanie Ruiz",
+        "title": "Counselor",
+        "dept": "Student Services",
+        "phone": "815-588-8333",
+        "email": "sruiz@lths.org"
+      },
+      {
+        "name": "Debbie Turrisi",
+        "title": "Counselor",
+        "dept": "Student Services",
+        "phone": "(815)588-8371",
+        "email": "dturrisi@lths.org"
+      },
+      {
+        "name": "Travanna Green",
+        "title": "Dean - East Campus",
+        "dept": "Dean's Office",
+        "phone": "(815)588-8340",
+        "email": "tgreen@lths.org"
+      }
+    ]
+  },
+  "Lincoln-Way Central High School": {
+    "school_urls": {
+      "base_url": "http://www.lw210.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.lw210.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Jason Depolo",
+        "title": "Associate Principal - Central",
+        "dept": "Administration",
+        "phone": "815-462-2284",
+        "email": "jdepolo@lw210.org"
+      },
+      {
+        "name": "Toriano Griggs",
+        "title": "Principal - East",
+        "dept": "Administration",
+        "phone": "815-464-4130",
+        "email": "tgriggs@lw210.org"
+      },
+      {
+        "name": "Sandra Jeffries",
+        "title": "Secretary - Principal - Central",
+        "dept": "Support Personnel",
+        "phone": "815-462-2979",
+        "email": "sjeffries@lw210.org"
+      },
+      {
+        "name": "Elizabeth Mcnamara",
+        "title": "Principal - Central",
+        "dept": "Administration",
+        "phone": "815-462-2151",
+        "email": "emcnamara@lw210.org"
+      },
+      {
+        "name": "Rory Olson",
+        "title": "Associate Principal - East",
+        "dept": "Administration",
+        "phone": "815-464-4234",
+        "email": "rolson@lw210.org"
+      },
+      {
+        "name": "Joseph Skarbek",
+        "title": "Associate Principal - Central",
+        "dept": "Administration",
+        "phone": "815-462-2172",
+        "email": "jskarbek@lw210.org"
+      },
+      {
+        "name": "Timothy Victor",
+        "title": "Associate Principal - East",
+        "dept": "Administration",
+        "phone": "815-464-4023",
+        "email": "tvictor@lw210.org"
+      },
+      {
+        "name": "Jennifer Zola",
+        "title": "Secretary - Principal - East",
+        "dept": "Support Personnel",
+        "phone": "815-464-4131",
+        "email": "jzola@lw210.org"
+      },
+      {
+        "name": "Christie Babcock",
+        "title": "School Counselor - East - CAM - FIG",
+        "dept": "PPS",
+        "phone": "815-464-4156",
+        "email": "cbabcock@lw210.org"
+      },
+      {
+        "name": "Jeannette Catuara Howley",
+        "title": "School Counselor - East - A - CAL",
+        "dept": "PPS",
+        "phone": "815-464-4153",
+        "email": "jcatuara-howley@lw210.org"
+      },
+      {
+        "name": "Danielle Custardo",
+        "title": "School Counselor - Central - POE - THOMP",
+        "dept": "PPS",
+        "phone": "815-462-2233",
+        "email": "dcustardo@lw210.org"
+      },
+      {
+        "name": "Jennifer Durkin",
+        "title": "School Counselor - East - OLS - SAN",
+        "dept": "PPS",
+        "phone": "815-464-4135",
+        "email": "jdurkin@lw210.org"
+      },
+      {
+        "name": "Amy Forsythe",
+        "title": "School Counselor - East - JAC - MALA",
+        "dept": "PPS",
+        "phone": "815-464-4158",
+        "email": "aforsythe@lw210.org"
+      },
+      {
+        "name": "Caley Foster",
+        "title": "School Counselor - East - SAS - SUL",
+        "dept": "PPS",
+        "phone": "815-464-4163",
+        "email": "cfoster@lw210.org"
+      },
+      {
+        "name": "Lance Lokanc",
+        "title": "School Counselor - East - MALD - OLI",
+        "dept": "PPS",
+        "phone": "815-464-4160",
+        "email": "llokanc@lw210.org"
+      },
+      {
+        "name": "John Mccarthy",
+        "title": "School Counselor - East - FIN - JAB",
+        "dept": "PPS",
+        "phone": "815-464-4361",
+        "email": "jmccarthy@lw210.org"
+      },
+      {
+        "name": "Michele Newswander",
+        "title": "School Counselor - East - SUN - Z",
+        "dept": "PPS",
+        "phone": "815-464-4161",
+        "email": "mnewswander@lw210.org"
+      },
+      {
+        "name": "Kathleen O'Connell",
+        "title": "School Counselor - Central - CRP - HAL",
+        "dept": "PPS",
+        "phone": "815-462-2341",
+        "email": "kboconnell@lw210.org"
+      },
+      {
+        "name": "Matthew Smith",
+        "title": "School Counselor - Central - THOMQ - Z",
+        "dept": "PPS",
+        "phone": "815-462-2972",
+        "email": "msmith@lw210.org"
+      },
+      {
+        "name": "Monica Zaucha",
+        "title": "School Counselor - Central - A - CRO",
+        "dept": "PPS",
+        "phone": "815-462-2232",
+        "email": "mzaucha@lw210.org"
+      },
+      {
+        "name": "Sarah Sabo",
+        "title": "Full-Time Dean - East",
+        "dept": "Student Services",
+        "phone": "815-464-4240",
+        "email": "ssabo@lw210.org"
+      }
+    ]
+  },
+  "Lincoln-Way East High School": {
+    "school_urls": {
+      "base_url": "http://www.lw210.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.lw210.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Jason Depolo",
+        "title": "Associate Principal - Central",
+        "dept": "Administration",
+        "phone": "815-462-2284",
+        "email": "jdepolo@lw210.org"
+      },
+      {
+        "name": "Toriano Griggs",
+        "title": "Principal - East",
+        "dept": "Administration",
+        "phone": "815-464-4130",
+        "email": "tgriggs@lw210.org"
+      },
+      {
+        "name": "Sandra Jeffries",
+        "title": "Secretary - Principal - Central",
+        "dept": "Support Personnel",
+        "phone": "815-462-2979",
+        "email": "sjeffries@lw210.org"
+      },
+      {
+        "name": "Elizabeth Mcnamara",
+        "title": "Principal - Central",
+        "dept": "Administration",
+        "phone": "815-462-2151",
+        "email": "emcnamara@lw210.org"
+      },
+      {
+        "name": "Rory Olson",
+        "title": "Associate Principal - East",
+        "dept": "Administration",
+        "phone": "815-464-4234",
+        "email": "rolson@lw210.org"
+      },
+      {
+        "name": "Joseph Skarbek",
+        "title": "Associate Principal - Central",
+        "dept": "Administration",
+        "phone": "815-462-2172",
+        "email": "jskarbek@lw210.org"
+      },
+      {
+        "name": "Timothy Victor",
+        "title": "Associate Principal - East",
+        "dept": "Administration",
+        "phone": "815-464-4023",
+        "email": "tvictor@lw210.org"
+      },
+      {
+        "name": "Jennifer Zola",
+        "title": "Secretary - Principal - East",
+        "dept": "Support Personnel",
+        "phone": "815-464-4131",
+        "email": "jzola@lw210.org"
+      },
+      {
+        "name": "Christie Babcock",
+        "title": "School Counselor - East - CAM - FIG",
+        "dept": "PPS",
+        "phone": "815-464-4156",
+        "email": "cbabcock@lw210.org"
+      },
+      {
+        "name": "Jeannette Catuara Howley",
+        "title": "School Counselor - East - A - CAL",
+        "dept": "PPS",
+        "phone": "815-464-4153",
+        "email": "jcatuara-howley@lw210.org"
+      },
+      {
+        "name": "Danielle Custardo",
+        "title": "School Counselor - Central - POE - THOMP",
+        "dept": "PPS",
+        "phone": "815-462-2233",
+        "email": "dcustardo@lw210.org"
+      },
+      {
+        "name": "Jennifer Durkin",
+        "title": "School Counselor - East - OLS - SAN",
+        "dept": "PPS",
+        "phone": "815-464-4135",
+        "email": "jdurkin@lw210.org"
+      },
+      {
+        "name": "Amy Forsythe",
+        "title": "School Counselor - East - JAC - MALA",
+        "dept": "PPS",
+        "phone": "815-464-4158",
+        "email": "aforsythe@lw210.org"
+      },
+      {
+        "name": "Caley Foster",
+        "title": "School Counselor - East - SAS - SUL",
+        "dept": "PPS",
+        "phone": "815-464-4163",
+        "email": "cfoster@lw210.org"
+      },
+      {
+        "name": "Lance Lokanc",
+        "title": "School Counselor - East - MALD - OLI",
+        "dept": "PPS",
+        "phone": "815-464-4160",
+        "email": "llokanc@lw210.org"
+      },
+      {
+        "name": "John Mccarthy",
+        "title": "School Counselor - East - FIN - JAB",
+        "dept": "PPS",
+        "phone": "815-464-4361",
+        "email": "jmccarthy@lw210.org"
+      },
+      {
+        "name": "Michele Newswander",
+        "title": "School Counselor - East - SUN - Z",
+        "dept": "PPS",
+        "phone": "815-464-4161",
+        "email": "mnewswander@lw210.org"
+      },
+      {
+        "name": "Kathleen O'Connell",
+        "title": "School Counselor - Central - CRP - HAL",
+        "dept": "PPS",
+        "phone": "815-462-2341",
+        "email": "kboconnell@lw210.org"
+      },
+      {
+        "name": "Matthew Smith",
+        "title": "School Counselor - Central - THOMQ - Z",
+        "dept": "PPS",
+        "phone": "815-462-2972",
+        "email": "msmith@lw210.org"
+      },
+      {
+        "name": "Monica Zaucha",
+        "title": "School Counselor - Central - A - CRO",
+        "dept": "PPS",
+        "phone": "815-462-2232",
+        "email": "mzaucha@lw210.org"
+      },
+      {
+        "name": "Sarah Sabo",
+        "title": "Full-Time Dean - East",
+        "dept": "Student Services",
+        "phone": "815-464-4240",
+        "email": "ssabo@lw210.org"
+      }
+    ]
+  },
+  "Lincoln Way West": {
+    "school_urls": {
+      "base_url": "http://www.lw210.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.lw210.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Jason Depolo",
+        "title": "Associate Principal - Central",
+        "dept": "Administration",
+        "phone": "815-462-2284",
+        "email": "jdepolo@lw210.org"
+      },
+      {
+        "name": "Toriano Griggs",
+        "title": "Principal - East",
+        "dept": "Administration",
+        "phone": "815-464-4130",
+        "email": "tgriggs@lw210.org"
+      },
+      {
+        "name": "Sandra Jeffries",
+        "title": "Secretary - Principal - Central",
+        "dept": "Support Personnel",
+        "phone": "815-462-2979",
+        "email": "sjeffries@lw210.org"
+      },
+      {
+        "name": "Elizabeth Mcnamara",
+        "title": "Principal - Central",
+        "dept": "Administration",
+        "phone": "815-462-2151",
+        "email": "emcnamara@lw210.org"
+      },
+      {
+        "name": "Rory Olson",
+        "title": "Associate Principal - East",
+        "dept": "Administration",
+        "phone": "815-464-4234",
+        "email": "rolson@lw210.org"
+      },
+      {
+        "name": "Joseph Skarbek",
+        "title": "Associate Principal - Central",
+        "dept": "Administration",
+        "phone": "815-462-2172",
+        "email": "jskarbek@lw210.org"
+      },
+      {
+        "name": "Timothy Victor",
+        "title": "Associate Principal - East",
+        "dept": "Administration",
+        "phone": "815-464-4023",
+        "email": "tvictor@lw210.org"
+      },
+      {
+        "name": "Jennifer Zola",
+        "title": "Secretary - Principal - East",
+        "dept": "Support Personnel",
+        "phone": "815-464-4131",
+        "email": "jzola@lw210.org"
+      },
+      {
+        "name": "Christie Babcock",
+        "title": "School Counselor - East - CAM - FIG",
+        "dept": "PPS",
+        "phone": "815-464-4156",
+        "email": "cbabcock@lw210.org"
+      },
+      {
+        "name": "Jeannette Catuara Howley",
+        "title": "School Counselor - East - A - CAL",
+        "dept": "PPS",
+        "phone": "815-464-4153",
+        "email": "jcatuara-howley@lw210.org"
+      },
+      {
+        "name": "Danielle Custardo",
+        "title": "School Counselor - Central - POE - THOMP",
+        "dept": "PPS",
+        "phone": "815-462-2233",
+        "email": "dcustardo@lw210.org"
+      },
+      {
+        "name": "Jennifer Durkin",
+        "title": "School Counselor - East - OLS - SAN",
+        "dept": "PPS",
+        "phone": "815-464-4135",
+        "email": "jdurkin@lw210.org"
+      },
+      {
+        "name": "Amy Forsythe",
+        "title": "School Counselor - East - JAC - MALA",
+        "dept": "PPS",
+        "phone": "815-464-4158",
+        "email": "aforsythe@lw210.org"
+      },
+      {
+        "name": "Caley Foster",
+        "title": "School Counselor - East - SAS - SUL",
+        "dept": "PPS",
+        "phone": "815-464-4163",
+        "email": "cfoster@lw210.org"
+      },
+      {
+        "name": "Lance Lokanc",
+        "title": "School Counselor - East - MALD - OLI",
+        "dept": "PPS",
+        "phone": "815-464-4160",
+        "email": "llokanc@lw210.org"
+      },
+      {
+        "name": "John Mccarthy",
+        "title": "School Counselor - East - FIN - JAB",
+        "dept": "PPS",
+        "phone": "815-464-4361",
+        "email": "jmccarthy@lw210.org"
+      },
+      {
+        "name": "Michele Newswander",
+        "title": "School Counselor - East - SUN - Z",
+        "dept": "PPS",
+        "phone": "815-464-4161",
+        "email": "mnewswander@lw210.org"
+      },
+      {
+        "name": "Kathleen O'Connell",
+        "title": "School Counselor - Central - CRP - HAL",
+        "dept": "PPS",
+        "phone": "815-462-2341",
+        "email": "kboconnell@lw210.org"
+      },
+      {
+        "name": "Matthew Smith",
+        "title": "School Counselor - Central - THOMQ - Z",
+        "dept": "PPS",
+        "phone": "815-462-2972",
+        "email": "msmith@lw210.org"
+      },
+      {
+        "name": "Monica Zaucha",
+        "title": "School Counselor - Central - A - CRO",
+        "dept": "PPS",
+        "phone": "815-462-2232",
+        "email": "mzaucha@lw210.org"
+      },
+      {
+        "name": "Sarah Sabo",
+        "title": "Full-Time Dean - East",
+        "dept": "Student Services",
+        "phone": "815-464-4240",
+        "email": "ssabo@lw210.org"
+      }
+    ]
+  },
+  "Reed-Custer High School": {
+    "school_urls": {
+      "base_url": "http://www.rc255.net",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.rc255.net/apps/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Meghan Domanszky",
+        "title": "R-C Director of Student Services",
+        "phone": "815-458-2307",
+        "email": null
+      },
+      {
+        "name": "Lucy Friedl",
+        "title": "RCMS School Counselor",
+        "phone": "815-458-2868",
+        "email": null
+      },
+      {
+        "name": "Heather Faletti",
+        "title": "RCES Principal",
+        "phone": "815-458-2145",
+        "email": null
+      },
+      {
+        "name": "Katie Redwitz",
+        "title": "RCHS School Counselor",
+        "phone": "815-458-2166",
+        "email": null
+      },
+      {
+        "name": "Chad Klover",
+        "title": "RCHS Principal",
+        "phone": "815-458-2166",
+        "email": null
+      },
+      {
+        "name": "Jeff Sukley",
+        "title": "RCES Dean of Students",
+        "phone": "815-458-2145",
+        "email": null
+      }
+    ]
+  },
+  "Aqsa School": {
+    "school_urls": {
+      "base_url": "http://www.aqsa.edu",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.aqsa.edu/faculty"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Haleama Hasan",
+        "title": "Dean",
+        "phone": null,
+        "email": "hhasan@aqsa.edu"
+      },
+      {
+        "name": "Tammie Ismail",
+        "title": "Principal",
+        "phone": null,
+        "email": "tismail@aqsa.edu"
+      }
+    ]
+  },
+  "Universal School": {
+    "school_urls": {
+      "base_url": "http://www.universalschool.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.universalschool.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Universal School Profile",
+        "title": "A letter from the Principal",
+        "dept": "Board of Directors",
+        "phone": "Administration and Support",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "The High School of Saint Thomas More": {
+    "school_urls": {
+      "base_url": "http://www.hs-stm.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.hs-stm.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Sr. M. Bridget Martin, FSGM",
+        "title": "Principal",
+        "dept": "Office",
+        "phone": "217-352-7210",
+        "email": "Send Message"
+      },
+      {
+        "name": "Melissa Donahoe",
+        "title": "Counselor",
+        "dept": "Office",
+        "phone": "217-352-7210",
+        "email": "Send Message"
+      },
+      {
+        "name": "STM Admissions",
+        "title": "Admissions",
+        "dept": "Office",
+        "phone": "217-352-7210",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Our Lady of Tepeyac High School": {
+    "school_urls": {
+      "base_url": "http://www.ourladyoftepeyac.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.ourladyoftepeyac.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Ingram, Kathleen",
+        "title": "Principal",
+        "phone": null,
+        "email": "kingram@ourladyoftepeyac.org"
+      },
+      {
+        "name": "Bukovatz, Julia (Class of '17')",
+        "title": "Art/Admissions/",
+        "phone": null,
+        "email": "jbukovatz@ourladyoftepeyac.org"
+      },
+      {
+        "name": "James Holzhauer-Chuckas",
+        "title": "Dean of Students",
+        "phone": null,
+        "email": "oblatejames@ourladyoftepeyac.org"
+      },
+      {
+        "name": "Ramirez, Natalie (Class of '17')",
+        "title": "Director of Admissions",
+        "phone": null,
+        "email": "nramirez@ourladyoftepeyac.org"
+      }
+    ]
+  },
+  "St Rita High School": {
+    "school_urls": {
+      "base_url": "http://www.stritahs.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.stritahs.com/staff-directory"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Mr. Antonio Godinez",
+        "title": "Admissions Coordinator",
+        "dept": "World Languages Faculty",
+        "phone": "Head Soccer Coach",
+        "email": "agodinez@stritahs.com"
+      }
+    ]
+  },
+  "Central Catholic High School": {
+    "school_urls": {
+      "base_url": "http://www.cchssaints.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.cchssaints.org/staff-directory"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Chris Highland",
+        "title": "Director of Admissions & Marketing",
+        "phone": null,
+        "email": "chighland@cchssaints.org"
+      },
+      {
+        "name": "Chris McGraw",
+        "title": "Principal",
+        "phone": null,
+        "email": "cmcgraw@cchssaints.org"
+      },
+      {
+        "name": "Sarah Larson",
+        "title": "Student Services",
+        "phone": null,
+        "email": "slarson@cchssaints.org"
+      },
+      {
+        "name": "Jackie DesLauriers",
+        "title": "Guidance Counselor",
+        "phone": null,
+        "email": "jdeslauriers@cchssaints.org"
+      },
+      {
+        "name": "Josh Miller",
+        "title": "Guidance Counselor",
+        "phone": null,
+        "email": "jmiller@cchssaints.org"
+      }
+    ]
+  },
+  "Rosary High School": {
+    "school_urls": {
+      "base_url": "http://rosaryhs.com",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://rosaryhs.com/contact-us"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Lisa Sustersic",
+        "title": "Dean of Women",
+        "phone": "630-896-0831 x228",
+        "email": null
+      }
+    ]
+  },
+  "St Edward Central Catholic H S": {
+    "school_urls": {
+      "base_url": "http://www.stedhs.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.stedhs.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "PJ White",
+        "title": "Dean of Students, AD",
+        "phone": null,
+        "email": "athletics@stedhs.org"
+      },
+      {
+        "name": "Rachel Popa",
+        "title": "School Counselor",
+        "phone": null,
+        "email": "rpopa@stedhs.org"
+      },
+      {
+        "name": "Barbara Villont",
+        "title": "Superintendent / Principal",
+        "phone": null,
+        "email": "bvillont@stedhs.org"
+      }
+    ]
+  },
+  "Galesburg Christian School": {
+    "school_urls": {
+      "base_url": "http://www.galesburgchristian.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.galesburgchristian.org/staff"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Home",
+        "title": "Admissions",
+        "dept": "Preschool",
+        "phone": "K-12",
+        "email": "Send Message"
+      }
+    ]
+  },
+  "Cristo Rey St Martin": {
+    "school_urls": {
+      "base_url": "http://www.cristoreystmartin.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.cristoreystmartin.org/staff-directory"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Ana Aguilar",
+        "title": "College Counselor",
+        "phone": "224-444-0681",
+        "email": "anaaguilar@cristoreystmartin.org"
+      },
+      {
+        "name": "Daniel Arizmendi",
+        "title": "Admissions & Administrative Coordinator",
+        "phone": "224-219-9711",
+        "email": "danielarizmendi@cristoreystmartin.org"
+      },
+      {
+        "name": "Pierre Edmonds",
+        "title": "Dean of Students",
+        "phone": "224-219-9720 ext. 203",
+        "email": "pierreedmonds@cristoreystmartin.org"
+      }
+    ]
+  },
+  "Carmel Catholic High School": {
+    "school_urls": {
+      "base_url": "http://www.carmelhs.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.carmelhs.org/directory"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Rina Pietrantonio",
+        "title": "Office Manager, Principal\u2019s Office",
+        "phone": null,
+        "email": "rpietrantonio@carmelhs.org"
+      },
+      {
+        "name": "Mrs. Susan Meyle",
+        "title": "School Counselor, Department Chair",
+        "phone": null,
+        "email": "smeyle@carmelhs.org"
+      },
+      {
+        "name": "Dr. John Ahlgrim '83",
+        "title": "Principal",
+        "phone": null,
+        "email": "jahlgrim@carmelhs.org"
+      },
+      {
+        "name": "Mrs. Christine Hartnett",
+        "title": "School Counselor, Department Chair",
+        "phone": null,
+        "email": "chartnett@carmelhs.org"
+      },
+      {
+        "name": "Mr. Cameron Louis",
+        "title": "Dean of Students",
+        "phone": null,
+        "email": "clouis@carmelhs.org"
+      }
+    ]
+  },
+  "Metro-East Lutheran High School": {
+    "school_urls": {
+      "base_url": "http://www.melhs.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.melhs.org/faculty"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Sheila Hamlin",
+        "title": "Office Manager, Admin. Asst. to Principal",
+        "phone": "618.656.3039 x 132",
+        "email": "sheila.hamlin@melhs.org"
+      },
+      {
+        "name": "Carrie Kober",
+        "title": "Admissions Director",
+        "phone": "618.656.3039 x 135",
+        "email": "carrie.kober@melhs.org"
+      }
+    ]
+  },
+  "Peoria Christian School": {
+    "school_urls": {
+      "base_url": "http://www.peoriachristian.org",
+      "alt_url": null,
+      "pages_with_contacts": [
+        "http://www.peoriachristian.org/directory"
+      ]
+    },
+    "contacts": [
+      {
+        "name": "Jeremy Garrett",
+        "title": "High School Principal",
+        "phone": "309-686-4500 ext. 225",
+        "email": null
+      }
+    ]
+  }
+}

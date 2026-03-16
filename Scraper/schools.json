@@ -1,0 +1,5002 @@
+[
+  {
+    "FacilityName": "Crossroad Learning Center",
+    "City": "Jacksonville",
+    "Website": null
+  },
+  {
+    "FacilityName": "Pleasant Hill High School",
+    "City": "Pleasant Hill",
+    "Website": "http://www.phwolves.com"
+  },
+  {
+    "FacilityName": "Griggsville-Perry High School",
+    "City": "Griggsville",
+    "Website": "http://www.griggsvilleperry.org"
+  },
+  {
+    "FacilityName": "Pittsfield High School",
+    "City": "Pittsfield",
+    "Website": "http://www.phs.net"
+  },
+  {
+    "FacilityName": "Western High School",
+    "City": "Barry",
+    "Website": "http://www.westerncusd12.org"
+  },
+  {
+    "FacilityName": "Winchester High School",
+    "City": "Winchester",
+    "Website": "http://www.winchesterschools.net"
+  },
+  {
+    "FacilityName": "Bluffs High School",
+    "City": "Bluffs",
+    "Website": "http://www.bluffs-school.com"
+  },
+  {
+    "FacilityName": "Mulberry Grove Sr High School",
+    "City": "Mulberry Grove",
+    "Website": "http://www.mgschools.com"
+  },
+  {
+    "FacilityName": "Bond Cty Comm Unit 2 High School",
+    "City": "Greenville",
+    "Website": "http://www.bccu2.k12.il.us"
+  },
+  {
+    "FacilityName": "Morrisonville High School",
+    "City": "Morrisonville",
+    "Website": "http://www.mohawks.net"
+  },
+  {
+    "FacilityName": "Taylorville Sr High School",
+    "City": "Taylorville",
+    "Website": "http://www.tcusd3.org"
+  },
+  {
+    "FacilityName": "Edinburg High School",
+    "City": "Edinburg",
+    "Website": "http://www.ecusd4.com"
+  },
+  {
+    "FacilityName": "Pana Sr High School",
+    "City": "Pana",
+    "Website": "http://www.panaschools.com"
+  },
+  {
+    "FacilityName": "South Fork Jr Sr High School",
+    "City": "Kincaid",
+    "Website": "http://www.southforkschools.com"
+  },
+  {
+    "FacilityName": "Altamont High School",
+    "City": "Altamont",
+    "Website": "http://www.altamontschools.org"
+  },
+  {
+    "FacilityName": "Beecher City Jr-Sr High School",
+    "City": "Beecher City",
+    "Website": "http://www.beechercity.org"
+  },
+  {
+    "FacilityName": "Dieterich Jr/Sr High School",
+    "City": "Dieterich",
+    "Website": "http://www.dieterichschools.org"
+  },
+  {
+    "FacilityName": "Effingham High School",
+    "City": "Effingham",
+    "Website": "https://www.unit40.org"
+  },
+  {
+    "FacilityName": "Teutopolis High School",
+    "City": "Teutopolis",
+    "Website": "http://www.teutopolisschools.org"
+  },
+  {
+    "FacilityName": "Brownstown High School",
+    "City": "Brownstown",
+    "Website": "http://www.bcusd201.com"
+  },
+  {
+    "FacilityName": "St Elmo Sr High School",
+    "City": "Saint Elmo",
+    "Website": "http://www.stelmo.org"
+  },
+  {
+    "FacilityName": "Vandalia Community High School",
+    "City": "Vandalia",
+    "Website": "http://vandals203.org"
+  },
+  {
+    "FacilityName": "Ramsey High School",
+    "City": "Ramsey",
+    "Website": "http://www.ramsey.fayette.k12.il.us"
+  },
+  {
+    "FacilityName": "Lincolnwood High School",
+    "City": "Raymond",
+    "Website": "http://www.panhandleschools.com"
+  },
+  {
+    "FacilityName": "Hillsboro High School",
+    "City": "Hillsboro",
+    "Website": null
+  },
+  {
+    "FacilityName": "Litchfield Senior High School",
+    "City": "Litchfield",
+    "Website": "http://www.litchfieldpanthers.org"
+  },
+  {
+    "FacilityName": "Nokomis Jr/Sr High Sch",
+    "City": "Nokomis",
+    "Website": "http://www.nokomis.k12.il.us"
+  },
+  {
+    "FacilityName": "Belvidere High School",
+    "City": "Belvidere",
+    "Website": "http://www.district100.com"
+  },
+  {
+    "FacilityName": "Belvidere North High Sch",
+    "City": "Belvidere",
+    "Website": "http://www.district100.com"
+  },
+  {
+    "FacilityName": "Everest High School",
+    "City": "Belvidere",
+    "Website": null
+  },
+  {
+    "FacilityName": "North Boone High School",
+    "City": "Poplar Grove",
+    "Website": "http://www.nbcusd.org"
+  },
+  {
+    "FacilityName": "Harlem High School",
+    "City": "Machesney Park",
+    "Website": "http://harlem122.org"
+  },
+  {
+    "FacilityName": "Auburn High School",
+    "City": "Rockford",
+    "Website": "http://www.rps205.com"
+  },
+  {
+    "FacilityName": "Rockford East High School",
+    "City": "Rockford",
+    "Website": "http://www.rps205.com"
+  },
+  {
+    "FacilityName": "Guilford High School",
+    "City": "Rockford",
+    "Website": "http://www.rps205.com"
+  },
+  {
+    "FacilityName": "Jefferson High School",
+    "City": "Rockford",
+    "Website": "http://www.rps205.com"
+  },
+  {
+    "FacilityName": "Winnebago Co Detention Center",
+    "City": "Rockford",
+    "Website": null
+  },
+  {
+    "FacilityName": "College and Career Education Center",
+    "City": "Rockford",
+    "Website": null
+  },
+  {
+    "FacilityName": "Roosevelt Center",
+    "City": "Rockford",
+    "Website": "http://www.rps205.com"
+  },
+  {
+    "FacilityName": "Hononegah CHD High School",
+    "City": "Rockton",
+    "Website": "http://www.hononegah.org"
+  },
+  {
+    "FacilityName": "South Beloit Sr High School",
+    "City": "South Beloit",
+    "Website": "http://www.sb320.org"
+  },
+  {
+    "FacilityName": "Pecatonica High School",
+    "City": "Pecatonica",
+    "Website": "http://www.pecschools.com"
+  },
+  {
+    "FacilityName": "Durand High School",
+    "City": "Durand",
+    "Website": "http://www.durandbulldogs.com"
+  },
+  {
+    "FacilityName": "Dolan Ctr Maryville Farm Campus",
+    "City": "Durand",
+    "Website": "http://www.durandbulldogs.com"
+  },
+  {
+    "FacilityName": "Winnebago High School",
+    "City": "Winnebago",
+    "Website": "http://www.winnebagoschools.org"
+  },
+  {
+    "FacilityName": "Evanston Twp High School",
+    "City": "Evanston",
+    "Website": "http://www.eths.k12.il.us"
+  },
+  {
+    "FacilityName": "ETHS Day School",
+    "City": "Evanston",
+    "Website": "https://www.eths.k12.il.us/Page/1518"
+  },
+  {
+    "FacilityName": "ETHS Day School - INT",
+    "City": "Evanston",
+    "Website": null
+  },
+  {
+    "FacilityName": "New Trier Township H S Winnetka",
+    "City": "Winnetka",
+    "Website": "http://www.newtrier.k12.il.us/"
+  },
+  {
+    "FacilityName": "Maine East High School",
+    "City": "Park Ridge",
+    "Website": "http://east.maine207.org"
+  },
+  {
+    "FacilityName": "Maine South High School",
+    "City": "Park Ridge",
+    "Website": "http://south.maine207.org"
+  },
+  {
+    "FacilityName": "Maine West High School",
+    "City": "Des Plaines",
+    "Website": "https://west.maine207.org"
+  },
+  {
+    "FacilityName": "Ralph J Frost Academy",
+    "City": "Park Ridge",
+    "Website": "http://www.maine207.org"
+  },
+  {
+    "FacilityName": "J B Conant High School",
+    "City": "Hoffman Estates",
+    "Website": "https://adc.d211.org/Domain/10"
+  },
+  {
+    "FacilityName": "Wm Fremd High School",
+    "City": "Palatine",
+    "Website": "https://adc.d211.org/Domain/9"
+  },
+  {
+    "FacilityName": "Palatine High School",
+    "City": "Palatine",
+    "Website": "https://adc.d211.org/Domain/8"
+  },
+  {
+    "FacilityName": "Schaumburg High School",
+    "City": "Schaumburg",
+    "Website": "https://adc.d211.org/Domain/11"
+  },
+  {
+    "FacilityName": "Hoffman Estates High School",
+    "City": "Hoffman Estates",
+    "Website": "https://adc.d211.org/Domain/12"
+  },
+  {
+    "FacilityName": "Higgins Education Center",
+    "City": "Hoffman Estates",
+    "Website": "https://adc.d211.org/Domain/13"
+  },
+  {
+    "FacilityName": "North Campus",
+    "City": "Palatine",
+    "Website": "https://adc.d211.org/Domain/14"
+  },
+  {
+    "FacilityName": "Higgins Education Center - INT",
+    "City": "Hoffman Est",
+    "Website": "https://adc.d211.org/Domain/13"
+  },
+  {
+    "FacilityName": "Adult Transition Program - North",
+    "City": "Palatine",
+    "Website": null
+  },
+  {
+    "FacilityName": "Adult Transition Program - North - INT",
+    "City": "Palatine",
+    "Website": null
+  },
+  {
+    "FacilityName": "Elk Grove High School",
+    "City": "Elk Grove Village",
+    "Website": "http://www.d214.org"
+  },
+  {
+    "FacilityName": "John Hersey High School",
+    "City": "Arlington Heights",
+    "Website": "http://www.d214.org"
+  },
+  {
+    "FacilityName": "Prospect High School",
+    "City": "Mt Prospect",
+    "Website": "http://www.d214.org"
+  },
+  {
+    "FacilityName": "Wheeling High School",
+    "City": "Wheeling",
+    "Website": "http://www.d214.org"
+  },
+  {
+    "FacilityName": "Rolling Meadows High School",
+    "City": "Rolling Meadows",
+    "Website": "http://www.d214.org"
+  },
+  {
+    "FacilityName": "Buffalo Grove High School",
+    "City": "Buffalo Grove",
+    "Website": "http://www.d214.org"
+  },
+  {
+    "FacilityName": "The Academy at Forest View",
+    "City": "Arlington Heights",
+    "Website": "http://www.d214.org"
+  },
+  {
+    "FacilityName": "Young Adult Program",
+    "City": "Arlington Heights",
+    "Website": "http://www.d214.org"
+  },
+  {
+    "FacilityName": "Vanguard School",
+    "City": "Arlington Heights",
+    "Website": "http://www.d214.org"
+  },
+  {
+    "FacilityName": "Newcomer Center",
+    "City": "Arlington Heights",
+    "Website": null
+  },
+  {
+    "FacilityName": "The Academy at Forest View - INT",
+    "City": "Arlington Hts",
+    "Website": null
+  },
+  {
+    "FacilityName": "Niles North High School",
+    "City": "Skokie",
+    "Website": "http://www.niles219.org"
+  },
+  {
+    "FacilityName": "Niles West High School",
+    "City": "Skokie",
+    "Website": "http://www.niles219.org"
+  },
+  {
+    "FacilityName": "Niles Central",
+    "City": "Skokie",
+    "Website": "http://www.niles219.org"
+  },
+  {
+    "FacilityName": "Bridges Adult Transition Center",
+    "City": "Lincolnwood",
+    "Website": null
+  },
+  {
+    "FacilityName": "Glenbrook North High School",
+    "City": "Northbrook",
+    "Website": "http://www.glenbrook225.org/north"
+  },
+  {
+    "FacilityName": "Glenbrook South High School",
+    "City": "Glenview",
+    "Website": "http://www.glenbrook225.org/south"
+  },
+  {
+    "FacilityName": "Glenbrook Off Campus",
+    "City": "Glenview",
+    "Website": "http://www.glenbrook225.org/offcampus"
+  },
+  {
+    "FacilityName": "Glenbrook Transition Services",
+    "City": "Northbrook",
+    "Website": null
+  },
+  {
+    "FacilityName": "Glenbrook Transition Services - INT",
+    "City": "Northbrook",
+    "Website": null
+  },
+  {
+    "FacilityName": "Oak Park & River Forest High Sch",
+    "City": "Oak Park",
+    "Website": null
+  },
+  {
+    "FacilityName": "J Sterling Morton East High Sch",
+    "City": "Cicero",
+    "Website": "http://www.morton201.org/schools/east.asp"
+  },
+  {
+    "FacilityName": "J Sterling Morton West High Sch",
+    "City": "Berwyn",
+    "Website": "http://www.morton201.org/schools/west.asp"
+  },
+  {
+    "FacilityName": "J Sterling Morton Alternative Sch",
+    "City": "Cicero",
+    "Website": "http://www.morton201.org/schools/alternative.asp"
+  },
+  {
+    "FacilityName": "Lyons Twp High Sch",
+    "City": "La Grange",
+    "Website": "http://www.lths.net"
+  },
+  {
+    "FacilityName": "Riverside Brookfield Twp HS",
+    "City": "Riverside",
+    "Website": "http://www.rbhs208.net"
+  },
+  {
+    "FacilityName": "Proviso East High School",
+    "City": "Maywood",
+    "Website": "http://east.pths209.org"
+  },
+  {
+    "FacilityName": "Proviso West High School",
+    "City": "Hillside",
+    "Website": "http://west.pths209.org"
+  },
+  {
+    "FacilityName": "Proviso Math and Science Academy",
+    "City": "Forest Park",
+    "Website": "http://pmsa.pths209.org"
+  },
+  {
+    "FacilityName": "East Leyden High School",
+    "City": "Franklin Park",
+    "Website": "http://www.leyden212.org"
+  },
+  {
+    "FacilityName": "West Leyden High School",
+    "City": "Northlake",
+    "Website": "http://www.leyden212.org"
+  },
+  {
+    "FacilityName": "Ridgewood Comm High School",
+    "City": "Norridge",
+    "Website": "http://www.d234.org"
+  },
+  {
+    "FacilityName": "Elmwood Park High School",
+    "City": "Elmwood Park",
+    "Website": "http://www.epcusd401.org/ephs"
+  },
+  {
+    "FacilityName": "Thornton Township High School",
+    "City": "Harvey",
+    "Website": "http://www.district205.net/thornton/site/default.asp"
+  },
+  {
+    "FacilityName": "Thornridge High School",
+    "City": "Dolton",
+    "Website": "http://www.district205.net/thornridge/site/default.asp"
+  },
+  {
+    "FacilityName": "Thornwood High School",
+    "City": "South Holland",
+    "Website": "http://www.district205.net/thornwood/site/default.asp"
+  },
+  {
+    "FacilityName": "Outlook Academy",
+    "City": "South Holland",
+    "Website": null
+  },
+  {
+    "FacilityName": "Bloom High School",
+    "City": "Chicago Heights",
+    "Website": "http://www.bloomhs.org"
+  },
+  {
+    "FacilityName": "Bloom Trail High School",
+    "City": "Chicago Heights",
+    "Website": "http://www.bloomtrail.org"
+  },
+  {
+    "FacilityName": "Dist 206 Alternative High School",
+    "City": "Chicago Heights",
+    "Website": "http://www.bloomhs.org"
+  },
+  {
+    "FacilityName": "Lemont Twp High School",
+    "City": "Lemont",
+    "Website": "http://www.lhs210.net"
+  },
+  {
+    "FacilityName": "Thornton Fractnl No High School",
+    "City": "Calumet City",
+    "Website": "http://tfd215.org"
+  },
+  {
+    "FacilityName": "Thornton Fractnl So High School",
+    "City": "Lansing",
+    "Website": "http://www.tfd215.org"
+  },
+  {
+    "FacilityName": "Center for Alternative Learning",
+    "City": "Calumet City",
+    "Website": "https://www.tfd215.org/"
+  },
+  {
+    "FacilityName": "Center for Academics and Technology",
+    "City": "Calumet City",
+    "Website": "https://www.tfd215.org/"
+  },
+  {
+    "FacilityName": "Argo Community High School",
+    "City": "Summit",
+    "Website": "http://www.argohs.net"
+  },
+  {
+    "FacilityName": "DD Eisenhower High Sch (Campus)",
+    "City": "Blue Island",
+    "Website": "http://chsd218.org"
+  },
+  {
+    "FacilityName": "H L Richards High Sch(Campus)",
+    "City": "Oak Lawn",
+    "Website": "http://chsd218.org"
+  },
+  {
+    "FacilityName": "A B Shepard High Sch (Campus)",
+    "City": "Palos Heights",
+    "Website": "http://chsd218.org"
+  },
+  {
+    "FacilityName": "Delta Learning Center",
+    "City": "Crestwood",
+    "Website": "http://chsd218.org"
+  },
+  {
+    "FacilityName": "Reavis High School",
+    "City": "Burbank",
+    "Website": "http://www.reavisd220.org"
+  },
+  {
+    "FacilityName": "Rich Township High School",
+    "City": "Olympia Fields",
+    "Website": "https://www.rich227.org"
+  },
+  {
+    "FacilityName": "Rich Township Star Academy",
+    "City": "Richton Park",
+    "Website": null
+  },
+  {
+    "FacilityName": "Bremen High School",
+    "City": "Midlothian",
+    "Website": null
+  },
+  {
+    "FacilityName": "Tinley Park High School",
+    "City": "Tinley Park",
+    "Website": "http://www.bhsd228.com"
+  },
+  {
+    "FacilityName": "Hillcrest High School",
+    "City": "Country Club Hills",
+    "Website": null
+  },
+  {
+    "FacilityName": "Oak Forest High School",
+    "City": "Oak Forest",
+    "Website": "http://www.bhsd228.com"
+  },
+  {
+    "FacilityName": "Delta Academy and Achieve",
+    "City": "Oak Forest",
+    "Website": null
+  },
+  {
+    "FacilityName": "Oak Lawn Comm High School",
+    "City": "Oak Lawn",
+    "Website": "http://www.olchs.org"
+  },
+  {
+    "FacilityName": "Carl Sandburg High School",
+    "City": "Orland Park",
+    "Website": "http://www.d230.org"
+  },
+  {
+    "FacilityName": "Amos Alonzo Stagg High School",
+    "City": "Palos Hills",
+    "Website": "http://www.d230.org"
+  },
+  {
+    "FacilityName": "Victor J Andrew High School",
+    "City": "Orland Hills",
+    "Website": "http://www.d230.org"
+  },
+  {
+    "FacilityName": "Evergreen Park High School",
+    "City": "Evergreen Park",
+    "Website": null
+  },
+  {
+    "FacilityName": "Homewood-Flossmoor High School",
+    "City": "Flossmoor",
+    "Website": "http://www.hfhighschool.org"
+  },
+  {
+    "FacilityName": "Eastland Jr/Sr High School",
+    "City": "Lanark",
+    "Website": "http://www.eastland308.com"
+  },
+  {
+    "FacilityName": "West Carroll High School",
+    "City": "Mount Carroll",
+    "Website": "http://www.wc314.org"
+  },
+  {
+    "FacilityName": "Chadwick-Milledgeville Jr/Sr High School",
+    "City": "Milledgeville",
+    "Website": "http://www.dist399.net"
+  },
+  {
+    "FacilityName": "East Dubuque High School",
+    "City": "East Dubuque",
+    "Website": "http://www.eastdbqschools.org"
+  },
+  {
+    "FacilityName": "Galena High School",
+    "City": "Galena",
+    "Website": "http://www.gusd120.k12.il.us"
+  },
+  {
+    "FacilityName": "Warren Jr/Sr High School",
+    "City": "Warren",
+    "Website": "http://205warren.net"
+  },
+  {
+    "FacilityName": "Stockton Sr High School",
+    "City": "Stockton",
+    "Website": "http://www.stocktonschools.com"
+  },
+  {
+    "FacilityName": "River Ridge High School",
+    "City": "Hanover",
+    "Website": "http://riverridge210.org"
+  },
+  {
+    "FacilityName": "Scales Mound High School",
+    "City": "Scales Mound",
+    "Website": "http://www.scalesmound.net"
+  },
+  {
+    "FacilityName": "Freeport High School",
+    "City": "Freeport",
+    "Website": "http://www.freeport.k12.il.us"
+  },
+  {
+    "FacilityName": "Rising Pretzels Academy",
+    "City": "Freeport",
+    "Website": "https://www.fsd145.org/"
+  },
+  {
+    "FacilityName": "Pearl City High School",
+    "City": "Pearl City",
+    "Website": "http://www.pcwolves.net"
+  },
+  {
+    "FacilityName": "Dakota Jr Sr High School",
+    "City": "Dakota",
+    "Website": "http://www.dakota201.com"
+  },
+  {
+    "FacilityName": "Lena-Winslow High School",
+    "City": "Lena",
+    "Website": "http://www.le-win.net"
+  },
+  {
+    "FacilityName": "Orangeville High School",
+    "City": "Orangeville",
+    "Website": "http://orangevillecusd.com"
+  },
+  {
+    "FacilityName": "Fisher Jr/Sr High School",
+    "City": "Fisher",
+    "Website": "http://fisherk12.com/home"
+  },
+  {
+    "FacilityName": "Mahomet-Seymour High School",
+    "City": "Mahomet",
+    "Website": "http://www.mahometseymour.org"
+  },
+  {
+    "FacilityName": "Centennial High School",
+    "City": "Champaign",
+    "Website": "http://www.champaignschools.org"
+  },
+  {
+    "FacilityName": "Central High School",
+    "City": "Champaign",
+    "Website": "http://www.champaignschools.org"
+  },
+  {
+    "FacilityName": "Young Adult Program",
+    "City": "Champaign",
+    "Website": null
+  },
+  {
+    "FacilityName": "Novak Academy",
+    "City": "Champaign",
+    "Website": "http://www.champaignschools.org"
+  },
+  {
+    "FacilityName": "ACTIONS Program",
+    "City": "Champaign",
+    "Website": null
+  },
+  {
+    "FacilityName": "Unity High School",
+    "City": "Tolono",
+    "Website": "http://unityrockets.com"
+  },
+  {
+    "FacilityName": "Heritage High School",
+    "City": "Broadlands",
+    "Website": "http://www.heritage8.org"
+  },
+  {
+    "FacilityName": "Urbana High School",
+    "City": "Urbana",
+    "Website": "http://www.usd116.org"
+  },
+  {
+    "FacilityName": "Urbana Gerber School",
+    "City": "Urbana",
+    "Website": null
+  },
+  {
+    "FacilityName": "Champaign Co Detention Center",
+    "City": "Urbana",
+    "Website": null
+  },
+  {
+    "FacilityName": "Rantoul Twp High School",
+    "City": "Rantoul",
+    "Website": "http://www.rths193.org"
+  },
+  {
+    "FacilityName": "St Joseph-Ogden High School",
+    "City": "Saint Joseph",
+    "Website": "http://www.sjo.k12.il.us"
+  },
+  {
+    "FacilityName": "GCMS High School",
+    "City": "Gibson City",
+    "Website": "http://www.gcmsk12.org"
+  },
+  {
+    "FacilityName": "Paxton-Buckley-Loda High School",
+    "City": "Paxton",
+    "Website": "http://pblunit10.com"
+  },
+  {
+    "FacilityName": "Panther Academy",
+    "City": "Paxton",
+    "Website": null
+  },
+  {
+    "FacilityName": "Marshall High School",
+    "City": "Marshall",
+    "Website": "http://www.marshallk12.net"
+  },
+  {
+    "FacilityName": "Martinsville Jr-Sr High School",
+    "City": "Martinsville",
+    "Website": "http://www.martinsville.k12.il.us"
+  },
+  {
+    "FacilityName": "Casey-Westfield Jr/Sr HS",
+    "City": "Casey",
+    "Website": "https://www.caseywestfield.org/o/jr-sr-high"
+  },
+  {
+    "FacilityName": "Charleston High School",
+    "City": "Charleston",
+    "Website": "http://charleston.k12.il.us"
+  },
+  {
+    "FacilityName": "Mattoon High School",
+    "City": "Mattoon",
+    "Website": "http://www.mattoon.k12.il.us"
+  },
+  {
+    "FacilityName": "Oakland High School",
+    "City": "Oakland",
+    "Website": "https://www.oakland5.org"
+  },
+  {
+    "FacilityName": "Neoga Jr/Sr High School",
+    "City": "Neoga",
+    "Website": "http://www.neoga.k12.il.us"
+  },
+  {
+    "FacilityName": "Cumberland High School",
+    "City": "Toledo",
+    "Website": "http://www.cumberland.k12.il.us"
+  },
+  {
+    "FacilityName": "Tuscola High School",
+    "City": "Tuscola",
+    "Website": "http://www.cusd301.org/"
+  },
+  {
+    "FacilityName": "Villa Grove High School",
+    "City": "Villa Grove",
+    "Website": "http://www.vg302.org"
+  },
+  {
+    "FacilityName": "Arthur-Lovington-Atwood-Hammond High School",
+    "City": "Arthur",
+    "Website": "http://www.cusd305.org"
+  },
+  {
+    "FacilityName": "Arcola High School",
+    "City": "Arcola",
+    "Website": "http://www.arcola.k12.il.us"
+  },
+  {
+    "FacilityName": "Shiloh High School",
+    "City": "Hume",
+    "Website": "http://www.shiloh1.org"
+  },
+  {
+    "FacilityName": "Kansas High School",
+    "City": "Kansas",
+    "Website": "http://www.kansas.k12.il.us"
+  },
+  {
+    "FacilityName": "Paris Cooperative High School 4",
+    "City": "Paris",
+    "Website": "http://www.pchs.k12.il.us"
+  },
+  {
+    "FacilityName": "Chrisman High School",
+    "City": "Chrisman",
+    "Website": "http://www.chrisman.k12.il.us"
+  },
+  {
+    "FacilityName": "Paris Cooperative High School 95",
+    "City": "Paris",
+    "Website": "http://www.paris95.k12.il.us"
+  },
+  {
+    "FacilityName": "Sullivan High School",
+    "City": "Sullivan",
+    "Website": "http://home.sullivan.k12.il.us/"
+  },
+  {
+    "FacilityName": "Okaw Valley High School",
+    "City": "Bethany",
+    "Website": "http://www.okawvalley.org"
+  },
+  {
+    "FacilityName": "Windsor Jr & Sr High School",
+    "City": "Windsor",
+    "Website": "http://www.windsorcusd.org"
+  },
+  {
+    "FacilityName": "Cowden-Herrick Jr/Sr High School",
+    "City": "Cowden",
+    "Website": "http://cowden-herrick.k12.il.us"
+  },
+  {
+    "FacilityName": "Shelbyville High School",
+    "City": "Shelbyville",
+    "Website": "http://shelbyville.k12.il.us"
+  },
+  {
+    "FacilityName": "Stewardson-Strasburg High School",
+    "City": "Strasburg",
+    "Website": "http://www.stew-stras.org"
+  },
+  {
+    "FacilityName": "Central A & M High School",
+    "City": "Moweaqua",
+    "Website": "http://www.camraiders.com"
+  },
+  {
+    "FacilityName": "Kemmerer Village School",
+    "City": "Assumption",
+    "Website": null
+  },
+  {
+    "FacilityName": "Clay City High School",
+    "City": "Clay City",
+    "Website": "http://claycityschools.org"
+  },
+  {
+    "FacilityName": "North Clay Community High School",
+    "City": "Louisville",
+    "Website": "http://www.northclayschools.com"
+  },
+  {
+    "FacilityName": "Hutsonville High School",
+    "City": "Hutsonville",
+    "Website": "http://www.hutsonvilletigers.net"
+  },
+  {
+    "FacilityName": "Robinson High School",
+    "City": "Robinson",
+    "Website": "http://www.robinsonschools.com"
+  },
+  {
+    "FacilityName": "Palestine High School",
+    "City": "Palestine",
+    "Website": "https://www.palestinecusd3.net/"
+  },
+  {
+    "FacilityName": "Oblong High School",
+    "City": "Oblong",
+    "Website": "http://www.oblongschools.net"
+  },
+  {
+    "FacilityName": "Newton Comm High School",
+    "City": "Newton",
+    "Website": "http://www.jaspercountyschools.net"
+  },
+  {
+    "FacilityName": "Flora High School",
+    "City": "Flora",
+    "Website": "http://floraschools.com"
+  },
+  {
+    "FacilityName": "Red Hill Jr/Sr High School",
+    "City": "Bridgeport",
+    "Website": "http://cusd10.org"
+  },
+  {
+    "FacilityName": "Lawrenceville High School",
+    "City": "Lawrenceville",
+    "Website": "http://cusd20.com"
+  },
+  {
+    "FacilityName": "Richland County High School",
+    "City": "Olney",
+    "Website": "http://rchs.rccu1.net"
+  },
+  {
+    "FacilityName": "Rise Up Alternative School",
+    "City": "Olney",
+    "Website": null
+  },
+  {
+    "FacilityName": "Carlyle High School",
+    "City": "Carlyle",
+    "Website": "http://www.carlyle1.org"
+  },
+  {
+    "FacilityName": "Wesclin Sr High School",
+    "City": "Trenton",
+    "Website": "http://www.wesclin.org"
+  },
+  {
+    "FacilityName": "Central Comm High School",
+    "City": "Breese",
+    "Website": "http://www.centralcougars.org"
+  },
+  {
+    "FacilityName": "Waltonville High School",
+    "City": "Waltonville",
+    "Website": "https://www.wcusd1.org/"
+  },
+  {
+    "FacilityName": "Mount Vernon High School",
+    "City": "Mount Vernon",
+    "Website": "http://www.mvths.org"
+  },
+  {
+    "FacilityName": "Woodlawn High School",
+    "City": "Woodlawn",
+    "Website": "https://www.woodlawnschools.org/"
+  },
+  {
+    "FacilityName": "Webber High School",
+    "City": "Bluford",
+    "Website": "https://www.blufordschools.org/"
+  },
+  {
+    "FacilityName": "Patoka Sr High School",
+    "City": "Patoka",
+    "Website": "http://www.patokaschool.com"
+  },
+  {
+    "FacilityName": "Centralia High School",
+    "City": "Centralia",
+    "Website": null
+  },
+  {
+    "FacilityName": "South Central High School",
+    "City": "Farina",
+    "Website": "http://southcentralschools.org/"
+  },
+  {
+    "FacilityName": "Sandoval Sr High School",
+    "City": "Sandoval",
+    "Website": "http://sandoval501.org"
+  },
+  {
+    "FacilityName": "Salem Community High School",
+    "City": "Salem",
+    "Website": "http://www.salemhigh.com"
+  },
+  {
+    "FacilityName": "Odin Attendance Center 9-12",
+    "City": "Odin",
+    "Website": "http://odinpublicschools.org"
+  },
+  {
+    "FacilityName": "Okawville Jr/Sr High School",
+    "City": "Okawville",
+    "Website": "http://www.county.washington.k12.il.us/okawville.ohs"
+  },
+  {
+    "FacilityName": "Nashville Comm High School",
+    "City": "Nashville",
+    "Website": "http://www.nashville-k12.org"
+  },
+  {
+    "FacilityName": "Amundsen High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Bogan High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Carver Military Academy HS",
+    "City": "Chicago",
+    "Website": "http://www.carvermilitary.org"
+  },
+  {
+    "FacilityName": "Farragut Career Academy HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Fenger Academy High School",
+    "City": "Chicago",
+    "Website": "http://www.fenger.cps.k12.il.us"
+  },
+  {
+    "FacilityName": "Foreman High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Back of The Yards IB HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Gage Park High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Harlan Community Academy HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Hirsch Metropolitan High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Hubbard High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Hyde Park Academy High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Thomas Kelly College Preparatory",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Kelvyn Park High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Kennedy High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Kenwood Academy High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Lake View High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Lane Technical High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Marshall Metropolitan High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Mather High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Morgan Park High School",
+    "City": "Chicago",
+    "Website": "http://www.morganparkcps.org"
+  },
+  {
+    "FacilityName": "Phillips Academy High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Roosevelt High School",
+    "City": "Chicago",
+    "Website": "http://www.roosevelt.cps.k12.il.us"
+  },
+  {
+    "FacilityName": "Schurz High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Senn High School",
+    "City": "Chicago",
+    "Website": "http://schools.cps.k12.il.us/default.aspx"
+  },
+  {
+    "FacilityName": "King College Prep High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Steinmetz College Prep HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Sullivan High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Taft High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Tilden Career Communty Academy HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Von Steuben Metro Science HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Lincoln Park High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Washington G High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Wells Community Academy HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Crane Medical Prep HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Disney II Magnet HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Chicago Vocational Career Acad HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Dunbar Vocational Career Acad HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Jones College Prep High School",
+    "City": "Chicago",
+    "Website": "http://www.jones.cps.k12.il.us"
+  },
+  {
+    "FacilityName": "Prosser Career Academy HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Richards Career Academy HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Simeon Career Academy High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Corliss High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Clemente Community Academy HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Manley Career Academy High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Curie Metropolitan High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Julian High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Young Magnet High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Juarez Community Academy HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Chicago HS for Agricult Sciences",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Hancock College Preparatory HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Brooks College Prep Academy HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Northside College Preparatory Hs",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Chicago Military Academy HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Payton College Preparatory HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Phoenix Military Academy HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Spry Community Links High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Chicago Academy High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Bowen High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "North-Grand High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Raby High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Clark Acad Prep Magnet High Schl",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Rickover Naval Academy High Schl",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Uplift Community High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "World Language High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Douglass Academy High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Devry Advantage Academy High Schl",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Lindblom Math & Science Acad HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Bronzeville Scholastic HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "School of Social Justice HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Multicultural Arts High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Infinity Math  Science & Tech HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Collins Academy STEAM High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Austin College and Career Academy High School",
+    "City": "Chicago",
+    "Website": "http://voise.cps.k12.il.us"
+  },
+  {
+    "FacilityName": "Orr Academy High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Air Force Acad High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Alcott College Prep",
+    "City": "Chicago",
+    "Website": "http://cps.edu"
+  },
+  {
+    "FacilityName": "Chicago Technology Academy HS",
+    "City": "Chicago",
+    "Website": "http://www.chicagotechacademy.org"
+  },
+  {
+    "FacilityName": "Chicago High School of the Arts",
+    "City": "Chicago",
+    "Website": "http://chiarts.org"
+  },
+  {
+    "FacilityName": "Ogden Int High School",
+    "City": "Chicago",
+    "Website": "http://cps.edu"
+  },
+  {
+    "FacilityName": "Williams Medical Prep High Sch",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Westinghouse High School",
+    "City": "Chicago",
+    "Website": "http://www.newwestinghouse.org"
+  },
+  {
+    "FacilityName": "Solorio Academy High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "South Shore Intl Col Prep HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Goode STEM Academy HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Walter Henri Dyett High School for the Arts",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Englewood STEM High School",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Marine Leadership Academy - Ames",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Cook Co Juvenile Detention Ctr - Jefferson Alt HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Cook Co Juvenile Detention Ctr - York Alternative HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Graham  R Training Center",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Simpson Acad HS for Young Women",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Northside Learning Center",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Vaughn Occupational High School",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Southside Occupational Acad HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Peace and Education Coalition HS",
+    "City": "Chicago",
+    "Website": "http://www.cps.edu"
+  },
+  {
+    "FacilityName": "Excel Academy - Englewood HS",
+    "City": "Chicago",
+    "Website": "https://sesischools.com/locations/excel-academy-of-englewood/"
+  },
+  {
+    "FacilityName": "Excel Academy of South Shore",
+    "City": "Chicago",
+    "Website": "https://sesischools.com/locations/excel-academy-of-south-shore/"
+  },
+  {
+    "FacilityName": "Excel Academy - Southwest HS",
+    "City": "Chicago",
+    "Website": "https://sesischools.com/locations/excel-academy-of-south-shore/"
+  },
+  {
+    "FacilityName": "Chicago Excel Academy High School",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Camelot Safe Academy School",
+    "City": "Chicago",
+    "Website": "https://sesischools.com/locations/safe-achieve-academy-of-chicago/"
+  },
+  {
+    "FacilityName": "Ombudsman Chicago Northwest",
+    "City": "Chicago",
+    "Website": "http://Chicagodiploma.com"
+  },
+  {
+    "FacilityName": "Ombudsman Chicago South",
+    "City": "Chicago",
+    "Website": "http://Chicagodiploma.com"
+  },
+  {
+    "FacilityName": "Ombudsman Chicago West",
+    "City": "Chicago",
+    "Website": "http://Chicagodiploma.com"
+  },
+  {
+    "FacilityName": "Pathways in Education Ashburn",
+    "City": "Chicago",
+    "Website": "http://pathwaysed.org"
+  },
+  {
+    "FacilityName": "Pathways in Education Avondale",
+    "City": "Chicago",
+    "Website": "http://pathwaysed.org"
+  },
+  {
+    "FacilityName": "Pathways in Education Brighton Park",
+    "City": "Chicago",
+    "Website": "http://pathwaysed.org"
+  },
+  {
+    "FacilityName": "Ombudsman Chicago - Roseland HS",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Pathways in Education - Humboldt Park HS",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Genoa-Kingston High School",
+    "City": "Genoa",
+    "Website": "http://www.gkschools.org"
+  },
+  {
+    "FacilityName": "Indian Creek High School",
+    "City": "Shabbona",
+    "Website": null
+  },
+  {
+    "FacilityName": "Hiawatha Jr/Sr High School",
+    "City": "Kirkland",
+    "Website": "http://www.hiawatha426.org"
+  },
+  {
+    "FacilityName": "Sycamore High School",
+    "City": "Sycamore",
+    "Website": "http://syc427.org"
+  },
+  {
+    "FacilityName": "DeKalb High School",
+    "City": "Dekalb",
+    "Website": "http://dist428.org"
+  },
+  {
+    "FacilityName": "Beyond One Barb Transition Center",
+    "City": "Dekalb",
+    "Website": null
+  },
+  {
+    "FacilityName": "Hinckley-Big Rock High School",
+    "City": "Hinckley",
+    "Website": "https://www.hbr429.org/Domain/277"
+  },
+  {
+    "FacilityName": "Sandwich Community High School",
+    "City": "Sandwich",
+    "Website": "http://www.sandwich430.org"
+  },
+  {
+    "FacilityName": "Somonauk High School",
+    "City": "Somonauk",
+    "Website": "http://www.somonauk.net"
+  },
+  {
+    "FacilityName": "Clinton High School",
+    "City": "Clinton",
+    "Website": "http://www.cusd15.org"
+  },
+  {
+    "FacilityName": "Blue Ridge High School",
+    "City": "Farmer City",
+    "Website": "http://www.blueridge18.org"
+  },
+  {
+    "FacilityName": "Woodland High School",
+    "City": "Streator",
+    "Website": "http://www.woodland5.net/"
+  },
+  {
+    "FacilityName": "Tri-Point High School",
+    "City": "Cullom",
+    "Website": "http://www.tripointschools.org"
+  },
+  {
+    "FacilityName": "Prairie Central High School",
+    "City": "Fairbury",
+    "Website": "http://www.prairiecentral.org"
+  },
+  {
+    "FacilityName": "Flanagan-Cornell High School",
+    "City": "Flanagan",
+    "Website": "http://www.fc74.org"
+  },
+  {
+    "FacilityName": "Pontiac High School",
+    "City": "Pontiac",
+    "Website": "http://www.pontiac90.org"
+  },
+  {
+    "FacilityName": "Dwight High School",
+    "City": "Dwight",
+    "Website": "http://www.dwight.k12.il.us"
+  },
+  {
+    "FacilityName": "Hartsburg-Emden Jr-Sr High School",
+    "City": "Hartsburg",
+    "Website": "http://logan.k12.il.us/hartem"
+  },
+  {
+    "FacilityName": "Mount Pulaski High School",
+    "City": "Mount Pulaski",
+    "Website": "http://www.mtpulaski.k12.il.us"
+  },
+  {
+    "FacilityName": "Lincoln Comm High School",
+    "City": "Lincoln",
+    "Website": "http://www.lchsrailers.org"
+  },
+  {
+    "FacilityName": "LeRoy High School",
+    "City": "Le Roy",
+    "Website": "http://ljsh.leroyk12.org/"
+  },
+  {
+    "FacilityName": "Tri-Valley High School",
+    "City": "Downs",
+    "Website": "http://www.tri-valley3.org"
+  },
+  {
+    "FacilityName": "Heyworth High School",
+    "City": "Heyworth",
+    "Website": "http://www.husd4.org"
+  },
+  {
+    "FacilityName": "Normal Community High School",
+    "City": "Normal",
+    "Website": "http://www.unit5.org"
+  },
+  {
+    "FacilityName": "Normal Community West High School",
+    "City": "Normal",
+    "Website": "http://www.unit5.org"
+  },
+  {
+    "FacilityName": "Eugene Field School",
+    "City": "Normal",
+    "Website": null
+  },
+  {
+    "FacilityName": "McClean Co Detention Center",
+    "City": "Normal",
+    "Website": null
+  },
+  {
+    "FacilityName": "Lexington High School",
+    "City": "Lexington",
+    "Website": "http://www.lexington.k12.il.us"
+  },
+  {
+    "FacilityName": "Olympia High School",
+    "City": "Stanford",
+    "Website": "http://www.olympia.org"
+  },
+  {
+    "FacilityName": "Ridgeview High School",
+    "City": "Colfax",
+    "Website": "http://www.ridgeview19.org"
+  },
+  {
+    "FacilityName": "Bloomington High School",
+    "City": "Bloomington",
+    "Website": null
+  },
+  {
+    "FacilityName": "Hinsdale Central High School",
+    "City": "Hinsdale",
+    "Website": "http://www.central.hinsdale86.org"
+  },
+  {
+    "FacilityName": "Hinsdale South High School",
+    "City": "Darien",
+    "Website": "http://south.hinsdale86.org"
+  },
+  {
+    "FacilityName": "Hinsdale Twp HSD 86 Adult Opportunities Program",
+    "City": "Darien",
+    "Website": null
+  },
+  {
+    "FacilityName": "Glenbard East High School",
+    "City": "Lombard",
+    "Website": "http://www.glenbardeasths.org"
+  },
+  {
+    "FacilityName": "Glenbard North High School",
+    "City": "Carol Stream",
+    "Website": "http://www.glenbardnorthhs.org"
+  },
+  {
+    "FacilityName": "Glenbard West High School",
+    "City": "Glen Ellyn",
+    "Website": "http://www.glenbardwesths.org"
+  },
+  {
+    "FacilityName": "Glenbard South High School",
+    "City": "Glen Ellyn",
+    "Website": "http://www.glenbardsouthhs.org"
+  },
+  {
+    "FacilityName": "Addison Trail High School",
+    "City": "Addison",
+    "Website": "http://dupage88.net"
+  },
+  {
+    "FacilityName": "Willowbrook High School",
+    "City": "Villa Park",
+    "Website": "http://dupage88.net"
+  },
+  {
+    "FacilityName": "West Chicago Community High School",
+    "City": "West Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Comm H S Dist 99 - North H S",
+    "City": "Downers Grove",
+    "Website": "http://www.csd99.org"
+  },
+  {
+    "FacilityName": "Comm H S Dist 99 - South High Sch",
+    "City": "Downers Grove",
+    "Website": "http://www.csd99.org"
+  },
+  {
+    "FacilityName": "Fenton High School",
+    "City": "Bensenville",
+    "Website": "http://www.fenton100.org"
+  },
+  {
+    "FacilityName": "Lake Park High School",
+    "City": "Roselle",
+    "Website": "https://www.lphs.org"
+  },
+  {
+    "FacilityName": "Wheaton Warrenville South H S",
+    "City": "Wheaton",
+    "Website": "http://www.wwshs.org"
+  },
+  {
+    "FacilityName": "Wheaton North High School",
+    "City": "Wheaton",
+    "Website": "http://www.wnhs.org"
+  },
+  {
+    "FacilityName": "Westmont High School",
+    "City": "Westmont",
+    "Website": "http://www.cusd201.org"
+  },
+  {
+    "FacilityName": "Lisle High School",
+    "City": "Lisle",
+    "Website": "http://www.lisle202.org"
+  },
+  {
+    "FacilityName": "Naperville Central High School",
+    "City": "Naperville",
+    "Website": "https://www.naperville203.org/nchs"
+  },
+  {
+    "FacilityName": "Naperville North High School",
+    "City": "Naperville",
+    "Website": "https://www.naperville203.org/nnhs"
+  },
+  {
+    "FacilityName": "Waubonsie Valley High School",
+    "City": "Aurora",
+    "Website": "http://www.ipsd.org"
+  },
+  {
+    "FacilityName": "Neuqua Valley High School",
+    "City": "Naperville",
+    "Website": "http://www.ipsd.org"
+  },
+  {
+    "FacilityName": "Metea Valley High School",
+    "City": "Aurora",
+    "Website": "http://www.ipsd.org"
+  },
+  {
+    "FacilityName": "Gail McKinzie High School",
+    "City": "Naperville",
+    "Website": null
+  },
+  {
+    "FacilityName": "STEPS",
+    "City": "Naperville",
+    "Website": null
+  },
+  {
+    "FacilityName": "York Comm High School",
+    "City": "Elmhurst",
+    "Website": "http://www.elmhurst205.org"
+  },
+  {
+    "FacilityName": "Edwards County High School",
+    "City": "Albion",
+    "Website": "http://www.edwardscountyschools.org"
+  },
+  {
+    "FacilityName": "Gallatin High School",
+    "City": "Junction",
+    "Website": "http://gallatincusd7.com"
+  },
+  {
+    "FacilityName": "Hamilton County Jr/Sr High School",
+    "City": "Mc Leansboro",
+    "Website": "http://www.unit10.com"
+  },
+  {
+    "FacilityName": "Hardin County High School",
+    "City": "Elizabethtown",
+    "Website": "http://roe20.k12.il.us"
+  },
+  {
+    "FacilityName": "Pope Co High School",
+    "City": "Golconda",
+    "Website": "http://www.popek12.org"
+  },
+  {
+    "FacilityName": "Galatia High School",
+    "City": "Galatia",
+    "Website": "http:www.galatiak12.org"
+  },
+  {
+    "FacilityName": "Carrier Mills-Stonefort H S",
+    "City": "Carrier Mills",
+    "Website": "http://www.cmsfcats.org"
+  },
+  {
+    "FacilityName": "Harrisburg High School",
+    "City": "Harrisburg",
+    "Website": "http://www.hbg.saline.k12.il.us"
+  },
+  {
+    "FacilityName": "Eldorado High School",
+    "City": "Eldorado",
+    "Website": "http://www.eld4.org"
+  },
+  {
+    "FacilityName": "Mount Carmel High School",
+    "City": "Mount Carmel",
+    "Website": "http://www.wabash348.com/o/mchs"
+  },
+  {
+    "FacilityName": "Wayne City High School",
+    "City": "Wayne City",
+    "Website": "http://www.waynecity100.0rg"
+  },
+  {
+    "FacilityName": "Cisne High School",
+    "City": "Cisne",
+    "Website": "http://www.roe20.k12.il.us"
+  },
+  {
+    "FacilityName": "Fairfield Comm High School",
+    "City": "Fairfield",
+    "Website": "http://www.fchsmules.com"
+  },
+  {
+    "FacilityName": "Grayville Jr Sr High School",
+    "City": "Grayville",
+    "Website": "http://www.gcusd.com"
+  },
+  {
+    "FacilityName": "Norris City-Omaha-Enfield H S",
+    "City": "Norris City",
+    "Website": "http://www.ncoehs.white.k12.il.us"
+  },
+  {
+    "FacilityName": "Carmi-White County High School",
+    "City": "Carmi",
+    "Website": "http://www.carmischools.org"
+  },
+  {
+    "FacilityName": "Brownsville Attendance Center",
+    "City": "Carmi",
+    "Website": "http://www.carmischools.org"
+  },
+  {
+    "FacilityName": "Christopher High",
+    "City": "Christopher",
+    "Website": "http://www.cpher99.org"
+  },
+  {
+    "FacilityName": "Benton Cons High School",
+    "City": "Benton",
+    "Website": "http://www.bentonhighschool.org"
+  },
+  {
+    "FacilityName": "Frankfort Community High School",
+    "City": "West Frankfort",
+    "Website": "http://www.wfschools.org"
+  },
+  {
+    "FacilityName": "Thompsonville High School",
+    "City": "Thompsonville",
+    "Website": "http://www.tvilleschools.org"
+  },
+  {
+    "FacilityName": "Zeigler-Royalton High School",
+    "City": "Zeigler",
+    "Website": "http://www.zr188.org"
+  },
+  {
+    "FacilityName": "Sesser-Valier High School",
+    "City": "Sesser",
+    "Website": "http://www.sv196.org"
+  },
+  {
+    "FacilityName": "Goreville High School",
+    "City": "Goreville",
+    "Website": "http://www.gorevilleschools.com"
+  },
+  {
+    "FacilityName": "Vienna High School",
+    "City": "Vienna",
+    "Website": "http://www.viennahighschool.com/"
+  },
+  {
+    "FacilityName": "Massac County High School",
+    "City": "Metropolis",
+    "Website": "http://mchs.massac.org"
+  },
+  {
+    "FacilityName": "Joppa Jr & Sr High School",
+    "City": "Joppa",
+    "Website": "http://www.joppa38.com"
+  },
+  {
+    "FacilityName": "Johnston City High School",
+    "City": "Johnston City",
+    "Website": "http://www.jcindians.org"
+  },
+  {
+    "FacilityName": "Marion High School",
+    "City": "Marion",
+    "Website": "http://www.marionunit2.org"
+  },
+  {
+    "FacilityName": "Crab Orchard High School",
+    "City": "Marion",
+    "Website": "http://www.cocusd3.org"
+  },
+  {
+    "FacilityName": "Herrin High School",
+    "City": "Herrin",
+    "Website": "http://www.herrinschools.org"
+  },
+  {
+    "FacilityName": "Carterville High School",
+    "City": "Carterville",
+    "Website": "http://www.cartervillelions.com"
+  },
+  {
+    "FacilityName": "Coal City High School",
+    "City": "Coal City",
+    "Website": "http://www.coalcity.k12.il.us"
+  },
+  {
+    "FacilityName": "Gardner-South Wilmington Twp H S",
+    "City": "Gardner",
+    "Website": "http://www.gswhs73.org"
+  },
+  {
+    "FacilityName": "Morris Community High School",
+    "City": "Morris",
+    "Website": "http://morrishs.org"
+  },
+  {
+    "FacilityName": "Minooka Community High School",
+    "City": "Minooka",
+    "Website": "http://www.mchs.net"
+  },
+  {
+    "FacilityName": "Newark Comm High School",
+    "City": "Newark",
+    "Website": null
+  },
+  {
+    "FacilityName": "Plano High School",
+    "City": "Plano",
+    "Website": "http://www.plano88.org/phs/"
+  },
+  {
+    "FacilityName": "Yorkville High School",
+    "City": "Yorkville",
+    "Website": "http://www.y115.org"
+  },
+  {
+    "FacilityName": "Yorkville Transition Program",
+    "City": "Yorkville",
+    "Website": null
+  },
+  {
+    "FacilityName": "Oswego High School",
+    "City": "Oswego",
+    "Website": "http://www.oswego308.org"
+  },
+  {
+    "FacilityName": "Oswego East High School",
+    "City": "Oswego",
+    "Website": "http://www.oswego308.org"
+  },
+  {
+    "FacilityName": "East View Academy School",
+    "City": "Oswego",
+    "Website": null
+  },
+  {
+    "FacilityName": "East View Academy - INT",
+    "City": "Oswego",
+    "Website": null
+  },
+  {
+    "FacilityName": "Astoria High School",
+    "City": "Astoria",
+    "Website": "http://www.acusd1.org"
+  },
+  {
+    "FacilityName": "V I T Sr High School",
+    "City": "Table Grove",
+    "Website": "http://www.vit2.org"
+  },
+  {
+    "FacilityName": "Cuba Sr High School",
+    "City": "Cuba",
+    "Website": "http://www.cusd3.net"
+  },
+  {
+    "FacilityName": "Spoon River Valley Sr High Sch",
+    "City": "London Mills",
+    "Website": "http://www.spoonrivervalley.us"
+  },
+  {
+    "FacilityName": "Canton High School",
+    "City": "Canton",
+    "Website": "http://cantonusd.org"
+  },
+  {
+    "FacilityName": "Lewistown Jr/Sr High School",
+    "City": "Lewistown",
+    "Website": "http://www.lewistown97.net"
+  },
+  {
+    "FacilityName": "Illini West High School",
+    "City": "Carthage",
+    "Website": "http://www.illiniwest.org"
+  },
+  {
+    "FacilityName": "Warsaw Sr High School",
+    "City": "Warsaw",
+    "Website": "http://warsawschool.com"
+  },
+  {
+    "FacilityName": "Hamilton High School",
+    "City": "Hamilton",
+    "Website": "http://www.hhs328.com"
+  },
+  {
+    "FacilityName": "Southeastern Jr/Sr High School",
+    "City": "Augusta",
+    "Website": "http://www.southeastern337.com"
+  },
+  {
+    "FacilityName": "West Prairie Senior High School",
+    "City": "Colchester",
+    "Website": "http://www.wp103.org"
+  },
+  {
+    "FacilityName": "Bushnell-Prairie City High Sch",
+    "City": "Bushnell",
+    "Website": "http://www.bpcschools.org"
+  },
+  {
+    "FacilityName": "Macomb Senior High School",
+    "City": "Macomb",
+    "Website": "http://www.macomb185.org"
+  },
+  {
+    "FacilityName": "Rushville-Industry High School",
+    "City": "Rushville",
+    "Website": "http://www.sid5.com"
+  },
+  {
+    "FacilityName": "DePue High School",
+    "City": "DePue",
+    "Website": "http://www.depueschools.org"
+  },
+  {
+    "FacilityName": "Behavior Disorder Program Coop",
+    "City": "Tiskilwa",
+    "Website": null
+  },
+  {
+    "FacilityName": "Behavior Disorder Program Coop - INT",
+    "City": "Tiskilwa",
+    "Website": null
+  },
+  {
+    "FacilityName": "La Moille Jr/Sr High School",
+    "City": "La Moille",
+    "Website": "https://home.lamoilleschools.org"
+  },
+  {
+    "FacilityName": "Bureau Valley High School",
+    "City": "Manlius",
+    "Website": "http://www.bv340.com"
+  },
+  {
+    "FacilityName": "Princeton High School",
+    "City": "Princeton",
+    "Website": "http://www.phs-il.org"
+  },
+  {
+    "FacilityName": "Hall High School",
+    "City": "Spring Valley",
+    "Website": "https://www.hallhighschool502.com/"
+  },
+  {
+    "FacilityName": "Ohio Community High School",
+    "City": "Ohio",
+    "Website": "http://ohiocommunityschooldistricts.com/"
+  },
+  {
+    "FacilityName": "Orion High School",
+    "City": "Orion",
+    "Website": "http://www.orionschools.us"
+  },
+  {
+    "FacilityName": "Galva Jr-Sr High School",
+    "City": "Galva",
+    "Website": "http://www.galva224.org"
+  },
+  {
+    "FacilityName": "AlWood  Middle/High School",
+    "City": "Woodhull",
+    "Website": "http://www.alwood.net"
+  },
+  {
+    "FacilityName": "Annawan High School",
+    "City": "Annawan",
+    "Website": "http://annawan226.org"
+  },
+  {
+    "FacilityName": "Cambridge Jr/Sr High School",
+    "City": "Cambridge",
+    "Website": "http://www.district227.org/"
+  },
+  {
+    "FacilityName": "Geneseo High School",
+    "City": "Geneseo",
+    "Website": "http://www.geneseoschools.org"
+  },
+  {
+    "FacilityName": "Kewanee High School",
+    "City": "Kewanee",
+    "Website": "http://kcud229.org"
+  },
+  {
+    "FacilityName": "Wethersfield Jr/Sr High School",
+    "City": "Kewanee",
+    "Website": "http://www.geese230.com"
+  },
+  {
+    "FacilityName": "Stark County High School",
+    "City": "Toulon",
+    "Website": "http://www.stark100.com"
+  },
+  {
+    "FacilityName": "Cairo Jr/Sr High School",
+    "City": "Cairo",
+    "Website": null
+  },
+  {
+    "FacilityName": "Egyptian Sr High School",
+    "City": "Tamms",
+    "Website": "http://egyptianschool.com"
+  },
+  {
+    "FacilityName": "Carbondale Comm H S",
+    "City": "Carbondale",
+    "Website": "http://www.cchs165.jacksn.k12.il.us"
+  },
+  {
+    "FacilityName": "Trico Senior High School",
+    "City": "Campbell Hill",
+    "Website": "http://www.edline.net/pages/trico_cusd_176"
+  },
+  {
+    "FacilityName": "Murphysboro High School",
+    "City": "Murphysboro",
+    "Website": "http://www.mhs.org"
+  },
+  {
+    "FacilityName": "Elverado High School",
+    "City": "Elkville",
+    "Website": "http://elv196.org"
+  },
+  {
+    "FacilityName": "Pinckneyville Comm High School",
+    "City": "Pinckneyville",
+    "Website": "http://www.pchspanthers.com"
+  },
+  {
+    "FacilityName": "Du Quoin High School",
+    "City": "Du Quoin",
+    "Website": "http://www.duquoinschools.org"
+  },
+  {
+    "FacilityName": "Century Jr/Sr High School",
+    "City": "Ullin",
+    "Website": "http://www.centuryschool100.com"
+  },
+  {
+    "FacilityName": "Meridian High School",
+    "City": "Mounds",
+    "Website": "http://www.meridian101.com"
+  },
+  {
+    "FacilityName": "Cobden High School",
+    "City": "Cobden",
+    "Website": "http://cobdenappleknockers.com"
+  },
+  {
+    "FacilityName": "Dongola High School",
+    "City": "Dongola",
+    "Website": "http://www.dongolaschool.com"
+  },
+  {
+    "FacilityName": "Anna-Jonesboro High School",
+    "City": "Anna",
+    "Website": "http://aj81.net"
+  },
+  {
+    "FacilityName": "Shawnee High School",
+    "City": "Wolf Lake",
+    "Website": "http://www.shawneedistrict84.com"
+  },
+  {
+    "FacilityName": "Elgin High School",
+    "City": "Elgin",
+    "Website": "https://www.u-46.org/ehs"
+  },
+  {
+    "FacilityName": "Larkin High School",
+    "City": "Elgin",
+    "Website": "http://www.u-46.org/lhs"
+  },
+  {
+    "FacilityName": "Streamwood High School",
+    "City": "Streamwood",
+    "Website": "https://www.u-46.org/shs"
+  },
+  {
+    "FacilityName": "Bartlett High School",
+    "City": "Bartlett",
+    "Website": "https://www.u-46.org/BHS"
+  },
+  {
+    "FacilityName": "South Elgin High School",
+    "City": "South Elgin",
+    "Website": "https://www.u-46.org/sehs"
+  },
+  {
+    "FacilityName": "Dream Academy",
+    "City": "Elgin",
+    "Website": "https://www.u-46.org/dream"
+  },
+  {
+    "FacilityName": "Central School Program",
+    "City": "Elgin",
+    "Website": "https://www.u-46.org/csp"
+  },
+  {
+    "FacilityName": "Batavia Sr High School",
+    "City": "Batavia",
+    "Website": "http://bhs.bps101.net"
+  },
+  {
+    "FacilityName": "West Aurora High School",
+    "City": "Aurora",
+    "Website": "https://www.sd129.org/Domain/22"
+  },
+  {
+    "FacilityName": "Harry D Jacobs High School",
+    "City": "Algonquin",
+    "Website": "http://www.d300.org"
+  },
+  {
+    "FacilityName": "Oak Ridge School",
+    "City": "Carpentersville",
+    "Website": "http://www.d300.org"
+  },
+  {
+    "FacilityName": "Central High School",
+    "City": "Burlington",
+    "Website": "http://www.central301.net"
+  },
+  {
+    "FacilityName": "Cissna Park Sr High School",
+    "City": "Cissna Park",
+    "Website": "http://www.cpschool.org"
+  },
+  {
+    "FacilityName": "Watseka Comm High School",
+    "City": "Watseka",
+    "Website": "http://www.watsekaschools.org"
+  },
+  {
+    "FacilityName": "Iroquois West High School",
+    "City": "Gilman",
+    "Website": "http://www.iwest.k12.il.us"
+  },
+  {
+    "FacilityName": "Milford High School Campus",
+    "City": "Milford",
+    "Website": null
+  },
+  {
+    "FacilityName": "Momence High School",
+    "City": "Momence",
+    "Website": "https://www.mcusd1.net/"
+  },
+  {
+    "FacilityName": "Herscher High School",
+    "City": "Herscher",
+    "Website": "http://www.hcusd2.org"
+  },
+  {
+    "FacilityName": "Manteno High School",
+    "City": "Manteno",
+    "Website": "https://mhs.manteno5.org/"
+  },
+  {
+    "FacilityName": "Grant Park High School",
+    "City": "Grant Park",
+    "Website": "http://www.grantparkdragons.org"
+  },
+  {
+    "FacilityName": "St Anne Comm High School",
+    "City": "Saint Anne",
+    "Website": null
+  },
+  {
+    "FacilityName": "Kankakee High School",
+    "City": "Kankakee",
+    "Website": "http://www.kankakeeschooldistrict.org"
+  },
+  {
+    "FacilityName": "Avis Huff Student Support Services Center",
+    "City": "Kankakee",
+    "Website": null
+  },
+  {
+    "FacilityName": "Virginia Jr/ Sr High School",
+    "City": "Virginia",
+    "Website": "http://www.virginia64.com"
+  },
+  {
+    "FacilityName": "A-C Central High School",
+    "City": "Ashland",
+    "Website": "http://www.a-ccentral.com"
+  },
+  {
+    "FacilityName": "Franklin Jr/Sr High School",
+    "City": "Franklin",
+    "Website": "http://www.franklinhigh.com"
+  },
+  {
+    "FacilityName": "Waverly Junior/Senior High School",
+    "City": "Waverly",
+    "Website": "http://www.wsd6.org"
+  },
+  {
+    "FacilityName": "Compass Academy",
+    "City": "St Charles",
+    "Website": null
+  },
+  {
+    "FacilityName": "Bradley-Bourbonnais C High School",
+    "City": "Bradley",
+    "Website": "http://www.bbchs.org"
+  },
+  {
+    "FacilityName": "West Central High School",
+    "City": "Biggsville",
+    "Website": "http://www.wc235.k12.il.us"
+  },
+  {
+    "FacilityName": "Knoxville Sr High School",
+    "City": "Knoxville",
+    "Website": "http://www.bluebullets.org"
+  },
+  {
+    "FacilityName": "Galesburg Senior High School",
+    "City": "Galesburg",
+    "Website": "https://ghs.galesburg205.org/o/ghs"
+  },
+  {
+    "FacilityName": "Knox Co Mary Davis Detention Home",
+    "City": "Galesburg",
+    "Website": null
+  },
+  {
+    "FacilityName": "R O W V A Jr and  Sr High School",
+    "City": "Oneida",
+    "Website": "http://www.rowva.k12.il.us"
+  },
+  {
+    "FacilityName": "Williamsfield High School",
+    "City": "Williamsfield",
+    "Website": "http://billtown.org"
+  },
+  {
+    "FacilityName": "Abingdon-Avon High Sch",
+    "City": "Abingdon",
+    "Website": "http://www.d276.net/"
+  },
+  {
+    "FacilityName": "Mercer County High School",
+    "City": "Aledo",
+    "Website": "http://www.mercerschools.org"
+  },
+  {
+    "FacilityName": "Monmouth-Roseville High Sch",
+    "City": "Monmouth",
+    "Website": "http://www.mr238.org"
+  },
+  {
+    "FacilityName": "United Jr./Sr. High School",
+    "City": "Monmouth",
+    "Website": null
+  },
+  {
+    "FacilityName": "Waukegan High School",
+    "City": "Waukegan",
+    "Website": "http://schools.wps60.org/whs/"
+  },
+  {
+    "FacilityName": "Lake Zurich High School",
+    "City": "Lake Zurich",
+    "Website": "http://www.lz95.net/lzhs/"
+  },
+  {
+    "FacilityName": "Lake Zurich CUSD 95 Young Adult Center",
+    "City": "Lake Zurich",
+    "Website": null
+  },
+  {
+    "FacilityName": "Lake Zurich Community Unit School District 95 Day School",
+    "City": "Lake Zurich",
+    "Website": null
+  },
+  {
+    "FacilityName": "Deerfield High School",
+    "City": "Deerfield",
+    "Website": "http://www.dist113.org"
+  },
+  {
+    "FacilityName": "Highland Park High School",
+    "City": "Highland Park",
+    "Website": "http://www.dist113.org"
+  },
+  {
+    "FacilityName": "Lake Forest High School",
+    "City": "Lake Forest",
+    "Website": "http://lfhs.org"
+  },
+  {
+    "FacilityName": "Round Lake Senior High School",
+    "City": "Round Lake",
+    "Website": "http://www.rlas-116.org"
+  },
+  {
+    "FacilityName": "Round Lake Transition Center",
+    "City": "Round Lake",
+    "Website": null
+  },
+  {
+    "FacilityName": "Antioch Comm High School",
+    "City": "Antioch",
+    "Website": "http://www.chsd117.org"
+  },
+  {
+    "FacilityName": "Lakes Community High School",
+    "City": "Lake Villa",
+    "Website": "http://www.chsd117.org"
+  },
+  {
+    "FacilityName": "Wauconda High School",
+    "City": "Wauconda",
+    "Website": "http://www.d118.org"
+  },
+  {
+    "FacilityName": "Mundelein Cons High School",
+    "City": "Mundelein",
+    "Website": "http://www.d120.org"
+  },
+  {
+    "FacilityName": "Warren Township High School",
+    "City": "Gurnee",
+    "Website": "http://www.d121.org"
+  },
+  {
+    "FacilityName": "Grant Community High School",
+    "City": "Fox Lake",
+    "Website": "http://www.grantbulldogs.org"
+  },
+  {
+    "FacilityName": "Adlai E Stevenson High School",
+    "City": "Lincolnshire",
+    "Website": "http://www.d125.org"
+  },
+  {
+    "FacilityName": "Lake Co Hulse Detention Center 9-12",
+    "City": "Vernon Hills",
+    "Website": null
+  },
+  {
+    "FacilityName": "Zion-Benton Twnshp Hi Sch",
+    "City": "Zion",
+    "Website": "http://www.zb126.org"
+  },
+  {
+    "FacilityName": "Zion-Benton East High School",
+    "City": "Zion",
+    "Website": "http://www.ntzb.org"
+  },
+  {
+    "FacilityName": "Grayslake Central High School",
+    "City": "Grayslake",
+    "Website": "http://www.d127.org"
+  },
+  {
+    "FacilityName": "Grayslake North High School",
+    "City": "Grayslake",
+    "Website": "https://www.d127.org/north"
+  },
+  {
+    "FacilityName": "Libertyville High School",
+    "City": "Libertyville",
+    "Website": "http://www.d128.org"
+  },
+  {
+    "FacilityName": "Vernon Hills High School",
+    "City": "Vernon Hills",
+    "Website": "http://www.d128.org"
+  },
+  {
+    "FacilityName": "District 128 Transition Pathways Center",
+    "City": "Libertyville",
+    "Website": null
+  },
+  {
+    "FacilityName": "North Chicago Community High Sch",
+    "City": "North Chicago",
+    "Website": "http://www.d187.org"
+  },
+  {
+    "FacilityName": "Barrington High School",
+    "City": "Barrington",
+    "Website": "http://www.barrington220.org"
+  },
+  {
+    "FacilityName": "Leland High School",
+    "City": "Leland",
+    "Website": "http://www.leland1.org"
+  },
+  {
+    "FacilityName": "Earlville Jr/Sr High School",
+    "City": "Earlville",
+    "Website": "http://www.earlvillecusd9.org"
+  },
+  {
+    "FacilityName": "Streator Twp High School",
+    "City": "Streator",
+    "Website": "http://streatorhs.org"
+  },
+  {
+    "FacilityName": "La Salle-Peru Twp High School",
+    "City": "La Salle",
+    "Website": "http://www.lphs.net"
+  },
+  {
+    "FacilityName": "Ottawa Township High School",
+    "City": "Ottawa",
+    "Website": "http://www.ottawahigh.com"
+  },
+  {
+    "FacilityName": "Seneca High School",
+    "City": "Seneca",
+    "Website": "http://www.senecahs.org"
+  },
+  {
+    "FacilityName": "Mendota Twp High School",
+    "City": "Mendota",
+    "Website": null
+  },
+  {
+    "FacilityName": "Henry-Senachwine High School",
+    "City": "Henry",
+    "Website": "http://hscud5.org"
+  },
+  {
+    "FacilityName": "Serena High School",
+    "City": "Serena",
+    "Website": "http://www.unit2.net"
+  },
+  {
+    "FacilityName": "Midland High School",
+    "City": "Varna",
+    "Website": "http://www.midland-7.net"
+  },
+  {
+    "FacilityName": "Putnam County High School",
+    "City": "Granville",
+    "Website": null
+  },
+  {
+    "FacilityName": "Argenta-Oreana High School",
+    "City": "Argenta",
+    "Website": "http://www.argenta-oreana.org"
+  },
+  {
+    "FacilityName": "Maroa-Forsyth Senior High Sch",
+    "City": "Maroa",
+    "Website": "https://mfhs.mfschools.net/"
+  },
+  {
+    "FacilityName": "Mt Zion High School",
+    "City": "Mount Zion",
+    "Website": "http://www.mtzion.k12.il.us"
+  },
+  {
+    "FacilityName": "Sangamon Valley High School",
+    "City": "Niantic",
+    "Website": "http://www.sangamonvalley.org"
+  },
+  {
+    "FacilityName": "Warrensburg-Latham High School",
+    "City": "Warrensburg",
+    "Website": "http://wl.k12.il.us"
+  },
+  {
+    "FacilityName": "Meridian High School",
+    "City": "Macon",
+    "Website": "http://www.meridianhawks.net"
+  },
+  {
+    "FacilityName": "Eisenhower High School",
+    "City": "Decatur",
+    "Website": "http://www.dps61.org"
+  },
+  {
+    "FacilityName": "MacArthur High School",
+    "City": "Decatur",
+    "Website": "http://www.dps61.org"
+  },
+  {
+    "FacilityName": "Decatur Public Schools Alternative Education",
+    "City": "Decatur",
+    "Website": "http://www.dps61.org"
+  },
+  {
+    "FacilityName": "Bement High School",
+    "City": "Bement",
+    "Website": null
+  },
+  {
+    "FacilityName": "Monticello High School",
+    "City": "Monticello",
+    "Website": "http://www.sages.us"
+  },
+  {
+    "FacilityName": "Deland-Weldon High School",
+    "City": "De Land",
+    "Website": "http://www.dwschools.org"
+  },
+  {
+    "FacilityName": "Cerro Gordo Jr and Sr High School",
+    "City": "Cerro Gordo",
+    "Website": "http://www.cgbroncos.org"
+  },
+  {
+    "FacilityName": "Calhoun High School",
+    "City": "Hardin",
+    "Website": "http://www.calhoun.k12.il.us"
+  },
+  {
+    "FacilityName": "Brussels High School",
+    "City": "Brussels",
+    "Website": null
+  },
+  {
+    "FacilityName": "Carrollton High School",
+    "City": "Carrollton",
+    "Website": "http://www.c-hawks.net"
+  },
+  {
+    "FacilityName": "North Greene Jr/Sr High Sch",
+    "City": "White Hall",
+    "Website": "http://www.northgreene.com"
+  },
+  {
+    "FacilityName": "Greenfield High School",
+    "City": "Greenfield",
+    "Website": "http://www.greenfieldschools.org"
+  },
+  {
+    "FacilityName": "Jersey Comm High School",
+    "City": "Jerseyville",
+    "Website": "http://www.jersey100.org"
+  },
+  {
+    "FacilityName": "Jersey Community Alternative Program (JCAP)",
+    "City": "Jerseyville",
+    "Website": null
+  },
+  {
+    "FacilityName": "Carlinville High School",
+    "City": "Carlinville",
+    "Website": "http://high.cusd1.com/"
+  },
+  {
+    "FacilityName": "Northwestern High School",
+    "City": "Palmyra",
+    "Website": "http://www.northwestern.k12.il.us"
+  },
+  {
+    "FacilityName": "Mt Olive High School",
+    "City": "Mount Olive",
+    "Website": "http://www.mtoliveschools.org"
+  },
+  {
+    "FacilityName": "Staunton High School",
+    "City": "Staunton",
+    "Website": "http://www.stauntonschools.org"
+  },
+  {
+    "FacilityName": "Gillespie High School",
+    "City": "Gillespie",
+    "Website": "http://www.joomla.gcusd7.org"
+  },
+  {
+    "FacilityName": "Bunker Hill High School",
+    "City": "Bunker Hill",
+    "Website": "http://www.bhcusd.org"
+  },
+  {
+    "FacilityName": "Southwestern High School",
+    "City": "Piasa",
+    "Website": "http://www.piasabirds.net/highschool"
+  },
+  {
+    "FacilityName": "North Mac High School",
+    "City": "Virden",
+    "Website": "http://www.northmacschools.org"
+  },
+  {
+    "FacilityName": "Roxana Sr High School",
+    "City": "Roxana",
+    "Website": "http://www.rcusd.org"
+  },
+  {
+    "FacilityName": "Triad High School",
+    "City": "Troy",
+    "Website": "https://triadhs.tcusd2.org/"
+  },
+  {
+    "FacilityName": "Highland High School",
+    "City": "Highland",
+    "Website": "http://www.highlandcusd5.org/hhs"
+  },
+  {
+    "FacilityName": "Edwardsville High School",
+    "City": "Edwardsville",
+    "Website": "http://www.ecusd7.org/ehs"
+  },
+  {
+    "FacilityName": "Madison Co Detention Center",
+    "City": "Edwardsville",
+    "Website": null
+  },
+  {
+    "FacilityName": "Civic Memorial High School",
+    "City": "Bethalto",
+    "Website": "http://www.bethalto.org"
+  },
+  {
+    "FacilityName": "Granite City High School",
+    "City": "Granite City",
+    "Website": "http://www.gcsd9.net"
+  },
+  {
+    "FacilityName": "Lake School",
+    "City": "Granite City",
+    "Website": null
+  },
+  {
+    "FacilityName": "Collinsville High School",
+    "City": "Collinsville",
+    "Website": "http://www.kahoks.org"
+  },
+  {
+    "FacilityName": "Hollywood Heights",
+    "City": "Caseyville",
+    "Website": "http://www.cusd.kahoks.org"
+  },
+  {
+    "FacilityName": "Alton High School",
+    "City": "Alton",
+    "Website": "http://altonschools.org/schools/ahs/index.html"
+  },
+  {
+    "FacilityName": "Mark Twain",
+    "City": "Alton",
+    "Website": "http://altonschools.org/schools/mac/index.html"
+  },
+  {
+    "FacilityName": "Madison Senior High School",
+    "City": "Madison",
+    "Website": "http://www.madisoncusd12.org"
+  },
+  {
+    "FacilityName": "Madison Student Support Center",
+    "City": "Madison",
+    "Website": "http://www.madisoncusd12.org"
+  },
+  {
+    "FacilityName": "East Alton-Wood River High Sch",
+    "City": "Wood River",
+    "Website": "http://www.eawr.org"
+  },
+  {
+    "FacilityName": "Alden-Hebron High School",
+    "City": "Hebron",
+    "Website": "http://www.alden-hebron.org"
+  },
+  {
+    "FacilityName": "Harvard High School",
+    "City": "Harvard",
+    "Website": "http://www.cusd50.org"
+  },
+  {
+    "FacilityName": "Marengo High School",
+    "City": "Marengo",
+    "Website": "http://www.mchs154.org"
+  },
+  {
+    "FacilityName": "Crystal Lake Central High School",
+    "City": "Crystal Lake",
+    "Website": null
+  },
+  {
+    "FacilityName": "Cary-Grove Community High School",
+    "City": "Cary",
+    "Website": null
+  },
+  {
+    "FacilityName": "Crystal Lake South High School",
+    "City": "Crystal Lake",
+    "Website": "http://ww2.d155.org/cls/default.aspx"
+  },
+  {
+    "FacilityName": "Prairie Ridge High School",
+    "City": "Crystal Lake",
+    "Website": "http://ww2.d155.org/pr/default.aspx"
+  },
+  {
+    "FacilityName": "Meredosia-Chambersburg High Sch",
+    "City": "Meredosia",
+    "Website": "http://www.mcsd11.net"
+  },
+  {
+    "FacilityName": "Johnsburg High School",
+    "City": "Johnsburg",
+    "Website": "http://www.johnsburg12.org"
+  },
+  {
+    "FacilityName": "Haber Oaks Campus",
+    "City": "Crystal Lake",
+    "Website": null
+  },
+  {
+    "FacilityName": "McHenry Community High School",
+    "City": "Mchenry",
+    "Website": null
+  },
+  {
+    "FacilityName": "Richmond-Burton High School",
+    "City": "Richmond",
+    "Website": "http://www.rbchs.com"
+  },
+  {
+    "FacilityName": "Huntley High School",
+    "City": "Huntley",
+    "Website": "http://huntley158.org"
+  },
+  {
+    "FacilityName": "Woodstock High School",
+    "City": "Woodstock",
+    "Website": "http://whs.woodstockschools.org/"
+  },
+  {
+    "FacilityName": "Woodstock North High School",
+    "City": "Woodstock",
+    "Website": "http://wnhs.woodstockschools.org/"
+  },
+  {
+    "FacilityName": "Clay Academy",
+    "City": "Woodstock",
+    "Website": "http://clay.woodstockschools.org/"
+  },
+  {
+    "FacilityName": "Clay Academy - INT",
+    "City": "Woodstock",
+    "Website": null
+  },
+  {
+    "FacilityName": "Valmeyer High School",
+    "City": "Valmeyer",
+    "Website": "http://www.valmeyerk12.org"
+  },
+  {
+    "FacilityName": "Columbia High School",
+    "City": "Columbia",
+    "Website": "https://www.columbia4.org/"
+  },
+  {
+    "FacilityName": "Waterloo High School",
+    "City": "Waterloo",
+    "Website": "http://www.wcusd5.net"
+  },
+  {
+    "FacilityName": "Coulterville High School",
+    "City": "Coulterville",
+    "Website": "http://www.cvillecusd1.com"
+  },
+  {
+    "FacilityName": "Red Bud High School",
+    "City": "Red Bud",
+    "Website": "http://www.redbud132.org"
+  },
+  {
+    "FacilityName": "Steeleville High School",
+    "City": "Steeleville",
+    "Website": "http://www.steeleville138.org"
+  },
+  {
+    "FacilityName": "Chester High School",
+    "City": "Chester",
+    "Website": "http://chs.chester139.com/"
+  },
+  {
+    "FacilityName": "Sparta High School",
+    "City": "Sparta",
+    "Website": "https://www.sparta140.org/"
+  },
+  {
+    "FacilityName": "Dixon High School",
+    "City": "Dixon",
+    "Website": "http://www.dps170.org"
+  },
+  {
+    "FacilityName": "TJ Dempsey Therapeutic Day School",
+    "City": "Nachusa",
+    "Website": "http://www.dps170.org"
+  },
+  {
+    "FacilityName": "Amboy High School",
+    "City": "Amboy",
+    "Website": "http://www.amboy.net"
+  },
+  {
+    "FacilityName": "Ashton-Franklin Center HS",
+    "City": "Ashton",
+    "Website": "http://www.afcschools.net"
+  },
+  {
+    "FacilityName": "Rochelle Twp High School",
+    "City": "Rochelle",
+    "Website": "http://www.rthsd212.org"
+  },
+  {
+    "FacilityName": "Rochelle Focus House",
+    "City": "Rochelle",
+    "Website": null
+  },
+  {
+    "FacilityName": "Oregon  Jr/Sr High School",
+    "City": "Oregon",
+    "Website": "http://www.ocusd.net"
+  },
+  {
+    "FacilityName": "Forreston Jr/Sr High Sch",
+    "City": "Forreston",
+    "Website": "http://www.fvdistrict221.org/"
+  },
+  {
+    "FacilityName": "Polo Comm High School",
+    "City": "Polo",
+    "Website": "http://www.poloschools.net"
+  },
+  {
+    "FacilityName": "Stillman Valley High School",
+    "City": "Stillman Valley",
+    "Website": "http://www.meridian223.org"
+  },
+  {
+    "FacilityName": "Byron High School 9-12",
+    "City": "Byron",
+    "Website": "http://byron226.org"
+  },
+  {
+    "FacilityName": "Erie High School",
+    "City": "Erie",
+    "Website": "http://www.ecusd.info"
+  },
+  {
+    "FacilityName": "Fulton High School",
+    "City": "Fulton",
+    "Website": "http://www.riverbendschools.org"
+  },
+  {
+    "FacilityName": "Prophetstown High School",
+    "City": "Prophetstown",
+    "Website": "http://www.plt3.org"
+  },
+  {
+    "FacilityName": "Sterling High School",
+    "City": "Sterling",
+    "Website": "http://www.sterlingpublicschools.org"
+  },
+  {
+    "FacilityName": "Morrison High School",
+    "City": "Morrison",
+    "Website": "http://www.morrisonschools.org"
+  },
+  {
+    "FacilityName": "Rock Falls Township High School",
+    "City": "Rock Falls",
+    "Website": "http://www.rfhs301.org"
+  },
+  {
+    "FacilityName": "Manual High School",
+    "City": "Peoria",
+    "Website": "http://www.psd150.org"
+  },
+  {
+    "FacilityName": "Peoria High School",
+    "City": "Peoria",
+    "Website": "http://www.psd150.org"
+  },
+  {
+    "FacilityName": "Richwoods High School",
+    "City": "Peoria",
+    "Website": "http://www.psd150.org"
+  },
+  {
+    "FacilityName": "Rolling Acres Middle School",
+    "City": "Peoria",
+    "Website": "http://www.psd150.org"
+  },
+  {
+    "FacilityName": "Robert A Jamieson School",
+    "City": "Peoria",
+    "Website": "http://www.psd150.org"
+  },
+  {
+    "FacilityName": "Glen Barton School",
+    "City": "Peoria",
+    "Website": null
+  },
+  {
+    "FacilityName": "Knoxville Center for Student Success",
+    "City": "Peoria",
+    "Website": "http://www.psd150.org"
+  },
+  {
+    "FacilityName": "Woodruff Career & Tech Center",
+    "City": "Peoria",
+    "Website": "http://www.psd150.org"
+  },
+  {
+    "FacilityName": "Online Learning Academy",
+    "City": "Peoria",
+    "Website": null
+  },
+  {
+    "FacilityName": "Knoxville Safe School Program",
+    "City": "Peoria",
+    "Website": null
+  },
+  {
+    "FacilityName": "Farmington Central High Sch",
+    "City": "Farmington",
+    "Website": "http://www.dist265.com"
+  },
+  {
+    "FacilityName": "Brimfield High School",
+    "City": "Brimfield",
+    "Website": "http://www.brimfield309.com"
+  },
+  {
+    "FacilityName": "Limestone Community High School",
+    "City": "Peoria",
+    "Website": "http://www.limestone310.org"
+  },
+  {
+    "FacilityName": "Peoria Cty Jvnl Det Ctr 9-12",
+    "City": "Peoria",
+    "Website": "http://www.limestone310.org"
+  },
+  {
+    "FacilityName": "Il Valley Central High School",
+    "City": "Chillicothe",
+    "Website": "http://www.ivcschools.com"
+  },
+  {
+    "FacilityName": "IVC Learning Center",
+    "City": "Chillicothe",
+    "Website": null
+  },
+  {
+    "FacilityName": "IVC Transition Center",
+    "City": "Chillicothe",
+    "Website": null
+  },
+  {
+    "FacilityName": "Elmwood High School",
+    "City": "Elmwood",
+    "Website": "http://www.elmwood322.com"
+  },
+  {
+    "FacilityName": "Dunlap High School",
+    "City": "Dunlap",
+    "Website": "https://dhs.dunlapcusd.net/"
+  },
+  {
+    "FacilityName": "Peoria Heights High School",
+    "City": "Peoria Heights",
+    "Website": "http://www.ph325.org"
+  },
+  {
+    "FacilityName": "Princeville High School",
+    "City": "Princeville",
+    "Website": "http://www.princeville326.org"
+  },
+  {
+    "FacilityName": "Illini Bluffs High School",
+    "City": "Glasford",
+    "Website": "http://www.illinibluffs.com"
+  },
+  {
+    "FacilityName": "United Twp High School",
+    "City": "East Moline",
+    "Website": "http://uths.net"
+  },
+  {
+    "FacilityName": "Moline Sr High School",
+    "City": "Moline",
+    "Website": "http://www.molineschools.org"
+  },
+  {
+    "FacilityName": "Rock Island High School",
+    "City": "Rock Island",
+    "Website": "http://www.rimsd41.org"
+  },
+  {
+    "FacilityName": "Thurgood Marshall Learning Ctr",
+    "City": "Rock Island",
+    "Website": "http://www.rimsd41.org"
+  },
+  {
+    "FacilityName": "Riverdale Sr High School",
+    "City": "Port Byron",
+    "Website": "http://www.riverdaleschools.org"
+  },
+  {
+    "FacilityName": "Sherrard High School",
+    "City": "Sherrard",
+    "Website": "http://www.sherrard.us"
+  },
+  {
+    "FacilityName": "Rockridge High School",
+    "City": "Taylor Ridge",
+    "Website": "http://www.rr300.org"
+  },
+  {
+    "FacilityName": "Lebanon High School",
+    "City": "Lebanon",
+    "Website": "http://lcusd9.org/"
+  },
+  {
+    "FacilityName": "Mascoutah High School",
+    "City": "Mascoutah",
+    "Website": "http://mhs.msd19.org"
+  },
+  {
+    "FacilityName": "Marissa Jr & Sr High School",
+    "City": "Marissa",
+    "Website": null
+  },
+  {
+    "FacilityName": "New Athens High School",
+    "City": "New Athens",
+    "Website": "http://www.na60.org"
+  },
+  {
+    "FacilityName": "Freeburg Community High Sch",
+    "City": "Freeburg",
+    "Website": "http://www.fchs77.org"
+  },
+  {
+    "FacilityName": "Cahokia High School",
+    "City": "Cahokia",
+    "Website": "http://www.cusd187.org"
+  },
+  {
+    "FacilityName": "Lovejoy Technology Academy",
+    "City": "Lovejoy",
+    "Website": "http://lovejoyschool.org"
+  },
+  {
+    "FacilityName": "East St Louis Senior High School",
+    "City": "East Saint Louis",
+    "Website": "http://estl189.com"
+  },
+  {
+    "FacilityName": "Saint Clair Co Juv Detention Center",
+    "City": "Belleville",
+    "Website": "http://estl189.com"
+  },
+  {
+    "FacilityName": "Gordon Bush Alternative School for Education",
+    "City": "E Saint Louis",
+    "Website": "http://estl189.com"
+  },
+  {
+    "FacilityName": "Belleville High School-East",
+    "City": "Belleville",
+    "Website": "http://www.bths201.org"
+  },
+  {
+    "FacilityName": "Belleville High School-West",
+    "City": "Belleville",
+    "Website": "http://www.bths201.org"
+  },
+  {
+    "FacilityName": "Belleville Twp HS-Night/Alt Sch",
+    "City": "Belleville",
+    "Website": "http://www.bths201.org"
+  },
+  {
+    "FacilityName": "Center for Academic and Vocational Excellence - CAVE",
+    "City": "Belleville",
+    "Website": null
+  },
+  {
+    "FacilityName": "Bridges Networking Connections",
+    "City": "Belleville",
+    "Website": null
+  },
+  {
+    "FacilityName": "Bridges Networking Connections - INT",
+    "City": "Belleville",
+    "Website": null
+  },
+  {
+    "FacilityName": "O Fallon High School",
+    "City": "O Fallon",
+    "Website": "http://www.oths.us"
+  },
+  {
+    "FacilityName": "Greenview Jr/Sr High School",
+    "City": "Greenview",
+    "Website": "http://www.greenviewschools.org"
+  },
+  {
+    "FacilityName": "Porta High School",
+    "City": "Petersburg",
+    "Website": "http://www.porta202.org"
+  },
+  {
+    "FacilityName": "Athens Sr High School",
+    "City": "Athens",
+    "Website": "http://athens-213.org"
+  },
+  {
+    "FacilityName": "Tri-City High School",
+    "City": "Buffalo",
+    "Website": "http://www.tricityschools.org"
+  },
+  {
+    "FacilityName": "Rochester High School",
+    "City": "Rochester",
+    "Website": "http://www.rochester3a.net"
+  },
+  {
+    "FacilityName": "Glenwood High School",
+    "City": "Chatham",
+    "Website": "https://www.chathamschools.org/glenwood-high-school"
+  },
+  {
+    "FacilityName": "Pleasant Plains High School",
+    "City": "Pleasant Plains",
+    "Website": "http://www.ppcusd8.org/hs/index.htm"
+  },
+  {
+    "FacilityName": "Auburn High School",
+    "City": "Auburn",
+    "Website": "http://www.auburn.k12.il.us"
+  },
+  {
+    "FacilityName": "Pawnee Jr/Sr High Sch",
+    "City": "Pawnee",
+    "Website": "http://www.pawneeschools.com"
+  },
+  {
+    "FacilityName": "Riverton High School",
+    "City": "Riverton",
+    "Website": "http://www.rivertonschools.org"
+  },
+  {
+    "FacilityName": "Williamsville High School",
+    "City": "Williamsville",
+    "Website": "http://www.wcusd15.org"
+  },
+  {
+    "FacilityName": "New Berlin High School",
+    "City": "New Berlin",
+    "Website": "http://www.pretzelpride.com/"
+  },
+  {
+    "FacilityName": "Lanphier High School",
+    "City": "Springfield",
+    "Website": "http://www.sps186.org/o/lanphier/"
+  },
+  {
+    "FacilityName": "Springfield High School",
+    "City": "Springfield",
+    "Website": "http://www.sps186.org/o/springfield/"
+  },
+  {
+    "FacilityName": "Springfield Southeast High Sch",
+    "City": "Springfield",
+    "Website": "http://www.sps186.org/o/southeast/"
+  },
+  {
+    "FacilityName": "Edwin A Lee Elementary School",
+    "City": "Springfield",
+    "Website": "http://www.sps186.org/o/lee/"
+  },
+  {
+    "FacilityName": "Sangamon Co Detention Center",
+    "City": "Springfield",
+    "Website": null
+  },
+  {
+    "FacilityName": "Douglas School",
+    "City": "Springfield",
+    "Website": "http://www.sps186.org/o/douglas/"
+  },
+  {
+    "FacilityName": "Springfield Learning Academy",
+    "City": "Springfield",
+    "Website": "http://www.sps186.org/o/sla"
+  },
+  {
+    "FacilityName": "Havana High School",
+    "City": "Havana",
+    "Website": "http://www.havana126.net"
+  },
+  {
+    "FacilityName": "Illini Central High School",
+    "City": "Mason City",
+    "Website": "http://www.illinicentral.org"
+  },
+  {
+    "FacilityName": "Midwest Central High School",
+    "City": "Manito",
+    "Website": null
+  },
+  {
+    "FacilityName": "Pekin Community High School",
+    "City": "Pekin",
+    "Website": "http://www.pekinhigh.net"
+  },
+  {
+    "FacilityName": "Washington Comm High School",
+    "City": "Washington",
+    "Website": "http://www.wacohi.net"
+  },
+  {
+    "FacilityName": "East Peoria High School",
+    "City": "East Peoria",
+    "Website": "http://www.ep309.org"
+  },
+  {
+    "FacilityName": "Dee-Mack High School",
+    "City": "Mackinaw",
+    "Website": "http://www.deemack.org"
+  },
+  {
+    "FacilityName": "Tremont High School",
+    "City": "Tremont",
+    "Website": "https://www.tremont702.net/"
+  },
+  {
+    "FacilityName": "Delavan High School",
+    "City": "Delavan",
+    "Website": "http://www.delavanschools.com"
+  },
+  {
+    "FacilityName": "Morton High School",
+    "City": "Morton",
+    "Website": "http://www.morton709.org"
+  },
+  {
+    "FacilityName": "Morton Academy",
+    "City": "Morton",
+    "Website": null
+  },
+  {
+    "FacilityName": "Morton Academy - INT",
+    "City": "Morton",
+    "Website": null
+  },
+  {
+    "FacilityName": "Fieldcrest High School",
+    "City": "Minonk",
+    "Website": "http://www.unit6.org"
+  },
+  {
+    "FacilityName": "El Paso-Gridley High School",
+    "City": "El Paso",
+    "Website": "http://unit11.org"
+  },
+  {
+    "FacilityName": "Lowpoint-Washburn Jr Sr High Sch",
+    "City": "Washburn",
+    "Website": "http://washburn.k12.il.us"
+  },
+  {
+    "FacilityName": "Roanoke-Benson High School",
+    "City": "Roanoke",
+    "Website": "http://www.rb60.com"
+  },
+  {
+    "FacilityName": "Metamora High School",
+    "City": "Metamora",
+    "Website": "http://www.mths.us"
+  },
+  {
+    "FacilityName": "Eureka High School",
+    "City": "Eureka",
+    "Website": null
+  },
+  {
+    "FacilityName": "Bismarck-Henning Rossville-Alvin Cooperative HS 1",
+    "City": "Bismarck",
+    "Website": "http://www.bismarck.k12.il.us"
+  },
+  {
+    "FacilityName": "Westville High School",
+    "City": "Westville",
+    "Website": "http://www.gowestville.org"
+  },
+  {
+    "FacilityName": "Georgetown-Ridge Farm High School",
+    "City": "Georgetown",
+    "Website": "http://www.grf.k12.il.us"
+  },
+  {
+    "FacilityName": "Bismarck-Henning Rossville-Alvin Cooperative HS  7",
+    "City": "Rossville",
+    "Website": null
+  },
+  {
+    "FacilityName": "Hoopeston Area High School",
+    "City": "Hoopeston",
+    "Website": "http://www.hoopeston.k12.il.us"
+  },
+  {
+    "FacilityName": "Oakwood High School",
+    "City": "Fithian",
+    "Website": "http://www.oakwood76.org"
+  },
+  {
+    "FacilityName": "Danville High School",
+    "City": "Danville",
+    "Website": "http://www.danville.k12.il.us/schools/dhs_site/index.htm"
+  },
+  {
+    "FacilityName": "Kenneth D Bailey Academy",
+    "City": "Danville",
+    "Website": null
+  },
+  {
+    "FacilityName": "Vermilion Co Detention Center",
+    "City": "Danville",
+    "Website": null
+  },
+  {
+    "FacilityName": "Armstrong High School",
+    "City": "Armstrong",
+    "Website": "http://armstrong.k12.il.us"
+  },
+  {
+    "FacilityName": "Salt Fork High School",
+    "City": "Catlin",
+    "Website": null
+  },
+  {
+    "FacilityName": "Beecher High School",
+    "City": "Beecher",
+    "Website": "http://beecher200u.org"
+  },
+  {
+    "FacilityName": "Crete-Monee High School",
+    "City": "Crete",
+    "Website": "http://www.cm201u.org"
+  },
+  {
+    "FacilityName": "Plainfield High School",
+    "City": "Plainfield",
+    "Website": null
+  },
+  {
+    "FacilityName": "Plainfield South High School",
+    "City": "Plainfield",
+    "Website": "http://psd202.org"
+  },
+  {
+    "FacilityName": "Plainfield North High School",
+    "City": "Plainfield",
+    "Website": "http://www.psd202.org"
+  },
+  {
+    "FacilityName": "Plainfield East High School",
+    "City": "Plainfield",
+    "Website": "http://psd202.org"
+  },
+  {
+    "FacilityName": "Plainfield Academy",
+    "City": "Plainfield",
+    "Website": null
+  },
+  {
+    "FacilityName": "Joliet Central High School",
+    "City": "Joliet",
+    "Website": null
+  },
+  {
+    "FacilityName": "Joliet West High School",
+    "City": "Joliet",
+    "Website": "http://www.jths.org"
+  },
+  {
+    "FacilityName": "Pathways Academy",
+    "City": "Joliet",
+    "Website": "http://www.jths.org"
+  },
+  {
+    "FacilityName": "Will Co Detention Center 9-12",
+    "City": "Joliet",
+    "Website": null
+  },
+  {
+    "FacilityName": "Lockport Township High Sch East",
+    "City": "Lockport",
+    "Website": "http://www.lths.org"
+  },
+  {
+    "FacilityName": "Peotone High School",
+    "City": "Peotone",
+    "Website": "http://www.peotoneschools.org"
+  },
+  {
+    "FacilityName": "Wilmington High School",
+    "City": "Wilmington",
+    "Website": "https://www.209u.net/"
+  },
+  {
+    "FacilityName": "Lincoln-Way Central High School",
+    "City": "New Lenox",
+    "Website": "http://www.lw210.org"
+  },
+  {
+    "FacilityName": "Lincoln-Way East High School",
+    "City": "Frankfort",
+    "Website": "http://www.lw210.org"
+  },
+  {
+    "FacilityName": "Lincoln Way West",
+    "City": "New Lenox",
+    "Website": "http://www.lw210.org"
+  },
+  {
+    "FacilityName": "Reed-Custer High School",
+    "City": "Braidwood",
+    "Website": "http://www.rc255.net"
+  },
+  {
+    "FacilityName": "Bolingbrook High School",
+    "City": "Bolingbrook",
+    "Website": "http://www.vvsd.org"
+  },
+  {
+    "FacilityName": "Romeoville High School",
+    "City": "Romeoville",
+    "Website": "http://www.edline.net/pages/romeoville_high_school"
+  },
+  {
+    "FacilityName": "Il Youth Center - Pere Marquette",
+    "City": "Grafton",
+    "Website": null
+  },
+  {
+    "FacilityName": "Illinois Youth Center-Warrenville",
+    "City": "Naperville",
+    "Website": null
+  },
+  {
+    "FacilityName": "School District 428 IYC-HRB",
+    "City": "Harrisburg",
+    "Website": null
+  },
+  {
+    "FacilityName": "IYC Chicago",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Quincy Notre Dame High School",
+    "City": "Quincy",
+    "Website": "http://quincynotredame.org"
+  },
+  {
+    "FacilityName": "Beardstown Christian Academy",
+    "City": "Beardstown",
+    "Website": null
+  },
+  {
+    "FacilityName": "Routt Catholic High School",
+    "City": "Jacksonville",
+    "Website": "http://www.routtcatholic.com"
+  },
+  {
+    "FacilityName": "Westfair Christian Academy",
+    "City": "Jacksonville",
+    "Website": null
+  },
+  {
+    "FacilityName": "Pike County Christian Academy",
+    "City": "Pittsfield",
+    "Website": null
+  },
+  {
+    "FacilityName": "Faith Bible Christian Academy",
+    "City": "Rosamond",
+    "Website": "http://www.fbcafalcons.org"
+  },
+  {
+    "FacilityName": "St Anthony High School",
+    "City": "Effingham",
+    "Website": "http://www.stanthony.com"
+  },
+  {
+    "FacilityName": "Berean Baptist Christian School",
+    "City": "Rockford",
+    "Website": "http://bereanschool.com"
+  },
+  {
+    "FacilityName": "Boylan Central Catholic High Sch",
+    "City": "Rockford",
+    "Website": "http://www.boylan.org"
+  },
+  {
+    "FacilityName": "Keith Country Day School",
+    "City": "Rockford",
+    "Website": "http://www.keithschool.com"
+  },
+  {
+    "FacilityName": "Rockford Lutheran School",
+    "City": "Rockford",
+    "Website": "http://www.rockfordlutheran.org"
+  },
+  {
+    "FacilityName": "Cornerstone Baptist Academy",
+    "City": "Rockford",
+    "Website": "http://www.cornerstonebaptistacademy.com"
+  },
+  {
+    "FacilityName": "Beautiful Beginnings",
+    "City": "Rockford",
+    "Website": null
+  },
+  {
+    "FacilityName": "North Love Christian School",
+    "City": "Rockford",
+    "Website": null
+  },
+  {
+    "FacilityName": "Kikifers Entrepreneurial Academy",
+    "City": "Rockford",
+    "Website": "http://www.kikifersacademy.org"
+  },
+  {
+    "FacilityName": "Christian Life Center School",
+    "City": "Rockford",
+    "Website": "http://www.clschools.org"
+  },
+  {
+    "FacilityName": "Rockford Christian Schools",
+    "City": "Rockford",
+    "Website": "http://www.rockfordchristian.org"
+  },
+  {
+    "FacilityName": "Rockford Iqra School",
+    "City": "Rockford",
+    "Website": "http://www.rockfordiqraschool.com"
+  },
+  {
+    "FacilityName": "Our Lady Sacred Heart Acad",
+    "City": "Rockford",
+    "Website": "http://www.olsha.org"
+  },
+  {
+    "FacilityName": "Lydia Urban Academy-Rockford",
+    "City": "Stillman Vly",
+    "Website": "http://www.lydiarockford.org"
+  },
+  {
+    "FacilityName": "Harvest Time Christian Academy",
+    "City": "Machesney Pk",
+    "Website": null
+  },
+  {
+    "FacilityName": "Beacon Academy",
+    "City": "Evanston",
+    "Website": "http://beaconacademyil.org"
+  },
+  {
+    "FacilityName": "Mesivta Shaarei Adirim",
+    "City": "Skokie",
+    "Website": "https://www.shaareiadirim.org"
+  },
+  {
+    "FacilityName": "OneSchool Global - Chicago Campus",
+    "City": "Elk Grove Village",
+    "Website": null
+  },
+  {
+    "FacilityName": "North Shore Country Day School",
+    "City": "Winnetka",
+    "Website": "http://www.nscds.org"
+  },
+  {
+    "FacilityName": "Mechinas Ner Naftali",
+    "City": "Lincolnwood",
+    "Website": "http://nernaftali.org"
+  },
+  {
+    "FacilityName": "Loyola Academy",
+    "City": "Wilmette",
+    "Website": "http://www.goramblers.org"
+  },
+  {
+    "FacilityName": "Notre Dame College Prep",
+    "City": "Niles",
+    "Website": "http://www.nddons.org"
+  },
+  {
+    "FacilityName": "Regina Dominican High School",
+    "City": "Wilmette",
+    "Website": null
+  },
+  {
+    "FacilityName": "Logos Christian Academy",
+    "City": "Niles",
+    "Website": "http://www.mylogos.org"
+  },
+  {
+    "FacilityName": "St Viator High School",
+    "City": "Arlington Heights",
+    "Website": "http://www.saintviator.com"
+  },
+  {
+    "FacilityName": "Fasman Yeshiva High School",
+    "City": "Skokie",
+    "Website": "https://www.htc.edu/fasman-yeshiva-high-school/"
+  },
+  {
+    "FacilityName": "Ida Crown Jewish Academy",
+    "City": "Skokie",
+    "Website": "http://www.icja.org"
+  },
+  {
+    "FacilityName": "Christian Liberty Academy",
+    "City": "Arlington Heights",
+    "Website": "http://www.christianlibertyacademy.com"
+  },
+  {
+    "FacilityName": "Rochelle Zell Jewish High School",
+    "City": "Deerfield",
+    "Website": "http://www.rzjhs.org"
+  },
+  {
+    "FacilityName": "Schaumburg Christian School",
+    "City": "Schaumburg",
+    "Website": null
+  },
+  {
+    "FacilityName": "Christian Heritage Academy",
+    "City": "Northfield",
+    "Website": "http://www.christianheritage.org"
+  },
+  {
+    "FacilityName": "Valeo Academy",
+    "City": "Hoffman Estates",
+    "Website": "http://www.valeoacademy.com"
+  },
+  {
+    "FacilityName": "MCC Academy",
+    "City": "Morton Grove",
+    "Website": "http://www.mccacademy.org"
+  },
+  {
+    "FacilityName": "Montessori Academy of North Hoffman",
+    "City": "Hoffman Estates",
+    "Website": "http://www.manh.org/"
+  },
+  {
+    "FacilityName": "Roycemore School",
+    "City": "Evanston",
+    "Website": "http://roycemoreschool.org"
+  },
+  {
+    "FacilityName": "Willows Academy",
+    "City": "Des Plaines",
+    "Website": "https://willowsacademy.org/"
+  },
+  {
+    "FacilityName": "Northridge Preparatory School",
+    "City": "Niles",
+    "Website": "http://Northridgeprep.org"
+  },
+  {
+    "FacilityName": "Tallgrass Sudbury School",
+    "City": "La Grange",
+    "Website": null
+  },
+  {
+    "FacilityName": "Tru-Source ALF",
+    "City": "Oak Park",
+    "Website": null
+  },
+  {
+    "FacilityName": "Fenwick High School",
+    "City": "Oak Park",
+    "Website": "http://www.fenwickfriars.com"
+  },
+  {
+    "FacilityName": "Trinity High School",
+    "City": "River Forest",
+    "Website": "http://www.trinityhs.org"
+  },
+  {
+    "FacilityName": "Walther Christian Academy",
+    "City": "Melrose Park",
+    "Website": "http://www.walther.com"
+  },
+  {
+    "FacilityName": "Nazareth Academy",
+    "City": "La Grange Park",
+    "Website": "http://www.nazarethacademy.com"
+  },
+  {
+    "FacilityName": "Chicago Christian High School - Palos Heights",
+    "City": "Palos Heights",
+    "Website": "https://www.chicagochristian.org/"
+  },
+  {
+    "FacilityName": "Carra Academy",
+    "City": "Matteson",
+    "Website": null
+  },
+  {
+    "FacilityName": "Unity Christian Academy",
+    "City": "South Holland",
+    "Website": "http://www.weareuca.org"
+  },
+  {
+    "FacilityName": "Forgirlslikeme Academy (remote)",
+    "City": "Olympia Flds",
+    "Website": "https://www.forgirlslikeme.org/"
+  },
+  {
+    "FacilityName": "Marian Catholic High School",
+    "City": "Chicago Heights",
+    "Website": "http://www.marianchs.com"
+  },
+  {
+    "FacilityName": "Jordan Baptist School",
+    "City": "Burbank",
+    "Website": "http://www.jordanbaptist.com"
+  },
+  {
+    "FacilityName": "St Laurence High School",
+    "City": "Burbank",
+    "Website": null
+  },
+  {
+    "FacilityName": "LHTBM School of The Saints",
+    "City": "Lemont",
+    "Website": null
+  },
+  {
+    "FacilityName": "American School (of Correspondence)",
+    "City": "Lansing",
+    "Website": "http://www.americanschool.org"
+  },
+  {
+    "FacilityName": "Aqsa School",
+    "City": "Bridgeview",
+    "Website": "http://www.aqsa.edu"
+  },
+  {
+    "FacilityName": "Universal School",
+    "City": "Bridgeview",
+    "Website": "http://www.universalschool.org"
+  },
+  {
+    "FacilityName": "Academy High",
+    "City": "Champaign",
+    "Website": "http://www.academyhigh.org"
+  },
+  {
+    "FacilityName": "Calvary Baptist Christian Academy",
+    "City": "Urbana",
+    "Website": "http://cbcurbana.org/academywp/"
+  },
+  {
+    "FacilityName": "Judah Christian School",
+    "City": "Champaign",
+    "Website": "http://www.judah.org"
+  },
+  {
+    "FacilityName": "Swann School",
+    "City": "Champaign",
+    "Website": "http://www.swanncare.org"
+  },
+  {
+    "FacilityName": "The High School of Saint Thomas More",
+    "City": "Champaign",
+    "Website": "http://www.hs-stm.org"
+  },
+  {
+    "FacilityName": "Maranatha Christian Academy",
+    "City": "Mattoon",
+    "Website": "https://www.mcamattoon.com/"
+  },
+  {
+    "FacilityName": "Arthur Christian School",
+    "City": "Arthur",
+    "Website": null
+  },
+  {
+    "FacilityName": "Mid-America Preparatory School",
+    "City": "Herrick",
+    "Website": "http://mapschristianschool.com"
+  },
+  {
+    "FacilityName": "Mater Dei High School",
+    "City": "Breese",
+    "Website": null
+  },
+  {
+    "FacilityName": "Christ Our Rock Lutheran HS",
+    "City": "Centralia",
+    "Website": "http://www.corstallions.org"
+  },
+  {
+    "FacilityName": "Victory Christian Academy",
+    "City": "Mount Vernon",
+    "Website": null
+  },
+  {
+    "FacilityName": "Leo High School",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "St Patrick High School",
+    "City": "Chicago",
+    "Website": "http://stpatrick.org"
+  },
+  {
+    "FacilityName": "Legacy Connections Vocational School",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Latino Youth High School",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Brother Rice High School",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Hinsdale Adventist Academy",
+    "City": "Hinsdale",
+    "Website": null
+  },
+  {
+    "FacilityName": "De La Salle Institute",
+    "City": "Chicago",
+    "Website": "http://www.dls.org"
+  },
+  {
+    "FacilityName": "John Amos George College Preparatory",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "DePaul College Prep",
+    "City": "Chicago",
+    "Website": "http://www.depaulprep.org"
+  },
+  {
+    "FacilityName": "Pass It On Academy",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Liberty School of Christrian Educ",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Holy Trinity High School",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Josephinum Academy",
+    "City": "Chicago",
+    "Website": "http://josephinum.org"
+  },
+  {
+    "FacilityName": "University of Chicago Lab Schs",
+    "City": "Chicago",
+    "Website": "http://ucls.uchicago.edu"
+  },
+  {
+    "FacilityName": "Marist High School",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Triopia Jr-Sr High School",
+    "City": "Concord",
+    "Website": "http://www.triopiacusd27.org/"
+  },
+  {
+    "FacilityName": "Mother McAuley Liberal Arts H S",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Morgan Park Academy",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Mt Carmel High School",
+    "City": "Chicago",
+    "Website": "http://www.mchs.org"
+  },
+  {
+    "FacilityName": "Providence - St Mel School",
+    "City": "Chicago",
+    "Website": "http://www.psmnow.com"
+  },
+  {
+    "FacilityName": "Resurrection College Prep",
+    "City": "Chicago",
+    "Website": "http://www.reshs.org"
+  },
+  {
+    "FacilityName": "Our Lady of Tepeyac High School",
+    "City": "Chicago",
+    "Website": "http://www.ourladyoftepeyac.org"
+  },
+  {
+    "FacilityName": "St Francis De Sales High School",
+    "City": "Chicago",
+    "Website": "http://www.sfdshs.org"
+  },
+  {
+    "FacilityName": "St Ignatius College Prep",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "St Rita High School",
+    "City": "Chicago",
+    "Website": "http://www.stritahs.com"
+  },
+  {
+    "FacilityName": "Chicago Waldorf School",
+    "City": "Chicago",
+    "Website": "http://chicagowaldorf.org"
+  },
+  {
+    "FacilityName": "Puerto Rican H S - Pedro A Campos",
+    "City": "Chicago",
+    "Website": "http://www.pachs-chicago.org"
+  },
+  {
+    "FacilityName": "Telshe High School",
+    "City": "Chicago",
+    "Website": "https://telsheyeshivachicago.com"
+  },
+  {
+    "FacilityName": "Wolcott School",
+    "City": "Chicago",
+    "Website": "http://www.wolcottschool.org"
+  },
+  {
+    "FacilityName": "Changing Oasis",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Living Free Center Christian Academy",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "A.S.B. Educational Institute",
+    "City": "Chicago",
+    "Website": "http://www.accountax.us"
+  },
+  {
+    "FacilityName": "Yeshiva Derech Hatorah of Chicago",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "No Adults Left Behind High School",
+    "City": "Chicago",
+    "Website": "http://www.noadultsleftbehind.org"
+  },
+  {
+    "FacilityName": "AIS Intelligence Project",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Yeshiva Gedola of the Midwest - Yeshiva Eitz Chaim",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Chicago Preparatory Elearning and Elite Sports Academy",
+    "City": "Chicago",
+    "Website": "http://www.chiprepsportsacademy.org"
+  },
+  {
+    "FacilityName": "Kribs 2 Kolleges",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Pathways Academy For Special Education",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Heaven on Earth Academy",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Midwest Academy for Gifted Education NFP",
+    "City": "Chicago",
+    "Website": "http://www.mage.education"
+  },
+  {
+    "FacilityName": "Christ the King Jesuit College Preparatory School",
+    "City": "Chicago",
+    "Website": "http://www.ctkjesuit.org"
+  },
+  {
+    "FacilityName": "Bnos Rabbeinu High School",
+    "City": "Chicago",
+    "Website": "http://bnosrabbeinu.com"
+  },
+  {
+    "FacilityName": "Woodlawn Academy College Preparatory",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Yeshivas Netzach Yisroel",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Hunter-Bolden Academy",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Daystar Academy",
+    "City": "Chicago",
+    "Website": "http://www.daystaracademy.org"
+  },
+  {
+    "FacilityName": "Francis W Parker School",
+    "City": "Chicago",
+    "Website": "http://www.fwparker.org"
+  },
+  {
+    "FacilityName": "Latin School of Chicago Upper",
+    "City": "Chicago",
+    "Website": "http://www.latinschool.org"
+  },
+  {
+    "FacilityName": "Lubavitch Mesivta of Chicago",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Chicago Academy for the Arts",
+    "City": "Chicago",
+    "Website": "https://www.chicagoacademyforthearts.org/"
+  },
+  {
+    "FacilityName": "Yeshivas Kesser Yonah",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Lubavitch Girls High Sch",
+    "City": "Chicago",
+    "Website": "http://lghschicago.org"
+  },
+  {
+    "FacilityName": "Muhammad University",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Bais Yaakov High Sch of Chicago",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "West Town Academy",
+    "City": "Chicago",
+    "Website": "http://www.westtownacademy.org"
+  },
+  {
+    "FacilityName": "Hanna Sacks Bais Yaakov High Sch",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Chicago Hope Academy",
+    "City": "Chicago",
+    "Website": "http://www.chicagohopeacademy.org"
+  },
+  {
+    "FacilityName": "GCE Lab School",
+    "City": "Chicago",
+    "Website": "http://gcelabschool.org"
+  },
+  {
+    "FacilityName": "Ravenswood Baptist Christian Sch",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Lycee Francais De Chicago",
+    "City": "Chicago",
+    "Website": "http://www.lyceechicago.org/"
+  },
+  {
+    "FacilityName": "Austin Career Education Center",
+    "City": "Chicago",
+    "Website": "http://austincareer.org"
+  },
+  {
+    "FacilityName": "Cristo Rey Jesuit High School",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Salem4Youth Ranch",
+    "City": "Flanagan",
+    "Website": "http://salem4youth.com"
+  },
+  {
+    "FacilityName": "Central Catholic High School",
+    "City": "Bloomington",
+    "Website": "http://www.cchssaints.org"
+  },
+  {
+    "FacilityName": "Youthbuild Academy",
+    "City": "Normal",
+    "Website": "http://www.youthbuildmcleancounty.org"
+  },
+  {
+    "FacilityName": "Crossroads Academy",
+    "City": "Big Rock",
+    "Website": null
+  },
+  {
+    "FacilityName": "Christian Life Academy",
+    "City": "Hopedale",
+    "Website": null
+  },
+  {
+    "FacilityName": "Calvary Christian  Academy",
+    "City": "Normal",
+    "Website": "https://ccanormal.org/"
+  },
+  {
+    "FacilityName": "Cornerstone Christian Academy",
+    "City": "Bloomington",
+    "Website": null
+  },
+  {
+    "FacilityName": "St Francis High School",
+    "City": "Wheaton",
+    "Website": null
+  },
+  {
+    "FacilityName": "I C Catholic Prep",
+    "City": "Elmhurst",
+    "Website": "http://www.iccatholicprep.org"
+  },
+  {
+    "FacilityName": "Benet Academy",
+    "City": "Lisle",
+    "Website": null
+  },
+  {
+    "FacilityName": "Timothy Christian High School",
+    "City": "Elmhurst",
+    "Website": null
+  },
+  {
+    "FacilityName": "Naperville Christian Academy",
+    "City": "Naperville",
+    "Website": null
+  },
+  {
+    "FacilityName": "Wheaton Academy",
+    "City": "West Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Montini Catholic High School",
+    "City": "Lombard",
+    "Website": null
+  },
+  {
+    "FacilityName": "Marquette Manor Baptist Academy",
+    "City": "Downers Grove",
+    "Website": "http://mmbm.org"
+  },
+  {
+    "FacilityName": "Clapham School",
+    "City": "Wheaton",
+    "Website": "http://www.claphamschool.org"
+  },
+  {
+    "FacilityName": "Chesterton Academy of The Holy Family",
+    "City": "Lisle",
+    "Website": null
+  },
+  {
+    "FacilityName": "Kindi Academy",
+    "City": "Lisle",
+    "Website": "http://www.kindiacademy.com"
+  },
+  {
+    "FacilityName": "Islamic Foundation School",
+    "City": "Villa Park",
+    "Website": "http://www.ifsvp.org"
+  },
+  {
+    "FacilityName": "College Preparatory Sch of America",
+    "City": "Lombard",
+    "Website": "https://cpsaonline.org/home/"
+  },
+  {
+    "FacilityName": "Vine Academy",
+    "City": "Burr Ridge",
+    "Website": "http://www.vineacademyhinsdale.com"
+  },
+  {
+    "FacilityName": "New Hope Christian Academy of Southern Illinois",
+    "City": "Harrisburg",
+    "Website": null
+  },
+  {
+    "FacilityName": "Agape Christian High School",
+    "City": "Carterville",
+    "Website": "http://agapechristianhighschool.com"
+  },
+  {
+    "FacilityName": "Parkview Christian Academy",
+    "City": "Yorkville",
+    "Website": "http://www.parkviewchristian.net"
+  },
+  {
+    "FacilityName": "Yorkville Christian High School",
+    "City": "Yorkville",
+    "Website": "http://www.yorkvillechristian.org"
+  },
+  {
+    "FacilityName": "Grace Holistic Center for Education",
+    "City": "Yorkville",
+    "Website": "http://www.ghcfe.org/"
+  },
+  {
+    "FacilityName": "Fields Lab School",
+    "City": "Macomb",
+    "Website": null
+  },
+  {
+    "FacilityName": "Trinity Academy",
+    "City": "Industry",
+    "Website": null
+  },
+  {
+    "FacilityName": "Princeton Christian Academy",
+    "City": "Princeton",
+    "Website": null
+  },
+  {
+    "FacilityName": "Trinity Christian School",
+    "City": "Carbondale",
+    "Website": "http://www.tcsoc.org"
+  },
+  {
+    "FacilityName": "Christian Fellowship Church Sch",
+    "City": "Du Quoin",
+    "Website": "http://www.cfsdqil.org"
+  },
+  {
+    "FacilityName": "Living Hope Flwshp Christian Sch",
+    "City": "Grand Chain",
+    "Website": null
+  },
+  {
+    "FacilityName": "Caledonia Christian Academy",
+    "City": "Olmsted",
+    "Website": null
+  },
+  {
+    "FacilityName": "Aurora Central Catholic High Sch",
+    "City": "Aurora",
+    "Website": null
+  },
+  {
+    "FacilityName": "Marmion Academy",
+    "City": "Aurora",
+    "Website": "http://www.marmion.org"
+  },
+  {
+    "FacilityName": "Mooseheart Child City and Sch Inc",
+    "City": "Mooseheart",
+    "Website": "http://www.mooseheart.org"
+  },
+  {
+    "FacilityName": "Rosary High School",
+    "City": "Aurora",
+    "Website": "http://rosaryhs.com"
+  },
+  {
+    "FacilityName": "St Edward Central Catholic H S",
+    "City": "Elgin",
+    "Website": "http://www.stedhs.org"
+  },
+  {
+    "FacilityName": "Harvest Christian Academy",
+    "City": "Elgin",
+    "Website": "http://www.harvestchristianacademy.org"
+  },
+  {
+    "FacilityName": "Aurora Christian Schools Inc",
+    "City": "Aurora",
+    "Website": null
+  },
+  {
+    "FacilityName": "The Einstein Academy",
+    "City": "Elgin",
+    "Website": null
+  },
+  {
+    "FacilityName": "Heart of the Lamb Christian Academy",
+    "City": "Aurora",
+    "Website": "http://www.heartofthelambchristianacademy.org"
+  },
+  {
+    "FacilityName": "Westminster Christian School",
+    "City": "Elgin",
+    "Website": null
+  },
+  {
+    "FacilityName": "Summit School",
+    "City": "Elgin",
+    "Website": "http://www.summitelgin.org"
+  },
+  {
+    "FacilityName": "Institute of Islamic Education",
+    "City": "Elgin",
+    "Website": null
+  },
+  {
+    "FacilityName": "Christ Lutheran High School",
+    "City": "Buckley",
+    "Website": "http://www.christlutheranbuckley.com"
+  },
+  {
+    "FacilityName": "Bishop McNamara Catholic School",
+    "City": "Kankakee",
+    "Website": null
+  },
+  {
+    "FacilityName": "Grace Christian Academy",
+    "City": "Kankakee",
+    "Website": "http://www.gracecrusaders.org"
+  },
+  {
+    "FacilityName": "Kankakee Trinity Academy",
+    "City": "Kankakee",
+    "Website": "http://www.k3trinityacademy.org"
+  },
+  {
+    "FacilityName": "Gospel Assembly Christian Sch",
+    "City": "Bourbonnais",
+    "Website": null
+  },
+  {
+    "FacilityName": "Galesburg Christian School",
+    "City": "Galesburg",
+    "Website": "http://www.galesburgchristian.org"
+  },
+  {
+    "FacilityName": "Westlake Christian Academy",
+    "City": "Grayslake",
+    "Website": null
+  },
+  {
+    "FacilityName": "Ombudsman Programs",
+    "City": "Libertyville",
+    "Website": null
+  },
+  {
+    "FacilityName": "Lake County Christian Academy",
+    "City": "Waukegan",
+    "Website": "http://www.lccalions.org"
+  },
+  {
+    "FacilityName": "Cristo Rey St Martin",
+    "City": "Waukegan",
+    "Website": "http://www.cristoreystmartin.org"
+  },
+  {
+    "FacilityName": "Chesterton Academy of the Immaculate Heart",
+    "City": "Volo",
+    "Website": null
+  },
+  {
+    "FacilityName": "S.T.U.D.Y.S. Ministries Christian Academy",
+    "City": "Lindenhurst",
+    "Website": null
+  },
+  {
+    "FacilityName": "Woodlands Acad of the Sacred Hrt",
+    "City": "Lake Forest",
+    "Website": null
+  },
+  {
+    "FacilityName": "Lake Forest Academy",
+    "City": "Lake Forest",
+    "Website": null
+  },
+  {
+    "FacilityName": "Carmel Catholic High School",
+    "City": "Mundelein",
+    "Website": "http://www.carmelhs.org"
+  },
+  {
+    "FacilityName": "Affirm Leadership Christian Academy",
+    "City": "Waukegan",
+    "Website": null
+  },
+  {
+    "FacilityName": "Quentin Road Christian School",
+    "City": "Lake Zurich",
+    "Website": null
+  },
+  {
+    "FacilityName": "LaSalle-Peru Christian School",
+    "City": "La Salle",
+    "Website": null
+  },
+  {
+    "FacilityName": "Marquette Academy High School Campus",
+    "City": "Ottawa",
+    "Website": null
+  },
+  {
+    "FacilityName": "Lutheran School Association",
+    "City": "Decatur",
+    "Website": "http://unitydecatur.org"
+  },
+  {
+    "FacilityName": "Decatur Christian School",
+    "City": "Forsyth",
+    "Website": "http://decaturchristian.net"
+  },
+  {
+    "FacilityName": "Hillside Bethel Tabernacle",
+    "City": "Decatur",
+    "Website": null
+  },
+  {
+    "FacilityName": "Riverbend Christian Leadership Academy",
+    "City": "Alton",
+    "Website": "https://riverbend.academy/"
+  },
+  {
+    "FacilityName": "Marquette Catholic High School",
+    "City": "Alton",
+    "Website": "http://www.marquettecatholic.org"
+  },
+  {
+    "FacilityName": "Rivers of Life Christian School",
+    "City": "Granite City",
+    "Website": null
+  },
+  {
+    "FacilityName": "Broken But Not Shattered Academy",
+    "City": "Pontoon Beach",
+    "Website": "http://www.bbnsacademy.com"
+  },
+  {
+    "FacilityName": "Metro-East Lutheran High School",
+    "City": "Edwardsville",
+    "Website": "http://www.melhs.org"
+  },
+  {
+    "FacilityName": "Lahr-Well Academy",
+    "City": "Edwardsville",
+    "Website": null
+  },
+  {
+    "FacilityName": "Father McGivney Catholic H S",
+    "City": "Glen Carbon",
+    "Website": "http://www.mcgivneygriffins.com"
+  },
+  {
+    "FacilityName": "Marian Central Catholic H S",
+    "City": "Woodstock",
+    "Website": "http://www.marian.com"
+  },
+  {
+    "FacilityName": "Trinity Oaks Christian Academy",
+    "City": "Cary",
+    "Website": "http://trinity-oaks.org"
+  },
+  {
+    "FacilityName": "Gibault High School",
+    "City": "Waterloo",
+    "Website": null
+  },
+  {
+    "FacilityName": "Faith Christian School",
+    "City": "Dixon",
+    "Website": null
+  },
+  {
+    "FacilityName": "Jacksonville High School",
+    "City": "Jacksonville",
+    "Website": "http://www.jsd117.org"
+  },
+  {
+    "FacilityName": "Newman Central Catholic High Sch",
+    "City": "Sterling",
+    "Website": "http://www.newmancchs.org"
+  },
+  {
+    "FacilityName": "Peoria Christian School",
+    "City": "Peoria",
+    "Website": "http://www.peoriachristian.org"
+  },
+  {
+    "FacilityName": "Chesterton Academy of the Sacred Heart",
+    "City": "Peoria",
+    "Website": null
+  },
+  {
+    "FacilityName": "Peoria Notre Dame High School",
+    "City": "Peoria",
+    "Website": "https://www.pndhs.org"
+  },
+  {
+    "FacilityName": "Calvary Baptist Academy",
+    "City": "Chillicothe",
+    "Website": null
+  },
+  {
+    "FacilityName": "Daarul Uloom Islamic School",
+    "City": "Peoria",
+    "Website": "http://www.dupeoria.org"
+  },
+  {
+    "FacilityName": "Alleman High School",
+    "City": "Rock Island",
+    "Website": "http://www.allemanhighschool.org"
+  },
+  {
+    "FacilityName": "Quad Cities Christian School",
+    "City": "Moline",
+    "Website": "http://www.qcchristianschool.org"
+  },
+  {
+    "FacilityName": "East Moline Christian School",
+    "City": "East Moline",
+    "Website": null
+  },
+  {
+    "FacilityName": "First Baptist Academy",
+    "City": "O Fallon",
+    "Website": "http://www.fbaofallon.org"
+  },
+  {
+    "FacilityName": "Berean Christian School",
+    "City": "Fairview Heights",
+    "Website": null
+  },
+  {
+    "FacilityName": "Victorious Life International - World Changers Prep Acad",
+    "City": "Swansea",
+    "Website": "http://vl-intl.org"
+  },
+  {
+    "FacilityName": "Althoff Catholic High School",
+    "City": "Belleville",
+    "Website": "https://www.althoffcatholic.org/"
+  },
+  {
+    "FacilityName": "Vincent Gray Academy",
+    "City": "East Saint Louis",
+    "Website": null
+  },
+  {
+    "FacilityName": "Tomorrows Hope Christian Acad",
+    "City": "Pekin",
+    "Website": null
+  },
+  {
+    "FacilityName": "First Baptist Christian School",
+    "City": "Danville",
+    "Website": null
+  },
+  {
+    "FacilityName": "Notre Dame De La Salette",
+    "City": "Georgetown",
+    "Website": null
+  },
+  {
+    "FacilityName": "Schlarman Academy",
+    "City": "Danville",
+    "Website": null
+  },
+  {
+    "FacilityName": "Danville Christian Academy",
+    "City": "Danville",
+    "Website": "http://danvilledca.org"
+  },
+  {
+    "FacilityName": "Seymour High School",
+    "City": "Payson",
+    "Website": "http://www.cusd1.org"
+  },
+  {
+    "FacilityName": "Liberty High School",
+    "City": "Liberty",
+    "Website": "http://www.libertyschool.net"
+  },
+  {
+    "FacilityName": "Central High School",
+    "City": "Camp Point",
+    "Website": "http://www.cusd3.com"
+  },
+  {
+    "FacilityName": "Unity High School",
+    "City": "Mendon",
+    "Website": "http://www.cusd4.com/"
+  },
+  {
+    "FacilityName": "Providence Catholic High School",
+    "City": "New Lenox",
+    "Website": "http://providencecatholic.org"
+  },
+  {
+    "FacilityName": "Joliet Catholic Academy",
+    "City": "Joliet",
+    "Website": "http://www.jca-online.org"
+  },
+  {
+    "FacilityName": "Illinois Lutheran High School",
+    "City": "Crete",
+    "Website": null
+  },
+  {
+    "FacilityName": "Furqaan Academy",
+    "City": "Bolingbrook",
+    "Website": "http://bolingbrook.furqaanacademy.org/"
+  },
+  {
+    "FacilityName": "Quincy Sr High School",
+    "City": "Quincy",
+    "Website": "http://www.qps.org"
+  },
+  {
+    "FacilityName": "Adams Co Juvenile Detention Cntr",
+    "City": "Quincy",
+    "Website": "http://www.qps.org"
+  },
+  {
+    "FacilityName": "Brown County High School",
+    "City": "Mount Sterling",
+    "Website": "http://www.bchornets.com"
+  },
+  {
+    "FacilityName": "Beardstown Jr/Sr High School",
+    "City": "Beardstown",
+    "Website": "http://www.beardstown.com"
+  },
+  {
+    "FacilityName": "PEACE Center",
+    "City": "Dolton",
+    "Website": null
+  },
+  {
+    "FacilityName": "MVTHS East Campus",
+    "City": "Mount Vernon",
+    "Website": null
+  },
+  {
+    "FacilityName": "Excel Safe Academy West",
+    "City": "Chicago",
+    "Website": null
+  },
+  {
+    "FacilityName": "Hope D Wall TMH Child Dev Ctr",
+    "City": "Aurora",
+    "Website": "http://www.sd129.org"
+  },
+  {
+    "FacilityName": "East High School",
+    "City": "Aurora",
+    "Website": "http://www.d131.org"
+  },
+  {
+    "FacilityName": "Dundee-Crown High School",
+    "City": "Carpentersville",
+    "Website": "http://www.d300.org"
+  },
+  {
+    "FacilityName": "Hampshire High School",
+    "City": "Hampshire",
+    "Website": "http://www.d300.org"
+  },
+  {
+    "FacilityName": "Kaneland Senior High School",
+    "City": "Maple Park",
+    "Website": "http://www.kaneland.org"
+  },
+  {
+    "FacilityName": "St Charles East High School",
+    "City": "Saint Charles",
+    "Website": "http://east.d303.org"
+  },
+  {
+    "FacilityName": "St Charles North High School",
+    "City": "Saint Charles",
+    "Website": "http://north.d303.org"
+  },
+  {
+    "FacilityName": "Kane Co Detention Center",
+    "City": "Saint Charles",
+    "Website": null
+  }
+]

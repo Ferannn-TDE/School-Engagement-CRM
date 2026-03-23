@@ -1,0 +1,2872 @@
+{
+    "Walter Henri Dyett High School for the Arts": {
+        "name": "Walter Henri Dyett High School for the Arts",
+        "website": "https://newdyett.org",
+        "phone": "7735351825",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Doreatha Butler"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Earick Rayburn"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Cinque Cullar"
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Chicago High School for the Arts (ChiArts)": {
+        "name": "Chicago High School for the Arts (ChiArts)",
+        "website": "https://chiarts.org",
+        "phone": "7735349710",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Nestor Corona"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Brenda Stolle"
+            },
+            "third": {
+                "title": "Executive Director",
+                "name": "Tina Boyer Brown"
+            },
+            "fourth": {
+                "title": "Dean of Students",
+                "name": "Terrance Kyles"
+            },
+            "fifth": {
+                "title": "Director of Operations",
+                "name": "Ursula McGregory"
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Noble - Muchin College Prep": {
+        "name": "Noble - Muchin College Prep",
+        "website": "https://nobleschools.org/muchin",
+        "phone": "3124454680",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Emily R Lockhart"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "DeAnn Deal"
+            },
+            "third": {
+                "title": "Dean of Culture",
+                "name": "Kristopher Perteet"
+            },
+            "fourth": {
+                "title": "Dean of Culture",
+                "name": "Cierra Howard"
+            },
+            "fifth": {
+                "title": "Dean of Students",
+                "name": "Evie Deavila"
+            },
+            "sixth": {
+                "title": "Dean of Students",
+                "name": "Wildanette Mollfulleda"
+            },
+            "seventh": {
+                "title": "Dean of Operations",
+                "name": "Esperanza Bernabe"
+            }
+        }
+    },
+    "Urban Prep Academy for Young Men - Bronzeville": {
+        "name": "Urban Prep Academy for Young Men - Bronzeville",
+        "website": "https://urbanprep.org",
+        "phone": "7736243444",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Jessica Monique Chandler"
+            },
+            "second": {
+                "title": "Principal",
+                "name": "Dennis Lacewell "
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Jessica Chandler "
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Noble - John and Eunice Johnson College Prep": {
+        "name": "Noble - John and Eunice Johnson College Prep",
+        "website": "https://nobleschools.org/johnson",
+        "phone": "3123481888",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Hamza Salameh"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Brianna Giles"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Elizabeth Greenberg"
+            },
+            "fourth": {
+                "title": "Dean of Operations",
+                "name": "Erica Santoyo"
+            },
+            "fifth": {
+                "title": "Dean of Culture",
+                "name": "Antione Neal"
+            },
+            "sixth": {
+                "title": "Dean of Students",
+                "name": "Channon Williams"
+            },
+            "seventh": {
+                "title": "Dean of Specialized Services",
+                "name": "Dr. Laura Bloker"
+            }
+        }
+    },
+    "EPIC Academy Charter High School": {
+        "name": "EPIC Academy Charter High School",
+        "website": "http://www.epicacademy.org",
+        "phone": "7735357930",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Kyla Mathews"
+            },
+            "second": {
+                "title": "Executive Director",
+                "name": "LeeAndra Khan"
+            },
+            "third": {
+                "title": "Principal",
+                "name": "Dr. Kyla Mathews"
+            },
+            "fourth": {
+                "title": "Campus Affairs Manager",
+                "name": "Stewart Watts"
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "ASPIRA Charter School - Early College High School": {
+        "name": "ASPIRA Charter School - Early College High School",
+        "website": "https://aec.aspirail.org",
+        "phone": "7732431626",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Matilda Medina"
+            },
+            "second": {
+                "title": "Principal",
+                "name": "Matilda Medina"
+            },
+            "third": {
+                "title": "",
+                "name": ""
+            },
+            "fourth": {
+                "title": "Dean of Students",
+                "name": "Carlos DeSantiago"
+            },
+            "fifth": {
+                "title": "Alvaro Aguilar",
+                "name": "Registrar"
+            },
+            "sixth": {
+                "title": "Magali Mendoza",
+                "name": "Attendance Coordinator"
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Roger C Sullivan High School": {
+        "name": "Roger C Sullivan High School",
+        "website": "https://sullivanhs.org",
+        "phone": "7735342000",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Ramona Colette Outlaw"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Mr. John Roseboom"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Mr. Leonel Gallegos"
+            },
+            "fourth": {
+                "title": "Attendance Coordinator",
+                "name": "Ms. Karen Paluzzi-Steele"
+            },
+            "fifth": {
+                "title": "School Clerk",
+                "name": "Ms. Bianca Rivera"
+            },
+            "sixth": {
+                "title": "Counselor",
+                "name": "Ms. Dylan Timmeney"
+            },
+            "seventh": {
+                "title": "ELPT",
+                "name": "Ms. Evelyn Levin"
+            }
+        }
+    },
+    "William Howard Taft High School": {
+        "name": "William Howard Taft High School",
+        "website": "https://tafthighschool.org",
+        "phone": "7735341000",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Ryan G Glowacz"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Patrick Levins"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Melissa Hess"
+            },
+            "fourth": {
+                "title": "Assistant Principal",
+                "name": "Alexis Covarrubias"
+            },
+            "fifth": {
+                "title": "Assistant Principal",
+                "name": "Fakhira Bukhari"
+            },
+            "sixth": {
+                "title": "Assistant Principal",
+                "name": "Theone Haralampopoulos"
+            },
+            "seventh": {
+                "title": "Assistant Principal",
+                "name": "Eric Mitchell"
+            }
+        }
+    },
+    "Edward Tilden Career Community Academy HS": {
+        "name": "Edward Tilden Career Community Academy HS",
+        "website": "https://tilden.cps.edu",
+        "phone": "7735351625",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Dawn M Ramos"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Kiara Jones "
+            },
+            "third": {
+                "title": "",
+                "name": ""
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "YCCS-Youth Connection Leadership Acad HS": {
+        "name": "YCCS-Youth Connection Leadership Acad HS",
+        "website": "https://yccs.us/campuses",
+        "phone": "3122254668",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Romainne Kelley"
+            },
+            "second": {
+                "title": "Camille Ivy",
+                "name": "Principal"
+            },
+            "third": {
+                "title": "Romainne Kelley",
+                "name": "Assistant Principal"
+            },
+            "fourth": {
+                "title": "Registrar",
+                "name": "Precious Roberson"
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "YCCS-West HS": {
+        "name": "YCCS-West HS",
+        "website": "https://yccs.us/campuses",
+        "phone": "7732610994",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Adrienne Undrell Procter"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Adam Wagner"
+            },
+            "third": {
+                "title": "Registrar",
+                "name": "Adrienne Procter"
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "YCCS-Truman Middle College HS": {
+        "name": "YCCS-Truman Middle College HS",
+        "website": "https://yccs.us/campuses",
+        "phone": "7739074840",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Gershon B Jackson"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Catrice Pierce"
+            },
+            "third": {
+                "title": "Registrar",
+                "name": "Vivian Diaz"
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Noble - Chicago Bulls College Prep": {
+        "name": "Noble - Chicago Bulls College Prep",
+        "website": "https://nobleschools.org/bulls",
+        "phone": "7735347599",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Jonas Gregory Cleaves"
+            },
+            "second": {
+                "title": "Assistant Principal of Culture",
+                "name": "Cassandra Hannah"
+            },
+            "third": {
+                "title": "Assistant Principal of Student Experience",
+                "name": "Chivon Ford"
+            },
+            "fourth": {
+                "title": "Assistant Principal of Academics",
+                "name": "Arielle Nelson "
+            },
+            "fifth": {
+                "title": "Dean of Operations",
+                "name": "Susana Sanchez"
+            },
+            "sixth": {
+                "title": "Dean of Students",
+                "name": "Jamal Murphy"
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "CICS - Ralph Ellison": {
+        "name": "CICS - Ralph Ellison",
+        "website": "https://cicsellison.org",
+        "phone": "7734784434",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Jacob Morgan"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Dr. Rashida Restaino-Daniels"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Dennison Cordell"
+            },
+            "fourth": {
+                "title": "Office Manager",
+                "name": "Ms. Nancy Troche"
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Instituto Health Sciences Career Academy": {
+        "name": "Instituto Health Sciences Career Academy",
+        "website": "https://www.ihsca.org/",
+        "phone": "7738908020",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Alberto Mendez"
+            },
+            "second": {
+                "title": "Assistant Principal ",
+                "name": "Ms. Delta Cervantes"
+            },
+            "third": {
+                "title": "District Director of Operations",
+                "name": "Ms. Stephanie Palomo-Vazquez"
+            },
+            "fourth": {
+                "title": "Director of College & Career Readiness",
+                "name": "Mr. Marco Garduno"
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Friedrich W Von Steuben Metropolitan Science HS": {
+        "name": "Friedrich W Von Steuben Metropolitan Science HS",
+        "website": "http://www.vonsteuben.org",
+        "phone": "7735345100",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Jennifer Miyoko Sutton"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Katie Hallberg"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Samuel Rasch"
+            },
+            "fourth": {
+                "title": "Assistant Principal",
+                "name": "Patrick Reget"
+            },
+            "fifth": {
+                "title": "Operations Manager",
+                "name": "Stacey Foster"
+            },
+            "sixth": {
+                "title": "Admissions Director",
+                "name": "Carla Escobar"
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "George Washington High School": {
+        "name": "George Washington High School",
+        "website": "https://www.gwashingtonhs.org",
+        "phone": "7735355725",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Samuel J Davis"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Carina Martinez"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Marquis Butler"
+            },
+            "fourth": {
+                "title": "IB Program Coordinator",
+                "name": "Michael Pestich"
+            },
+            "fifth": {
+                "title": "Case Manager",
+                "name": "Natasha Pacheco"
+            },
+            "sixth": {
+                "title": "Case Manager",
+                "name": "Matthew Jandura"
+            },
+            "seventh": {
+                "title": "Counselor",
+                "name": "Gabriel Fuentes"
+            }
+        }
+    },
+    "Wells Community Academy High School": {
+        "name": "Wells Community Academy High School",
+        "website": "https://WellsHS.cps.edu",
+        "phone": "7735347010",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Frances Ann Barnett Evins"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Dr. Le Toya M. Lofton"
+            },
+            "third": {
+                "title": "Clerk",
+                "name": "Gilbert Johnson"
+            },
+            "fourth": {
+                "title": "Case Manager / Specialized Services",
+                "name": "Jeanne Paulino"
+            },
+            "fifth": {
+                "title": "School Counselor",
+                "name": "Michael Horton"
+            },
+            "sixth": {
+                "title": "Bilingual Clerk",
+                "name": "Jessenia Rangel"
+            },
+            "seventh": {
+                "title": "Attendance Clerk",
+                "name": "Maria Roman"
+            }
+        }
+    },
+    "Gurdon S Hubbard High School": {
+        "name": "Gurdon S Hubbard High School",
+        "website": "https://www.hubbardhighschool.org",
+        "phone": "7735352200",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Angelica Altamirano"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Ishshah Phillips"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Steven Biegel"
+            },
+            "fourth": {
+                "title": "Assistant Principal",
+                "name": "Michael Krzysztofiak"
+            },
+            "fifth": {
+                "title": "IB Coordinator",
+                "name": "Jean Biba-Brown"
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Northside Learning Center High School": {
+        "name": "Northside Learning Center High School",
+        "website": "https://www.northsidelearningcenter.org",
+        "phone": "7735345180",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Elizabeth M Mourtokokis"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Michelle Kopke"
+            },
+            "third": {
+                "title": "",
+                "name": ""
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "CICS - Longwood": {
+        "name": "CICS - Longwood",
+        "website": "https://cicsloomislongwood.org",
+        "phone": "7732385330",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Melinda Jean Baptiste"
+            },
+            "second": {
+                "title": "Principal 3rd-8th Grade",
+                "name": "Melinda Jean-Baptiste"
+            },
+            "third": {
+                "title": "Resident Principal 3rd-8th Grade",
+                "name": "Yvonne Glenn"
+            },
+            "fourth": {
+                "title": "Assistant Principal  3rd-8th Grade",
+                "name": "Kamilah Chandler-Connor"
+            },
+            "fifth": {
+                "title": "Principal 9th-12th Grade",
+                "name": "Jeralyn Harris"
+            },
+            "sixth": {
+                "title": "Assistant Principal 9th-12th Grade",
+                "name": "Jeremy Roussel"
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "CICS - Northtown": {
+        "name": "CICS - Northtown",
+        "website": "https://cicsnorthtown.org",
+        "phone": "7734783655",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Marivenus Garcia"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Marivenus Garcia"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Jim Fusco"
+            },
+            "fourth": {
+                "title": "Office Manager",
+                "name": "Evelyn Medina"
+            },
+            "fifth": {
+                "title": "Assistant Office Manager",
+                "name": "Nidia Medina"
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Chicago Math and Science Academy Charter School": {
+        "name": "Chicago Math and Science Academy Charter School",
+        "website": "https://www.cmsaonline.net",
+        "phone": "7737618960",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Angela Huls"
+            },
+            "second": {
+                "title": "Admissions",
+                "name": "Mrs. Lopez"
+            },
+            "third": {
+                "title": "High School Dean of Academics",
+                "name": "Mrs. Russart"
+            },
+            "fourth": {
+                "title": "High School Counselor",
+                "name": "Mrs. Khatoon"
+            },
+            "fifth": {
+                "title": "High School Counselor",
+                "name": "Mrs. Yousef"
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Noble - Noble College Prep": {
+        "name": "Noble - Noble College Prep",
+        "website": "https://nobleschools.org/noblestreet",
+        "phone": "7738621449",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Ben Gunty"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Natasha Cavitt"
+            },
+            "third": {
+                "title": "Dean of Operations",
+                "name": "Jennifer Cotton"
+            },
+            "fourth": {
+                "title": "Dean of Students",
+                "name": "Tonya Milkie"
+            },
+            "fifth": {
+                "title": "Dean of Students",
+                "name": "Lisa Nickele"
+            },
+            "sixth": {
+                "title": "Dean of College Counseling",
+                "name": "Michelle Ganti"
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Noble - Gary Comer College Prep": {
+        "name": "Noble - Gary Comer College Prep",
+        "website": "https://nobleschools.org/comer",
+        "phone": "7737293969",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Nora Lawrence"
+            },
+            "second": {
+                "title": "AP of Operations and External Partnerships",
+                "name": "Bradley Johnson"
+            },
+            "third": {
+                "title": "AP of Culture and Safety",
+                "name": "Jason Moore"
+            },
+            "fourth": {
+                "title": "AP of Catamount Experience",
+                "name": "Genesis Jelkes"
+            },
+            "fifth": {
+                "title": "AP of Strategy and Specialized Services",
+                "name": "Synthia Wesley-Wilkins"
+            },
+            "sixth": {
+                "title": "AP of Academic Innovations",
+                "name": "Janelle Hughes"
+            },
+            "seventh": {
+                "title": "AP of Instruction 6-11",
+                "name": "Jack Pruitt"
+            }
+        }
+    },
+    "Noble - Golder College Prep": {
+        "name": "Noble - Golder College Prep",
+        "website": "https://nobleschools.org/golder",
+        "phone": "3122659925",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Jessie Weingartner"
+            },
+            "second": {
+                "title": "Dean of Operations",
+                "name": "Sarah Kohtala"
+            },
+            "third": {
+                "title": "Deans of Instruction",
+                "name": "Jenna Mullen"
+            },
+            "fourth": {
+                "title": "Enrollment",
+                "name": "Eric Serrano"
+            },
+            "fifth": {
+                "title": "Dean of Culture",
+                "name": "Reggie Brown"
+            },
+            "sixth": {
+                "title": "Deans of Students",
+                "name": "Cicele Bennett"
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Noble - Pritzker College Prep": {
+        "name": "Noble - Pritzker College Prep",
+        "website": "https://nobleschools.org/pritzker",
+        "phone": "7733942848",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Caroline Ryden"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Diana Manning"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Caroline Ryden"
+            },
+            "fourth": {
+                "title": "Assistant Principal",
+                "name": "Paige Moran"
+            },
+            "fifth": {
+                "title": "Dean of College Counseling",
+                "name": "Sarah Kruger"
+            },
+            "sixth": {
+                "title": "Dean of Students",
+                "name": "Pamela Johnson"
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Noble - Rauner College Prep": {
+        "name": "Noble - Rauner College Prep",
+        "website": "https://nobleschools.org/rauner",
+        "phone": "3122265345",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Cicele Bennett"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Janna Walson"
+            },
+            "third": {
+                "title": "Dean of Students",
+                "name": "Dane Pitzer"
+            },
+            "fourth": {
+                "title": "Dean of Operations",
+                "name": "Maria Serrano"
+            },
+            "fifth": {
+                "title": "Dean of College Counseling",
+                "name": "Julie Dreifuss"
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Noble - Rowe-Clark Math and Science Academy": {
+        "name": "Noble - Rowe-Clark Math and Science Academy",
+        "website": "https://nobleschools.org/rowe-clark",
+        "phone": "7732422212",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Miracle Moss"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Onel Abreu"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Conor Quinn"
+            },
+            "fourth": {
+                "title": "Dean of Operations",
+                "name": "Shela Lopez"
+            },
+            "fifth": {
+                "title": "Dean of Students",
+                "name": "Karla Arce"
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Noble - UIC College Prep": {
+        "name": "Noble - UIC College Prep",
+        "website": "https://nobleschools.org/uic",
+        "phone": "3127684858",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "MACY BENNETT"
+            },
+            "second": {
+                "title": "Principal",
+                "name": "Macy Bennett"
+            },
+            "third": {
+                "title": "Assistant Principal of Operations",
+                "name": "Patricia Arroyo"
+            },
+            "fourth": {
+                "title": "Assistant Principal of Instruction",
+                "name": "Alexandra Werd"
+            },
+            "fifth": {
+                "title": "Assistant Principal of Culture",
+                "name": "Stephan Gilbert"
+            },
+            "sixth": {
+                "title": "Dean of College Counseling",
+                "name": "Nikki Desgrosellier"
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "North Lawndale College Prep - Christiana": {
+        "name": "North Lawndale College Prep - Christiana",
+        "website": "https://www.nlcphs.org",
+        "phone": "7735421490",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Kyera Bradley"
+            },
+            "second": {
+                "title": "Principal",
+                "name": "Kyera Bradley"
+            },
+            "third": {
+                "title": "Dean of Culture",
+                "name": "Cherylynn Jones-McLeod"
+            },
+            "fourth": {
+                "title": "Office Manager",
+                "name": "Yvette Vessel"
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "CEO",
+                "name": "Jemia Cunningham-Elder"
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "North Lawndale College Prep - Collins": {
+        "name": "North Lawndale College Prep - Collins",
+        "website": "https://www.nlcphs.org",
+        "phone": "7735426766",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Kyera Bradley"
+            },
+            "second": {
+                "title": "Principal",
+                "name": "Kyera Bradley"
+            },
+            "third": {
+                "title": "Office Manager",
+                "name": "Yvette Vessel"
+            },
+            "fourth": {
+                "title": "Dean of Culture",
+                "name": "Cherylynn Jones-McLeod"
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "CEO",
+                "name": "Jemia Cunningham-Elder"
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Perspectives - Leadership Academy": {
+        "name": "Perspectives - Leadership Academy",
+        "website": "http://www.pcsedu.org",
+        "phone": "7733586100",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Eron Powell"
+            },
+            "second": {
+                "title": "Middle School Principal",
+                "name": "Jasmine Morales"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Darcy Scharf"
+            },
+            "fourth": {
+                "title": "Assistant Principal",
+                "name": "Karla Morris"
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Perspectives - High School of Technology": {
+        "name": "Perspectives - High School of Technology",
+        "website": "https://www.pcsedu.org",
+        "phone": "7733586120",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Eron Powell"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Darcy Scharpf"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Karla Morris"
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Perspectives - Rodney D. Joslin": {
+        "name": "Perspectives - Rodney D. Joslin",
+        "website": "http://www.pcsedu.org",
+        "phone": "3122257400",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Dorienne Canada-Pendleton"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Rodnina Tate"
+            },
+            "third": {
+                "title": "",
+                "name": ""
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Perspectives - Math and Science Academy": {
+        "name": "Perspectives - Math and Science Academy",
+        "website": "https://www.pcsedu.org",
+        "phone": "7733586800",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "TyNeisha H Banks"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Waybon McConnell"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Patrick Duffey"
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "University of Chicago - Woodlawn": {
+        "name": "University of Chicago - Woodlawn",
+        "website": "https://www.uchicagocharter.org",
+        "phone": "7737528101",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "De'Shemika Benton"
+            },
+            "second": {
+                "title": "High School  Director",
+                "name": "Donald Gordon"
+            },
+            "third": {
+                "title": "Operations Manager",
+                "name": "LaTasha McMillon"
+            },
+            "fourth": {
+                "title": "Director of Admissions",
+                "name": "Gia Long"
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Acero Charter Schools - Major Hector P. Garcia MD": {
+        "name": "Acero Charter Schools - Major Hector P. Garcia MD",
+        "website": "http://hg.aceroschools.org",
+        "phone": "7735793480",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Eleanor Mccree"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "William Del Toro"
+            },
+            "third": {
+                "title": "Dean ",
+                "name": "David Arroyo"
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Urban Prep Academy for Young Men - Englewood": {
+        "name": "Urban Prep Academy for Young Men - Englewood",
+        "website": "https://urbanprep.org",
+        "phone": "7735359724",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Ronald Levert Bryant"
+            },
+            "second": {
+                "title": "Operations Manager",
+                "name": "Syesha Hampton"
+            },
+            "third": {
+                "title": "",
+                "name": ""
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Chicago Technology Academy High School": {
+        "name": "Chicago Technology Academy High School",
+        "website": "https://chitech.org",
+        "phone": "7735347755",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Zataya Shackelford"
+            },
+            "second": {
+                "title": "Deputy Director",
+                "name": "Dave Alfafara"
+            },
+            "third": {
+                "title": "Deputy Director",
+                "name": "DeMarco Hughes"
+            },
+            "fourth": {
+                "title": "Associate Director, Operations",
+                "name": "Michele Ratliff"
+            },
+            "fifth": {
+                "title": "Associate Director, Student Services",
+                "name": "Benton Fletcher"
+            },
+            "sixth": {
+                "title": "Enrollment Manager",
+                "name": "Imani K. Strong"
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Catalyst - Maria Charter School": {
+        "name": "Catalyst - Maria Charter School",
+        "website": "https://catalystschools.org/maria",
+        "phone": "7739931770",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Jacquelin D Baker"
+            },
+            "second": {
+                "title": "High School Principal",
+                "name": "Dr. Jacqueline Baker"
+            },
+            "third": {
+                "title": "Elementary School Principal",
+                "name": "Krystina Henley"
+            },
+            "fourth": {
+                "title": "Elementary Assistant Principal",
+                "name": "Sharenda Hill"
+            },
+            "fifth": {
+                "title": "Director of School Administration and Compliance",
+                "name": "Roxanne Salas"
+            },
+            "sixth": {
+                "title": "Director of Recruitment and Community Engagement",
+                "name": "Naurice Olivera"
+            },
+            "seventh": {
+                "title": "Director of Post-Secondary Success",
+                "name": "Denise Delgado"
+            }
+        }
+    },
+    "Noble - Hansberry College Prep": {
+        "name": "Noble - Hansberry College Prep",
+        "website": "https://nobleschools.org/hansberry",
+        "phone": "7737293400",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Kameshia Ward"
+            },
+            "second": {
+                "title": "",
+                "name": ""
+            },
+            "third": {
+                "title": "Dean of Operations",
+                "name": "Herika Panduro"
+            },
+            "fourth": {
+                "title": "Dean of Students",
+                "name": "Jamika Oshogo"
+            },
+            "fifth": {
+                "title": "Manager of Admissions | Recruitment & Enrollment |",
+                "name": "August Davenport"
+            },
+            "sixth": {
+                "title": "Dean of College & Career Counseling",
+                "name": "Kameshia Ward"
+            },
+            "seventh": {
+                "title": "Dean of Specialized Services | Diverse Learners & ILT",
+                "name": "Mary Arevalo"
+            }
+        }
+    },
+    "Noble - DRW College Prep": {
+        "name": "Noble - DRW College Prep",
+        "website": "https://nobleschools.org/drw",
+        "phone": "7738934500",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Tina Ellis"
+            },
+            "second": {
+                "title": "Assistant Principal of Academics",
+                "name": "Lashun Crosby"
+            },
+            "third": {
+                "title": "Assistant Principal of Culture ",
+                "name": "Aiesha Collins"
+            },
+            "fourth": {
+                "title": "Dean of Operations ",
+                "name": "Tanya Coleman"
+            },
+            "fifth": {
+                "title": "Dean of Specialize Services",
+                "name": "John Greenfield "
+            },
+            "sixth": {
+                "title": "Dean of Students",
+                "name": "Quinton Bonds"
+            },
+            "seventh": {
+                "title": "Dean of Instructions ",
+                "name": "Meghan Coli"
+            }
+        }
+    },
+    "Legal Prep Charter Academy": {
+        "name": "Legal Prep Charter Academy",
+        "website": "https://www.legalprep.org",
+        "phone": "7739227800",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Joseph Williams"
+            },
+            "second": {
+                "title": "Dean of Culture",
+                "name": "Ms. Tashondra Pickett"
+            },
+            "third": {
+                "title": "",
+                "name": ""
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Acero Charter Schools - Sor Juana In\u00e9s de la Cruz": {
+        "name": "Acero Charter Schools - Sor Juana In\u00e9s de la Cruz",
+        "website": "http://jc.aceroschools.org",
+        "phone": "3124555440",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": ""
+            },
+            "second": {
+                "title": "",
+                "name": ""
+            },
+            "third": {
+                "title": "",
+                "name": ""
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "YCCS- Academy of Scholastic Achievement HS": {
+        "name": "YCCS- Academy of Scholastic Achievement HS",
+        "website": "http://asaschool.org",
+        "phone": "7739211315",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Nicole Simpson"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Marvin Simpson"
+            },
+            "third": {
+                "title": "Registrar",
+                "name": "Cassandra Covington"
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "YCCS- McKinley Lakeside Leadership HS": {
+        "name": "YCCS- McKinley Lakeside Leadership HS",
+        "website": "https://yccs.us/campuses",
+        "phone": "3129495010",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Irma Plaxico"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Mainard Easley"
+            },
+            "third": {
+                "title": "Registrar",
+                "name": "Regina Williams"
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "YCCS-ASPIRA,Antonia Pantoja Alternative HS": {
+        "name": "YCCS-ASPIRA,Antonia Pantoja Alternative HS",
+        "website": "https://aap.aspirail.org",
+        "phone": "7732520970",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Leon Hart"
+            },
+            "second": {
+                "title": "Principal",
+                "name": "Rod Orrego-Lindstad"
+            },
+            "third": {
+                "title": "Registrar",
+                "name": "Carmen Caraballo"
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "YCCS-Association House HS": {
+        "name": "YCCS-Association House HS",
+        "website": "https://associationhouse.org",
+        "phone": "7737727170",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "David Pieper"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Tiana Thomas"
+            },
+            "third": {
+                "title": "Registrar",
+                "name": "Gabriela Arriaga"
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Acero Charter Schools - Victoria Soto": {
+        "name": "Acero Charter Schools - Victoria Soto",
+        "website": "http://vs.aceroschools.org",
+        "phone": "3124555446",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Elizabeth Obrzut"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Chris Gladfelter"
+            },
+            "third": {
+                "title": "Director of Student Affairs",
+                "name": "Edgar Garcia"
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "YCCS-Chatham AcademyHS": {
+        "name": "YCCS-Chatham AcademyHS",
+        "website": "https://www.chathamacademyhs.org",
+        "phone": "7736511500",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Eboni Bingham"
+            },
+            "second": {
+                "title": "Principal",
+                "name": "Tena Sanders"
+            },
+            "third": {
+                "title": "Registrar",
+                "name": "Tanisha Haynes"
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Noble - Butler College Prep": {
+        "name": "Noble - Butler College Prep",
+        "website": "https://nobleschools.org/butler",
+        "phone": "7735355490",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Brian Riddick"
+            },
+            "second": {
+                "title": "Principal",
+                "name": "Brian Riddick"
+            },
+            "third": {
+                "title": "Dean of Operations",
+                "name": "Hector Gonzalez"
+            },
+            "fourth": {
+                "title": "Director of Student Enrollment",
+                "name": "Rhonda Coleman"
+            },
+            "fifth": {
+                "title": "Dean of Students",
+                "name": "Paul Hobson"
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Noble - Baker College Prep": {
+        "name": "Noble - Baker College Prep",
+        "website": "https://nobleschools.org/baker",
+        "phone": "7735356460",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Nate Lowry"
+            },
+            "second": {
+                "title": "Assistant Principal of Culture & Operations",
+                "name": "Yesenia Santoyo"
+            },
+            "third": {
+                "title": "Dean of Students",
+                "name": "Aniya Collins"
+            },
+            "fourth": {
+                "title": "Dean of Culture",
+                "name": "Rayshawn Redmond"
+            },
+            "fifth": {
+                "title": "Dean of Specialized Services",
+                "name": "Elizabeth Iggins"
+            },
+            "sixth": {
+                "title": "Dean of College Counseling",
+                "name": "Selena Dixon"
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Chicago Collegiate Charter School": {
+        "name": "Chicago Collegiate Charter School",
+        "website": "https://chicagocollegiate.org",
+        "phone": "7735369098",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Tieshia Robinson"
+            },
+            "second": {
+                "title": "Principal",
+                "name": "Tieshia Robinson"
+            },
+            "third": {
+                "title": "",
+                "name": ""
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Intrinsic Charter School": {
+        "name": "Intrinsic Charter School",
+        "website": "https://intrinsicschools.org",
+        "phone": "7088872735",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Michelle Trojan"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Chris Lin"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Coryn Schmit"
+            },
+            "fourth": {
+                "title": "Assistant Principal",
+                "name": "Miguel Rivera "
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Instituto - Justice and Leadership": {
+        "name": "Instituto - Justice and Leadership",
+        "website": "https://ijla.org",
+        "phone": "7738908060",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Maribel Arellano"
+            },
+            "second": {
+                "title": "Principal",
+                "name": "Elias Alozno"
+            },
+            "third": {
+                "title": "Admissions Registrar and Clerk",
+                "name": "Emelda Villasenor"
+            },
+            "fourth": {
+                "title": "Assistant Principal ",
+                "name": "Maribel Arellano"
+            },
+            "fifth": {
+                "title": "Director of Operations",
+                "name": "Stephanie Palomo-Vazquez"
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Horizon Science Academy Southwest Chicago Charter": {
+        "name": "Horizon Science Academy Southwest Chicago Charter",
+        "website": "https://www.hsaswchicago.org",
+        "phone": "7734983355",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Stephen Anthony Palmerin"
+            },
+            "second": {
+                "title": "",
+                "name": ""
+            },
+            "third": {
+                "title": "",
+                "name": ""
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Noble - ITW David Speer Academy": {
+        "name": "Noble - ITW David Speer Academy",
+        "website": "https://nobleschools.org/speer",
+        "phone": "7736227484",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Jordan Kruger"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Geomele Moya"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Steven Denza"
+            },
+            "fourth": {
+                "title": "Assistant Principal",
+                "name": "Sheina Lacour"
+            },
+            "fifth": {
+                "title": "Dean of Specialized Services",
+                "name": " Caitlin Costello"
+            },
+            "sixth": {
+                "title": "Dean of Students",
+                "name": "Winnie Mulder"
+            },
+            "seventh": {
+                "title": "Director of College Counseling",
+                "name": "Daijon Jefferson"
+            }
+        }
+    },
+    "Noble - The Noble Academy": {
+        "name": "Noble - The Noble Academy",
+        "website": "https://nobleschools.org/nobleacademy",
+        "phone": "3125741527",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Tierionna Pinkston"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Ernesto Garza"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Audrienna Lampkins"
+            },
+            "fourth": {
+                "title": "Dean of College Counseling",
+                "name": "Jazlin Laboy"
+            },
+            "fifth": {
+                "title": "Dean of Specialized Services",
+                "name": "Jessica Plate"
+            },
+            "sixth": {
+                "title": "Dean of Operations",
+                "name": "Andrea Gomez"
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "ASPIRA Business and Finance": {
+        "name": "ASPIRA Business and Finance",
+        "website": "https://abfhs.aspirail.org",
+        "phone": "7732431820",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "James Edwards"
+            },
+            "second": {
+                "title": "Dean of Climate and Culture",
+                "name": "Irving Hernandez"
+            },
+            "third": {
+                "title": "Registrar",
+                "name": "Ana Ty-Ling"
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Pathways in Education- Brighton Park": {
+        "name": "Pathways in Education- Brighton Park",
+        "website": "https://pathwaysineducation.org",
+        "phone": "7735791220",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Matthew Wienclawski"
+            },
+            "second": {
+                "title": "",
+                "name": ""
+            },
+            "third": {
+                "title": "",
+                "name": ""
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Excel Academy of South Shore": {
+        "name": "Excel Academy of South Shore",
+        "website": "https://sesischools.com/locations/excel-academy-of-south-shore",
+        "phone": "7739027800",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Rosie N Jones"
+            },
+            "second": {
+                "title": "Executive Director",
+                "name": "Rosie Jones"
+            },
+            "third": {
+                "title": "Director of Operations",
+                "name": "Juan Jones"
+            },
+            "fourth": {
+                "title": "Academic Leader/Principal",
+                "name": "Camille ivy-Williams"
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Noble Mansueto High School": {
+        "name": "Noble Mansueto High School",
+        "website": "https://nobleschools.org/mansueto",
+        "phone": "7733498200",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Robert Hyatt"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Ashley Mosley"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Megan Walkenhorst"
+            },
+            "fourth": {
+                "title": "Dean of Operations",
+                "name": "Judy Castellanos"
+            },
+            "fifth": {
+                "title": "Dean of Students",
+                "name": "Allison Clements"
+            },
+            "sixth": {
+                "title": "Dean of Students",
+                "name": "Mary Mekstan"
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Art in Motion Charter School": {
+        "name": "Art in Motion Charter School",
+        "website": "https://www.aimchicago.org",
+        "phone": "7738209426",
+        "contacts": {
+            "administrator": {
+                "title": "Director",
+                "name": "Dion Steele"
+            },
+            "second": {
+                "title": "Dean of Students",
+                "name": "Krishaun Branch"
+            },
+            "third": {
+                "title": "Dean of Students/Restorative Counselor",
+                "name": "Roy Curry"
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Chicago Vocational Career Academy High School": {
+        "name": "Chicago Vocational Career Academy High School",
+        "website": "https://chicagovocational.org",
+        "phone": "7735356100",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Latasha Mary Taylor"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Angelique Williams"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Phillip Watson"
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Paul Laurence Dunbar Career Academy High School": {
+        "name": "Paul Laurence Dunbar Career Academy High School",
+        "website": "https://dvca-cps.org",
+        "phone": "7735349000",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Richard Mcmillan"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Mark Wesolowski"
+            },
+            "third": {
+                "title": "Case Manager",
+                "name": "Kelly Roberson"
+            },
+            "fourth": {
+                "title": "Operations Coordinator",
+                "name": "Tammie Wehmhoefer"
+            },
+            "fifth": {
+                "title": "Dean of Students",
+                "name": "Ahmad Shareef"
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "William Jones College Preparatory High School": {
+        "name": "William Jones College Preparatory High School",
+        "website": "https://www.jonescollegeprep.org",
+        "phone": "7735348600",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Kerry R Dolan"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Sean McGuire"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Courtney Jordan"
+            },
+            "fourth": {
+                "title": "Assistant Principal",
+                "name": "Jimini Ofori-Amoah"
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Charles Allen Prosser Career Academy High School": {
+        "name": "Charles Allen Prosser Career Academy High School",
+        "website": "https://prosseracademy.org",
+        "phone": "7735343200",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Sandra L Shimon"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Terry Batey"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Jenny Greenblatt"
+            },
+            "fourth": {
+                "title": "CTE Cooordinator",
+                "name": "Lindsey Richards"
+            },
+            "fifth": {
+                "title": "IB Coordinator",
+                "name": "Jennifer Koszyk"
+            },
+            "sixth": {
+                "title": "IB Coordinator",
+                "name": "Jessica Stephensen"
+            },
+            "seventh": {
+                "title": "Technology Coordinator",
+                "name": "Jose Palacios"
+            }
+        }
+    },
+    "Walter Payton College Preparatory High School": {
+        "name": "Walter Payton College Preparatory High School",
+        "website": "https://wpcp.org",
+        "phone": "7735340034",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Fareeda Jahaan Shabazz"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Sarah Moon-Sarudi"
+            },
+            "third": {
+                "title": "Assistant Principal ",
+                "name": "Paul Arabie "
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Neal F Simeon Career Academy High School": {
+        "name": "Neal F Simeon Career Academy High School",
+        "website": "https://simeonca.org",
+        "phone": "7735353200",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Tamarah Nicole Ellis"
+            },
+            "second": {
+                "title": "Principal",
+                "name": "Tamarah Ellis"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Nicole Hudson-Lucas "
+            },
+            "fourth": {
+                "title": "Case Manager",
+                "name": "Nora Barr"
+            },
+            "fifth": {
+                "title": "Assistant Principal",
+                "name": "Nakisha Lee-Winfield"
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Ellen H Richards Career Academy High School": {
+        "name": "Ellen H Richards Career Academy High School",
+        "website": "https://richards.cps.edu",
+        "phone": "7735354945",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Ellen Marie Kennedy"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Martin Walsh"
+            },
+            "third": {
+                "title": "School Counselor",
+                "name": "Yeri Bejar"
+            },
+            "fourth": {
+                "title": "Case Manager",
+                "name": "Nicole Donnelly"
+            },
+            "fifth": {
+                "title": "School Counselor",
+                "name": "Samantha Kutz"
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "North-Grand High School": {
+        "name": "North-Grand High School",
+        "website": "https://www.northgrandhs.org",
+        "phone": "7735348520",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Emily Ann Feltes"
+            },
+            "second": {
+                "title": "Principal",
+                "name": "Emily A. Feltes"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Dewitt Anthony Love"
+            },
+            "fourth": {
+                "title": "Assistant Principal",
+                "name": "Cynthia Sanchez"
+            },
+            "fifth": {
+                "title": "Resident Principal",
+                "name": "Lauren Wilkie"
+            },
+            "sixth": {
+                "title": "Director of Climate and Culture",
+                "name": "Glenn Gustafson"
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "George Westinghouse College Prep": {
+        "name": "George Westinghouse College Prep",
+        "website": "https://newwestinghouse.org",
+        "phone": "7735346400",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "W. Terrell Burgess"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Madisson Dickson"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Diamond Bogard"
+            },
+            "fourth": {
+                "title": "Director of Counseling & Admissions",
+                "name": "Rebecca Miller"
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Roald Amundsen High School": {
+        "name": "Roald Amundsen High School",
+        "website": "http://www.amundsenhs.org",
+        "phone": "7735342320",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Kristi Marie Eilers"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Mr. Minh Nguyen"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Ms. Cybill Ortiz"
+            },
+            "fourth": {
+                "title": "Assistant Principal",
+                "name": "Ms. Colleen Murray"
+            },
+            "fifth": {
+                "title": "Assistant Principal",
+                "name": "Mr. Reginald Williams"
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "John Hancock College Preparatory High School": {
+        "name": "John Hancock College Preparatory High School",
+        "website": "http://www.hancockhs.org",
+        "phone": "7735352410",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Trista Lashey Harper"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Mr. Marlon Mclachlan"
+            },
+            "third": {
+                "title": "",
+                "name": ""
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "William J Bogan High School": {
+        "name": "William J Bogan High School",
+        "website": "https://boganhs.org",
+        "phone": "7735352180",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Alahrie A Aziz-Sims"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Abdul Muhammad"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Jennifer Ellen Maali"
+            },
+            "fourth": {
+                "title": "Operations Manager",
+                "name": "Sharon Bland"
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "David G Farragut Career Academy High School": {
+        "name": "David G Farragut Career Academy High School",
+        "website": "https://fcaib.org",
+        "phone": "7735341300",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Virag Chirantan Nanavati"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Deani Blue Jordan"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Jeff Heredia"
+            },
+            "fourth": {
+                "title": "IB Coordinator",
+                "name": "Daniela Varela "
+            },
+            "fifth": {
+                "title": "IB Coordinator",
+                "name": "Amy Jesionowski"
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Christian Fenger Academy High School": {
+        "name": "Christian Fenger Academy High School",
+        "website": "https://fengerhighschool.org",
+        "phone": "7735355430",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Mescha Moriah Robertson"
+            },
+            "second": {
+                "title": "Principal",
+                "name": "Mescha Lammy"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Shuronda Turner"
+            },
+            "fourth": {
+                "title": "MTSS Coordinator",
+                "name": "Jessica Wilkes"
+            },
+            "fifth": {
+                "title": "Case Manager",
+                "name": "Caroll Welch-Shareef"
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Edwin G. Foreman College and Career Academy": {
+        "name": "Edwin G. Foreman College and Career Academy",
+        "website": "http://www.foremancca.org",
+        "phone": "7735343400",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Jason Roberts"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "David Stachowiak"
+            },
+            "third": {
+                "title": "Assistant Principal",
+                "name": "Lidia Paredes"
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "Gage Park High School": {
+        "name": "Gage Park High School",
+        "website": "https://gageparkhs.org",
+        "phone": "7735359230",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Anna M Taglia"
+            },
+            "second": {
+                "title": "Assistant Principal",
+                "name": "Akilah Lowe"
+            },
+            "third": {
+                "title": "",
+                "name": ""
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    },
+    "John M Harlan Community Academy High School": {
+        "name": "John M Harlan Community Academy High School",
+        "website": "https://www.harlanfalcons.org",
+        "phone": "7735355400",
+        "contacts": {
+            "administrator": {
+                "title": "Principal",
+                "name": "Kai L Jones"
+            },
+            "second": {
+                "title": "Assistant Principal ",
+                "name": "Mrs. Ebony C Jones "
+            },
+            "third": {
+                "title": "",
+                "name": ""
+            },
+            "fourth": {
+                "title": "",
+                "name": ""
+            },
+            "fifth": {
+                "title": "",
+                "name": ""
+            },
+            "sixth": {
+                "title": "",
+                "name": ""
+            },
+            "seventh": {
+                "title": "",
+                "name": ""
+            }
+        }
+    }
+}

@@ -131,12 +131,18 @@ class NormalWebCrawler(WebCrawler):
                 # print(best.get_attribute("innerText"))
                 actions = ActionChains(selenium)
                 actions.move_to_element(best).click().perform()
-                return selenium.current_url
+                if "/events/" not in selenium.current_url:
+                    return selenium.current_url
+                else:
+                    return url
             except:
                     try:
                         selenium.execute_script("arguments[0].scrollIntoView(true);", best)
                         selenium.execute_script("arguments[0].click();", best)
-                        return selenium.current_url
+                        if "/events/" not in selenium.current_url:
+                            return selenium.current_url
+                        else:
+                            return url
                     except:
                         print(best.get_attribute("innerText"))
                         print("School link not clickable")

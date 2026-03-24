@@ -2,7 +2,7 @@ import json
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from Crawler import NormalWebCrawler
-from ScraperStrategies import Scraper
+from ScraperStrategies import ScraperContext
 
 SCHOOLS_JSON = "schools.json"
 OUTPUT_FILE = "Completed.json"
@@ -46,7 +46,7 @@ def main():
             selenium.get(url)
             crawler = NormalWebCrawler()
             school_url = crawler.resolve_school(selenium, url, school_name, school_city)
-            scraper = Scraper(selenium)
+            scraper = ScraperContext(selenium)
             result = scraper.scrape_school(school, contact_paths, school_url)
 
 
@@ -76,7 +76,7 @@ def main():
             selenium.quit()
 
         except Exception as e:
-            print(f"school {school_name} raised an exception {e}")
+            print(f"school {school_name} raised an exception{type(e).__name__}")
         selenium.quit()
 
 

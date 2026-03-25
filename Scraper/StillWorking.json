@@ -1,1 +1,2732 @@
-{}
+{
+  "Griggsville-Perry High School": {
+    "school_urls": {
+      "base_url": "http://www.griggsvilleperry.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Edinburg High School": {
+    "school_urls": {
+      "base_url": "https://ecusd4.com/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "South Fork Jr Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.southforkschools.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Effingham High School": {
+    "school_urls": {
+      "base_url": "https://ehs.unit40.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Lincolnwood High School": {
+    "school_urls": {
+      "base_url": "http://www.panhandleschools.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Harlem High School": {
+    "school_urls": {
+      "base_url": "https://www.harlem122.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "South Beloit Sr High School": {
+    "school_urls": {
+      "base_url": "https://www.sb320.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Durand High School": {
+    "school_urls": {
+      "base_url": "https://www.durandbulldogs.com/en-US",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Dolan Ctr Maryville Farm Campus": {
+    "school_urls": {
+      "base_url": "http://www.durandbulldogs.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Winnebago High School": {
+    "school_urls": {
+      "base_url": "https://whs.winnebagoschools.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Evanston Twp High School": {
+    "school_urls": {
+      "base_url": "http://www.eths.k12.il.us",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "ETHS Day School": {
+    "school_urls": {
+      "base_url": "https://www.eths202.org/academics/special-education/day-school",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "New Trier Township H S Winnetka": {
+    "school_urls": {
+      "base_url": "http://www.newtrier.k12.il.us/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Maine South High School": {
+    "school_urls": {
+      "base_url": "http://south.maine207.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Maine West High School": {
+    "school_urls": {
+      "base_url": "https://west.maine207.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Ralph J Frost Academy": {
+    "school_urls": {
+      "base_url": "http://www.maine207.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "J B Conant High School": {
+    "school_urls": {
+      "base_url": "https://chs.d211.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Wm Fremd High School": {
+    "school_urls": {
+      "base_url": "https://fhs.d211.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Palatine High School": {
+    "school_urls": {
+      "base_url": "https://phs.d211.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Schaumburg High School": {
+    "school_urls": {
+      "base_url": "https://shs.d211.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Hoffman Estates High School": {
+    "school_urls": {
+      "base_url": "https://hehs.d211.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Higgins Education Center": {
+    "school_urls": {
+      "base_url": "https://cntr.d211.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "North Campus": {
+    "school_urls": {
+      "base_url": "https://adc.d211.org/Domain/14",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Higgins Education Center - INT": {
+    "school_urls": {
+      "base_url": "https://adc.d211.org/Domain/13",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Niles West High School": {
+    "school_urls": {
+      "base_url": "https://west.niles219.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Niles Central": {
+    "school_urls": {
+      "base_url": "https://central.niles219.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Glenbrook North High School": {
+    "school_urls": {
+      "base_url": "https://gbn.glenbrook225.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Glenbrook South High School": {
+    "school_urls": {
+      "base_url": "https://gbs.glenbrook225.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Glenbrook Off Campus": {
+    "school_urls": {
+      "base_url": "https://gbo.glenbrook225.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "J Sterling Morton East High Sch": {
+    "school_urls": {
+      "base_url": "http://www.morton201.org/schools/east.asp",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "J Sterling Morton West High Sch": {
+    "school_urls": {
+      "base_url": "http://www.morton201.org/schools/west.asp",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "J Sterling Morton Alternative Sch": {
+    "school_urls": {
+      "base_url": "http://www.morton201.org/schools/alternative.asp",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Proviso East High School": {
+    "school_urls": {
+      "base_url": "https://east.pths209.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Proviso West High School": {
+    "school_urls": {
+      "base_url": "https://west.pths209.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Proviso Math and Science Academy": {
+    "school_urls": {
+      "base_url": "https://pmsa.pths209.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "East Leyden High School": {
+    "school_urls": {
+      "base_url": "http://www.leyden212.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "West Leyden High School": {
+    "school_urls": {
+      "base_url": "http://www.leyden212.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Ridgewood Comm High School": {
+    "school_urls": {
+      "base_url": "http://www.d234.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Thornton Township High School": {
+    "school_urls": {
+      "base_url": "https://www.district205.net/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Thornridge High School": {
+    "school_urls": {
+      "base_url": "http://www.district205.net/thornridge/site/default.asp",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Thornwood High School": {
+    "school_urls": {
+      "base_url": "http://www.district205.net/thornwood/site/default.asp",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Bloom High School": {
+    "school_urls": {
+      "base_url": "https://bloomhs.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Bloom Trail High School": {
+    "school_urls": {
+      "base_url": "http://www.bloomtrail.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Dist 206 Alternative High School": {
+    "school_urls": {
+      "base_url": "http://www.bloomhs.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Lemont Twp High School": {
+    "school_urls": {
+      "base_url": "http://www.lhs210.net",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Thornton Fractnl No High School": {
+    "school_urls": {
+      "base_url": "http://tfd215.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Thornton Fractnl So High School": {
+    "school_urls": {
+      "base_url": "http://www.tfd215.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Center for Alternative Learning": {
+    "school_urls": {
+      "base_url": "https://www.tfd215.org/cal/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Center for Academics and Technology": {
+    "school_urls": {
+      "base_url": "https://www.tfd215.org/centerforacademicstechnology/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "DD Eisenhower High Sch (Campus)": {
+    "school_urls": {
+      "base_url": "http://chsd218.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "H L Richards High Sch(Campus)": {
+    "school_urls": {
+      "base_url": "http://chsd218.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "A B Shepard High Sch (Campus)": {
+    "school_urls": {
+      "base_url": "http://chsd218.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Delta Learning Center": {
+    "school_urls": {
+      "base_url": "http://chsd218.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Carl Sandburg High School": {
+    "school_urls": {
+      "base_url": "http://www.d230.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Amos Alonzo Stagg High School": {
+    "school_urls": {
+      "base_url": "http://www.d230.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Victor J Andrew High School": {
+    "school_urls": {
+      "base_url": "http://www.d230.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Homewood-Flossmoor High School": {
+    "school_urls": {
+      "base_url": "http://www.hfhighschool.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "West Carroll High School": {
+    "school_urls": {
+      "base_url": "https://hs.wc314.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Chadwick-Milledgeville Jr/Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.dist399.net",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "East Dubuque High School": {
+    "school_urls": {
+      "base_url": "http://www.eastdbqschools.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Warren Jr/Sr High School": {
+    "school_urls": {
+      "base_url": "https://www.205warren.net/schools/hs/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Stockton Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.stocktonschools.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Freeport High School": {
+    "school_urls": {
+      "base_url": "http://www.freeport.k12.il.us",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Rising Pretzels Academy": {
+    "school_urls": {
+      "base_url": "https://www.fsd145.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Pearl City High School": {
+    "school_urls": {
+      "base_url": "https://jrsrhigh.pcwolves.net/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Dakota Jr Sr High School": {
+    "school_urls": {
+      "base_url": "https://www.dakota201.org/vnews/display.v/SEC/Dakota%20Jr.%20Sr.%20High%20School",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Lena-Winslow High School": {
+    "school_urls": {
+      "base_url": "http://www.le-win.net",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Fisher Jr/Sr High School": {
+    "school_urls": {
+      "base_url": "http://fisherk12.com/home",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Novak Academy": {
+    "school_urls": {
+      "base_url": "https://novakacademy.champaignschools.org/o/novakacademy",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Rantoul Twp High School": {
+    "school_urls": {
+      "base_url": "http://www.rths193.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "GCMS High School": {
+    "school_urls": {
+      "base_url": "https://highschool.gcmsk12.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Paxton-Buckley-Loda High School": {
+    "school_urls": {
+      "base_url": "http://pblunit10.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Mattoon High School": {
+    "school_urls": {
+      "base_url": "https://www.mattoon.k12.il.us/o/mhs",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Oakland High School": {
+    "school_urls": {
+      "base_url": "https://www.oakland5.org/page/oakland-high-school",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Neoga Jr/Sr High School": {
+    "school_urls": {
+      "base_url": "https://www.neoga.k12.il.us/vnews/display.v/SEC/Jr-Sr%20High%20School",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Tuscola High School": {
+    "school_urls": {
+      "base_url": "https://www.cusd301.org/o/tchs",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Kansas High School": {
+    "school_urls": {
+      "base_url": "http://www.kansas.k12.il.us",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Paris Cooperative High School 4": {
+    "school_urls": {
+      "base_url": "http://www.pchs.k12.il.us",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Paris Cooperative High School 95": {
+    "school_urls": {
+      "base_url": "http://www.paris95.k12.il.us",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Sullivan High School": {
+    "school_urls": {
+      "base_url": "https://www.sullivan.k12.il.us/article/2242503",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "North Clay Community High School": {
+    "school_urls": {
+      "base_url": "https://sites.google.com/northclayschools.com/nccusd25",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Palestine High School": {
+    "school_urls": {
+      "base_url": "https://www.palestinecusd3.net/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Flora High School": {
+    "school_urls": {
+      "base_url": "https://www.floraschools.com/schools/fhs/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Red Hill Jr/Sr High School": {
+    "school_urls": {
+      "base_url": "https://www.cusd10.org/o/rhjshc",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Wesclin Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.wesclin.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Central Comm High School": {
+    "school_urls": {
+      "base_url": "https://www.centralcougars.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Woodlawn High School": {
+    "school_urls": {
+      "base_url": "https://www.woodlawnschools.org/page/high-school",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Patoka Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.patokaschool.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Nashville Comm High School": {
+    "school_urls": {
+      "base_url": "https://www.nashville-k12.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Carver Military Academy HS": {
+    "school_urls": {
+      "base_url": "http://www.carvermilitary.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Morgan Park High School": {
+    "school_urls": {
+      "base_url": "https://www.morganparkcps.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Senn High School": {
+    "school_urls": {
+      "base_url": "http://schools.cps.k12.il.us/default.aspx",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Alcott College Prep": {
+    "school_urls": {
+      "base_url": "http://cps.edu",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Ogden Int High School": {
+    "school_urls": {
+      "base_url": "http://cps.edu",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Westinghouse High School": {
+    "school_urls": {
+      "base_url": "http://www.newwestinghouse.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Excel Academy - Englewood HS": {
+    "school_urls": {
+      "base_url": "https://sesischools.com/locations/excel-academy-of-englewood/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Excel Academy of South Shore": {
+    "school_urls": {
+      "base_url": "https://sesischools.com/locations/excel-academy-of-south-shore/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Excel Academy - Southwest HS": {
+    "school_urls": {
+      "base_url": "https://sesischools.com/locations/excel-academy-of-south-shore/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Camelot Safe Academy School": {
+    "school_urls": {
+      "base_url": "https://sesischools.com/locations/safe-achieve-academy-of-chicago/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Ombudsman Chicago Northwest": {
+    "school_urls": {
+      "base_url": "http://Chicagodiploma.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Pathways in Education Ashburn": {
+    "school_urls": {
+      "base_url": "http://pathwaysed.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Pathways in Education Avondale": {
+    "school_urls": {
+      "base_url": "http://pathwaysed.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Pathways in Education Brighton Park": {
+    "school_urls": {
+      "base_url": "http://pathwaysed.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Genoa-Kingston High School": {
+    "school_urls": {
+      "base_url": "https://www.gkschools.org/o/high-school",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Hiawatha Jr/Sr High School": {
+    "school_urls": {
+      "base_url": "https://www.hiawatha426.org/schools/jrsr-high-school",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Sycamore High School": {
+    "school_urls": {
+      "base_url": "https://shs.syc427.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "DeKalb High School": {
+    "school_urls": {
+      "base_url": "https://dhs.d428.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Sandwich Community High School": {
+    "school_urls": {
+      "base_url": "https://shs.sandwich430.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Blue Ridge High School": {
+    "school_urls": {
+      "base_url": "https://www.blueridge18.org/page/blue-ridge-high-school",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Woodland High School": {
+    "school_urls": {
+      "base_url": "https://www.woodland5.net/high_school",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Tri-Point High School": {
+    "school_urls": {
+      "base_url": "https://www.tripointschools.org/o/tpcusd/page/tri-point-high-school",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Pontiac High School": {
+    "school_urls": {
+      "base_url": "http://www.pontiac90.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Hartsburg-Emden Jr-Sr High School": {
+    "school_urls": {
+      "base_url": "http://logan.k12.il.us/hartem",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Lincoln Comm High School": {
+    "school_urls": {
+      "base_url": "http://www.lchsrailers.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Heyworth High School": {
+    "school_urls": {
+      "base_url": "https://www.husd4.org/apps/pages/index.jsp?uREC_ID=4444508&type=d&pREC_ID=2683208",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Glenbard East High School": {
+    "school_urls": {
+      "base_url": "http://www.glenbardeasths.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Glenbard North High School": {
+    "school_urls": {
+      "base_url": "http://www.glenbardnorthhs.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Glenbard West High School": {
+    "school_urls": {
+      "base_url": "http://www.glenbardwesths.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Glenbard South High School": {
+    "school_urls": {
+      "base_url": "http://www.glenbardsouthhs.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Addison Trail High School": {
+    "school_urls": {
+      "base_url": "http://dupage88.net",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Willowbrook High School": {
+    "school_urls": {
+      "base_url": "http://dupage88.net",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Comm H S Dist 99 - North H S": {
+    "school_urls": {
+      "base_url": "http://www.csd99.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Comm H S Dist 99 - South High Sch": {
+    "school_urls": {
+      "base_url": "http://www.csd99.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Fenton High School": {
+    "school_urls": {
+      "base_url": "http://www.fenton100.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Lake Park High School": {
+    "school_urls": {
+      "base_url": "https://www.lphs.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Lisle High School": {
+    "school_urls": {
+      "base_url": "http://www.lisle202.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Naperville Central High School": {
+    "school_urls": {
+      "base_url": "https://nchs.naperville203.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Naperville North High School": {
+    "school_urls": {
+      "base_url": "https://nnhs.naperville203.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Waubonsie Valley High School": {
+    "school_urls": {
+      "base_url": "https://www.ipsd.org/resources/2024-referendum/projects/wvhs",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Neuqua Valley High School": {
+    "school_urls": {
+      "base_url": "https://www.ipsd.org/resources/2024-referendum/projects/neuqua-valley-high-school",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Metea Valley High School": {
+    "school_urls": {
+      "base_url": "https://www.ipsd.org/resources/2024-referendum/projects/metea-valley-high-school",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Edwards County High School": {
+    "school_urls": {
+      "base_url": "https://www.edwardscountyschools.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Gallatin High School": {
+    "school_urls": {
+      "base_url": "http://gallatincusd7.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Hamilton County Jr/Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.unit10.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Pope Co High School": {
+    "school_urls": {
+      "base_url": "https://www.popek12.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Harrisburg High School": {
+    "school_urls": {
+      "base_url": "http://www.hbg.saline.k12.il.us",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Cisne High School": {
+    "school_urls": {
+      "base_url": "http://www.roe20.k12.il.us",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Grayville Jr Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.gcusd.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Norris City-Omaha-Enfield H S": {
+    "school_urls": {
+      "base_url": "http://www.ncoehs.white.k12.il.us",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Thompsonville High School": {
+    "school_urls": {
+      "base_url": "https://www.tvilleschools.org/page/thompsonville-high-school",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Sesser-Valier High School": {
+    "school_urls": {
+      "base_url": "http://www.sv196.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Marion High School": {
+    "school_urls": {
+      "base_url": "http://www.marionunit2.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Morris Community High School": {
+    "school_urls": {
+      "base_url": "https://www.morrishs.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Yorkville High School": {
+    "school_urls": {
+      "base_url": "http://www.y115.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Oswego High School": {
+    "school_urls": {
+      "base_url": "http://www.oswego308.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Oswego East High School": {
+    "school_urls": {
+      "base_url": "http://www.oswego308.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Astoria High School": {
+    "school_urls": {
+      "base_url": "https://acusd1.org/astoria-high-school",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Canton High School": {
+    "school_urls": {
+      "base_url": "https://www.cantonusd.org/canton-high-school.html",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Warsaw Sr High School": {
+    "school_urls": {
+      "base_url": "http://warsawschool.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Hamilton High School": {
+    "school_urls": {
+      "base_url": "https://hhs328.com/junior-senior-high-school/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Southeastern Jr/Sr High School": {
+    "school_urls": {
+      "base_url": "https://www.southeastern337.com/jr__sr_high_school",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "DePue High School": {
+    "school_urls": {
+      "base_url": "http://www.depueschools.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "La Moille Jr/Sr High School": {
+    "school_urls": {
+      "base_url": "https://home.lamoilleschools.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Hall High School": {
+    "school_urls": {
+      "base_url": "https://www.hallhighschool502.com/home",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Ohio Community High School": {
+    "school_urls": {
+      "base_url": "http://ohiocommunityschooldistricts.com/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Kewanee High School": {
+    "school_urls": {
+      "base_url": "https://www.kcud229.org/high-school",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Wethersfield Jr/Sr High School": {
+    "school_urls": {
+      "base_url": "https://www.geese230.com/page/about-wethersfield-high-school",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Stark County High School": {
+    "school_urls": {
+      "base_url": "https://jhhs.stark100.com/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Murphysboro High School": {
+    "school_urls": {
+      "base_url": "http://www.mhs.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Elverado High School": {
+    "school_urls": {
+      "base_url": "https://www.elv196.org//",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Century Jr/Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.centuryschool100.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Cobden High School": {
+    "school_urls": {
+      "base_url": "https://www.cobdenappleknockers.com/o/jr-sr-high",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Anna-Jonesboro High School": {
+    "school_urls": {
+      "base_url": "https://aj81.net/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Shawnee High School": {
+    "school_urls": {
+      "base_url": "http://www.shawneedistrict84.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Elgin High School": {
+    "school_urls": {
+      "base_url": "https://ehs.u-46.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Larkin High School": {
+    "school_urls": {
+      "base_url": "https://lhs.u-46.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Streamwood High School": {
+    "school_urls": {
+      "base_url": "https://shs.u-46.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Bartlett High School": {
+    "school_urls": {
+      "base_url": "https://bhs.u-46.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "South Elgin High School": {
+    "school_urls": {
+      "base_url": "https://sehs.u-46.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Dream Academy": {
+    "school_urls": {
+      "base_url": "https://dream.u-46.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Central School Program": {
+    "school_urls": {
+      "base_url": "https://csp.u-46.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Batavia Sr High School": {
+    "school_urls": {
+      "base_url": "https://bhs.bps101.net/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "West Aurora High School": {
+    "school_urls": {
+      "base_url": "https://westhigh.sd129.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Harry D Jacobs High School": {
+    "school_urls": {
+      "base_url": "http://www.d300.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Cissna Park Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.cpschool.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Watseka Comm High School": {
+    "school_urls": {
+      "base_url": "https://www.watsekaschools.org/page/watseka-community-high",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Iroquois West High School": {
+    "school_urls": {
+      "base_url": "http://www.iwest.k12.il.us",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Momence High School": {
+    "school_urls": {
+      "base_url": "https://www.mcusd1.net/page/about-mchs",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Manteno High School": {
+    "school_urls": {
+      "base_url": "https://mhs.manteno5.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Grant Park High School": {
+    "school_urls": {
+      "base_url": "http://www.grantparkdragons.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Virginia Jr/ Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.virginia64.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Waverly Junior/Senior High School": {
+    "school_urls": {
+      "base_url": "http://www.wsd6.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Bradley-Bourbonnais C High School": {
+    "school_urls": {
+      "base_url": "https://www.bbchs.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Knoxville Sr High School": {
+    "school_urls": {
+      "base_url": "https://www.bluebullets.org/o/khs",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Abingdon-Avon High Sch": {
+    "school_urls": {
+      "base_url": "http://www.d276.net/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Mercer County High School": {
+    "school_urls": {
+      "base_url": "http://www.mercerschools.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Deerfield High School": {
+    "school_urls": {
+      "base_url": "https://dhs.dist113.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Highland Park High School": {
+    "school_urls": {
+      "base_url": "https://hphs.dist113.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Lake Forest High School": {
+    "school_urls": {
+      "base_url": "http://lfhs.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Wauconda High School": {
+    "school_urls": {
+      "base_url": "https://www.d118.org/schools/whs",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Mundelein Cons High School": {
+    "school_urls": {
+      "base_url": "http://www.d120.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Warren Township High School": {
+    "school_urls": {
+      "base_url": "https://www.d121.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Grant Community High School": {
+    "school_urls": {
+      "base_url": "https://www.grantbulldogs.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Zion-Benton Twnshp Hi Sch": {
+    "school_urls": {
+      "base_url": "http://www.zb126.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Zion-Benton East High School": {
+    "school_urls": {
+      "base_url": "http://www.ntzb.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "La Salle-Peru Twp High School": {
+    "school_urls": {
+      "base_url": "https://www.lphs.net/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Seneca High School": {
+    "school_urls": {
+      "base_url": "https://www.senecahs.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Argenta-Oreana High School": {
+    "school_urls": {
+      "base_url": "http://www.argenta-oreana.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Maroa-Forsyth Senior High Sch": {
+    "school_urls": {
+      "base_url": "https://mfhs.mfschools.net/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Mt Zion High School": {
+    "school_urls": {
+      "base_url": "https://hs.mtzschools.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Warrensburg-Latham High School": {
+    "school_urls": {
+      "base_url": "http://wl.k12.il.us",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Eisenhower High School": {
+    "school_urls": {
+      "base_url": "https://www.dps61.org/ehs",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "MacArthur High School": {
+    "school_urls": {
+      "base_url": "https://www.dps61.org/mhs",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Decatur Public Schools Alternative Education": {
+    "school_urls": {
+      "base_url": "http://www.dps61.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Deland-Weldon High School": {
+    "school_urls": {
+      "base_url": "https://www.dwschools.org/high-school",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Cerro Gordo Jr and Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.cgbroncos.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Jersey Comm High School": {
+    "school_urls": {
+      "base_url": "http://www.jersey100.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Carlinville High School": {
+    "school_urls": {
+      "base_url": "http://high.cusd1.com/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Northwestern High School": {
+    "school_urls": {
+      "base_url": "https://www.northwestern.k12.il.us/vnews/display.v/SEC/Jr%20Sr%20High%20School",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Mt Olive High School": {
+    "school_urls": {
+      "base_url": "https://www.mtoliveschools.org/page/mt-olive-high-school",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Bunker Hill High School": {
+    "school_urls": {
+      "base_url": "https://www.bhcusd.org/article/2585287",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Southwestern High School": {
+    "school_urls": {
+      "base_url": "http://www.piasabirds.net/highschool",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "North Mac High School": {
+    "school_urls": {
+      "base_url": "http://www.northmacschools.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Edwardsville High School": {
+    "school_urls": {
+      "base_url": "https://ehs.ecusd7.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Granite City High School": {
+    "school_urls": {
+      "base_url": "http://www.gcsd9.net",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Collinsville High School": {
+    "school_urls": {
+      "base_url": "https://chs.kahoks.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Alton High School": {
+    "school_urls": {
+      "base_url": "http://altonschools.org/schools/ahs/index.html",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Mark Twain": {
+    "school_urls": {
+      "base_url": "http://altonschools.org/schools/mac/index.html",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Harvard High School": {
+    "school_urls": {
+      "base_url": "https://www.cusd50.org/o/hhs",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Crystal Lake South High School": {
+    "school_urls": {
+      "base_url": "http://ww2.d155.org/cls/default.aspx",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Prairie Ridge High School": {
+    "school_urls": {
+      "base_url": "http://ww2.d155.org/pr/default.aspx",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Huntley High School": {
+    "school_urls": {
+      "base_url": "https://hhs.huntley158.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Woodstock High School": {
+    "school_urls": {
+      "base_url": "https://whs.woodstockschools.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Clay Academy": {
+    "school_urls": {
+      "base_url": "http://clay.woodstockschools.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Valmeyer High School": {
+    "school_urls": {
+      "base_url": "http://www.valmeyerk12.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Columbia High School": {
+    "school_urls": {
+      "base_url": "https://www.columbia4.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Waterloo High School": {
+    "school_urls": {
+      "base_url": "https://www.wcusd5.net/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Steeleville High School": {
+    "school_urls": {
+      "base_url": "http://www.steeleville138.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Chester High School": {
+    "school_urls": {
+      "base_url": "http://chs.chester139.com/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Sparta High School": {
+    "school_urls": {
+      "base_url": "https://www.sparta140.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "TJ Dempsey Therapeutic Day School": {
+    "school_urls": {
+      "base_url": "http://www.dps170.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Amboy High School": {
+    "school_urls": {
+      "base_url": "https://www.amboy.net/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Rochelle Twp High School": {
+    "school_urls": {
+      "base_url": "http://www.rthsd212.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Byron High School 9-12": {
+    "school_urls": {
+      "base_url": "http://byron226.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Prophetstown High School": {
+    "school_urls": {
+      "base_url": "http://www.plt3.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Morrison High School": {
+    "school_urls": {
+      "base_url": "https://www.morrisonschools.org/page/high-school",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Rock Falls Township High School": {
+    "school_urls": {
+      "base_url": "https://rfhs301.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Robert A Jamieson School": {
+    "school_urls": {
+      "base_url": "http://www.psd150.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Farmington Central High Sch": {
+    "school_urls": {
+      "base_url": "https://www.dist265.com/o/fchs",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Brimfield High School": {
+    "school_urls": {
+      "base_url": "http://www.brimfield309.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Il Valley Central High School": {
+    "school_urls": {
+      "base_url": "http://www.ivcschools.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Dunlap High School": {
+    "school_urls": {
+      "base_url": "https://dhs.dunlapcusd.net/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Peoria Heights High School": {
+    "school_urls": {
+      "base_url": "https://peoriaheightsil.sites.thrillshare.com/page/peoria-heights-high-school-page",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Princeville High School": {
+    "school_urls": {
+      "base_url": "https://sites.google.com/princeville326.net/pcusd326/home",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Riverdale Sr High School": {
+    "school_urls": {
+      "base_url": "https://www.riverdaleschools.org/article/2763541",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Sherrard High School": {
+    "school_urls": {
+      "base_url": "http://www.sherrard.us",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Freeburg Community High Sch": {
+    "school_urls": {
+      "base_url": "http://www.fchs77.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "East St Louis Senior High School": {
+    "school_urls": {
+      "base_url": "http://estl189.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Saint Clair Co Juv Detention Center": {
+    "school_urls": {
+      "base_url": "http://estl189.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Gordon Bush Alternative School for Education": {
+    "school_urls": {
+      "base_url": "http://estl189.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Belleville High School-East": {
+    "school_urls": {
+      "base_url": "http://www.bths201.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Belleville High School-West": {
+    "school_urls": {
+      "base_url": "http://www.bths201.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Belleville Twp HS-Night/Alt Sch": {
+    "school_urls": {
+      "base_url": "http://www.bths201.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "O Fallon High School": {
+    "school_urls": {
+      "base_url": "http://www.oths.us",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Greenview Jr/Sr High School": {
+    "school_urls": {
+      "base_url": "https://www.greenviewschools.org/page/jr-sr-high-school",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Athens Sr High School": {
+    "school_urls": {
+      "base_url": "https://www.athens-213.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Tri-City High School": {
+    "school_urls": {
+      "base_url": "https://www.tricityschools.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Pleasant Plains High School": {
+    "school_urls": {
+      "base_url": "https://sites.google.com/a/ppcusd8.org/pphs/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Riverton High School": {
+    "school_urls": {
+      "base_url": "https://www.rivertonschools.org/schools",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Williamsville High School": {
+    "school_urls": {
+      "base_url": "http://www.wcusd15.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Douglas School": {
+    "school_urls": {
+      "base_url": "http://www.sps186.org/o/douglas/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "East Peoria High School": {
+    "school_urls": {
+      "base_url": "http://www.ep309.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Dee-Mack High School": {
+    "school_urls": {
+      "base_url": "https://deemack-hs.ss18.sharpschool.com/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Morton High School": {
+    "school_urls": {
+      "base_url": "http://www.morton709.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Fieldcrest High School": {
+    "school_urls": {
+      "base_url": "https://unit6fhs.ss18.sharpschool.com/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "El Paso-Gridley High School": {
+    "school_urls": {
+      "base_url": "http://unit11.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Oakwood High School": {
+    "school_urls": {
+      "base_url": "http://www.oakwood76.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Beecher High School": {
+    "school_urls": {
+      "base_url": "http://beecher200u.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Crete-Monee High School": {
+    "school_urls": {
+      "base_url": "https://cmhs.cm201u.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Joliet West High School": {
+    "school_urls": {
+      "base_url": "https://www.jths.org/joliet-west-high-school",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Pathways Academy": {
+    "school_urls": {
+      "base_url": "http://www.jths.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Reed-Custer High School": {
+    "school_urls": {
+      "base_url": "http://www.rc255.net",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Bolingbrook High School": {
+    "school_urls": {
+      "base_url": "http://www.vvsd.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Quincy Notre Dame High School": {
+    "school_urls": {
+      "base_url": "https://www.quincynotredame.org/wp-login.php?redirect_to=https%3A%2F%2Fwww.quincynotredame.org%2Fwp-admin%2F&reauth=1",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Routt Catholic High School": {
+    "school_urls": {
+      "base_url": "http://www.routtcatholic.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Berean Baptist Christian School": {
+    "school_urls": {
+      "base_url": "http://bereanschool.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Boylan Central Catholic High Sch": {
+    "school_urls": {
+      "base_url": "http://www.boylan.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Keith Country Day School": {
+    "school_urls": {
+      "base_url": "http://www.keithschool.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Rockford Lutheran School": {
+    "school_urls": {
+      "base_url": "http://www.rockfordlutheran.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Kikifers Entrepreneurial Academy": {
+    "school_urls": {
+      "base_url": "http://www.kikifersacademy.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Christian Life Center School": {
+    "school_urls": {
+      "base_url": "http://www.clschools.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Rockford Christian Schools": {
+    "school_urls": {
+      "base_url": "http://www.rockfordchristian.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Rockford Iqra School": {
+    "school_urls": {
+      "base_url": "https://rockfordiqra.com/about-rise/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Our Lady Sacred Heart Acad": {
+    "school_urls": {
+      "base_url": "http://www.olsha.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Lydia Urban Academy-Rockford": {
+    "school_urls": {
+      "base_url": "http://www.lydiarockford.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Beacon Academy": {
+    "school_urls": {
+      "base_url": "http://beaconacademyil.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Mesivta Shaarei Adirim": {
+    "school_urls": {
+      "base_url": "https://www.shaareiadirim.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "North Shore Country Day School": {
+    "school_urls": {
+      "base_url": "https://www.nscds.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Mechinas Ner Naftali": {
+    "school_urls": {
+      "base_url": "http://nernaftali.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Notre Dame College Prep": {
+    "school_urls": {
+      "base_url": "http://www.nddons.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Logos Christian Academy": {
+    "school_urls": {
+      "base_url": "http://www.mylogos.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "St Viator High School": {
+    "school_urls": {
+      "base_url": "https://www.saintviator.com/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Fasman Yeshiva High School": {
+    "school_urls": {
+      "base_url": "https://www.htc.edu/fasman-yeshiva-high-school/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Ida Crown Jewish Academy": {
+    "school_urls": {
+      "base_url": "http://www.icja.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Rochelle Zell Jewish High School": {
+    "school_urls": {
+      "base_url": "https://www.rzjhs.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Christian Heritage Academy": {
+    "school_urls": {
+      "base_url": "http://www.christianheritage.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "MCC Academy": {
+    "school_urls": {
+      "base_url": "http://www.mccacademy.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Montessori Academy of North Hoffman": {
+    "school_urls": {
+      "base_url": "http://www.manh.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Roycemore School": {
+    "school_urls": {
+      "base_url": "https://www.roycemoreschool.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Fenwick High School": {
+    "school_urls": {
+      "base_url": "http://www.fenwickfriars.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Trinity High School": {
+    "school_urls": {
+      "base_url": "http://www.trinityhs.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Walther Christian Academy": {
+    "school_urls": {
+      "base_url": "http://www.walther.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Nazareth Academy": {
+    "school_urls": {
+      "base_url": "http://www.nazarethacademy.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Chicago Christian High School - Palos Heights": {
+    "school_urls": {
+      "base_url": "https://www.chicagochristian.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Unity Christian Academy": {
+    "school_urls": {
+      "base_url": "http://www.weareuca.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Forgirlslikeme Academy (remote)": {
+    "school_urls": {
+      "base_url": "https://www.forgirlslikeme.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Marian Catholic High School": {
+    "school_urls": {
+      "base_url": "http://www.marianchs.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Jordan Baptist School": {
+    "school_urls": {
+      "base_url": "http://www.jordanbaptist.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "American School (of Correspondence)": {
+    "school_urls": {
+      "base_url": "http://www.americanschool.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Academy High": {
+    "school_urls": {
+      "base_url": "https://www.academyhigh.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Calvary Baptist Christian Academy": {
+    "school_urls": {
+      "base_url": "https://cbcurbana.org/academywp/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Swann School": {
+    "school_urls": {
+      "base_url": "https://cdn.prod.website-files.com/6942b221212fda6654ea9b0d/6942b221212fda6654ea9cfa_WLC_Faiths-Law-Resource-Guide.pdfsearch-faith_s_law.pdf",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Maranatha Christian Academy": {
+    "school_urls": {
+      "base_url": "https://www.mcamattoon.com/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Mid-America Preparatory School": {
+    "school_urls": {
+      "base_url": "http://mapschristianschool.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Christ Our Rock Lutheran HS": {
+    "school_urls": {
+      "base_url": "https://www.corstallions.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "De La Salle Institute": {
+    "school_urls": {
+      "base_url": "http://www.dls.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "DePaul College Prep": {
+    "school_urls": {
+      "base_url": "http://www.depaulprep.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Josephinum Academy": {
+    "school_urls": {
+      "base_url": "https://www.josephinum.org/apps/pages/index.jsp?uREC_ID=4433283&type=d&pREC_ID=2673399",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Triopia Jr-Sr High School": {
+    "school_urls": {
+      "base_url": "http://www.triopiacusd27.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Mt Carmel High School": {
+    "school_urls": {
+      "base_url": "https://www.mchs.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Providence - St Mel School": {
+    "school_urls": {
+      "base_url": "http://www.psmnow.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Resurrection College Prep": {
+    "school_urls": {
+      "base_url": "https://www.reshs.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Chicago Waldorf School": {
+    "school_urls": {
+      "base_url": "http://chicagowaldorf.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Puerto Rican H S - Pedro A Campos": {
+    "school_urls": {
+      "base_url": "http://www.pachs-chicago.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Telshe High School": {
+    "school_urls": {
+      "base_url": "https://telsheyeshivachicago.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "A.S.B. Educational Institute": {
+    "school_urls": {
+      "base_url": "http://www.accountax.us",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "No Adults Left Behind High School": {
+    "school_urls": {
+      "base_url": "http://www.noadultsleftbehind.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Chicago Preparatory Elearning and Elite Sports Academy": {
+    "school_urls": {
+      "base_url": "http://www.chiprepsportsacademy.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Midwest Academy for Gifted Education NFP": {
+    "school_urls": {
+      "base_url": "http://www.mage.education",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Bnos Rabbeinu High School": {
+    "school_urls": {
+      "base_url": "http://bnosrabbeinu.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Daystar Academy": {
+    "school_urls": {
+      "base_url": "http://www.daystaracademy.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Francis W Parker School": {
+    "school_urls": {
+      "base_url": "http://www.fwparker.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Latin School of Chicago Upper": {
+    "school_urls": {
+      "base_url": "http://www.latinschool.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Chicago Academy for the Arts": {
+    "school_urls": {
+      "base_url": "https://www.chicagoacademyforthearts.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Lubavitch Girls High Sch": {
+    "school_urls": {
+      "base_url": "http://lghschicago.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "West Town Academy": {
+    "school_urls": {
+      "base_url": "https://westtownacademy.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "GCE Lab School": {
+    "school_urls": {
+      "base_url": "http://gcelabschool.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Lycee Francais De Chicago": {
+    "school_urls": {
+      "base_url": "http://www.lyceechicago.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Austin Career Education Center": {
+    "school_urls": {
+      "base_url": "http://austincareer.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Salem4Youth Ranch": {
+    "school_urls": {
+      "base_url": "http://salem4youth.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Youthbuild Academy": {
+    "school_urls": {
+      "base_url": "http://www.youthbuildmcleancounty.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Calvary Christian  Academy": {
+    "school_urls": {
+      "base_url": "https://ccanormal.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "I C Catholic Prep": {
+    "school_urls": {
+      "base_url": "https://www.iccatholicprep.org/giving/support-ic-catholic-prep",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Clapham School": {
+    "school_urls": {
+      "base_url": "http://www.claphamschool.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Kindi Academy": {
+    "school_urls": {
+      "base_url": "http://www.kindiacademy.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Islamic Foundation School": {
+    "school_urls": {
+      "base_url": "https://www.islamicfoundation.org/islamic-foundation-sunday-school",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "College Preparatory Sch of America": {
+    "school_urls": {
+      "base_url": "https://cpsaonline.org/home/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Vine Academy": {
+    "school_urls": {
+      "base_url": "http://www.vineacademyhinsdale.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Agape Christian High School": {
+    "school_urls": {
+      "base_url": "http://agapechristianhighschool.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Grace Holistic Center for Education": {
+    "school_urls": {
+      "base_url": "https://www.ghcfe.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Trinity Christian School": {
+    "school_urls": {
+      "base_url": "http://www.tcsoc.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Christian Fellowship Church Sch": {
+    "school_urls": {
+      "base_url": "http://www.cfsdqil.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Marmion Academy": {
+    "school_urls": {
+      "base_url": "http://www.marmion.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Mooseheart Child City and Sch Inc": {
+    "school_urls": {
+      "base_url": "http://www.mooseheart.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Harvest Christian Academy": {
+    "school_urls": {
+      "base_url": "http://www.harvestchristianacademy.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Heart of the Lamb Christian Academy": {
+    "school_urls": {
+      "base_url": "http://www.heartofthelambchristianacademy.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Summit School": {
+    "school_urls": {
+      "base_url": "https://www.summitelgin.org/ss_staff-contact-information",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Christ Lutheran High School": {
+    "school_urls": {
+      "base_url": "https://christlutheranbuckley.com/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Grace Christian Academy": {
+    "school_urls": {
+      "base_url": "https://www.gracecrusaders.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Lake County Christian Academy": {
+    "school_urls": {
+      "base_url": "https://lccalions.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Lutheran School Association": {
+    "school_urls": {
+      "base_url": "http://unitydecatur.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Riverbend Christian Leadership Academy": {
+    "school_urls": {
+      "base_url": "https://riverbend.academy/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Marquette Catholic High School": {
+    "school_urls": {
+      "base_url": "https://www.marquettecatholic.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Broken But Not Shattered Academy": {
+    "school_urls": {
+      "base_url": "http://www.bbnsacademy.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Marian Central Catholic H S": {
+    "school_urls": {
+      "base_url": "http://www.marian.com",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Trinity Oaks Christian Academy": {
+    "school_urls": {
+      "base_url": "https://www.trinity-oaks.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Jacksonville High School": {
+    "school_urls": {
+      "base_url": "https://www.jsd117.org/schools",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Newman Central Catholic High Sch": {
+    "school_urls": {
+      "base_url": "http://www.newmancchs.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Peoria Christian School": {
+    "school_urls": {
+      "base_url": "http://www.peoriachristian.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Daarul Uloom Islamic School": {
+    "school_urls": {
+      "base_url": "https://www.dupeoria.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Alleman High School": {
+    "school_urls": {
+      "base_url": "https://www.allemanhighschool.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Quad Cities Christian School": {
+    "school_urls": {
+      "base_url": "https://www.qcchristianschools.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "First Baptist Academy": {
+    "school_urls": {
+      "base_url": "http://www.fbaofallon.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Victorious Life International - World Changers Prep Acad": {
+    "school_urls": {
+      "base_url": "http://vl-intl.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Althoff Catholic High School": {
+    "school_urls": {
+      "base_url": "https://www.althoffcatholic.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Danville Christian Academy": {
+    "school_urls": {
+      "base_url": "http://danvilledca.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Seymour High School": {
+    "school_urls": {
+      "base_url": "https://www.cusd1.org/District/Department/292-Payson-Seymour-JRH-HS#",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Liberty High School": {
+    "school_urls": {
+      "base_url": "http://www.libertyschool.net",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Central High School": {
+    "school_urls": {
+      "base_url": "https://cusd3.com/central-high-school/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Unity High School": {
+    "school_urls": {
+      "base_url": "https://www.cusd4.com/schools",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Providence Catholic High School": {
+    "school_urls": {
+      "base_url": "http://providencecatholic.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Joliet Catholic Academy": {
+    "school_urls": {
+      "base_url": "http://www.jca-online.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Furqaan Academy": {
+    "school_urls": {
+      "base_url": "https://bolingbrook.furqaanacademy.org/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Quincy Sr High School": {
+    "school_urls": {
+      "base_url": "https://www.qps.org/schools/qhs/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Adams Co Juvenile Detention Cntr": {
+    "school_urls": {
+      "base_url": "http://www.qps.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Brown County High School": {
+    "school_urls": {
+      "base_url": "https://bchs.bchornets.com/",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "East High School": {
+    "school_urls": {
+      "base_url": "http://www.d131.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "Kaneland Senior High School": {
+    "school_urls": {
+      "base_url": "http://www.kaneland.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "St Charles East High School": {
+    "school_urls": {
+      "base_url": "http://east.d303.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  },
+  "St Charles North High School": {
+    "school_urls": {
+      "base_url": "http://north.d303.org",
+      "pages_with_contacts": []
+    },
+    "contacts": []
+  }
+}

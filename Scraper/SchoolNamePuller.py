@@ -20,21 +20,34 @@ class SupabaseSchoolPuller(SchoolPuller):
             raise ValueError("Missing SUPABASE_URL or SUPABASE_KEY")
         self.client = create_client(self.supabase_url, self.supabase_key)
     def get_schools(self):
-        response = (
-            self.client.table("school_facilities")
-            .select("FacilityName, City, Website")
-            .execute()
-        )
-        rows = response.data or []
+        limit = 1000
+        offset = 0
         schools = []
-        for row in rows:
-            schools.append(
-                {
-                    "FacilityName": row.get("FacilityName", ""),
-                    "City": row.get("City", ""),
-                    "Website": row.get("Website", row.get("website", "")),
-                }
+
+        while True:
+
+            response = (
+                self.client.table("school_facilities")
+                .select("CountyName","RegionCountyDistrict","FacilityName, City, Website", "Administrator", "Telephone", "NCES_ID")
+                .range(offset, offset + limit)
+                .execute()
             )
+            rows = response.data or []
+            if not rows:
+                break
+            for row in rows:
+                schools.append(
+                    {
+                        "FacilityName": row.get("FacilityName", ""),
+                        "City": row.get("City", ""),
+                        "County": row.get("CountyName", ""),
+                        "Website": row.get("Website", ""),
+                        "Administrator": row.get("Administrator", ""),
+                        "Telephone": row.get("Telephone", ""),
+                        "NCES_ID": row.get("NCES_ID", ""),
+                    }
+                )
+            offset += limit
         return schools
 
 

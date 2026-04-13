@@ -1,7 +1,10 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { AppProvider } from './context/AppContext';
+import { LoadingSpinner } from './components/common/LoadingSpinner';
 import { AppLayout } from './components/layout/AppLayout';
+import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { SchoolsPage } from './pages/SchoolsPage';
 import { SchoolDetailPage } from './pages/SchoolDetailPage';
@@ -11,22 +14,43 @@ import { ImportPage } from './pages/ImportPage';
 import { GenerateListsPage } from './pages/GenerateListsPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { CountiesPage } from './pages/CountiesPage';
+import { CountyDetailPage } from './pages/CountyDetailPage';
+import { NotFoundPage } from './pages/NotFoundPage';
+
+// Redirects to /login when unauthenticated; renders child routes + AppProvider when signed in.
+function AuthGuard() {
+  const { user, loading } = useAuth();
+  if (loading) return <LoadingSpinner />;
+  if (!user) return <Navigate to="/login" replace />;
+  return (
+    <AppProvider>
+      <Outlet />
+    </AppProvider>
+  );
+}
 
 function App() {
   return (
-    <AppProvider>
+    <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route element={<AppLayout />}>
-            <Route path="/" element={<DashboardPage />} />
-            <Route path="/schools" element={<SchoolsPage />} />
-            <Route path="/schools/:id" element={<SchoolDetailPage />} />
-            <Route path="/contacts" element={<ContactsPage />} />
-            <Route path="/events" element={<EventsPage />} />
-            <Route path="/import" element={<ImportPage />} />
-            <Route path="/generate" element={<GenerateListsPage />} />
-            <Route path="/analytics" element={<AnalyticsPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route element={<AuthGuard />}>
+            <Route element={<AppLayout />}>
+              <Route path="/" element={<DashboardPage />} />
+              <Route path="/schools" element={<SchoolsPage />} />
+              <Route path="/schools/:id" element={<SchoolDetailPage />} />
+              <Route path="/contacts" element={<ContactsPage />} />
+              <Route path="/events" element={<EventsPage />} />
+              <Route path="/import" element={<ImportPage />} />
+              <Route path="/generate" element={<GenerateListsPage />} />
+              <Route path="/analytics" element={<AnalyticsPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/counties" element={<CountiesPage />} />
+              <Route path="/counties/:countyName" element={<CountyDetailPage />} />
+              <Route path="*" element={<NotFoundPage />} />
+            </Route>
           </Route>
         </Routes>
       </BrowserRouter>
@@ -48,7 +72,7 @@ function App() {
           },
         }}
       />
-    </AppProvider>
+    </AuthProvider>
   );
 }
 

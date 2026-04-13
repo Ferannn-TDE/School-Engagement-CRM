@@ -7,25 +7,34 @@ import {
   Info,
   CheckCircle,
   Shield,
+  LogOut,
 } from 'lucide-react';
 import { Header } from '../components/layout/Header';
 import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import { useAppContext } from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
 import { seedSchools, seedContacts, seedEvents, seedActivities } from '../constants/seedData';
-import { exportDatabase, importDatabase } from '../utils/storage';
+import { importDatabase } from '../utils/storage';
 import { downloadFile } from '../utils/helpers';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 
 export function SettingsPage() {
-  const { dispatch } = useAppContext();
+  const { dispatch, state } = useAppContext();
+  const { user, signOut } = useAuth();
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExportDatabase = () => {
-    const json = exportDatabase();
+    const data = {
+      schools: state.schools,
+      contacts: state.contacts,
+      events: state.events,
+      activities: state.activities,
+    };
+    const json = JSON.stringify(data, null, 2);
     downloadFile(json, `siue-crm-backup-${format(new Date(), 'yyyy-MM-dd')}.json`, 'application/json');
     toast.success('Database exported successfully');
   };
@@ -56,6 +65,7 @@ export function SettingsPage() {
         contacts: seedContacts,
         events: seedEvents,
         activities: seedActivities,
+        programs: [],
       },
     });
     toast.success('Data reset to demo data successfully');
@@ -86,7 +96,7 @@ export function SettingsPage() {
               <div>
                 <p className="text-sm font-medium text-neutral-700">Export Database</p>
                 <p className="text-xs text-neutral-400 mt-0.5">
-                  Download a full JSON backup of all schools, contacts, events, and activities.
+                  Download a JSON snapshot of all current schools, contacts, events, and activities from the live database.
                 </p>
               </div>
               <Button size="sm" variant="secondary" onClick={handleExportDatabase}>
@@ -125,7 +135,7 @@ export function SettingsPage() {
               <div>
                 <p className="text-sm font-medium text-neutral-700">Reset to Demo Data</p>
                 <p className="text-xs text-neutral-400 mt-0.5">
-                  Wipe all current data and reload the built-in sample dataset. This cannot be undone.
+                  Load the built-in sample dataset into the current session. Refreshing the page will restore live data from the database.
                 </p>
               </div>
               <Button
@@ -154,18 +164,34 @@ export function SettingsPage() {
           <div className="text-sm text-neutral-600 space-y-2">
             <p className="flex items-start gap-2">
               <CheckCircle size={16} className="text-success mt-0.5 shrink-0" />
-              All data is stored locally in your browser's LocalStorage under the key prefix{' '}
-              <code className="text-xs font-mono bg-neutral-100 px-1.5 py-0.5 rounded">siue_crm_</code>.
+              Schools, contacts, and events are stored in a Supabase cloud database and are shared across all browsers and sessions.
             </p>
             <p className="flex items-start gap-2">
               <CheckCircle size={16} className="text-success mt-0.5 shrink-0" />
-              No data is sent to any server — this is a fully offline application.
+              Activities are stored in Supabase and persist across sessions.
             </p>
             <p className="flex items-start gap-2">
               <CheckCircle size={16} className="text-success mt-0.5 shrink-0" />
-              Use the Export function above to back up your data before clearing browser storage.
+              Use the Export function above to download a local backup of all data.
             </p>
           </div>
+        </Card>
+
+        {/* Account */}
+        <Card>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 rounded-lg bg-neutral-100">
+              <Shield size={20} className="text-neutral-500" />
+            </div>
+            <div>
+              <h2 className="text-sm font-semibold text-neutral-800">Account</h2>
+              <p className="text-xs text-neutral-400">Signed in as {user?.email}</p>
+            </div>
+          </div>
+          <Button variant="secondary" size="sm" onClick={() => void signOut()}>
+            <LogOut size={16} />
+            Sign out
+          </Button>
         </Card>
 
         {/* About */}
@@ -202,7 +228,7 @@ export function SettingsPage() {
             </div>
             <div>
               <dt className="text-xs text-neutral-400 uppercase tracking-wider">Storage</dt>
-              <dd className="mt-0.5 font-medium text-neutral-700">Browser LocalStorage (offline)</dd>
+              <dd className="mt-0.5 font-medium text-neutral-700">Supabase (cloud)</dd>
             </div>
           </dl>
         </Card>
@@ -213,7 +239,7 @@ export function SettingsPage() {
         onClose={() => setShowResetConfirm(false)}
         onConfirm={handleResetToSeed}
         title="Reset to Demo Data"
-        message="This will permanently replace all your current data with the built-in sample dataset. This action cannot be undone. Are you sure?"
+        message="This will replace the current session's data with the built-in sample dataset. Refreshing the page will restore live data from the database."
         confirmLabel="Reset Data"
         variant="destructive"
       />

@@ -20,6 +20,9 @@ const schoolSchema = z.object({
   zipCode: z.string().min(5, 'Valid zip code required'),
   schoolType: z.enum(['high_school', 'middle_school']),
   notes: z.string().optional(),
+  enrollment: z.string().optional(),
+  gradeRange: z.string().optional(),
+  priorityTier: z.string().optional(),
 });
 
 type SchoolFormData = z.infer<typeof schoolSchema>;
@@ -50,20 +53,31 @@ export function SchoolForm({ school, onClose }: SchoolFormProps) {
           zipCode: school.zipCode,
           schoolType: school.schoolType,
           notes: school.notes || '',
+          enrollment: school.enrollment != null ? String(school.enrollment) : '',
+          gradeRange: school.gradeRange || '',
+          priorityTier: school.priorityTier || 'standard',
         }
       : {
           state: 'IL',
           schoolType: 'high_school',
+          priorityTier: 'standard',
         },
   });
 
   const onSubmit = (data: SchoolFormData) => {
+    const enrollment = data.enrollment ? parseInt(data.enrollment, 10) : undefined;
+    const gradeRange = data.gradeRange || undefined;
+    const priorityTier = (data.priorityTier as 'high' | 'standard' | 'low' | undefined) || undefined;
+
     if (isEditing && school) {
       updateSchool({
         ...school,
         ...data,
         district: data.district || undefined,
         notes: data.notes || undefined,
+        enrollment,
+        gradeRange,
+        priorityTier,
       });
       toast.success('School updated successfully');
     } else {
@@ -72,6 +86,9 @@ export function SchoolForm({ school, onClose }: SchoolFormProps) {
         district: data.district || undefined,
         notes: data.notes || undefined,
         isActive: true,
+        enrollment,
+        gradeRange,
+        priorityTier,
       });
       toast.success('School added successfully');
     }
@@ -137,6 +154,32 @@ export function SchoolForm({ school, onClose }: SchoolFormProps) {
           {...register('zipCode')}
         />
       </div>
+      <div className="grid grid-cols-2 gap-4">
+        <Input
+          label="Enrollment"
+          type="number"
+          helpText="Total student population"
+          error={errors.enrollment?.message}
+          {...register('enrollment')}
+        />
+        <Input
+          label="Grade Range"
+          placeholder="e.g. 9-12"
+          helpText="Grades served by this school"
+          error={errors.gradeRange?.message}
+          {...register('gradeRange')}
+        />
+      </div>
+      <Select
+        label="Priority Tier"
+        options={[
+          { value: 'high', label: 'High' },
+          { value: 'standard', label: 'Standard' },
+          { value: 'low', label: 'Low' },
+        ]}
+        error={errors.priorityTier?.message}
+        {...register('priorityTier')}
+      />
       <Textarea
         label="Notes"
         rows={3}

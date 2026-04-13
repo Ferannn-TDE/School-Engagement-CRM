@@ -5,7 +5,7 @@ import { format, isAfter, isSameMonth, startOfMonth, endOfMonth, eachDayOfInterv
 import { Header } from '../components/layout/Header';
 import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
-import { Select } from '../components/common/Select';
+import { FilterBar } from '../components/common/FilterBar';
 import { Badge } from '../components/common/Badge';
 import { DataTable } from '../components/common/DataTable';
 import { Modal } from '../components/common/Modal';
@@ -68,11 +68,11 @@ export function EventsPage() {
         cell: ({ row }) => {
           const isPast = !isAfter(new Date(row.original.date), new Date());
           return (
-            <div>
+            <div className="flex items-center gap-2">
               <span className={classNames('text-sm', isPast ? 'text-neutral-400' : 'text-neutral-700')}>
                 {format(new Date(row.original.date), 'MMM d, yyyy')}
               </span>
-              {isPast && <Badge variant="default" className="ml-2">Past</Badge>}
+              {isPast && <Badge variant="default">Past</Badge>}
             </div>
           );
         },
@@ -92,7 +92,7 @@ export function EventsPage() {
         header: 'Attendees',
         cell: ({ getValue }) => {
           const count = getValue() as number | undefined;
-          return count ? count : <span className="text-neutral-300">-</span>;
+          return count ?? 0;
         },
       },
       {
@@ -170,22 +170,12 @@ export function EventsPage() {
       <div className="p-8 space-y-6">
         {view === 'list' ? (
           <>
-            <Card>
-              <div className="flex gap-4">
-                <Select
-                  options={typeOptions}
-                  placeholder="All Types"
-                  value={typeFilter}
-                  onChange={(e) => setTypeFilter(e.target.value)}
-                  className="w-48"
-                />
-                {typeFilter && (
-                  <Button variant="ghost" size="sm" onClick={() => setTypeFilter('')}>
-                    Clear
-                  </Button>
-                )}
-              </div>
-            </Card>
+            <FilterBar
+              filters={[
+                { value: typeFilter, onChange: setTypeFilter, options: typeOptions, placeholder: 'All Types', className: 'w-48' },
+              ]}
+              onClear={() => setTypeFilter('')}
+            />
             {state.events.length === 0 ? (
               <EmptyState
                 icon={<Calendar size={32} />}
@@ -203,6 +193,7 @@ export function EventsPage() {
                 <DataTable
                   data={filteredEvents}
                   columns={columns}
+                  columnWidths={['32%', '15%', '18%', '10%', '10%', '15%']}
                   emptyMessage="No events match your filter."
                 />
               </Card>

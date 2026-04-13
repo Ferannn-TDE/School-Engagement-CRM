@@ -1,33 +1,108 @@
 @import "tailwindcss";
 
-@theme {
-  --color-siue-red: #CE1126;
-  --color-siue-maroon: #8B2332;
-  --color-siue-gray: #54585A;
-  --color-siue-charcoal: #373A3C;
-  --color-success: #0F7837;
-  --color-warning: #FF8C00;
-  --color-error: #C41E3A;
-  --color-info: #004B87;
-  --color-neutral-50: #F7F7F7;
-  --color-neutral-100: #E8E9EA;
-  --color-neutral-200: #D1D3D4;
-  --color-neutral-300: #B0B3B5;
-  --color-neutral-400: #8A8D8F;
-  --color-neutral-500: #54585A;
-  --color-neutral-600: #444749;
-  --color-neutral-700: #373A3C;
-  --color-neutral-800: #2A2C2E;
-  --color-neutral-900: #1A1C1E;
+/* ─────────────────────────────────────────────────────────────────────────────
+   Palette tokens — canonical source of truth for all color values.
+   To implement dark mode: override these variables inside [data-theme="dark"].
+   Tailwind utility classes (bg-siue-red, text-neutral-700, etc.) reference the
+   @theme-generated vars which Tailwind makes overridable in the same way.
+───────────────────────────────────────────────────────────────────────────── */
+:root {
+  /* Brand */
+  --palette-siue-red: #CE1126;
+  --palette-siue-maroon: #8B2332;
+  --palette-siue-gray: #54585A;
+  --palette-siue-charcoal: #373A3C;
+
+  /* Semantic */
+  --palette-success: #0F7837;
+  --palette-warning: #FF8C00;
+  --palette-error: #C41E3A;
+  --palette-info: #004B87;
+
+  /* Neutral scale */
+  --palette-neutral-50: #F7F7F7;
+  --palette-neutral-100: #E8E9EA;
+  --palette-neutral-200: #D1D3D4;
+  --palette-neutral-300: #B0B3B5;
+  --palette-neutral-400: #8A8D8F;
+  --palette-neutral-500: #54585A;
+  --palette-neutral-600: #444749;
+  --palette-neutral-700: #373A3C;
+  --palette-neutral-800: #2A2C2E;
+  --palette-neutral-900: #1A1C1E;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Tailwind design tokens — reference palette vars above.
+   NOTE: Tailwind v4 @theme inline supports var() references, generating
+   utilities that inline the variable reference at the point of use.
+───────────────────────────────────────────────────────────────────────────── */
+@theme inline {
+  --color-siue-red: var(--palette-siue-red);
+  --color-siue-maroon: var(--palette-siue-maroon);
+  --color-siue-gray: var(--palette-siue-gray);
+  --color-siue-charcoal: var(--palette-siue-charcoal);
+  --color-success: var(--palette-success);
+  --color-warning: var(--palette-warning);
+  --color-error: var(--palette-error);
+  --color-info: var(--palette-info);
+  --color-neutral-50: var(--palette-neutral-50);
+  --color-neutral-100: var(--palette-neutral-100);
+  --color-neutral-200: var(--palette-neutral-200);
+  --color-neutral-300: var(--palette-neutral-300);
+  --color-neutral-400: var(--palette-neutral-400);
+  --color-neutral-500: var(--palette-neutral-500);
+  --color-neutral-600: var(--palette-neutral-600);
+  --color-neutral-700: var(--palette-neutral-700);
+  --color-neutral-800: var(--palette-neutral-800);
+  --color-neutral-900: var(--palette-neutral-900);
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  /* Micro-interaction animations */
+  --animate-fade-in: fadeIn 150ms ease-out;
+  --animate-slide-up: slideUp 220ms cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Dark mode placeholder — uncomment and fill in values to enable dark mode.
+   These overrides update the :root palette tokens which flow through to all
+   Tailwind utilities automatically.
+
+[data-theme="dark"] {
+  --palette-siue-red: #e8374d;
+  --palette-siue-maroon: #a63347;
+  --palette-success: #22a05a;
+  --palette-warning: #ffaa33;
+  --palette-error: #e03050;
+  --palette-info: #3a8fd4;
+  --palette-neutral-50: #1a1c1e;
+  --palette-neutral-100: #2a2c2e;
+  --palette-neutral-200: #373a3c;
+  --palette-neutral-300: #54585a;
+  --palette-neutral-400: #8a8d8f;
+  --palette-neutral-500: #b0b3b5;
+  --palette-neutral-600: #d1d3d4;
+  --palette-neutral-700: #e8e9ea;
+  --palette-neutral-800: #f2f3f3;
+  --palette-neutral-900: #f7f7f7;
+}
+───────────────────────────────────────────────────────────────────────────── */
 
 body {
   margin: 0;
   font-family: var(--font-sans);
-  background-color: var(--color-neutral-50);
-  color: var(--color-neutral-700);
+  background-color: var(--palette-neutral-50);
+  color: var(--palette-neutral-700);
   min-height: 100vh;
 }
 
@@ -41,16 +116,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-neutral-100);
+  background: var(--palette-neutral-100);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-neutral-300);
+  background: var(--palette-neutral-300);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-neutral-400);
+  background: var(--palette-neutral-400);
 }
 
 .skip-nav {
@@ -58,7 +133,7 @@ body {
   left: -9999px;
   z-index: 999;
   padding: 0.5rem 1rem;
-  background: var(--color-siue-red);
+  background: var(--palette-siue-red);
   color: white;
   text-decoration: none;
   font-weight: 600;

@@ -1,11 +1,11 @@
 import { useState, useMemo } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
-import { Plus, Users, Search, Mail, Phone } from 'lucide-react';
+import { Plus, Users, Mail, Phone, ShieldCheck, ShieldOff, CheckCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { Header } from '../components/layout/Header';
 import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
-import { Select } from '../components/common/Select';
+import { FilterBar } from '../components/common/FilterBar';
 import { Badge } from '../components/common/Badge';
 import { DataTable } from '../components/common/DataTable';
 import { Modal } from '../components/common/Modal';
@@ -17,24 +17,34 @@ import type { Contact } from '../types';
 import { ContactRole, ContactRoleLabels } from '../types';
 import toast from 'react-hot-toast';
 
+type VerifiedTab = 'all' | 'verified' | 'unverified';
+
 export function ContactsPage() {
-  const { state, getSchoolById, updateContact, deleteContact } = useAppContext();
+  const { state, getSchoolById, updateContact, deleteContact, verifyContact } = useAppContext();
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
   const [schoolFilter, setSchoolFilter] = useState('');
   const [activeFilter, setActiveFilter] = useState('');
+  const [verifiedTab, setVerifiedTab] = useState<VerifiedTab>('all');
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingContact, setEditingContact] = useState<Contact | null>(null);
   const [deletingContact, setDeletingContact] = useState<Contact | null>(null);
 
+  const unverifiedCount = useMemo(
+    () => state.contacts.filter((c) => !c.isVerified).length,
+    [state.contacts]
+  );
+
   const filteredContacts = useMemo(() => {
     let contacts = state.contacts;
+    if (verifiedTab === 'verified') contacts = contacts.filter((c) => c.isVerified);
+    else if (verifiedTab === 'unverified') contacts = contacts.filter((c) => !c.isVerified);
     if (roleFilter) contacts = contacts.filter((c) => c.role === roleFilter);
     if (schoolFilter) contacts = contacts.filter((c) => c.schoolId === schoolFilter);
     if (activeFilter === 'active') contacts = contacts.filter((c) => c.isActive);
     if (activeFilter === 'inactive') contacts = contacts.filter((c) => !c.isActive);
     return contacts;
-  }, [state.contacts, roleFilter, schoolFilter, activeFilter]);
+  }, [state.contacts, verifiedTab, roleFilter, schoolFilter, activeFilter]);
 
   const columns: ColumnDef<Contact, unknown>[] = useMemo(
     () => [
@@ -103,7 +113,20 @@ export function ContactsPage() {
         header: '',
         enableSorting: false,
         cell: ({ row }) => (
-          <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+          <div className="flex gap-1 flex-wrap" onClick={(e) => e.stopPropagation()}>
+            {!row.original.isVerified && (
+              <>
+                <button
+                  onClick={() => verifyContact(row.original.id)}
+                  className="flex items-center gap-1 text-xs text-success hover:underline"
+                  title="Mark as verified"
+                >
+                  <CheckCircle size={12} />
+                  Verify
+                </button>
+                <span className="text-neutral-200">|</span>
+              </>
+            )}
             <button
               onClick={() => setEditingContact(row.original)}
               className="text-xs text-info hover:underline"
@@ -131,7 +154,7 @@ export function ContactsPage() {
         ),
       },
     ],
-    [getSchoolById, updateContact]
+    [getSchoolById, updateContact, verifyContact]
   );
 
   const roleOptions = Object.values(ContactRole).map((role) => ({
@@ -139,10 +162,9 @@ export function ContactsPage() {
     label: ContactRoleLabels[role],
   }));
 
-  const schoolOptions = state.schools.map((s) => ({
-    value: s.id,
-    label: s.name,
-  }));
+  const schoolOptions = [...state.schools]
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map((s) => ({ value: s.id, label: s.name }));
 
   return (
     <div>
@@ -157,60 +179,60 @@ export function ContactsPage() {
         }
       />
       <div className="p-8 space-y-6">
+
+        {/* Verified / Unverified tabs */}
+        <div className="flex gap-1 bg-neutral-100 p-1 rounded-lg w-fit">
+          {([
+            { key: 'all', label: 'All', icon: <Users size={14} /> },
+            { key: 'verified', label: 'Verified', icon: <ShieldCheck size={14} /> },
+            { key: 'unverified', label: 'Unverified', icon: <ShieldOff size={14} /> },
+          ] as const).map(({ key, label, icon }) => (
+            <button
+              key={key}
+              onClick={() => setVerifiedTab(key)}
+              className={
+                'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ' +
+                (verifiedTab === key
+                  ? 'bg-white text-neutral-800 shadow-sm'
+                  : 'text-neutral-500 hover:text-neutral-700')
+              }
+            >
+              {icon}
+              {label}
+              {key === 'unverified' && unverifiedCount > 0 && (
+                <span className="ml-0.5 bg-warning/20 text-warning rounded-full px-1.5 py-0.5 text-xs font-semibold leading-none">
+                  {unverifiedCount}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+
         {/* Filters */}
-        <Card>
-          <div className="flex flex-wrap gap-4">
-            <div className="flex-1 min-w-[200px]">
-              <div className="relative">
-                <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
-                <input
-                  type="search"
-                  placeholder="Search contacts..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-siue-red/30 focus:border-siue-red"
-                />
-              </div>
-            </div>
-            <Select
-              options={roleOptions}
-              placeholder="All Roles"
-              value={roleFilter}
-              onChange={(e) => setRoleFilter(e.target.value)}
-              className="w-48"
-            />
-            <Select
-              options={schoolOptions}
-              placeholder="All Schools"
-              value={schoolFilter}
-              onChange={(e) => setSchoolFilter(e.target.value)}
-              className="w-48"
-            />
-            <Select
-              options={[
+        <FilterBar
+          searchValue={search}
+          onSearchChange={setSearch}
+          searchPlaceholder="Search contacts..."
+          filters={[
+            { value: roleFilter, onChange: setRoleFilter, options: roleOptions, placeholder: 'All Roles', className: 'w-48' },
+            { value: schoolFilter, onChange: setSchoolFilter, options: schoolOptions, placeholder: 'All Schools', className: 'w-48' },
+            {
+              value: activeFilter,
+              onChange: setActiveFilter,
+              options: [
                 { value: 'active', label: 'Active' },
                 { value: 'inactive', label: 'Inactive' },
-              ]}
-              placeholder="All Status"
-              value={activeFilter}
-              onChange={(e) => setActiveFilter(e.target.value)}
-              className="w-36"
-            />
-            {(roleFilter || schoolFilter || activeFilter) && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setRoleFilter('');
-                  setSchoolFilter('');
-                  setActiveFilter('');
-                }}
-              >
-                Clear
-              </Button>
-            )}
-          </div>
-        </Card>
+              ],
+              placeholder: 'All Status',
+              className: 'w-36',
+            },
+          ]}
+          onClear={() => {
+            setRoleFilter('');
+            setSchoolFilter('');
+            setActiveFilter('');
+          }}
+        />
 
         {state.contacts.length === 0 ? (
           <EmptyState
@@ -223,6 +245,18 @@ export function ContactsPage() {
                 Add Contact
               </Button>
             }
+          />
+        ) : verifiedTab === 'verified' && filteredContacts.length === 0 ? (
+          <EmptyState
+            icon={<ShieldCheck size={32} />}
+            title="No verified contacts yet"
+            description="Switch to the Unverified tab to review and verify contacts."
+          />
+        ) : verifiedTab === 'unverified' && filteredContacts.length === 0 ? (
+          <EmptyState
+            icon={<ShieldCheck size={32} />}
+            title="All contacts are verified"
+            description="Every contact record has been verified."
           />
         ) : (
           <Card padding={false}>

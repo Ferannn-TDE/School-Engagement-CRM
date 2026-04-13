@@ -1,3 +1,34 @@
+export enum ProgramCategory {
+  CS = 'cs',
+  ENGINEERING = 'engineering',
+  ROBOTICS = 'robotics',
+  STEM_CLUB = 'stem_club',
+  MATH_CLUB = 'math_club',
+  SCIENCE_CLUB = 'science_club',
+  OTHER = 'other',
+}
+
+export const ProgramCategoryLabels: Record<ProgramCategory, string> = {
+  [ProgramCategory.CS]: 'Computer Science',
+  [ProgramCategory.ENGINEERING]: 'Engineering',
+  [ProgramCategory.ROBOTICS]: 'Robotics',
+  [ProgramCategory.STEM_CLUB]: 'STEM Club',
+  [ProgramCategory.MATH_CLUB]: 'Math Club',
+  [ProgramCategory.SCIENCE_CLUB]: 'Science Club',
+  [ProgramCategory.OTHER]: 'Other',
+};
+
+export interface Program {
+  id: string;
+  schoolId: string;
+  name: string;
+  category: ProgramCategory;
+  description?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export enum ContactRole {
   SUPERINTENDENT = 'superintendent',
   PRINCIPAL = 'principal',
@@ -48,6 +79,9 @@ export interface Contact {
   schoolId: string;
   isActive: boolean;
   notes?: string;
+  dataSource?: 'manual' | 'imported' | 'scraped';
+  isVerified?: boolean;
+  lastVerifiedAt?: string;
   createdAt: string;
   updatedAt: string;
   lastContactDate?: string;
@@ -65,6 +99,12 @@ export interface School {
   schoolType: SchoolType;
   isActive: boolean;
   notes?: string;
+  enrollment?: number;
+  gradeRange?: string;
+  dataSource?: 'manual' | 'imported' | 'scraped';
+  isVerified?: boolean;
+  lastVerifiedAt?: string;
+  priorityTier?: 'high' | 'standard' | 'low';
   createdAt: string;
   updatedAt: string;
 }
@@ -105,12 +145,6 @@ export interface FilterState {
   dateTo?: string;
 }
 
-export interface AppState {
-  schools: School[];
-  contacts: Contact[];
-  events: Event[];
-  activities: ActivityRecord[];
-}
 
 export type ColumnMapping = Record<string, string>;
 

@@ -20,6 +20,8 @@ interface DataTableProps<T> {
   onRowClick?: (row: T) => void;
   emptyMessage?: string;
   emptyAction?: React.ReactNode;
+  /** Optional column width percentages, e.g. ['30%', '20%', '15%', '15%', '20%']. Must sum to 100%. */
+  columnWidths?: string[];
 }
 
 export function DataTable<T>({
@@ -30,6 +32,7 @@ export function DataTable<T>({
   onRowClick,
   emptyMessage = 'No data found.',
   emptyAction,
+  columnWidths,
 }: DataTableProps<T>) {
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -48,7 +51,14 @@ export function DataTable<T>({
   return (
     <div>
       <div className="overflow-x-auto rounded-lg border border-neutral-100">
-        <table className="min-w-full divide-y divide-neutral-100">
+        <table className="min-w-full divide-y divide-neutral-100 table-fixed">
+          {columnWidths && (
+            <colgroup>
+              {columnWidths.map((w, i) => (
+                <col key={i} style={{ width: w }} />
+              ))}
+            </colgroup>
+          )}
           <thead className="bg-neutral-50">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>

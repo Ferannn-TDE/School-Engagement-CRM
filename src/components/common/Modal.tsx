@@ -42,7 +42,7 @@ export function Modal({ open, onClose, title, children, size = 'md' }: ModalProp
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in"
       onClick={(e) => {
         if (e.target === overlayRef.current) onClose();
       }}
@@ -53,7 +53,7 @@ export function Modal({ open, onClose, title, children, size = 'md' }: ModalProp
       <div
         ref={contentRef}
         tabIndex={-1}
-        className={`${sizeClasses[size]} w-full bg-white rounded-xl shadow-xl max-h-[90vh] flex flex-col outline-none`}
+        className={`${sizeClasses[size]} w-full bg-white rounded-xl shadow-xl max-h-[90vh] flex flex-col outline-none animate-slide-up`}
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100">
           <h2 id="modal-title" className="text-lg font-semibold text-neutral-800">

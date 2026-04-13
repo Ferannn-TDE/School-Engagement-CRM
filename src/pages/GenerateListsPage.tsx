@@ -17,6 +17,7 @@ export function GenerateListsPage() {
   const [schoolTypeFilter, setSchoolTypeFilter] = useState('');
   const [eventFilter, setEventFilter] = useState('');
   const [activeOnly, setActiveOnly] = useState(true);
+  const [includeUnverified, setIncludeUnverified] = useState(false);
   const [exportFormat, setExportFormat] = useState<'email' | 'csv' | 'mailing'>('email');
 
   const uniqueCounties = useMemo(
@@ -28,6 +29,7 @@ export function GenerateListsPage() {
     let contacts = state.contacts;
 
     if (activeOnly) contacts = contacts.filter((c) => c.isActive);
+    if (!includeUnverified) contacts = contacts.filter((c) => c.isVerified === true);
     if (roleFilter) contacts = contacts.filter((c) => c.role === roleFilter);
 
     // Filter by school attributes
@@ -54,7 +56,7 @@ export function GenerateListsPage() {
     }
 
     return contacts;
-  }, [state, countyFilter, roleFilter, schoolTypeFilter, eventFilter, activeOnly]);
+  }, [state, countyFilter, roleFilter, schoolTypeFilter, eventFilter, activeOnly, includeUnverified]);
 
   const handleCopyEmails = () => {
     const emails = filteredContacts.map((c) => c.email).join(', ');
@@ -168,6 +170,15 @@ export function GenerateListsPage() {
                 />
                 <span className="text-sm text-neutral-700">Active contacts only</span>
               </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={includeUnverified}
+                  onChange={(e) => setIncludeUnverified(e.target.checked)}
+                  className="rounded border-neutral-300 text-siue-red focus:ring-siue-red"
+                />
+                <span className="text-sm text-neutral-700">Include unverified contacts</span>
+              </label>
 
               <div className="pt-4 border-t border-neutral-100">
                 <Select
@@ -222,15 +233,27 @@ export function GenerateListsPage() {
                 </div>
               </div>
             </div>
+            {filteredContacts.length > 0 && (
+              <div className="px-4 py-2 border-b border-neutral-100 text-xs text-neutral-500">
+                Showing {Math.min(50, filteredContacts.length)} of {filteredContacts.length} contacts
+              </div>
+            )}
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-neutral-100 text-sm">
+              <table className="min-w-full divide-y divide-neutral-100 text-sm table-fixed">
+                <colgroup>
+                  <col style={{ width: '20%' }} />
+                  <col style={{ width: '28%' }} />
+                  <col style={{ width: '16%' }} />
+                  <col style={{ width: '24%' }} />
+                  <col style={{ width: '12%' }} />
+                </colgroup>
                 <thead className="bg-neutral-50">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-500">Name</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-500">Email</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-500">Role</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-500">School</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-500">County</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider">Name</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider">Email</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider">Role</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider">School</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider">County</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-neutral-50">

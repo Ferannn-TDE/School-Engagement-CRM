@@ -10,11 +10,45 @@ import { Select } from '../components/common/Select';
 import { Badge } from '../components/common/Badge';
 import { useAppContext } from '../context/AppContext';
 import { ContactRole } from '../types';
-import { isValidEmail } from '../utils/helpers';
+import { isValidEmail, downloadFile } from '../utils/helpers';
 import { CONTACT_FIELD_OPTIONS, SCHOOL_FIELD_OPTIONS } from '../constants';
 import toast from 'react-hot-toast';
 
 type ImportTab = 'contacts' | 'schools';
+
+const ROLE_LOOKUP: Record<string, ContactRole> = {
+  // enum values (what the template shows)
+  superintendent:          ContactRole.SUPERINTENDENT,
+  principal:               ContactRole.PRINCIPAL,
+  counselor:               ContactRole.COUNSELOR,
+  cs_teacher:              ContactRole.CS_TEACHER,
+  engineering_teacher:     ContactRole.ENGINEERING_TEACHER,
+  math_teacher:            ContactRole.MATH_TEACHER,
+  science_teacher:         ContactRole.SCIENCE_TEACHER,
+  // natural-language labels a user might type
+  'cs teacher':                  ContactRole.CS_TEACHER,
+  'computer science teacher':    ContactRole.CS_TEACHER,
+  'computer science':            ContactRole.CS_TEACHER,
+  'computing teacher':           ContactRole.CS_TEACHER,
+  'engineering teacher':         ContactRole.ENGINEERING_TEACHER,
+  engineering:                   ContactRole.ENGINEERING_TEACHER,
+  'math teacher':                ContactRole.MATH_TEACHER,
+  'mathematics teacher':         ContactRole.MATH_TEACHER,
+  mathematics:                   ContactRole.MATH_TEACHER,
+  math:                          ContactRole.MATH_TEACHER,
+  'science teacher':             ContactRole.SCIENCE_TEACHER,
+  science:                       ContactRole.SCIENCE_TEACHER,
+  'guidance counselor':          ContactRole.COUNSELOR,
+  'school counselor':            ContactRole.COUNSELOR,
+  guidance:                      ContactRole.COUNSELOR,
+  'district superintendent':     ContactRole.SUPERINTENDENT,
+  supt:                          ContactRole.SUPERINTENDENT,
+};
+
+function resolveRole(value: string | undefined): ContactRole {
+  if (!value) return ContactRole.COUNSELOR;
+  return ROLE_LOOKUP[value.toLowerCase().trim()] ?? ContactRole.COUNSELOR;
+}
 
 interface ParsedRow {
   [key: string]: string;
@@ -134,6 +168,15 @@ export function ImportPage() {
         if (existingEmail) {
           errors.push({ row: i, field: 'email', message: 'Duplicate email (already exists)', severity: 'warning' });
         }
+        // Check school name resolves to a known school
+        if (mapped.schoolId) {
+          const schoolMatch = state.schools.find(
+            (s) => s.name.toLowerCase() === mapped.schoolId.toLowerCase()
+          );
+          if (!schoolMatch) {
+            errors.push({ row: i, field: 'schoolId', message: `School "${mapped.schoolId}" not found — row will be skipped`, severity: 'error' });
+          }
+        }
       });
     } else {
       parsedData.forEach((row, i) => {
@@ -166,7 +209,6 @@ export function ImportPage() {
         .filter(({ i }) => !errorRows.has(i))
         .map(({ row }) => {
           const mapped = mapRow(row);
-          // Try to find school by name
           const school = state.schools.find(
             (s) => s.name.toLowerCase() === (mapped.schoolId || '').toLowerCase()
           );
@@ -175,9 +217,8 @@ export function ImportPage() {
             lastName: mapped.lastName || '',
             email: mapped.email || '',
             phone: mapped.phone || undefined,
-            role: (Object.values(ContactRole).find((r) => r === mapped.role?.toLowerCase()) ||
-              ContactRole.COUNSELOR) as ContactRole,
-            schoolId: school?.id || state.schools[0]?.id || '',
+            role: resolveRole(mapped.role),
+            schoolId: school?.id ?? '',
             isActive: true,
             notes: mapped.notes || undefined,
           };
@@ -216,6 +257,22 @@ export function ImportPage() {
     setValidationErrors([]);
     setFileName('');
     setStep('upload');
+  };
+
+  const downloadTemplate = () => {
+    if (activeTab === 'contacts') {
+      const csv = [
+        'firstName,lastName,email,phone,role,schoolName,notes',
+        'Jane,Smith,jane.smith@example.com,6185550100,counselor,Edwardsville High School,',
+      ].join('\n');
+      downloadFile(csv, 'contacts-template.csv', 'text/csv');
+    } else {
+      const csv = [
+        'name,district,county,address,city,state,zipCode,schoolType,notes',
+        'Edwardsville High School,Edwardsville CUSD 7,Madison,1200 Tigers Trail,Edwardsville,IL,62025,high_school,',
+      ].join('\n');
+      downloadFile(csv, 'schools-template.csv', 'text/csv');
+    }
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -260,7 +317,7 @@ export function ImportPage() {
               <h2 className="text-lg font-semibold text-neutral-800">
                 Upload {activeTab === 'contacts' ? 'Contact' : 'School'} File
               </h2>
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" onClick={downloadTemplate}>
                 <Download size={16} />
                 Download Template
               </Button>

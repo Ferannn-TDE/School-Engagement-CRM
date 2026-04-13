@@ -154,8 +154,9 @@ export function EventForm({ event, onClose }: EventFormProps) {
           Participating Schools
         </label>
         <div className="border border-neutral-200 rounded-lg max-h-48 overflow-y-auto p-2 space-y-1">
-          {state.schools
+          {[...state.schools]
             .filter((s) => s.isActive)
+            .sort((a, b) => a.name.localeCompare(b.name))
             .map((school) => (
               <label
                 key={school.id}

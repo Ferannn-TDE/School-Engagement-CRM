@@ -1,14 +1,55 @@
-import { createContext, useContext, useReducer, useEffect, type ReactNode } from 'react';
-import type { School, Contact, Event, ActivityRecord } from '../types';
-import { loadFromStorage, saveToStorage } from '../utils/storage';
-import { seedSchools, seedContacts, seedEvents, seedActivities } from '../constants/seedData';
-import { generateId, nowISO } from '../utils/helpers';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useReducer,
+  useEffect,
+  useState,
+  type ReactNode,
+} from 'react';
+import toast from 'react-hot-toast';
+import type { School, Contact, Event, ActivityRecord, Program } from '../types';
+import { nowISO } from '../utils/helpers';
+import {
+  fetchSchools,
+  createSchool,
+  updateSchool as dbUpdateSchool,
+  deleteSchool as dbDeleteSchool,
+  markSchoolVerified,
+  markSchoolsVerifiedBulk,
+} from '../services/schoolsService';
+import {
+  fetchContacts,
+  createContact,
+  createContactsBulk,
+  updateContact as dbUpdateContact,
+  deleteContact as dbDeleteContact,
+  markContactVerified,
+} from '../services/contactsService';
+import {
+  fetchEvents,
+  createEvent,
+  updateEvent as dbUpdateEvent,
+  deleteEvent as dbDeleteEvent,
+} from '../services/eventsService';
+import {
+  fetchActivities,
+  createActivity,
+  deleteActivity as dbDeleteActivity,
+} from '../services/activitiesService';
+import {
+  fetchPrograms,
+  createProgram,
+  updateProgram as dbUpdateProgram,
+  deleteProgram as dbDeleteProgram,
+} from '../services/programsService';
 
 interface AppState {
   schools: School[];
   contacts: Contact[];
   events: Event[];
   activities: ActivityRecord[];
+  programs: Program[];
 }
 
 type Action =
@@ -27,6 +68,13 @@ type Action =
   | { type: 'DELETE_EVENT'; payload: string }
   | { type: 'SET_ACTIVITIES'; payload: ActivityRecord[] }
   | { type: 'ADD_ACTIVITY'; payload: ActivityRecord }
+  | { type: 'DELETE_ACTIVITY'; payload: string }
+  | { type: 'SET_PROGRAMS'; payload: Program[] }
+  | { type: 'ADD_PROGRAM'; payload: Program }
+  | { type: 'UPDATE_PROGRAM'; payload: Program }
+  | { type: 'DELETE_PROGRAM'; payload: string }
+  | { type: 'VERIFY_SCHOOLS_BULK'; payload: { ids: string[]; now: string } }
+  | { type: 'VERIFY_CONTACT'; payload: { id: string; now: string } }
   | { type: 'LOAD_STATE'; payload: AppState };
 
 function reducer(state: AppState, action: Action): AppState {
@@ -87,6 +135,45 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, activities: action.payload };
     case 'ADD_ACTIVITY':
       return { ...state, activities: [...state.activities, action.payload] };
+    case 'DELETE_ACTIVITY':
+      return {
+        ...state,
+        activities: state.activities.filter((a) => a.id !== action.payload),
+      };
+    case 'SET_PROGRAMS':
+      return { ...state, programs: action.payload };
+    case 'ADD_PROGRAM':
+      return { ...state, programs: [...state.programs, action.payload] };
+    case 'UPDATE_PROGRAM':
+      return {
+        ...state,
+        programs: state.programs.map((p) =>
+          p.id === action.payload.id ? action.payload : p
+        ),
+      };
+    case 'DELETE_PROGRAM':
+      return {
+        ...state,
+        programs: state.programs.filter((p) => p.id !== action.payload),
+      };
+    case 'VERIFY_SCHOOLS_BULK':
+      return {
+        ...state,
+        schools: state.schools.map((s) =>
+          action.payload.ids.includes(s.id)
+            ? { ...s, isVerified: true, lastVerifiedAt: action.payload.now, updatedAt: action.payload.now }
+            : s
+        ),
+      };
+    case 'VERIFY_CONTACT':
+      return {
+        ...state,
+        contacts: state.contacts.map((c) =>
+          c.id === action.payload.id
+            ? { ...c, isVerified: true, lastVerifiedAt: action.payload.now, updatedAt: action.payload.now }
+            : c
+        ),
+      };
     default:
       return state;
   }
@@ -97,11 +184,14 @@ const initialState: AppState = {
   contacts: [],
   events: [],
   activities: [],
+  programs: [],
 };
 
 interface AppContextValue {
   state: AppState;
   dispatch: React.Dispatch<Action>;
+  loading: boolean;
+  error: string | null;
   addSchool: (school: Omit<School, 'id' | 'createdAt' | 'updatedAt'>) => void;
   updateSchool: (school: School) => void;
   deleteSchool: (id: string) => void;
@@ -113,141 +203,281 @@ interface AppContextValue {
   updateEvent: (event: Event) => void;
   deleteEvent: (id: string) => void;
   addActivity: (activity: Omit<ActivityRecord, 'id'>) => void;
+  deleteActivity: (id: string) => void;
+  addProgram: (program: Omit<Program, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  updateProgram: (program: Program) => void;
+  deleteProgram: (id: string) => void;
+  verifySchool: (id: string) => void;
+  verifySchoolsBulk: (ids: string[]) => void;
+  verifyContact: (id: string) => void;
   getSchoolById: (id: string) => School | undefined;
   getContactsBySchool: (schoolId: string) => Contact[];
   getActivitiesBySchool: (schoolId: string) => ActivityRecord[];
   getEventsBySchool: (schoolId: string) => Event[];
+  getProgramsBySchool: (schoolId: string) => Program[];
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Load data on mount
+  // Load all data from Supabase on mount (activities from localStorage)
   useEffect(() => {
-    const schools = loadFromStorage<School[]>('schools', []);
-    const contacts = loadFromStorage<Contact[]>('contacts', []);
-    const events = loadFromStorage<Event[]>('events', []);
-    const activities = loadFromStorage<ActivityRecord[]>('activities', []);
-
-    if (schools.length === 0 && contacts.length === 0) {
-      // Seed with demo data
-      dispatch({
-        type: 'LOAD_STATE',
-        payload: {
-          schools: seedSchools,
-          contacts: seedContacts,
-          events: seedEvents,
-          activities: seedActivities,
-        },
-      });
-    } else {
-      dispatch({
-        type: 'LOAD_STATE',
-        payload: { schools, contacts, events, activities },
-      });
+    async function loadData() {
+      try {
+        setLoading(true);
+        setError(null);
+        const [schools, contacts, events, activities, programs] = await Promise.all([
+          fetchSchools(),
+          fetchContacts(),
+          fetchEvents(),
+          fetchActivities(),
+          fetchPrograms(),
+        ]);
+        dispatch({
+          type: 'LOAD_STATE',
+          payload: { schools, contacts, events, activities, programs },
+        });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Failed to load data from database';
+        setError(message);
+        console.error('AppContext load error:', err);
+      } finally {
+        setLoading(false);
+      }
     }
+    void loadData();
   }, []);
 
-  // Persist on change
-  useEffect(() => {
-    if (state.schools.length > 0 || state.contacts.length > 0) {
-      saveToStorage('schools', state.schools);
-      saveToStorage('contacts', state.contacts);
-      saveToStorage('events', state.events);
-      saveToStorage('activities', state.activities);
-    }
-  }, [state]);
-
-  const addSchool = (school: Omit<School, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const now = nowISO();
-    dispatch({
-      type: 'ADD_SCHOOL',
-      payload: { ...school, id: generateId(), createdAt: now, updatedAt: now },
-    });
+  // Schools
+  const addSchool = (school: Omit<School, 'id' | 'createdAt' | 'updatedAt'>): void => {
+    createSchool(school)
+      .then((created) => dispatch({ type: 'ADD_SCHOOL', payload: created }))
+      .catch((err) => {
+        console.error('addSchool failed:', err);
+        toast.error('Failed to save school');
+      });
   };
 
-  const updateSchool = (school: School) => {
-    dispatch({
-      type: 'UPDATE_SCHOOL',
-      payload: { ...school, updatedAt: nowISO() },
-    });
+  const updateSchool = (school: School): void => {
+    dbUpdateSchool(school.id, school)
+      .then(() =>
+        dispatch({
+          type: 'UPDATE_SCHOOL',
+          payload: { ...school, updatedAt: nowISO() },
+        })
+      )
+      .catch((err) => {
+        console.error('updateSchool failed:', err);
+        toast.error('Failed to update school');
+      });
   };
 
-  const deleteSchool = (id: string) => {
-    dispatch({ type: 'DELETE_SCHOOL', payload: id });
+  const deleteSchool = (id: string): void => {
+    dbDeleteSchool(id)
+      .then(() => dispatch({ type: 'DELETE_SCHOOL', payload: id }))
+      .catch((err) => {
+        console.error('deleteSchool failed:', err);
+        toast.error('Failed to delete school');
+      });
   };
 
-  const addContact = (contact: Omit<Contact, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const now = nowISO();
-    dispatch({
-      type: 'ADD_CONTACT',
-      payload: { ...contact, id: generateId(), createdAt: now, updatedAt: now },
-    });
+  // Contacts
+  const addContact = (contact: Omit<Contact, 'id' | 'createdAt' | 'updatedAt'>): void => {
+    createContact(contact)
+      .then((created) => dispatch({ type: 'ADD_CONTACT', payload: created }))
+      .catch((err) => {
+        console.error('addContact failed:', err);
+        toast.error('Failed to save contact');
+      });
   };
 
-  const addContactsBulk = (contacts: Omit<Contact, 'id' | 'createdAt' | 'updatedAt'>[]) => {
-    const now = nowISO();
-    const newContacts = contacts.map((c) => ({
-      ...c,
-      id: generateId(),
-      createdAt: now,
-      updatedAt: now,
-    }));
-    dispatch({ type: 'ADD_CONTACTS_BULK', payload: newContacts });
+  const addContactsBulk = (
+    contacts: Omit<Contact, 'id' | 'createdAt' | 'updatedAt'>[]
+  ): void => {
+    createContactsBulk(contacts)
+      .then((created) => dispatch({ type: 'ADD_CONTACTS_BULK', payload: created }))
+      .catch((err) => {
+        console.error('addContactsBulk failed:', err);
+        toast.error('Failed to import contacts');
+      });
   };
 
-  const updateContact = (contact: Contact) => {
-    dispatch({
-      type: 'UPDATE_CONTACT',
-      payload: { ...contact, updatedAt: nowISO() },
-    });
+  const updateContact = (contact: Contact): void => {
+    dbUpdateContact(contact.id, contact)
+      .then(() =>
+        dispatch({
+          type: 'UPDATE_CONTACT',
+          payload: { ...contact, updatedAt: nowISO() },
+        })
+      )
+      .catch((err) => {
+        console.error('updateContact failed:', err);
+        toast.error('Failed to update contact');
+      });
   };
 
-  const deleteContact = (id: string) => {
-    dispatch({ type: 'DELETE_CONTACT', payload: id });
+  const deleteContact = (id: string): void => {
+    dbDeleteContact(id)
+      .then(() => dispatch({ type: 'DELETE_CONTACT', payload: id }))
+      .catch((err) => {
+        console.error('deleteContact failed:', err);
+        toast.error('Failed to delete contact');
+      });
   };
 
-  const addEvent = (event: Omit<Event, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const now = nowISO();
-    dispatch({
-      type: 'ADD_EVENT',
-      payload: { ...event, id: generateId(), createdAt: now, updatedAt: now },
-    });
+  // Events
+  const addEvent = (event: Omit<Event, 'id' | 'createdAt' | 'updatedAt'>): void => {
+    createEvent(event)
+      .then((created) => dispatch({ type: 'ADD_EVENT', payload: created }))
+      .catch((err) => {
+        console.error('addEvent failed:', err);
+        toast.error('Failed to save event');
+      });
   };
 
-  const updateEvent = (event: Event) => {
-    dispatch({
-      type: 'UPDATE_EVENT',
-      payload: { ...event, updatedAt: nowISO() },
-    });
+  const updateEvent = (event: Event): void => {
+    dbUpdateEvent(event.id, event)
+      .then(() =>
+        dispatch({
+          type: 'UPDATE_EVENT',
+          payload: { ...event, updatedAt: nowISO() },
+        })
+      )
+      .catch((err) => {
+        console.error('updateEvent failed:', err);
+        toast.error('Failed to update event');
+      });
   };
 
-  const deleteEvent = (id: string) => {
-    dispatch({ type: 'DELETE_EVENT', payload: id });
+  const deleteEvent = (id: string): void => {
+    dbDeleteEvent(id)
+      .then(() => dispatch({ type: 'DELETE_EVENT', payload: id }))
+      .catch((err) => {
+        console.error('deleteEvent failed:', err);
+        toast.error('Failed to delete event');
+      });
   };
 
-  const addActivity = (activity: Omit<ActivityRecord, 'id'>) => {
-    dispatch({
-      type: 'ADD_ACTIVITY',
-      payload: { ...activity, id: generateId() },
-    });
+  // Activities (Supabase-backed)
+  const addActivity = (activity: Omit<ActivityRecord, 'id'>): void => {
+    createActivity(activity)
+      .then((created) => dispatch({ type: 'ADD_ACTIVITY', payload: created }))
+      .catch((err) => {
+        console.error('addActivity failed:', err);
+        toast.error('Failed to save activity');
+      });
   };
 
-  const getSchoolById = (id: string) => state.schools.find((s) => s.id === id);
-  const getContactsBySchool = (schoolId: string) =>
-    state.contacts.filter((c) => c.schoolId === schoolId);
-  const getActivitiesBySchool = (schoolId: string) =>
-    state.activities.filter((a) => a.schoolId === schoolId);
-  const getEventsBySchool = (schoolId: string) =>
-    state.events.filter((e) => e.participatingSchools.includes(schoolId));
+  const deleteActivity = (id: string): void => {
+    dbDeleteActivity(id)
+      .then(() => dispatch({ type: 'DELETE_ACTIVITY', payload: id }))
+      .catch((err) => {
+        console.error('deleteActivity failed:', err);
+        toast.error('Failed to delete activity');
+      });
+  };
+
+  // Programs
+  const addProgram = (program: Omit<Program, 'id' | 'createdAt' | 'updatedAt'>): void => {
+    createProgram(program)
+      .then((created) => dispatch({ type: 'ADD_PROGRAM', payload: created }))
+      .catch((err) => {
+        console.error('addProgram failed:', err);
+        toast.error('Failed to save program');
+      });
+  };
+
+  const updateProgram = (program: Program): void => {
+    dbUpdateProgram(program.id, program)
+      .then(() => dispatch({ type: 'UPDATE_PROGRAM', payload: { ...program, updatedAt: nowISO() } }))
+      .catch((err) => {
+        console.error('updateProgram failed:', err);
+        toast.error('Failed to update program');
+      });
+  };
+
+  const deleteProgram = (id: string): void => {
+    dbDeleteProgram(id)
+      .then(() => dispatch({ type: 'DELETE_PROGRAM', payload: id }))
+      .catch((err) => {
+        console.error('deleteProgram failed:', err);
+        toast.error('Failed to delete program');
+      });
+  };
+
+  const verifySchool = (id: string): void => {
+    markSchoolVerified(id)
+      .then(() => {
+        const now = new Date().toISOString();
+        dispatch({ type: 'VERIFY_SCHOOLS_BULK', payload: { ids: [id], now } });
+        toast.success('School marked as verified');
+      })
+      .catch((err) => {
+        console.error('verifySchool failed:', err);
+        toast.error('Failed to verify school');
+      });
+  };
+
+  const verifySchoolsBulk = (ids: string[]): void => {
+    if (ids.length === 0) return;
+    markSchoolsVerifiedBulk(ids)
+      .then(() => {
+        const now = new Date().toISOString();
+        dispatch({ type: 'VERIFY_SCHOOLS_BULK', payload: { ids, now } });
+        toast.success(`${ids.length} school${ids.length !== 1 ? 's' : ''} marked as verified`);
+      })
+      .catch((err) => {
+        console.error('verifySchoolsBulk failed:', err);
+        toast.error('Failed to bulk verify schools');
+      });
+  };
+
+  const verifyContact = (id: string): void => {
+    markContactVerified(id)
+      .then(() => {
+        const now = new Date().toISOString();
+        dispatch({ type: 'VERIFY_CONTACT', payload: { id, now } });
+        toast.success('Contact marked as verified');
+      })
+      .catch((err) => {
+        console.error('verifyContact failed:', err);
+        toast.error('Failed to verify contact');
+      });
+  };
+
+  // Selectors — memoized so consumers don't re-render on unrelated state changes
+  const getSchoolById = useCallback(
+    (id: string) => state.schools.find((s) => s.id === id),
+    [state.schools]
+  );
+  const getContactsBySchool = useCallback(
+    (schoolId: string) => state.contacts.filter((c) => c.schoolId === schoolId),
+    [state.contacts]
+  );
+  const getActivitiesBySchool = useCallback(
+    (schoolId: string) => state.activities.filter((a) => a.schoolId === schoolId),
+    [state.activities]
+  );
+  const getEventsBySchool = useCallback(
+    (schoolId: string) => state.events.filter((e) => e.participatingSchools.includes(schoolId)),
+    [state.events]
+  );
+  const getProgramsBySchool = useCallback(
+    (schoolId: string) => state.programs.filter((p) => p.schoolId === schoolId),
+    [state.programs]
+  );
 
   return (
     <AppContext.Provider
       value={{
         state,
         dispatch,
+        loading,
+        error,
         addSchool,
         updateSchool,
         deleteSchool,
@@ -259,10 +489,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
         updateEvent,
         deleteEvent,
         addActivity,
+        deleteActivity,
+        addProgram,
+        updateProgram,
+        deleteProgram,
+        verifySchool,
+        verifySchoolsBulk,
+        verifyContact,
         getSchoolById,
         getContactsBySchool,
         getActivitiesBySchool,
         getEventsBySchool,
+        getProgramsBySchool,
       }}
     >
       {children}

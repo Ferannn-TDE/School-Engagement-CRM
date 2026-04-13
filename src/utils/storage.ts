@@ -18,12 +18,10 @@ export function saveToStorage<T>(key: string, data: T): void {
   }
 }
 
-export function removeFromStorage(key: string): void {
-  localStorage.removeItem(STORAGE_PREFIX + key);
-}
 
 export function exportDatabase(): string {
-  const keys = ['schools', 'contacts', 'events', 'activities'];
+  // activities are now in Supabase and no longer stored in localStorage
+  const keys = ['schools', 'contacts', 'events'];
   const data: Record<string, unknown> = {};
   for (const key of keys) {
     const raw = localStorage.getItem(STORAGE_PREFIX + key);

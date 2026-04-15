@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { MapPin, School, Users, Calendar, BookOpen, ChevronUp, ChevronDown, ChevronsUpDown, ArrowLeft } from 'lucide-react';
 import { format } from 'date-fns';
 import { Header } from '../components/layout/Header';
+import { Breadcrumb } from '../components/common/Breadcrumb';
 import { Card, MetricCard } from '../components/common/Card';
 import { Badge } from '../components/common/Badge';
 import { EmptyState } from '../components/common/EmptyState';
@@ -189,15 +190,12 @@ export function CountyDetailPage() {
 
   return (
     <div>
-      {/* Breadcrumb */}
-      <div className="px-8 pt-4 flex items-center gap-1.5 text-sm text-neutral-400">
-        <Link to="/counties" className="hover:text-siue-red transition-colors">
-          Counties
-        </Link>
-        <span>/</span>
-        <span className="text-neutral-600 font-medium">{countyName}</span>
-      </div>
-
+      <Breadcrumb
+        crumbs={[
+          { label: 'Counties', href: '/counties' },
+          { label: `${countyName} County` },
+        ]}
+      />
       <Header
         title={`${countyName} County`}
         subtitle={`${countySchools.length} schools · ${engagementPct}% engagement rate`}
@@ -306,7 +304,7 @@ export function CountyDetailPage() {
                   <tr key={school.id} className="hover:bg-neutral-50 transition-colors">
                     <td className="px-4 py-3 text-sm">
                       <Link
-                        to={`/schools/${school.id}`}
+                        to={`/schools/${encodeURIComponent(school.id)}`}
                         className="font-medium text-neutral-800 hover:text-siue-red transition-colors"
                       >
                         {school.name}

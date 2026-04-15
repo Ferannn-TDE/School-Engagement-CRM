@@ -214,6 +214,7 @@ export function AnalyticsPage() {
   const countiesAtRisk = useMemo(() => {
     const countyMap = new Map<string, { total: number; withContacts: number }>();
     for (const s of state.schools) {
+      if (!s.county || !s.county.trim()) continue;
       const entry = countyMap.get(s.county) ?? { total: 0, withContacts: 0 };
       entry.total++;
       if ((schoolContactsMap.get(s.id)?.total ?? 0) > 0) entry.withContacts++;
@@ -248,7 +249,7 @@ export function AnalyticsPage() {
   const engagementRateByCounty = useMemo(() => {
     if (countyEngagement.length > 0) {
       return countyEngagement
-        .filter((r) => r.total_schools >= 2)
+        .filter((r) => r.total_schools >= 2 && r.county_name && r.county_name.trim() !== '')
         .map((r) => ({
           county: r.county_name,
           total: r.total_schools,
@@ -261,6 +262,7 @@ export function AnalyticsPage() {
     }
     const countyMap = new Map<string, { total: number; engaged: number }>();
     for (const s of state.schools) {
+      if (!s.county || !s.county.trim()) continue;
       const entry = countyMap.get(s.county) ?? { total: 0, engaged: 0 };
       entry.total++;
       if ((schoolContactsMap.get(s.id)?.total ?? 0) > 0) entry.engaged++;
@@ -392,7 +394,7 @@ export function AnalyticsPage() {
   const countyComparisonData = useMemo(() => {
     if (countyEngagement.length > 0) {
       return countyEngagement
-        .filter((r): r is typeof r & { county_name: string } => Boolean(r.county_name))
+        .filter((r): r is typeof r & { county_name: string } => Boolean(r.county_name) && r.county_name!.trim() !== '')
         .map((r) => ({
           county: r.county_name.length > 12 ? r.county_name.slice(0, 10) + '…' : r.county_name,
           fullCounty: r.county_name,
@@ -404,6 +406,7 @@ export function AnalyticsPage() {
     }
     const countyMap = new Map<string, { total: number; engaged: number }>();
     for (const s of state.schools) {
+      if (!s.county || !s.county.trim()) continue;
       const entry = countyMap.get(s.county) ?? { total: 0, engaged: 0 };
       entry.total++;
       if ((schoolEventCountMap.get(s.id) ?? 0) > 0) entry.engaged++;
@@ -432,7 +435,7 @@ export function AnalyticsPage() {
     const countyProgramMap = new Map<string, Map<ProgramCategory, number>>();
     for (const p of state.programs) {
       const county = schoolCountyMap.get(p.schoolId);
-      if (!county) continue;
+      if (!county || !county.trim()) continue;
       if (!countyProgramMap.has(county)) countyProgramMap.set(county, new Map());
       const catMap = countyProgramMap.get(county)!;
       catMap.set(p.category, (catMap.get(p.category) ?? 0) + 1);
@@ -483,10 +486,14 @@ export function AnalyticsPage() {
   };
 
   const total = engagementPipeline[0]?.count ?? 1;
+  const missingCountyCount = state.schools.filter((s) => !s.county || !s.county.trim()).length;
+  const allSameFollowupReason =
+    upcomingFollowups.length > 0 &&
+    new Set(upcomingFollowups.map((f) => f.reason)).size === 1;
 
   return (
     <div>
-      <Header
+<Header
         title="Analytics & Reports"
         subtitle="Actionable insights into your K-12 engagement program"
         actions={
@@ -547,6 +554,18 @@ export function AnalyticsPage() {
             ))}
           </div>
         </Card>
+
+        {/* ── Data quality notice ───────────────────────────────────────────── */}
+        {missingCountyCount > 0 && (
+          <div className="flex items-center gap-2.5 px-4 py-2.5 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-700">
+            <AlertTriangle size={14} className="shrink-0 text-amber-500" />
+            <span>
+              <span className="font-semibold">{missingCountyCount} school{missingCountyCount !== 1 ? 's' : ''}</span>{' '}
+              {missingCountyCount !== 1 ? 'have' : 'has'} no county assigned and {missingCountyCount !== 1 ? 'are' : 'is'} excluded from county-level analytics below.
+              Visit the Schools page to update their county data.
+            </span>
+          </div>
+        )}
 
         {/* ── Top Engaged Schools + Counties At Risk ────────────────────────── */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -696,7 +715,7 @@ export function AnalyticsPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-0.5">
                         <Link
-                          to={`/schools/${a.schoolId}`}
+                          to={`/schools/${encodeURIComponent(a.schoolId)}`}
                           className="text-sm font-medium text-neutral-800 hover:text-siue-red transition-colors truncate"
                         >
                           {a.school?.name ?? 'Unknown School'}
@@ -727,24 +746,36 @@ export function AnalyticsPage() {
               Schools that attended a recent event with no follow-up, or with contacts but stale activity.
             </p>
             {upcomingFollowups.length > 0 ? (
-              <div className="divide-y divide-neutral-50">
-                {upcomingFollowups.map((s) => (
-                  <div key={s.id} className="flex items-start gap-3 py-2.5">
-                    <div className="flex-1 min-w-0">
-                      <Link
-                        to={`/schools/${s.id}`}
-                        className="text-sm font-medium text-neutral-800 hover:text-siue-red transition-colors block truncate"
-                      >
-                        {s.name}
-                      </Link>
-                      <p className="text-xs text-neutral-400">{s.county} County</p>
-                    </div>
-                    <span className="text-xs bg-warning/10 text-warning px-2 py-1 rounded-lg shrink-0 max-w-[160px] text-right leading-tight">
-                      {s.reason}
+              <>
+                {allSameFollowupReason && (
+                  <div className="mb-3 flex items-center gap-2 px-3 py-2 bg-neutral-50 rounded-lg border border-neutral-100">
+                    <span className="text-xs bg-neutral-200 text-neutral-600 px-2.5 py-0.5 rounded-full shrink-0 font-medium">
+                      {upcomingFollowups[0].reason}
                     </span>
+                    <span className="text-xs text-neutral-400">applies to all entries below</span>
                   </div>
-                ))}
-              </div>
+                )}
+                <div className="divide-y divide-neutral-50">
+                  {upcomingFollowups.map((s) => (
+                    <div key={s.id} className="flex items-center justify-between py-2.5 hover:bg-neutral-50 transition-colors rounded-lg px-1 -mx-1">
+                      <div className="flex-1 min-w-0 mr-3">
+                        <Link
+                          to={`/schools/${encodeURIComponent(s.id)}`}
+                          className="text-sm font-medium text-neutral-800 hover:text-siue-red transition-colors block truncate"
+                        >
+                          {s.name}
+                        </Link>
+                        <p className="text-xs text-neutral-400">{s.county} County</p>
+                      </div>
+                      {!allSameFollowupReason && (
+                        <span className="text-xs bg-neutral-100 text-neutral-600 px-2.5 py-0.5 rounded-full shrink-0">
+                          {s.reason}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </>
             ) : (
               <div className="py-12 text-center">
                 <Clock size={28} className="mx-auto mb-3 text-neutral-300" />
@@ -926,7 +957,7 @@ export function AnalyticsPage() {
                         <tr key={school.id} className="hover:bg-neutral-50">
                           <td className="px-4 py-3">
                             <Link
-                              to={`/schools/${school.id}`}
+                              to={`/schools/${encodeURIComponent(school.id)}`}
                               className="font-medium text-neutral-800 hover:text-siue-red transition-colors line-clamp-1"
                             >
                               {school.name}
@@ -1005,7 +1036,7 @@ export function AnalyticsPage() {
                         <tr key={school.id} className="hover:bg-neutral-50">
                           <td className="px-4 py-3">
                             <Link
-                              to={`/schools/${school.id}`}
+                              to={`/schools/${encodeURIComponent(school.id)}`}
                               className="font-medium text-siue-red hover:text-siue-maroon hover:underline"
                             >
                               {school.name}

@@ -100,7 +100,7 @@ export function DashboardPage() {
 
   return (
     <div>
-      <Header
+<Header
         title="Dashboard"
         subtitle="Overview of your K-12 engagement program"
         actions={
@@ -309,7 +309,7 @@ export function DashboardPage() {
                 <div key={school.id} className="flex items-center justify-between py-3 gap-4">
                   <div className="min-w-0 flex-1">
                     <Link
-                      to={`/schools/${school.id}`}
+                      to={`/schools/${encodeURIComponent(school.id)}`}
                       className="text-sm font-medium text-neutral-800 hover:text-siue-red transition-colors truncate block"
                     >
                       {school.name}

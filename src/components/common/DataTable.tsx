@@ -49,7 +49,7 @@ export function DataTable<T>({
   });
 
   return (
-    <div>
+    <div className="pb-4">
       <div className="overflow-x-auto rounded-lg border border-neutral-100">
         <table className="min-w-full divide-y divide-neutral-100 table-fixed">
           {columnWidths && (
@@ -125,7 +125,7 @@ export function DataTable<T>({
 
       {/* Pagination */}
       {table.getPageCount() > 1 && (
-        <div className="flex items-center justify-between mt-4 text-sm">
+        <div className="flex items-center justify-between mt-4 px-4 text-sm">
           <p className="text-neutral-500">
             Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}
             {' '}-{' '}

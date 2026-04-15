@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
 import { Plus, Calendar, CalendarDays, List, MapPin, Users } from 'lucide-react';
-import { format, isAfter, isSameMonth, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths } from 'date-fns';
+import { format, isAfter, isSameMonth, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, isToday } from 'date-fns';
 import { Header } from '../components/layout/Header';
 import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
@@ -135,7 +135,7 @@ export function EventsPage() {
 
   return (
     <div>
-      <Header
+<Header
         title="Events"
         subtitle={`${state.events.length} events`}
         actions={
@@ -226,9 +226,26 @@ export function EventsPage() {
                 const dayEvents = eventsInMonth.filter(
                   (e) => format(new Date(e.date), 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd')
                 );
+                const today = isToday(day);
                 return (
-                  <div key={day.toISOString()} className="bg-white p-2 min-h-[100px]">
-                    <span className="text-sm text-neutral-500">{format(day, 'd')}</span>
+                  <div
+                    key={day.toISOString()}
+                    className={classNames(
+                      'p-2 min-h-[100px]',
+                      today ? 'bg-blue-50 ring-2 ring-inset ring-blue-200' : 'bg-white'
+                    )}
+                  >
+                    <span
+                      className={classNames(
+                        'text-sm leading-none',
+                        today ? 'font-bold text-blue-600' : 'text-neutral-500'
+                      )}
+                    >
+                      {format(day, 'd')}
+                    </span>
+                    {today && (
+                      <span className="block text-xs text-blue-400 leading-none mt-0.5">Today</span>
+                    )}
                     {dayEvents.map((event) => (
                       <div
                         key={event.id}

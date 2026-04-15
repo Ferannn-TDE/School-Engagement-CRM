@@ -73,7 +73,7 @@ export function SettingsPage() {
 
   return (
     <div>
-      <Header
+<Header
         title="Settings"
         subtitle="Database management and application settings"
       />

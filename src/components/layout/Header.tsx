@@ -108,7 +108,7 @@ export function Header({ title, subtitle, actions }: HeaderProps) {
                         {results.schools.map((school) => (
                           <button
                             key={school.id}
-                            onClick={() => handleNavigate(`/schools/${school.id}`)}
+                            onClick={() => handleNavigate(`/schools/${encodeURIComponent(school.id)}`)}
                             className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-neutral-50 text-left transition-colors"
                           >
                             <School size={15} className="text-neutral-400 shrink-0" />

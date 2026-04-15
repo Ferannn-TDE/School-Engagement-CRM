@@ -117,7 +117,7 @@ export function GenerateListsPage() {
 
   return (
     <div>
-      <Header
+<Header
         title="Generate Lists"
         subtitle="Build filtered mailing and email lists"
       />

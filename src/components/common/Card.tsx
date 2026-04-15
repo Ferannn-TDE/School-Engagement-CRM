@@ -42,8 +42,6 @@ interface MetricCardProps {
 export function MetricCard({ title, value, subtitle, icon }: MetricCardProps) {
   return (
     <div className="bg-white rounded-xl border border-neutral-100 shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
-      {/* Gradient header strip */}
-      <div className="h-1 bg-gradient-to-r from-siue-red/40 via-siue-red/10 to-transparent" />
       <div className="p-6">
         <div className="flex items-start justify-between">
           <div>

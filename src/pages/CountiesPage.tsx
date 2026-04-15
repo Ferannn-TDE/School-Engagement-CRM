@@ -77,7 +77,7 @@ export function CountiesPage() {
 
   return (
     <div>
-      <Header
+<Header
         title="Counties"
         subtitle={loading ? 'Loading...' : `${counties.length} counties in Illinois`}
       />

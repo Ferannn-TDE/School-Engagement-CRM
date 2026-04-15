@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { type ColumnDef } from '@tanstack/react-table';
 import { Plus, Users, Mail, Phone, ShieldCheck, ShieldOff, CheckCircle } from 'lucide-react';
 import { format } from 'date-fns';
@@ -83,9 +84,20 @@ export function ContactsPage() {
         id: 'school',
         header: 'School',
         accessorFn: (row) => getSchoolById(row.schoolId)?.name || 'Unknown',
-        cell: ({ getValue }) => (
-          <span className="text-neutral-600">{getValue() as string}</span>
-        ),
+        cell: ({ row }) => {
+          const school = getSchoolById(row.original.schoolId);
+          return school ? (
+            <Link
+              to={`/schools/${encodeURIComponent(school.id)}`}
+              className="text-neutral-600 hover:text-siue-red transition-colors"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {school.name}
+            </Link>
+          ) : (
+            <span className="text-neutral-400">Unknown</span>
+          );
+        },
       },
       {
         accessorKey: 'isActive',
@@ -168,7 +180,7 @@ export function ContactsPage() {
 
   return (
     <div>
-      <Header
+<Header
         title="Contacts"
         subtitle={`${state.contacts.length} contacts in database`}
         actions={

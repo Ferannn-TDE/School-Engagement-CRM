@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Edit, MapPin, Users, Calendar, Trash2, School, ArrowLeft, Plus, BookOpen, TrendingUp } from 'lucide-react';
 import { format } from 'date-fns';
 import { Header } from '../components/layout/Header';
@@ -11,6 +11,9 @@ import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import { SchoolForm } from '../components/schools/SchoolForm';
 import { ProgramForm } from '../components/programs/ProgramForm';
 import { EmptyState } from '../components/common/EmptyState';
+import { LoadingSpinner } from '../components/common/LoadingSpinner';
+import { Breadcrumb } from '../components/common/Breadcrumb';
+import type { BreadcrumbTag } from '../components/common/Breadcrumb';
 import { useAppContext } from '../context/AppContext';
 import { ContactRoleLabels, ProgramCategoryLabels, ProgramCategory } from '../types';
 import type { Program } from '../types';
@@ -25,6 +28,7 @@ export function SchoolDetailPage() {
     getSchoolById, getContactsBySchool, getActivitiesBySchool, getEventsBySchool,
     deleteSchool, deleteActivity,
     addProgram, deleteProgram, getProgramsBySchool,
+    loading,
   } = useAppContext();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -32,11 +36,12 @@ export function SchoolDetailPage() {
   const [showAddProgramModal, setShowAddProgramModal] = useState(false);
   const [programToDelete, setProgramToDelete] = useState<Program | null>(null);
 
-  const school = id ? getSchoolById(id) : undefined;
-  const contacts = useMemo(() => (id ? getContactsBySchool(id) : []), [id, getContactsBySchool]);
-  const activities = useMemo(() => (id ? getActivitiesBySchool(id) : []), [id, getActivitiesBySchool]);
-  const events = useMemo(() => (id ? getEventsBySchool(id) : []), [id, getEventsBySchool]);
-  const programs = useMemo(() => (id ? getProgramsBySchool(id) : []), [id, getProgramsBySchool]);
+  const decodedId = id ? decodeURIComponent(id) : undefined;
+  const school = decodedId ? getSchoolById(decodedId) : undefined;
+  const contacts = useMemo(() => (decodedId ? getContactsBySchool(decodedId) : []), [decodedId, getContactsBySchool]);
+  const activities = useMemo(() => (decodedId ? getActivitiesBySchool(decodedId) : []), [decodedId, getActivitiesBySchool]);
+  const events = useMemo(() => (decodedId ? getEventsBySchool(decodedId) : []), [decodedId, getEventsBySchool]);
+  const programs = useMemo(() => (decodedId ? getProgramsBySchool(decodedId) : []), [decodedId, getProgramsBySchool]);
 
   const programsByCategory = useMemo(() => {
     const map = new Map<ProgramCategory, Program[]>();
@@ -52,6 +57,10 @@ export function SchoolDetailPage() {
     () => computeEngagementScore(contacts, activities, events, programs),
     [contacts, activities, events, programs]
   );
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   if (!school) {
     return (
@@ -69,25 +78,26 @@ export function SchoolDetailPage() {
     );
   }
 
+  const schoolTags: BreadcrumbTag[] = [
+    { label: formatSchoolType(school.schoolType), variant: 'default', className: 'border border-neutral-200' },
+    ...(school.priorityTier === 'high'
+      ? [{ label: 'High Priority', variant: 'warning' as const, className: 'border border-amber-200' }]
+      : school.priorityTier === 'low'
+      ? [{ label: 'Low Priority', variant: 'default' as const, className: 'border border-neutral-200' }]
+      : []),
+    {
+      label: school.isVerified ? 'Verified' : 'Unverified',
+      variant: school.isVerified ? 'success' as const : 'warning' as const,
+      className: school.isVerified ? 'border border-green-200' : 'border border-amber-200',
+    },
+  ];
+
   return (
     <div>
-      <div className="px-8 pt-4 flex items-center gap-1.5 text-sm text-neutral-400">
-        <Link to="/schools" className="hover:text-siue-red transition-colors">Schools</Link>
-        <span>/</span>
-        <span className="text-neutral-600 font-medium truncate">{school.name}</span>
-        <div className="ml-auto flex items-center gap-2">
-          <Badge variant="default">{formatSchoolType(school.schoolType)}</Badge>
-          {school.priorityTier === 'high' && (
-            <Badge variant="warning">High Priority</Badge>
-          )}
-          {school.priorityTier === 'low' && (
-            <Badge variant="default">Low Priority</Badge>
-          )}
-          <Badge variant={school.isVerified ? 'success' : 'warning'}>
-            {school.isVerified ? 'Verified' : 'Unverified'}
-          </Badge>
-        </div>
-      </div>
+      <Breadcrumb
+        crumbs={[{ label: 'Schools', href: '/schools' }, { label: school.name }]}
+        tags={schoolTags}
+      />
       <Header
         title={school.name}
         subtitle={school.district || school.county + ' County'}

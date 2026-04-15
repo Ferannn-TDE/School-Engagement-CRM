@@ -106,10 +106,10 @@ export function Sidebar() {
                     onClick={closeSidebar}
                     className={({ isActive }) =>
                       classNames(
-                        'flex items-center gap-3 pr-3 py-2.5 rounded-lg text-sm font-medium transition-colors border-l-[3px] pl-[10px]',
+                        'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
                         isActive
-                          ? 'border-siue-red bg-siue-red/10 text-siue-red'
-                          : 'border-transparent text-neutral-500 hover:bg-neutral-50 hover:text-neutral-700'
+                          ? 'bg-neutral-100 text-siue-red'
+                          : 'text-neutral-500 hover:bg-neutral-50 hover:text-neutral-700'
                       )
                     }
                   >

@@ -289,7 +289,7 @@ export function ImportPage() {
 
   return (
     <div>
-      <Header
+<Header
         title="Import Data"
         subtitle="Import contacts and schools from spreadsheets"
       />

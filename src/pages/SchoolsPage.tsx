@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { type ColumnDef } from '@tanstack/react-table';
 import { Plus, School, MapPin, ShieldCheck, ShieldOff, CheckCircle } from 'lucide-react';
 import { format } from 'date-fns';
@@ -90,7 +90,13 @@ export function SchoolsPage() {
         header: 'School Name',
         cell: ({ row }) => (
           <div>
-            <p className="font-medium text-neutral-800">{row.original.name}</p>
+            <Link
+              to={`/schools/${encodeURIComponent(row.original.id)}`}
+              className="font-medium text-neutral-800 hover:text-siue-red transition-colors"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {row.original.name}
+            </Link>
             {row.original.district && (
               <p className="text-xs text-neutral-400">{row.original.district}</p>
             )}
@@ -171,7 +177,7 @@ export function SchoolsPage() {
 
   return (
     <div>
-      <Header
+<Header
         title="Schools"
         subtitle={`${state.schools.length} schools in directory`}
         actions={
@@ -267,7 +273,7 @@ export function SchoolsPage() {
               data={filteredSchools}
               columns={columns}
               searchValue={search}
-              onRowClick={(school) => navigate(`/schools/${school.id}`)}
+              onRowClick={(school) => navigate(`/schools/${encodeURIComponent(school.id)}`)}
               emptyMessage="No schools match your filters."
             />
           </Card>

@@ -175,6 +175,21 @@ class CsvUrlWriter(DocumentWriter):
                     writer.writeheader()
                     writer.writerows(urls)
 
+class FailedFacilitiesCsvWriter(DocumentWriter):
+    def __init__(self):
+        self.lock = threading.Lock()
+
+    def write(self, facilities, filename):
+        if not facilities:
+            return
+        with self.lock:
+            headers = ["FacilityName", "City", "Website"]
+            with open(filename, "a", newline="", encoding="utf-8") as f:
+                writer = csv.DictWriter(f, fieldnames=headers)
+                if f.tell() == 0:
+                    writer.writeheader()
+                writer.writerows(facilities)
+
 class Scraper:
     def __init__(self, ai_model, writer, school_puller):
         self.ai_model = ai_model
@@ -210,7 +225,7 @@ class Scraper:
             print(f"Processing Schools {i + 1}-{i + len(group)}: {len(contacts)} written")
         
         if failed_facilities:
-            failed_writer = CsvWriter()
+            failed_writer = FailedFacilitiesCsvWriter()
             failed_writer.write(failed_facilities, "failed_facilities.csv")
             print(f"Total failed: {len(failed_facilities)}")
         print(f"Total contacts: {total_contacts}")

@@ -33,3 +33,7 @@ dist-ssr
 # Markdown files
 *.md
 !README.md
+
+.env
+.env.local
+.env.*.local

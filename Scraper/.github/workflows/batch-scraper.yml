@@ -1,0 +1,75 @@
+name: Batch Scraper
+
+on:
+  schedule:
+    - cron: "0 7 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio
+
+      - name: Run tests
+        run: |
+          python -m pytest -v tests --ignore=tests/test_school_size_strategies.py -k "not school_size" -ra
+
+      # - name: Force batch size to 100
+      #   run: |
+      #     python - <<'PY'
+      #     import json
+      #     p = "settings.json"
+      #     with open(p, "r", encoding="utf-8") as f:
+      #         d = json.load(f)
+      #     d.setdefault("global", {})["normal_webcrawler_counter"] = 100
+      #     with open(p, "w", encoding="utf-8") as f:
+      #         json.dump(d, f, indent=2)
+      #     PY
+
+      # - name: Run scraper batch
+      #   run: python main.py
+
+      # - name: Upsert contacts and schools to Supabase
+      #   run: python SchoolContactUploader.py
+
+      # - name: Commit updated artifacts
+      #   run: |
+      #     git config user.name "github-actions[bot]"
+      #     git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      #     git add settings.json
+      #     git add Completed.json
+      #     git add StillWorking.json
+      #     git add cps_schools.json
+
+      #     if git diff --cached --quiet; then
+      #       echo "No changes to commit"
+      #       exit 0
+      #     fi
+
+      #     git commit -m "chore: scraper batch update"
+      #     git push

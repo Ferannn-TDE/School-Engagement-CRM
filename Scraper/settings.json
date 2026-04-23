@@ -50,6 +50,8 @@
       "menu",
       "schools"
     ],
+    "normal_webcrawler_counter": 100,
+    "normal_webcrawler_start_index": 0,
   "EMAIL_REGEX": "(?<![A-Za-z0-9._%+-])[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9.-]{1,253}\\.[A-Za-z]{2,24}\\b",
   "MESSAGE_REGEX": "send\\s*email|send\\s*message|email|message",
   "PHONE_REGEX": "(?:\\+?1[\\s.-]?)?\\(?\\d{3}\\)?[\\s.-]?\\d{3}[\\s.-]?\\d{4}(?:\\s*(?:x|ext\\.?)\\s*\\d+)?"

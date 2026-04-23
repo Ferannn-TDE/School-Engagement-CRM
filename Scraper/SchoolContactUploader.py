@@ -2,7 +2,7 @@ import json
 import os
 import re
 from typing import Any, Dict, Iterable, List, Optional, Tuple
-
+from SchoolSizeStrategies import SchoolSizeScraperContext
 from dotenv import load_dotenv
 from supabase import create_client
 from supabase.client import ClientOptions
@@ -36,6 +36,7 @@ class SupabaseCRMUpserter:
                 storage_client_timeout=20,
             ),
         )
+        self.school_size_context = SchoolSizeScraperContext()
 
     @staticmethod
     def _safe_int(value: Any) -> Optional[int]:
@@ -197,13 +198,17 @@ class SupabaseCRMUpserter:
             if district_by_facility_key:
                 district_id = district_by_facility_key.get(normalized_facility_key)
 
+            class_size = None
+            if hasattr(self, "school_size_context") and self.school_size_context:
+                class_size = self.school_size_context.scrape_school_size(s)
+
             row = {
                 "facility_key": normalized_facility_key,
                 "name": self._clean_text(s.get("FacilityName")) or "Unknown School",
                 "district_id": district_id,
                 "phone_number": self._clean_text(s.get("Telephone")),
                 "address": None,
-                "class_size": None,
+                "class_size": class_size,
                 "rating": None,
                 "type_of_school": None,
                 "admin": self._clean_text(s.get("Administrator")),
@@ -319,7 +324,7 @@ class SupabaseCRMUpserter:
 
         return listing
 
-    def upsert_staff_info(self, staff_rows: List[Dict[str, Any]]) -> Tuple[int, int]:
+    def upsert_staff(self, staff_rows: List[Dict[str, Any]]) -> Tuple[int, int]:
         with_id: List[Dict[str, Any]] = []
         without_id: List[Dict[str, Any]] = []
 
@@ -343,8 +348,8 @@ class SupabaseCRMUpserter:
             else:
                 without_id.append(payload)
 
-        upserted = self._batched_upsert("staff_info", with_id, ["staff_id"]) if with_id else 0
-        inserted = self._batched_insert("staff_info", without_id) if without_id else 0
+        upserted = self._batched_upsert("staff", with_id, ["staff_id"]) if with_id else 0
+        inserted = self._batched_insert("staff", without_id) if without_id else 0
         return upserted, inserted
 
     def _staff_dedupe_key(
@@ -422,7 +427,7 @@ class SupabaseCRMUpserter:
 
         while True:
             response = (
-                self.client.table("staff_info")
+                self.client.table("staff")
                 .select("staff_id,name,email,job_name,school_worked_at")
                 .range(offset, offset + limit - 1)
                 .execute()
@@ -457,8 +462,8 @@ class SupabaseCRMUpserter:
             else:
                 without_id.append(payload)
 
-        upserted = self._batched_upsert("staff_info", with_id, ["staff_id"]) if with_id else 0
-        inserted = self._batched_insert("staff_info", without_id) if without_id else 0
+        upserted = self._batched_upsert("staff", with_id, ["staff_id"]) if with_id else 0
+        inserted = self._batched_insert("staff", without_id) if without_id else 0
 
         return {
             "staff_upserted_with_id": upserted,
@@ -513,8 +518,8 @@ class SupabaseCRMUpserter:
             else:
                 without_id.append(payload)
 
-        upserted = self._batched_upsert("staff_info", with_id, ["staff_id"]) if with_id else 0
-        inserted = self._batched_insert("staff_info", without_id) if without_id else 0
+        upserted = self._batched_upsert("staff", with_id, ["staff_id"]) if with_id else 0
+        inserted = self._batched_insert("staff", without_id) if without_id else 0
 
         return {
             "cps_staff_upserted_with_id": upserted,
@@ -529,7 +534,7 @@ class SupabaseCRMUpserter:
 
         while True:
             response = (
-                self.client.table("staff_info")
+                self.client.table("staff")
                 .select("staff_id,name,email,job_name,school_worked_at")
                 .range(offset, offset + limit - 1)
                 .execute()

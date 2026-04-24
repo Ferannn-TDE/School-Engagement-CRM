@@ -140,6 +140,7 @@ export async function createContactsBulk(
     is_active: c.isActive,
     notes: c.notes ?? null,
     data_source: c.dataSource ?? 'manual',
+    is_verified: c.isVerified ?? false,
   }));
 
   const { data: staffData, error } = await supabase
@@ -209,6 +210,138 @@ export async function markContactVerified(id: string): Promise<void> {
     .update({ is_verified: true, last_verified_at: new Date().toISOString() })
     .eq('staff_id', staffId);
   if (error) throw error;
+}
+
+export interface ImportContactsResult {
+  contacts: Contact[];
+  created: number;
+  updated: number;
+  failed: number;
+}
+
+/**
+ * Import-specific bulk upsert for staff/contacts. Pre-fetches existing staff by email so:
+ *  - new staff are INSERTed with is_verified=false
+ *  - existing staff are UPDATEd (name/phone/role) but is_verified is preserved
+ *  - per-row errors are caught so one bad row doesn't abort the batch
+ *  - junction rows are upserted with ignoreDuplicates so re-runs are safe
+ */
+export async function importContactsBulk(
+  contacts: Array<{
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone?: string;
+    role: ContactRole;
+    schoolId: string;
+  }>
+): Promise<ImportContactsResult> {
+  if (contacts.length === 0) return { contacts: [], created: 0, updated: 0, failed: 0 };
+
+  const emails = [...new Set(contacts.map((c) => c.email.toLowerCase()).filter(Boolean))];
+
+  // Fresh DB look-up — not relying on potentially-stale in-memory state
+  const { data: existingData, error: fetchError } = await supabase
+    .from('staff')
+    .select('*')
+    .in('email', emails);
+
+  if (fetchError) {
+    console.error('importContactsBulk: fetch existing failed', fetchError);
+    throw fetchError;
+  }
+
+  const existingByEmail = new Map<string, StaffRow>(
+    (existingData as StaffRow[]).map((r) => [r.email?.toLowerCase() ?? '', r])
+  );
+
+  const allContacts: Contact[] = [];
+  let created = 0;
+  let updated = 0;
+  let failed = 0;
+
+  await Promise.all(
+    contacts.map(async (contact) => {
+      const existing = existingByEmail.get(contact.email.toLowerCase());
+      const fullName = `${contact.firstName} ${contact.lastName}`.trim();
+      try {
+        let staffRow: StaffRow;
+        if (existing) {
+          // UPDATE — preserve is_verified
+          const { data, error } = await supabase
+            .from('staff')
+            .update({
+              name: fullName,
+              phone: contact.phone ?? null,
+              job_name: contact.role,
+              school_worked_at: contact.schoolId,
+              is_active: true,
+              data_source: 'imported',
+            })
+            .eq('staff_id', existing.staff_id)
+            .select()
+            .single();
+          if (error) throw error;
+          staffRow = data as StaffRow;
+          updated++;
+        } else {
+          // INSERT — new record, is_verified=false
+          const { data, error } = await supabase
+            .from('staff')
+            .insert({
+              name: fullName,
+              email: contact.email,
+              phone: contact.phone ?? null,
+              job_name: contact.role,
+              school_worked_at: contact.schoolId,
+              is_active: true,
+              data_source: 'imported',
+              is_verified: false,
+            })
+            .select()
+            .single();
+          if (error) throw error;
+          staffRow = data as StaffRow;
+          created++;
+        }
+
+        // Upsert junction row — safe to re-run (ignoreDuplicates avoids 409 on contacts table)
+        if (contact.schoolId) {
+          await supabase
+            .from('contacts')
+            .upsert(
+              { school_id: contact.schoolId, staff_id: staffRow.staff_id },
+              { onConflict: 'staff_id,school_id', ignoreDuplicates: true }
+            );
+        }
+
+        allContacts.push(rowToContact(staffRow, contact.schoolId));
+      } catch (err) {
+        const pgErr = err as { code?: string };
+        if (pgErr?.code === '23505') {
+          // Unique-violation: pre-fetch missed it. Recover the real row.
+          const { data: recovered } = await supabase
+            .from('staff')
+            .select('*')
+            .ilike('email', contact.email)
+            .single();
+          if (recovered) {
+            allContacts.push(rowToContact(recovered as StaffRow, contact.schoolId));
+            updated++;
+          } else {
+            console.error(`importContactsBulk: failed for "${contact.email}"`, err);
+            failed++;
+          }
+        } else {
+          console.error(`importContactsBulk: failed for "${contact.email}"`, err);
+          failed++;
+          if (existing) allContacts.push(rowToContact(existing, contact.schoolId));
+        }
+      }
+    })
+  );
+
+  return { contacts: allContacts, created, updated, failed };
 }
 
 export async function deleteContact(id: string): Promise<void> {

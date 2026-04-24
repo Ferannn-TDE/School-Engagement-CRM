@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Edit, MapPin, Users, Calendar, Trash2, School, ArrowLeft, Plus, BookOpen, TrendingUp } from 'lucide-react';
+import { Edit, MapPin, Users, Calendar, Trash2, School, ArrowLeft, Plus, BookOpen, TrendingUp, ShieldCheck } from 'lucide-react';
 import { format } from 'date-fns';
 import { Header } from '../components/layout/Header';
 import { Card } from '../components/common/Card';
@@ -26,7 +26,7 @@ export function SchoolDetailPage() {
   const navigate = useNavigate();
   const {
     getSchoolById, getContactsBySchool, getActivitiesBySchool, getEventsBySchool,
-    deleteSchool, deleteActivity,
+    deleteSchool, deleteActivity, verifySchool,
     addProgram, deleteProgram, getProgramsBySchool,
     loading,
   } = useAppContext();
@@ -103,6 +103,12 @@ export function SchoolDetailPage() {
         subtitle={school.district || school.county + ' County'}
         actions={
           <div className="flex gap-2">
+            {!school.isVerified && (
+              <Button size="sm" variant="secondary" onClick={() => verifySchool(school.id)}>
+                <ShieldCheck size={16} />
+                Verify
+              </Button>
+            )}
             <Button size="sm" variant="secondary" onClick={() => setShowEditModal(true)}>
               <Edit size={16} />
               Edit
@@ -389,7 +395,11 @@ export function SchoolDetailPage() {
           navigate('/schools');
         }}
         title="Delete School"
-        message={`Are you sure you want to delete "${school.name}"? This action cannot be undone.`}
+        message={
+          contacts.length > 0
+            ? `This will permanently delete "${school.name}" and its ${contacts.length} associated contact${contacts.length !== 1 ? 's' : ''}. This action cannot be undone.`
+            : `Are you sure you want to delete "${school.name}"? This action cannot be undone.`
+        }
         confirmLabel="Delete School"
       />
 

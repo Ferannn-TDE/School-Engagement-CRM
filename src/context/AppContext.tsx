@@ -13,6 +13,7 @@ import { nowISO } from '../utils/helpers';
 import {
   fetchSchools,
   createSchool,
+  createSchoolsBulk,
   updateSchool as dbUpdateSchool,
   deleteSchool as dbDeleteSchool,
   markSchoolVerified,
@@ -55,8 +56,10 @@ interface AppState {
 type Action =
   | { type: 'SET_SCHOOLS'; payload: School[] }
   | { type: 'ADD_SCHOOL'; payload: School }
+  | { type: 'ADD_SCHOOLS_BULK'; payload: School[] }
   | { type: 'UPDATE_SCHOOL'; payload: School }
   | { type: 'DELETE_SCHOOL'; payload: string }
+  | { type: 'DELETE_CONTACTS_BY_SCHOOL'; payload: string }
   | { type: 'SET_CONTACTS'; payload: Contact[] }
   | { type: 'ADD_CONTACT'; payload: Contact }
   | { type: 'ADD_CONTACTS_BULK'; payload: Contact[] }
@@ -85,6 +88,8 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, schools: action.payload };
     case 'ADD_SCHOOL':
       return { ...state, schools: [...state.schools, action.payload] };
+    case 'ADD_SCHOOLS_BULK':
+      return { ...state, schools: [...state.schools, ...action.payload] };
     case 'UPDATE_SCHOOL':
       return {
         ...state,
@@ -96,6 +101,11 @@ function reducer(state: AppState, action: Action): AppState {
       return {
         ...state,
         schools: state.schools.filter((s) => s.id !== action.payload),
+      };
+    case 'DELETE_CONTACTS_BY_SCHOOL':
+      return {
+        ...state,
+        contacts: state.contacts.filter((c) => c.schoolId !== action.payload),
       };
     case 'SET_CONTACTS':
       return { ...state, contacts: action.payload };
@@ -193,6 +203,7 @@ interface AppContextValue {
   loading: boolean;
   error: string | null;
   addSchool: (school: Omit<School, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  addSchoolsBulk: (schools: Omit<School, 'id' | 'createdAt' | 'updatedAt'>[]) => Promise<School[]>;
   updateSchool: (school: School) => void;
   deleteSchool: (id: string) => void;
   addContact: (contact: Omit<Contact, 'id' | 'createdAt' | 'updatedAt'>) => void;
@@ -262,6 +273,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
       });
   };
 
+  const addSchoolsBulk = async (
+    schools: Omit<School, 'id' | 'createdAt' | 'updatedAt'>[]
+  ): Promise<School[]> => {
+    const created = await createSchoolsBulk(schools);
+    dispatch({ type: 'ADD_SCHOOLS_BULK', payload: created });
+    return created;
+  };
+
   const updateSchool = (school: School): void => {
     dbUpdateSchool(school.id, school)
       .then(() =>
@@ -278,7 +297,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const deleteSchool = (id: string): void => {
     dbDeleteSchool(id)
-      .then(() => dispatch({ type: 'DELETE_SCHOOL', payload: id }))
+      .then(() => {
+        dispatch({ type: 'DELETE_CONTACTS_BY_SCHOOL', payload: id });
+        dispatch({ type: 'DELETE_SCHOOL', payload: id });
+      })
       .catch((err) => {
         console.error('deleteSchool failed:', err);
         toast.error('Failed to delete school');
@@ -479,6 +501,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         loading,
         error,
         addSchool,
+        addSchoolsBulk,
         updateSchool,
         deleteSchool,
         addContact,

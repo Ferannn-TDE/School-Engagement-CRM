@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { supabase, fetchAllRows } from './supabase';
 import type { School, SchoolType } from '../types';
 import { nowISO } from '../utils/helpers';
 
@@ -61,9 +61,11 @@ function rowToSchool(row: SchoolRow): School {
 }
 
 export async function fetchSchools(): Promise<School[]> {
-  const { data, error } = await supabase.from('schools').select('*').order('name', { ascending: true });
-  if (error) throw error;
-  return (data as SchoolRow[]).map(rowToSchool);
+  // Paged: there are more schools than PostgREST returns in one response.
+  const rows = await fetchAllRows<SchoolRow>('schools', 'facility_key');
+  return rows
+    .map(rowToSchool)
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 

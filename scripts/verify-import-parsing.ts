@@ -15,6 +15,7 @@ import { join } from 'node:path';
 
 import { interpretCombinedWorkbook, looksLikeSpreadsheet } from '../src/utils/importParsing.ts';
 import { describeFileRejection, formatBytes, MAX_UPLOAD_BYTES } from '../src/utils/helpers.ts';
+import { collectPages } from '../src/utils/paging.ts';
 
 const dir = mkdtempSync(join(tmpdir(), 'import-verify-'));
 let passed = 0;
@@ -23,6 +24,17 @@ const failures: string[] = [];
 function check(name: string, fn: () => void) {
   try {
     fn();
+    passed++;
+    console.log(`  ok   ${name}`);
+  } catch (err) {
+    failures.push(`${name}: ${(err as Error).message}`);
+    console.log(`  FAIL ${name}\n       ${(err as Error).message}`);
+  }
+}
+
+async function checkAsync(name: string, fn: () => Promise<void>) {
+  try {
+    await fn();
     passed++;
     console.log(`  ok   ${name}`);
   } catch (err) {
@@ -217,5 +229,56 @@ check('formatBytes boundaries', () => {
   assert.equal(formatBytes(MAX_UPLOAD_BYTES), '10.0 MB');
 });
 
-console.log(`\n${passed} passed, ${failures.length} failed\n`);
-if (failures.length) process.exit(1);
+// ── Row paging ────────────────────────────────────────────────────────────────
+// PostgREST caps a response at 1000 rows with no error, so an unpaged read
+// silently truncates. These exercise the accumulation loop directly.
+console.log('\ncollectPages');
+
+function fakeSource(total: number, pageSize: number) {
+  const all = Array.from({ length: total }, (_, i) => ({ id: i }));
+  let calls = 0;
+  return {
+    fetch: async (from: number, to: number) => {
+      calls++;
+      return all.slice(from, to + 1);
+    },
+    get calls() {
+      return calls;
+    },
+    pageSize,
+  };
+}
+
+void (async () => {
+  await checkAsync('reads past the cap instead of stopping at one page', async () => {
+    const src = fakeSource(2500, 1000);
+    const rows = await collectPages(src.fetch, 1000);
+    assert.equal(rows.length, 2500, 'must return every row, not just the first page');
+    assert.equal(src.calls, 3, 'expected 3 requests for 2500 rows at 1000/page');
+    assert.equal(new Set(rows.map((r) => r.id)).size, 2500, 'no duplicates or gaps');
+  });
+
+  await checkAsync('a total that is an exact multiple still terminates', async () => {
+    const src = fakeSource(2000, 1000);
+    const rows = await collectPages(src.fetch, 1000);
+    assert.equal(rows.length, 2000);
+    assert.equal(src.calls, 3, 'needs a final short page to know it is done');
+  });
+
+  await checkAsync('a single short page makes exactly one request', async () => {
+    const src = fakeSource(62, 1000);
+    const rows = await collectPages(src.fetch, 1000);
+    assert.equal(rows.length, 62);
+    assert.equal(src.calls, 1);
+  });
+
+  await checkAsync('an empty table returns nothing without looping', async () => {
+    const src = fakeSource(0, 1000);
+    const rows = await collectPages(src.fetch, 1000);
+    assert.equal(rows.length, 0);
+    assert.equal(src.calls, 1);
+  });
+
+  console.log(`\n${passed} passed, ${failures.length} failed\n`);
+  if (failures.length) process.exit(1);
+})();

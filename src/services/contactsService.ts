@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { supabase, fetchAllRows } from './supabase';
 import type { Contact } from '../types';
 import { ContactRole } from '../types';
 import { nowISO } from '../utils/helpers';
@@ -70,15 +70,11 @@ function rowToContact(staff: StaffRow, schoolId: string): Contact {
 }
 
 export async function fetchContacts(): Promise<Contact[]> {
-  const [staffResult, junctionResult] = await Promise.all([
-    supabase.from('staff').select('*'),
-    supabase.from('contacts').select('*'),
+  // Paged: staff and contacts both exceed PostgREST's single-response cap.
+  const [staffRows, junctionRows] = await Promise.all([
+    fetchAllRows<StaffRow>('staff', 'staff_id'),
+    fetchAllRows<JunctionRow>('contacts', ['school_id', 'staff_id']),
   ]);
-  if (staffResult.error) throw staffResult.error;
-  if (junctionResult.error) throw junctionResult.error;
-
-  const staffRows = staffResult.data as StaffRow[];
-  const junctionRows = junctionResult.data as JunctionRow[];
 
   // Build staff_id -> school_id lookup from junction table
   const schoolIdMap = new Map<number, string>();

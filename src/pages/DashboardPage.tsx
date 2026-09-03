@@ -297,7 +297,7 @@ export function DashboardPage() {
               <p className="text-xs text-neutral-400 mt-0.5">Top 5 highest-priority schools from your engagement data.</p>
             </div>
             <Link
-              to="/reports"
+              to="/priorities"
               className="text-sm text-siue-red hover:text-siue-maroon font-medium flex items-center gap-1 transition-colors shrink-0"
             >
               View all <ArrowRight size={14} />

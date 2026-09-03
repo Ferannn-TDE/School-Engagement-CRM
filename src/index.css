@@ -19,6 +19,17 @@
   --palette-error: #C41E3A;
   --palette-info: #004B87;
 
+  /* Attention scale — how overdue something is.
+     Deliberately NOT siue-red: on a worklist whose whole job is flagging
+     schools that need chasing, brand red and alert red compete and neither
+     reads as meaningful. Red stays identity and navigation; these carry
+     urgency. "Low" is cool rather than warm because a never-contacted school
+     is untouched, not late. */
+  --palette-attention-high: #B45309;
+  --palette-attention-high-text: #92400E;
+  --palette-attention-medium: #F59E0B;
+  --palette-attention-low: #94A3B8;
+
   /* Neutral scale */
   --palette-neutral-50: #F7F7F7;
   --palette-neutral-100: #E8E9EA;
@@ -46,6 +57,10 @@
   --color-warning: var(--palette-warning);
   --color-error: var(--palette-error);
   --color-info: var(--palette-info);
+  --color-attention-high: var(--palette-attention-high);
+  --color-attention-high-text: var(--palette-attention-high-text);
+  --color-attention-medium: var(--palette-attention-medium);
+  --color-attention-low: var(--palette-attention-low);
   --color-neutral-50: var(--palette-neutral-50);
   --color-neutral-100: var(--palette-neutral-100);
   --color-neutral-200: var(--palette-neutral-200);

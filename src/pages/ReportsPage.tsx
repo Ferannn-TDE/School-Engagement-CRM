@@ -4,24 +4,22 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, PieChart, Pie, Cell, Legend,
 } from 'recharts';
-import { format, subMonths, isAfter, differenceInDays } from 'date-fns';
+import { format, subMonths, isAfter } from 'date-fns';
 import {
   Download, AlertTriangle, TrendingUp, School, Users, Calendar,
-  BarChart3, ChevronDown, ChevronUp, Activity, Clock, ArrowRight,
-  ChevronsUpDown, BookOpen,
+  BarChart3, ChevronDown, ChevronUp, Activity, ArrowRight,
+  BookOpen,
 } from 'lucide-react';
 import { Header } from '../components/layout/Header';
 import { Card, MetricCard } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { Badge } from '../components/common/Badge';
-import { useAppContext } from '../context/AppContext';
+import { useEngagementMaps, useSchoolsNeedingAttention } from '../hooks/useEngagementMaps';
 import { EventTypeLabels, ProgramCategoryLabels, ProgramCategory } from '../types';
 import type { EventType } from '../types';
 import {
   fetchCountyEngagementRate,
-  fetchSchoolEngagementSummary,
   type CountyEngagementRow,
-  type SchoolEngagementSummaryRow,
 } from '../services/analyticsService';
 import { downloadFile } from '../utils/helpers';
 import toast from 'react-hot-toast';
@@ -97,56 +95,18 @@ function PieEventTooltip({ active, payload }: {
 }
 
 export function ReportsPage() {
-  const { state } = useAppContext();
+  const { state, schoolContactsMap, schoolActivitiesMap, schoolEventCountMap } = useEngagementMaps();
+  const schoolsNeedingAttention = useSchoolsNeedingAttention();
 
   // ── Supabase view data ───────────────────────────────────────────────────────
   const [countyEngagement, setCountyEngagement] = useState<CountyEngagementRow[]>([]);
-  const [schoolSummary, setSchoolSummary] = useState<SchoolEngagementSummaryRow[]>([]);
   useEffect(() => {
     fetchCountyEngagementRate().then(setCountyEngagement).catch(() => {});
-    fetchSchoolEngagementSummary().then(setSchoolSummary).catch(() => {});
   }, []);
 
   // ── UI state ─────────────────────────────────────────────────────────────────
-  const [attentionSort, setAttentionSort] = useState<'name' | 'county'>('name');
-  const [attentionExpanded, setAttentionExpanded] = useState(false);
-  const [noEventsExpanded, setNoEventsExpanded] = useState(false);
   const [countyComparisonExpanded, setCountyComparisonExpanded] = useState(false);
   const [programCoverageExpanded, setProgramCoverageExpanded] = useState(true);
-
-  // ── Precomputed lookup maps (O(n) each, shared across all memos) ─────────────
-  const schoolContactsMap = useMemo(() => {
-    const map = new Map<string, { total: number; active: number }>();
-    for (const c of state.contacts) {
-      const entry = map.get(c.schoolId) ?? { total: 0, active: 0 };
-      entry.total++;
-      if (c.isActive) entry.active++;
-      map.set(c.schoolId, entry);
-    }
-    return map;
-  }, [state.contacts]);
-
-  const schoolActivitiesMap = useMemo(() => {
-    const map = new Map<string, { count: number; latestDate: Date | null }>();
-    for (const a of state.activities) {
-      const entry = map.get(a.schoolId) ?? { count: 0, latestDate: null };
-      entry.count++;
-      const d = new Date(a.date);
-      if (!entry.latestDate || d > entry.latestDate) entry.latestDate = d;
-      map.set(a.schoolId, entry);
-    }
-    return map;
-  }, [state.activities]);
-
-  const schoolEventCountMap = useMemo(() => {
-    const map = new Map<string, number>();
-    for (const event of state.events) {
-      for (const schoolId of event.participatingSchools) {
-        map.set(schoolId, (map.get(schoolId) ?? 0) + 1);
-      }
-    }
-    return map;
-  }, [state.events]);
 
   // ── Summary metrics ──────────────────────────────────────────────────────────
   const summaryMetrics = useMemo(() => {
@@ -209,27 +169,6 @@ export function ReportsPage() {
       .sort((a, b) => b.score - a.score)
       .slice(0, 10);
   }, [state.schools, schoolActivitiesMap, schoolContactsMap, schoolEventCountMap]);
-
-  // ── Counties at risk (most unreached schools) ─────────────────────────────────
-  const countiesAtRisk = useMemo(() => {
-    const countyMap = new Map<string, { total: number; withContacts: number }>();
-    for (const s of state.schools) {
-      if (!s.county || !s.county.trim()) continue;
-      const entry = countyMap.get(s.county) ?? { total: 0, withContacts: 0 };
-      entry.total++;
-      if ((schoolContactsMap.get(s.id)?.total ?? 0) > 0) entry.withContacts++;
-      countyMap.set(s.county, entry);
-    }
-    return Array.from(countyMap.entries())
-      .map(([county, { total, withContacts }]) => ({
-        county, total, withContacts,
-        gap: total - withContacts,
-        rate: total > 0 ? withContacts / total : 0,
-      }))
-      .filter((c) => c.total >= 2 && c.gap > 0)
-      .sort((a, b) => b.gap - a.gap)
-      .slice(0, 8);
-  }, [state.schools, schoolContactsMap]);
 
   // ── Event type distribution (enhanced with attendance) ───────────────────────
   const eventTypeData = useMemo(() => {
@@ -294,101 +233,6 @@ export function ReportsPage() {
         activityType: a.activityType,
       }));
   }, [state.activities, state.schools]);
-
-  // ── Upcoming follow-ups ──────────────────────────────────────────────────────
-  const upcomingFollowups = useMemo(() => {
-    const now = new Date();
-    const thirtyDaysAgo = subMonths(now, 1);
-    const ninetyDaysAgo = subMonths(now, 3);
-
-    const recentEventSchoolIds = new Set<string>();
-    for (const event of state.events) {
-      if (!event.date) continue;
-      try {
-        if (isAfter(new Date(event.date.slice(0, 10)), ninetyDaysAgo)) {
-          event.participatingSchools.forEach((id) => recentEventSchoolIds.add(id));
-        }
-      } catch { /* skip */ }
-    }
-
-    const result: Array<{ id: string; name: string; county: string; reason: string; urgency: number }> = [];
-    const seen = new Set<string>();
-
-    for (const s of state.schools) {
-      if (seen.has(s.id)) continue;
-      const acts = schoolActivitiesMap.get(s.id);
-      if (recentEventSchoolIds.has(s.id) && !acts) {
-        result.push({ id: s.id, name: s.name, county: s.county, reason: 'Attended recent event — no follow-up', urgency: 9999 });
-        seen.add(s.id);
-      }
-    }
-
-    for (const s of state.schools) {
-      if (seen.has(s.id)) continue;
-      if ((schoolContactsMap.get(s.id)?.active ?? 0) === 0) continue;
-      const acts = schoolActivitiesMap.get(s.id);
-      if (!acts) {
-        result.push({ id: s.id, name: s.name, county: s.county, reason: 'Has contacts — no activity logged yet', urgency: 8888 });
-        seen.add(s.id);
-      } else if (acts.latestDate && !isAfter(acts.latestDate, thirtyDaysAgo)) {
-        const days = differenceInDays(now, acts.latestDate);
-        result.push({ id: s.id, name: s.name, county: s.county, reason: `${days}d since last activity`, urgency: days });
-        seen.add(s.id);
-      }
-    }
-
-    return result.sort((a, b) => b.urgency - a.urgency).slice(0, 10);
-  }, [state.schools, state.events, schoolContactsMap, schoolActivitiesMap]);
-
-  // ── Schools needing attention ────────────────────────────────────────────────
-  const schoolsNeedingAttention = useMemo(() => {
-    const sixMonthsAgo = subMonths(new Date(), 6);
-    return state.schools
-      .map((school) => {
-        const contacts = schoolContactsMap.get(school.id) ?? { total: 0, active: 0 };
-        const acts = schoolActivitiesMap.get(school.id);
-        const issues: string[] = [];
-        if (contacts.total === 0) issues.push('No contacts');
-        else if (contacts.active === 0) issues.push('No active contacts');
-        if (!acts) issues.push('No activity recorded');
-        else if (acts.latestDate && !isAfter(acts.latestDate, sixMonthsAgo))
-          issues.push('No activity in 6+ months');
-        return {
-          id: school.id,
-          name: school.name,
-          county: school.county,
-          contactCount: contacts.total,
-          lastActivity: acts?.latestDate ? format(acts.latestDate, 'MMM d, yyyy') : 'Never',
-          issues,
-          priority: issues.length >= 2 ? 'high' : 'medium',
-        };
-      })
-      .filter((s) => s.issues.length > 0);
-  }, [state.schools, schoolContactsMap, schoolActivitiesMap]);
-
-  const sortedAttention = useMemo(
-    () =>
-      [...schoolsNeedingAttention].sort((a, b) =>
-        attentionSort === 'county'
-          ? a.county.localeCompare(b.county) || a.name.localeCompare(b.name)
-          : a.name.localeCompare(b.name)
-      ),
-    [schoolsNeedingAttention, attentionSort]
-  );
-
-  // ── Schools never in any event ───────────────────────────────────────────────
-  const schoolsWithNoEvents = useMemo(() => {
-    if (schoolSummary.length > 0) {
-      const zeroEventIds = new Set(schoolSummary.filter((r) => r.event_count === 0).map((r) => r.facility_key));
-      return state.schools
-        .filter((s) => zeroEventIds.has(s.id))
-        .sort((a, b) => a.county.localeCompare(b.county) || a.name.localeCompare(b.name));
-    }
-    const schoolIdsInEvents = new Set(state.events.flatMap((e) => e.participatingSchools));
-    return state.schools
-      .filter((s) => !schoolIdsInEvents.has(s.id))
-      .sort((a, b) => a.county.localeCompare(b.county) || a.name.localeCompare(b.name));
-  }, [schoolSummary, state.schools, state.events]);
 
   // ── County Comparison ────────────────────────────────────────────────────────
   const countyComparisonData = useMemo(() => {
@@ -477,8 +321,8 @@ export function ReportsPage() {
       '',
       '=== SCHOOLS NEEDING ATTENTION ===',
       'School,County,Contacts,Last Activity,Priority,Issues',
-      ...sortedAttention.map(
-        (s) => `"${s.name}",${s.county},${s.contactCount},${s.lastActivity},${s.priority},"${s.issues.join('; ')}"`
+      ...schoolsNeedingAttention.map(
+        (s) => `"${s.name}",${s.county},${s.contactCount},${s.lastActivity},${s.severity},"${s.issues.join('; ')}"`
       ),
     ];
     downloadFile(lines.join('\n'), `siue-crm-report-${format(new Date(), 'yyyy-MM-dd')}.csv`);
@@ -487,9 +331,6 @@ export function ReportsPage() {
 
   const total = engagementPipeline[0]?.count ?? 1;
   const missingCountyCount = state.schools.filter((s) => !s.county || !s.county.trim()).length;
-  const allSameFollowupReason =
-    upcomingFollowups.length > 0 &&
-    new Set(upcomingFollowups.map((f) => f.reason)).size === 1;
 
   return (
     <div>
@@ -567,9 +408,9 @@ export function ReportsPage() {
           </div>
         )}
 
-        {/* ── Top Engaged Schools + Counties At Risk ────────────────────────── */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="lg:col-span-2">
+        {/* ── Top Engaged Schools ──────────────────────────────────────────── */}
+        <div>
+          <Card>
             <h3 className="text-sm font-semibold text-neutral-700 mb-1">Top Engaged Schools</h3>
             <p className="text-xs text-neutral-400 mb-4">Composite score: activities ×3 + active contacts ×2 + event appearances ×4</p>
             {topEngagedSchools.length > 0 ? (
@@ -591,38 +432,6 @@ export function ReportsPage() {
             )}
           </Card>
 
-          <Card>
-            <h3 className="text-sm font-semibold text-neutral-700 mb-1">Counties At Risk</h3>
-            <p className="text-xs text-neutral-400 mb-4">Most schools not yet in contact — sorted by gap size.</p>
-            {countiesAtRisk.length > 0 ? (
-              <div className="space-y-4">
-                {countiesAtRisk.map((c) => (
-                  <div key={c.county}>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-neutral-700 truncate">{c.county}</span>
-                      <span className="text-xs text-error font-medium shrink-0 ml-2">{c.gap} unreached</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 h-2 bg-neutral-100 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-siue-red/40 rounded-full"
-                          style={{ width: `${Math.round((1 - c.rate) * 100)}%` }}
-                        />
-                      </div>
-                      <span className="text-xs text-neutral-400 shrink-0 w-20 text-right">
-                        {c.withContacts}/{c.total} reached
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="py-12 text-center">
-                <TrendingUp size={28} className="mx-auto mb-3 text-success opacity-50" />
-                <p className="text-sm font-medium text-neutral-500">All counties have good contact coverage.</p>
-              </div>
-            )}
-          </Card>
         </div>
 
         {/* ── Events by Type + Engagement Rate by County ────────────────────── */}
@@ -700,8 +509,8 @@ export function ReportsPage() {
           </Card>
         </div>
 
-        {/* ── Recent Activity Feed + Upcoming Follow-ups ────────────────────── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* ── Recent Activity Feed ─────────────────────────────────────────── */}
+        <div>
           <Card>
             <h3 className="text-sm font-semibold text-neutral-700 flex items-center gap-2 mb-4">
               <Activity size={15} className="text-neutral-400" />
@@ -737,53 +546,6 @@ export function ReportsPage() {
             )}
           </Card>
 
-          <Card>
-            <h3 className="text-sm font-semibold text-neutral-700 flex items-center gap-2 mb-1">
-              <Clock size={15} className="text-neutral-400" />
-              Upcoming Follow-ups
-            </h3>
-            <p className="text-xs text-neutral-400 mb-4">
-              Schools that attended a recent event with no follow-up, or with contacts but stale activity.
-            </p>
-            {upcomingFollowups.length > 0 ? (
-              <>
-                {allSameFollowupReason && (
-                  <div className="mb-3 flex items-center gap-2 px-3 py-2 bg-neutral-50 rounded-lg border border-neutral-100">
-                    <span className="text-xs bg-neutral-200 text-neutral-600 px-2.5 py-0.5 rounded-full shrink-0 font-medium">
-                      {upcomingFollowups[0].reason}
-                    </span>
-                    <span className="text-xs text-neutral-400">applies to all entries below</span>
-                  </div>
-                )}
-                <div className="divide-y divide-neutral-50">
-                  {upcomingFollowups.map((s) => (
-                    <div key={s.id} className="flex items-center justify-between py-2.5 hover:bg-neutral-50 transition-colors rounded-lg px-1 -mx-1">
-                      <div className="flex-1 min-w-0 mr-3">
-                        <Link
-                          to={`/schools/${encodeURIComponent(s.id)}`}
-                          className="text-sm font-medium text-neutral-800 hover:text-siue-red transition-colors block truncate"
-                        >
-                          {s.name}
-                        </Link>
-                        <p className="text-xs text-neutral-400">{s.county} County</p>
-                      </div>
-                      {!allSameFollowupReason && (
-                        <span className="text-xs bg-neutral-100 text-neutral-600 px-2.5 py-0.5 rounded-full shrink-0">
-                          {s.reason}
-                        </span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <div className="py-12 text-center">
-                <Clock size={28} className="mx-auto mb-3 text-neutral-300" />
-                <p className="text-sm font-medium text-neutral-500">No follow-ups needed</p>
-                <p className="text-xs text-neutral-400 mt-1">All schools with contacts have recent activity.</p>
-              </div>
-            )}
-          </Card>
         </div>
 
         {/* ── County Comparison (collapsible) ──────────────────────────────── */}
@@ -877,187 +639,6 @@ export function ReportsPage() {
           )}
         </Card>
 
-        {/* ── Schools Needing Attention (collapsible) ───────────────────────── */}
-        <Card padding={false}>
-          <button
-            className="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-neutral-50 rounded-xl transition-colors"
-            onClick={() => setAttentionExpanded((v) => !v)}
-          >
-            <div>
-              <h3 className="text-sm font-semibold text-neutral-700 flex items-center gap-2">
-                <AlertTriangle size={15} className="text-warning" />
-                Schools Needing Attention
-              </h3>
-              <p className="text-xs text-neutral-400 mt-0.5">
-                No contacts, no activity, or no activity in the last 6 months.
-              </p>
-            </div>
-            <div className="flex items-center gap-3 shrink-0 ml-4">
-              <Badge variant={schoolsNeedingAttention.length === 0 ? 'success' : 'warning'}>
-                {schoolsNeedingAttention.length} school{schoolsNeedingAttention.length !== 1 ? 's' : ''}
-              </Badge>
-              {attentionExpanded
-                ? <ChevronUp size={18} className="text-neutral-400" />
-                : <ChevronDown size={18} className="text-neutral-400" />}
-            </div>
-          </button>
-
-          {attentionExpanded && (
-            <div className="border-t border-neutral-100">
-              {schoolsNeedingAttention.length === 0 ? (
-                <div className="py-10 text-center">
-                  <BarChart3 size={32} className="mx-auto mb-3 text-success opacity-50" />
-                  <p className="text-sm font-medium text-success">All schools are in good standing.</p>
-                  <p className="text-xs text-neutral-400 mt-1">Every school has active contacts and recent engagement.</p>
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full text-sm table-fixed">
-                    <colgroup>
-                      <col style={{ width: '28%' }} />
-                      <col style={{ width: '14%' }} />
-                      <col style={{ width: '9%' }} />
-                      <col style={{ width: '13%' }} />
-                      <col style={{ width: '25%' }} />
-                      <col style={{ width: '11%' }} />
-                    </colgroup>
-                    <thead className="bg-neutral-50 border-b border-neutral-100">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-                          School
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-                          <button
-                            className="inline-flex items-center gap-1 hover:text-neutral-700 transition-colors"
-                            onClick={() => setAttentionSort((s) => s === 'county' ? 'name' : 'county')}
-                            title={attentionSort === 'county' ? 'Currently sorted by county — click to sort by name' : 'Click to sort by county'}
-                          >
-                            County
-                            {attentionSort === 'county'
-                              ? <ChevronDown size={12} className="text-siue-red" />
-                              : <ChevronsUpDown size={12} className="text-neutral-400" />}
-                          </button>
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-                          Contacts
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-                          Last Activity
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-                          Issues
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-                          Priority
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-neutral-50 bg-white">
-                      {sortedAttention.map((school) => (
-                        <tr key={school.id} className="hover:bg-neutral-50">
-                          <td className="px-4 py-3">
-                            <Link
-                              to={`/schools/${encodeURIComponent(school.id)}`}
-                              className="font-medium text-neutral-800 hover:text-siue-red transition-colors line-clamp-1"
-                            >
-                              {school.name}
-                            </Link>
-                          </td>
-                          <td className="px-4 py-3 text-neutral-500 truncate">{school.county}</td>
-                          <td className="px-4 py-3 text-neutral-500">{school.contactCount}</td>
-                          <td className="px-4 py-3 text-neutral-500 text-xs">{school.lastActivity}</td>
-                          <td className="px-4 py-3">
-                            <div className="flex flex-wrap gap-1">
-                              {school.issues.map((issue) => (
-                                <Badge key={issue} variant="warning">{issue}</Badge>
-                              ))}
-                            </div>
-                          </td>
-                          <td className="px-4 py-3">
-                            <Badge variant={school.priority === 'high' ? 'error' : 'warning'}>
-                              {school.priority === 'high' ? 'High' : 'Medium'}
-                            </Badge>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          )}
-        </Card>
-
-        {/* ── Schools Never at an Event (collapsible) ───────────────────────── */}
-        <Card padding={false}>
-          <button
-            className="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-neutral-50 rounded-xl transition-colors"
-            onClick={() => setNoEventsExpanded((v) => !v)}
-          >
-            <div>
-              <h3 className="text-sm font-semibold text-neutral-700 flex items-center gap-2">
-                <School size={15} className="text-neutral-400" />
-                Schools Never at an Event
-              </h3>
-              <p className="text-xs text-neutral-400 mt-0.5">
-                Schools with no event appearance — your coldest outreach leads.
-              </p>
-            </div>
-            <div className="flex items-center gap-3 shrink-0 ml-4">
-              <Badge variant={schoolsWithNoEvents.length === 0 ? 'success' : 'info'}>
-                {schoolsWithNoEvents.length} school{schoolsWithNoEvents.length !== 1 ? 's' : ''}
-              </Badge>
-              {noEventsExpanded
-                ? <ChevronUp size={18} className="text-neutral-400" />
-                : <ChevronDown size={18} className="text-neutral-400" />}
-            </div>
-          </button>
-
-          {noEventsExpanded && (
-            <div className="border-t border-neutral-100">
-              {schoolsWithNoEvents.length === 0 ? (
-                <div className="py-8 text-center">
-                  <School size={28} className="mx-auto mb-3 text-success opacity-50" />
-                  <p className="text-sm font-medium text-success">All schools have appeared at an event.</p>
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-neutral-100 text-sm">
-                    <thead className="bg-neutral-50">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider">School</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider">County</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider">Type</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider">Contacts</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-neutral-50 bg-white">
-                      {schoolsWithNoEvents.map((school) => (
-                        <tr key={school.id} className="hover:bg-neutral-50">
-                          <td className="px-4 py-3">
-                            <Link
-                              to={`/schools/${encodeURIComponent(school.id)}`}
-                              className="font-medium text-siue-red hover:text-siue-maroon hover:underline"
-                            >
-                              {school.name}
-                            </Link>
-                          </td>
-                          <td className="px-4 py-3 text-neutral-500">{school.county}</td>
-                          <td className="px-4 py-3 text-neutral-500">
-                            {school.schoolType === 'high_school' ? 'High School' : 'Middle School'}
-                          </td>
-                          <td className="px-4 py-3 text-neutral-500">
-                            {schoolContactsMap.get(school.id)?.total ?? 0}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          )}
-        </Card>
 
       </div>
     </div>

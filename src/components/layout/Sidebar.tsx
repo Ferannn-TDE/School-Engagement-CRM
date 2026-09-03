@@ -9,6 +9,7 @@ import {
   BarChart3,
   Settings,
   Map,
+  ListChecks,
 } from 'lucide-react';
 import { classNames } from '../../utils/helpers';
 import { useLayout } from '../../context/LayoutContext';
@@ -29,6 +30,7 @@ const navGroups: NavGroup[] = [
     label: 'Data',
     items: [
       { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
+      { to: '/priorities', icon: ListChecks, label: 'Priorities' },
       { to: '/schools', icon: School, label: 'Schools' },
       { to: '/contacts', icon: Users, label: 'Contacts' },
       { to: '/events', icon: Calendar, label: 'Events' },

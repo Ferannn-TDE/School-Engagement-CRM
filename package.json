@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "verify:import": "esbuild scripts/verify-import-parsing.ts --bundle --platform=node --format=cjs --external:xlsx --outfile=node_modules/.cache/verify-import.cjs --log-level=warning && node node_modules/.cache/verify-import.cjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

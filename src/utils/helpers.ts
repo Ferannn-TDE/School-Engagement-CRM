@@ -48,3 +48,42 @@ export function contactsToCsv(
 export function nowISO(): string {
   return new Date().toISOString();
 }
+
+/** Largest spreadsheet we accept. Parsing happens in the browser, so a file
+ *  much bigger than this locks up the tab rather than failing cleanly. */
+export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // 10 MB
+
+export function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+/** Turns a react-dropzone rejection into something a non-technical user can act on.
+ *  `accepted` describes the allowed formats in plain words, e.g. "Excel (.xlsx or .xls)". */
+export function describeFileRejection(
+  rejection: {
+    file: { name: string; size: number };
+    errors: readonly { readonly code: string }[];
+  },
+  accepted: string
+): string {
+  const codes = rejection.errors.map((e) => e.code);
+  const name = rejection.file.name;
+
+  if (codes.includes('file-too-large')) {
+    return `"${name}" is ${formatBytes(rejection.file.size)}, which is over the ${formatBytes(
+      MAX_UPLOAD_BYTES
+    )} limit. Try splitting it into smaller files.`;
+  }
+  if (codes.includes('too-many-files')) {
+    return 'Please add one file at a time.';
+  }
+  if (codes.includes('file-invalid-type')) {
+    const ext = name.includes('.') ? name.slice(name.lastIndexOf('.')) : '';
+    return `"${name}" isn't a supported file${
+      ext ? ` (${ext} files can't be read here)` : ''
+    }. Please upload ${accepted}.`;
+  }
+  return `"${name}" couldn't be accepted. Please upload ${accepted}.`;
+}

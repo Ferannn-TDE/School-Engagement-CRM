@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
-import { Upload, FileSpreadsheet, CheckCircle, AlertCircle, X, Download, Loader2, Users, School as SchoolIcon } from 'lucide-react';
+import { Upload, FileSpreadsheet, CheckCircle, AlertCircle, AlertTriangle, X, Download, Loader2, Users, School as SchoolIcon } from 'lucide-react';
 import { Header } from '../components/layout/Header';
 import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
@@ -10,8 +10,19 @@ import { Select } from '../components/common/Select';
 import { Badge } from '../components/common/Badge';
 import { useAppContext } from '../context/AppContext';
 import { ContactRole } from '../types';
-import { isValidEmail, downloadFile } from '../utils/helpers';
+import {
+  isValidEmail,
+  downloadFile,
+  describeFileRejection,
+  formatBytes,
+  MAX_UPLOAD_BYTES,
+} from '../utils/helpers';
 import { CONTACT_FIELD_OPTIONS, SCHOOL_FIELD_OPTIONS } from '../constants';
+import {
+  interpretCombinedWorkbook,
+  looksLikeSpreadsheet,
+  type ParsedRow,
+} from '../utils/importParsing';
 import { importContactsBulk } from '../services/contactsService';
 import { importSchoolsBulk } from '../services/schoolsService';
 import toast from 'react-hot-toast';
@@ -50,8 +61,62 @@ function resolveRole(value: string | undefined): ContactRole {
   return ROLE_LOOKUP[value.toLowerCase().trim()] ?? ContactRole.COUNSELOR;
 }
 
-interface ParsedRow {
-  [key: string]: string;
+/** Persistent, dismissible explanation of why an upload didn't work.
+ *  Deliberately not a toast — toasts disappear after 3s and this is the only
+ *  thing telling the user what went wrong. */
+function UploadError({ message, onDismiss }: { message: string; onDismiss: () => void }) {
+  return (
+    <div
+      role="alert"
+      className="flex items-start gap-3 p-4 rounded-lg border border-red-200 bg-red-50"
+    >
+      <AlertCircle size={18} className="text-error shrink-0 mt-0.5" />
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-semibold text-error">That file couldn&rsquo;t be uploaded</p>
+        <p className="text-sm text-neutral-700 mt-0.5">{message}</p>
+      </div>
+      <button
+        onClick={onDismiss}
+        className="p-1 rounded hover:bg-red-100 text-neutral-500 shrink-0"
+        aria-label="Dismiss"
+      >
+        <X size={16} />
+      </button>
+    </div>
+  );
+}
+
+/** Shared dropzone interior so the idle / dragging / reading states stay
+ *  identical between the two upload areas. */
+function DropzoneBody({
+  isParsing,
+  isDragActive,
+  idleLabel,
+  hint,
+}: {
+  isParsing: boolean;
+  isDragActive: boolean;
+  idleLabel: string;
+  hint: string;
+}) {
+  if (isParsing) {
+    return (
+      <>
+        <Loader2 className="w-12 h-12 mx-auto mb-4 text-siue-red animate-spin" />
+        <p className="text-lg text-neutral-700 mb-2">Reading your file…</p>
+        <p className="text-sm text-neutral-400">This can take a moment for large spreadsheets.</p>
+      </>
+    );
+  }
+  return (
+    <>
+      <Upload className="w-12 h-12 mx-auto mb-4 text-neutral-400" />
+      <p className="text-lg text-neutral-700 mb-2">
+        {isDragActive ? 'Drop file here' : idleLabel}
+      </p>
+      <p className="text-sm text-neutral-400">{hint}</p>
+    </>
+  );
 }
 
 interface ValidationResult {
@@ -66,6 +131,9 @@ interface CombinedPreview {
   contactRows: ParsedRow[];
   duplicateNames: string[];
   fileName: string;
+  schoolSheetName: string;
+  contactSheetName: string | null;
+  warnings: string[];
 }
 
 export function ImportPage() {
@@ -81,6 +149,11 @@ export function ImportPage() {
   const [step, setStep] = useState<'upload' | 'mapping' | 'preview' | 'done'>('upload');
   const [isImporting, setIsImporting] = useState(false);
 
+  // Shared upload feedback. Only one tab is active at a time, and both reset
+  // helpers clear these, so a single pair covers every dropzone on the page.
+  const [isParsing, setIsParsing] = useState(false);
+  const [parseError, setParseError] = useState<string | null>(null);
+
   // Combined import state
   const [combinedPreview, setCombinedPreview] = useState<CombinedPreview | null>(null);
   const [combinedStep, setCombinedStep] = useState<'upload' | 'preview' | 'done'>('upload');
@@ -95,39 +168,57 @@ export function ImportPage() {
 
   const parseCombinedFile = useCallback(
     (file: File) => {
+      setParseError(null);
+      setIsParsing(true);
+
       const reader = new FileReader();
-      reader.onload = (e) => {
-        const data = e.target?.result;
-        const workbook = XLSX.read(data, { type: 'binary' });
 
-        const schoolSheetName =
-          workbook.SheetNames.find((n) => n.toLowerCase().includes('school')) ??
-          workbook.SheetNames[0];
-        const contactSheetName =
-          workbook.SheetNames.find((n) => n.toLowerCase().includes('contact')) ??
-          workbook.SheetNames[1] ??
-          workbook.SheetNames[0];
-
-        const schoolSheet = workbook.Sheets[schoolSheetName];
-        const contactSheet = workbook.Sheets[contactSheetName];
-
-        const schoolRows = schoolSheet
-          ? XLSX.utils.sheet_to_json<ParsedRow>(schoolSheet, { defval: '' })
-          : [];
-        const contactRows =
-          contactSheet && contactSheetName !== schoolSheetName
-            ? XLSX.utils.sheet_to_json<ParsedRow>(contactSheet, { defval: '' })
-            : [];
-
-        const existingNames = new Set(state.schools.map((s) => s.name.toLowerCase()));
-        const duplicateNames = schoolRows
-          .map((r) => (r['name'] as string) || '')
-          .filter((n) => n && existingNames.has(n.toLowerCase()));
-
-        setCombinedPreview({ schoolRows, contactRows, duplicateNames, fileName: file.name });
-        setCombinedStep('preview');
+      reader.onerror = () => {
+        setIsParsing(false);
+        setParseError(
+          `We couldn't read "${file.name}". The file may be in use by another program — close it in Excel and try again.`
+        );
       };
-      reader.readAsBinaryString(file);
+
+      reader.onload = (e) => {
+        try {
+          const data = e.target?.result;
+          if (!data) throw new Error('empty read result');
+
+          const bytes = new Uint8Array(data as ArrayBuffer);
+          const workbook = XLSX.read(bytes, { type: 'array' });
+          const result = interpretCombinedWorkbook(
+            workbook,
+            state.schools.map((s) => s.name)
+          );
+
+          if (!result.ok) {
+            setIsParsing(false);
+            // XLSX.read turns junk into an empty workbook rather than throwing,
+            // so distinguish "not really a spreadsheet" from "genuinely empty".
+            setParseError(
+              !looksLikeSpreadsheet(bytes)
+                ? `"${file.name}" doesn't look like a real Excel file, even though it's named like one. Try opening it in Excel and re-saving it as .xlsx, then upload again.`
+                : result.reason === 'no-sheets'
+                  ? `"${file.name}" has no sheets in it. Check you uploaded the right file.`
+                  : `"${file.name}" doesn't contain any data rows. Make sure the first row is a header (name, county, city…) with at least one row of data beneath it.`
+            );
+            return;
+          }
+
+          setCombinedPreview({ ...result.data, fileName: file.name });
+          setIsParsing(false);
+          setCombinedStep('preview');
+        } catch (err) {
+          console.error('Combined file parse failed:', err);
+          setIsParsing(false);
+          setParseError(
+            `We couldn't read "${file.name}". It may be damaged or not a real Excel file. Try opening it in Excel and re-saving it as .xlsx, then upload again.`
+          );
+        }
+      };
+
+      reader.readAsArrayBuffer(file);
     },
     [state.schools]
   );
@@ -202,11 +293,17 @@ export function ImportPage() {
       if (totalFailed === 0) {
         toast.success(`Import complete — ${totalNew} new, ${totalUpdated} updated`);
       } else {
-        toast.error(`Import finished with ${totalFailed} failure${totalFailed !== 1 ? 's' : ''} — see console`);
+        toast.error(
+          `Import finished, but ${totalFailed} record${totalFailed !== 1 ? 's' : ''} couldn't be saved. See the summary below.`
+        );
       }
     } catch (err) {
       console.error('Combined import failed:', err);
-      toast.error('Import failed — check console for details');
+      setParseError(
+        'The import could not be completed and nothing was saved. Check your internet connection and try again.'
+      );
+      setCombinedStep('upload');
+      toast.error('Import failed — nothing was saved');
     } finally {
       setIsImporting(false);
     }
@@ -216,6 +313,8 @@ export function ImportPage() {
     setCombinedPreview(null);
     setCombinedStep('upload');
     setCombinedResult(null);
+    setIsParsing(false);
+    setParseError(null);
   };
 
   // ── Single-entity import helpers ────────────────────────────────────────────
@@ -223,39 +322,93 @@ export function ImportPage() {
   const parseFile = useCallback(
     (file: File) => {
       setFileName(file.name);
+      setParseError(null);
+      setIsParsing(true);
 
-      if (file.name.endsWith('.csv')) {
-        Papa.parse(file, {
+      // Shared landing point for both CSV and Excel once rows are in hand.
+      // `notASpreadsheet` is only ever true on the Excel path, where junk parses
+      // to an empty workbook instead of throwing.
+      const accept = (rows: ParsedRow[], hdrs: string[], notASpreadsheet = false) => {
+        if (rows.length === 0) {
+          setIsParsing(false);
+          setParseError(
+            notASpreadsheet
+              ? `"${file.name}" doesn't look like a real spreadsheet, even though it's named like one. Try opening it in Excel and re-saving it, then upload again.`
+              : `"${file.name}" doesn't contain any data rows. Make sure the first row is a header and there is at least one row of data beneath it.`
+          );
+          return;
+        }
+        if (hdrs.length === 0) {
+          setIsParsing(false);
+          setParseError(
+            `"${file.name}" has no column headings, so its columns can't be matched up. Add a header row and try again.`
+          );
+          return;
+        }
+        setHeaders(hdrs);
+        setParsedData(rows);
+        autoMapColumns(hdrs);
+        setIsParsing(false);
+        setStep('mapping');
+      };
+
+      if (file.name.toLowerCase().endsWith('.csv')) {
+        Papa.parse<ParsedRow>(file, {
           header: true,
           skipEmptyLines: true,
           complete: (results) => {
-            const data = results.data as ParsedRow[];
-            const hdrs = results.meta.fields || [];
-            setHeaders(hdrs);
-            setParsedData(data);
-            autoMapColumns(hdrs);
-            setStep('mapping');
+            accept(results.data, results.meta.fields ?? []);
           },
-          error: () => toast.error('Failed to parse CSV file'),
+          error: (err) => {
+            console.error('CSV parse failed:', err);
+            setIsParsing(false);
+            setParseError(
+              `We couldn't read "${file.name}". Try opening it in Excel and re-saving it as a CSV, then upload again.`
+            );
+          },
         });
-      } else {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const data = e.target?.result;
-          const workbook = XLSX.read(data, { type: 'binary' });
-          const sheetName = workbook.SheetNames[0];
-          const sheet = workbook.Sheets[sheetName];
-          const jsonData = XLSX.utils.sheet_to_json<ParsedRow>(sheet, { defval: '' });
-          if (jsonData.length > 0) {
-            const hdrs = Object.keys(jsonData[0]);
-            setHeaders(hdrs);
-            setParsedData(jsonData);
-            autoMapColumns(hdrs);
-            setStep('mapping');
-          }
-        };
-        reader.readAsBinaryString(file);
+        return;
       }
+
+      const reader = new FileReader();
+
+      reader.onerror = () => {
+        setIsParsing(false);
+        setParseError(
+          `We couldn't read "${file.name}". The file may be in use by another program — close it in Excel and try again.`
+        );
+      };
+
+      reader.onload = (e) => {
+        try {
+          const data = e.target?.result;
+          if (!data) throw new Error('empty read result');
+
+          const bytes = new Uint8Array(data as ArrayBuffer);
+          const workbook = XLSX.read(bytes, { type: 'array' });
+          if (workbook.SheetNames.length === 0) {
+            setIsParsing(false);
+            setParseError(`"${file.name}" has no sheets in it. Check you uploaded the right file.`);
+            return;
+          }
+
+          const sheet = workbook.Sheets[workbook.SheetNames[0]];
+          const jsonData = XLSX.utils.sheet_to_json<ParsedRow>(sheet, { defval: '' });
+          accept(
+            jsonData,
+            jsonData.length > 0 ? Object.keys(jsonData[0]) : [],
+            !looksLikeSpreadsheet(bytes)
+          );
+        } catch (err) {
+          console.error('Spreadsheet parse failed:', err);
+          setIsParsing(false);
+          setParseError(
+            `We couldn't read "${file.name}". It may be damaged or not a real spreadsheet. Try opening it in Excel and re-saving it, then upload again.`
+          );
+        }
+      };
+
+      reader.readAsArrayBuffer(file);
     },
     [activeTab] // eslint-disable-line react-hooks/exhaustive-deps
   );
@@ -411,7 +564,10 @@ export function ImportPage() {
       setStep('done');
     } catch (err) {
       console.error('Import failed:', err);
-      toast.error('Import failed — check console for details');
+      setParseError(
+        'The import could not be completed and nothing was saved. Check your internet connection and try again.'
+      );
+      toast.error('Import failed — nothing was saved');
     } finally {
       setIsImporting(false);
     }
@@ -424,6 +580,8 @@ export function ImportPage() {
     setValidationErrors([]);
     setFileName('');
     setStep('upload');
+    setIsParsing(false);
+    setParseError(null);
   };
 
   const downloadTemplate = () => {
@@ -448,7 +606,16 @@ export function ImportPage() {
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
     },
     maxFiles: 1,
+    maxSize: MAX_UPLOAD_BYTES,
+    disabled: isParsing,
     onDrop: (files) => { if (files[0]) parseCombinedFile(files[0]); },
+    // Without this a rejected file does nothing at all — no message, no state
+    // change — and the page looks broken.
+    onDropRejected: (rejections) => {
+      const message = describeFileRejection(rejections[0], 'an Excel file (.xlsx or .xls)');
+      setParseError(message);
+      toast.error(message);
+    },
   });
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -458,7 +625,14 @@ export function ImportPage() {
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
     },
     maxFiles: 1,
+    maxSize: MAX_UPLOAD_BYTES,
+    disabled: isParsing,
     onDrop: (files) => { if (files[0]) parseFile(files[0]); },
+    onDropRejected: (rejections) => {
+      const message = describeFileRejection(rejections[0], 'a CSV or Excel file (.csv, .xlsx, .xls)');
+      setParseError(message);
+      toast.error(message);
+    },
   });
 
   return (
@@ -493,6 +667,10 @@ export function ImportPage() {
           ))}
         </div>
 
+        {parseError && (
+          <UploadError message={parseError} onDismiss={() => setParseError(null)} />
+        )}
+
         {/* ── Combined Import Tab ─────────────────────────────────────────── */}
         {activeTab === 'combined' && (
           <>
@@ -507,16 +685,21 @@ export function ImportPage() {
                 </div>
                 <div
                   {...getCombinedRootProps()}
-                  className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-colors ${
-                    isCombinedDragActive ? 'border-siue-red bg-red-50' : 'border-neutral-300 hover:border-siue-red'
+                  className={`border-2 border-dashed rounded-lg p-12 text-center transition-colors ${
+                    isParsing
+                      ? 'border-neutral-200 bg-neutral-50 cursor-wait'
+                      : isCombinedDragActive
+                        ? 'border-siue-red bg-red-50 cursor-pointer'
+                        : 'border-neutral-300 hover:border-siue-red cursor-pointer'
                   }`}
                 >
                   <input {...getCombinedInputProps()} />
-                  <Upload className="w-12 h-12 mx-auto mb-4 text-neutral-400" />
-                  <p className="text-lg text-neutral-700 mb-2">
-                    {isCombinedDragActive ? 'Drop file here' : 'Drag and drop Excel file, or click to browse'}
-                  </p>
-                  <p className="text-sm text-neutral-400">Accepts .xlsx or .xls files with Schools + Contacts sheets</p>
+                  <DropzoneBody
+                    isParsing={isParsing}
+                    isDragActive={isCombinedDragActive}
+                    idleLabel="Drag and drop Excel file, or click to browse"
+                    hint={`Accepts .xlsx or .xls files with Schools + Contacts sheets — up to ${formatBytes(MAX_UPLOAD_BYTES)}`}
+                  />
                 </div>
                 <div className="mt-4 p-4 bg-neutral-50 rounded-lg text-sm text-neutral-600 space-y-1">
                   <p className="font-medium text-neutral-700">Expected column names:</p>
@@ -535,12 +718,32 @@ export function ImportPage() {
                       <FileSpreadsheet size={16} />
                       {combinedPreview.fileName}
                     </p>
+                    <p className="text-xs text-neutral-400 mt-1">
+                      Reading schools from the &ldquo;{combinedPreview.schoolSheetName}&rdquo; sheet
+                      {combinedPreview.contactSheetName
+                        ? ` and contacts from the “${combinedPreview.contactSheetName}” sheet.`
+                        : '. No second sheet found for contacts.'}
+                    </p>
                   </div>
                   <Button variant="ghost" size="sm" onClick={resetCombined}>
                     <X size={16} />
                     Cancel
                   </Button>
                 </div>
+
+                {combinedPreview.warnings.length > 0 && (
+                  <div className="mb-6 p-4 rounded-lg border border-amber-200 bg-amber-50">
+                    <p className="text-sm font-semibold text-amber-900 flex items-center gap-2">
+                      <AlertTriangle size={16} className="shrink-0" />
+                      Check this before importing
+                    </p>
+                    <ul className="mt-2 space-y-1 list-disc list-inside">
+                      {combinedPreview.warnings.map((w, i) => (
+                        <li key={i} className="text-sm text-amber-900">{w}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-2 gap-4 mb-6">
                   <div className="p-4 bg-neutral-50 rounded-lg">
@@ -655,12 +858,22 @@ export function ImportPage() {
 
                 <div className="flex justify-end gap-3 pt-4 border-t border-neutral-100">
                   <Button variant="ghost" onClick={resetCombined} disabled={isImporting}>Cancel</Button>
-                  <Button onClick={() => void handleCombinedImport()} disabled={isImporting}>
+                  <Button
+                    onClick={() => void handleCombinedImport()}
+                    disabled={
+                      isImporting ||
+                      (combinedPreview.schoolRows.length - combinedPreview.duplicateNames.length === 0 &&
+                        combinedPreview.contactRows.length === 0)
+                    }
+                  >
                     {isImporting ? (
                       <>
                         <Loader2 size={16} className="animate-spin" />
                         Importing…
                       </>
+                    ) : combinedPreview.schoolRows.length - combinedPreview.duplicateNames.length === 0 &&
+                      combinedPreview.contactRows.length === 0 ? (
+                      <>Nothing new to import</>
                     ) : (
                       <>Import {combinedPreview.schoolRows.length - combinedPreview.duplicateNames.length} Schools + {combinedPreview.contactRows.length} Contacts</>
                     )}
@@ -720,16 +933,21 @@ export function ImportPage() {
                 </div>
                 <div
                   {...getRootProps()}
-                  className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-colors ${
-                    isDragActive ? 'border-siue-red bg-red-50' : 'border-neutral-300 hover:border-siue-red'
+                  className={`border-2 border-dashed rounded-lg p-12 text-center transition-colors ${
+                    isParsing
+                      ? 'border-neutral-200 bg-neutral-50 cursor-wait'
+                      : isDragActive
+                        ? 'border-siue-red bg-red-50 cursor-pointer'
+                        : 'border-neutral-300 hover:border-siue-red cursor-pointer'
                   }`}
                 >
                   <input {...getInputProps()} />
-                  <Upload className="w-12 h-12 mx-auto mb-4 text-neutral-400" />
-                  <p className="text-lg text-neutral-700 mb-2">
-                    {isDragActive ? 'Drop file here' : 'Drag and drop file, or click to browse'}
-                  </p>
-                  <p className="text-sm text-neutral-400">Supports CSV and Excel (.xlsx, .xls) files</p>
+                  <DropzoneBody
+                    isParsing={isParsing}
+                    isDragActive={isDragActive}
+                    idleLabel="Drag and drop file, or click to browse"
+                    hint={`Supports CSV and Excel (.xlsx, .xls) files — up to ${formatBytes(MAX_UPLOAD_BYTES)}`}
+                  />
                 </div>
               </Card>
             )}

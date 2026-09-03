@@ -1,37 +1,30 @@
-import { useMemo, useEffect, useState, Fragment } from 'react';
+import { useMemo, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, PieChart, Pie, Cell, Legend,
+  ResponsiveContainer, PieChart, Pie, Cell,
 } from 'recharts';
 import { format, subMonths, isAfter } from 'date-fns';
 import {
   Download, AlertTriangle, TrendingUp, School, Users, Calendar,
-  BarChart3, ChevronDown, ChevronUp, Activity, ArrowRight,
-  BookOpen,
+  BarChart3, Activity, ArrowRight,
 } from 'lucide-react';
 import { Header } from '../components/layout/Header';
 import { Card, MetricCard } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { Badge } from '../components/common/Badge';
 import { useEngagementMaps, useSchoolsNeedingAttention } from '../hooks/useEngagementMaps';
-import { EventTypeLabels, ProgramCategoryLabels, ProgramCategory } from '../types';
+import { EventTypeLabels } from '../types';
 import type { EventType } from '../types';
-import {
-  fetchCountyEngagementRate,
-  type CountyEngagementRow,
-} from '../services/analyticsService';
+import { CHART_COLORS, TOOLTIP_CLS } from '../constants/charts';
 import { downloadFile } from '../utils/helpers';
 import toast from 'react-hot-toast';
 
-const CHART_COLORS = ['#CE1126', '#004B87', '#0F7837', '#FF8C00', '#8B2332', '#54585A', '#C41E3A', '#373A3C'];
 
 function formatActivityType(type: string): string {
   return type.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-// Shared tooltip wrapper style
-const TOOLTIP_CLS = 'bg-white border border-neutral-100 rounded-xl shadow-lg p-3 text-xs';
 
 // Custom tooltip for the Top Engaged Schools chart
 function EngagementTooltip({ active, payload }: { active?: boolean; payload?: Array<{ payload: { fullName: string; score: number; acts: number; contacts: number; events: number } }> }) {
@@ -46,32 +39,6 @@ function EngagementTooltip({ active, payload }: { active?: boolean; payload?: Ar
         <p>Event appearances: <span className="font-medium text-neutral-800">{d.events}</span></p>
       </div>
       <p className="mt-2 font-semibold text-siue-red">Score: {d.score}</p>
-    </div>
-  );
-}
-
-// Generic chart tooltip — works for grouped and stacked bar charts
-function ChartTooltipContent({ active, payload, label }: {
-  active?: boolean;
-  payload?: Array<{ name: string; value: number; color: string; payload: Record<string, unknown> }>;
-  label?: string;
-}) {
-  if (!active || !payload?.length) return null;
-  const displayLabel = (payload[0]?.payload as { fullCounty?: string })?.fullCounty ?? label;
-  return (
-    <div className={`${TOOLTIP_CLS} min-w-[140px]`}>
-      {displayLabel && <p className="font-semibold text-neutral-800 mb-2 max-w-[180px]">{displayLabel}</p>}
-      <div className="space-y-1.5">
-        {payload.map((entry) => (
-          <div key={entry.name} className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: entry.color }} />
-              <span className="text-neutral-500">{entry.name}</span>
-            </div>
-            <span className="font-medium text-neutral-800">{entry.value}</span>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }
@@ -97,16 +64,6 @@ function PieEventTooltip({ active, payload }: {
 export function ReportsPage() {
   const { state, schoolContactsMap, schoolActivitiesMap, schoolEventCountMap } = useEngagementMaps();
   const schoolsNeedingAttention = useSchoolsNeedingAttention();
-
-  // ── Supabase view data ───────────────────────────────────────────────────────
-  const [countyEngagement, setCountyEngagement] = useState<CountyEngagementRow[]>([]);
-  useEffect(() => {
-    fetchCountyEngagementRate().then(setCountyEngagement).catch(() => {});
-  }, []);
-
-  // ── UI state ─────────────────────────────────────────────────────────────────
-  const [countyComparisonExpanded, setCountyComparisonExpanded] = useState(false);
-  const [programCoverageExpanded, setProgramCoverageExpanded] = useState(true);
 
   // ── Summary metrics ──────────────────────────────────────────────────────────
   const summaryMetrics = useMemo(() => {
@@ -184,40 +141,6 @@ export function ReportsPage() {
     }));
   }, [state.events]);
 
-  // ── Engagement rate by county — sorted worst first ───────────────────────────
-  const engagementRateByCounty = useMemo(() => {
-    if (countyEngagement.length > 0) {
-      return countyEngagement
-        .filter((r) => r.total_schools >= 2 && r.county_name && r.county_name.trim() !== '')
-        .map((r) => ({
-          county: r.county_name,
-          total: r.total_schools,
-          engaged: r.engaged_schools,
-          rate: r.total_schools > 0 ? r.engaged_schools / r.total_schools : 0,
-          label: 'at event',
-        }))
-        .sort((a, b) => a.rate - b.rate)
-        .slice(0, 14);
-    }
-    const countyMap = new Map<string, { total: number; engaged: number }>();
-    for (const s of state.schools) {
-      if (!s.county || !s.county.trim()) continue;
-      const entry = countyMap.get(s.county) ?? { total: 0, engaged: 0 };
-      entry.total++;
-      if ((schoolContactsMap.get(s.id)?.total ?? 0) > 0) entry.engaged++;
-      countyMap.set(s.county, entry);
-    }
-    return Array.from(countyMap.entries())
-      .map(([county, { total, engaged }]) => ({
-        county, total, engaged,
-        rate: total > 0 ? engaged / total : 0,
-        label: 'with contacts',
-      }))
-      .filter((c) => c.total >= 2)
-      .sort((a, b) => a.rate - b.rate)
-      .slice(0, 14);
-  }, [countyEngagement, state.schools, schoolContactsMap]);
-
   // ── Recent activity feed ─────────────────────────────────────────────────────
   const recentActivityFeed = useMemo(() => {
     const schoolMap = new Map(state.schools.map((s) => [s.id, s]));
@@ -233,74 +156,6 @@ export function ReportsPage() {
         activityType: a.activityType,
       }));
   }, [state.activities, state.schools]);
-
-  // ── County Comparison ────────────────────────────────────────────────────────
-  const countyComparisonData = useMemo(() => {
-    if (countyEngagement.length > 0) {
-      return countyEngagement
-        .filter((r): r is typeof r & { county_name: string } => Boolean(r.county_name) && r.county_name!.trim() !== '')
-        .map((r) => ({
-          county: r.county_name.length > 12 ? r.county_name.slice(0, 10) + '…' : r.county_name,
-          fullCounty: r.county_name,
-          total: r.total_schools,
-          engaged: r.engaged_schools,
-        }))
-        .sort((a, b) => b.total - a.total)
-        .slice(0, 12);
-    }
-    const countyMap = new Map<string, { total: number; engaged: number }>();
-    for (const s of state.schools) {
-      if (!s.county || !s.county.trim()) continue;
-      const entry = countyMap.get(s.county) ?? { total: 0, engaged: 0 };
-      entry.total++;
-      if ((schoolEventCountMap.get(s.id) ?? 0) > 0) entry.engaged++;
-      countyMap.set(s.county, entry);
-    }
-    return Array.from(countyMap.entries())
-      .map(([county, { total, engaged }]) => ({
-        county: county.length > 12 ? county.slice(0, 10) + '…' : county,
-        fullCounty: county,
-        total,
-        engaged,
-      }))
-      .sort((a, b) => b.total - a.total)
-      .slice(0, 12);
-  }, [countyEngagement, state.schools, schoolEventCountMap]);
-
-  // ── Program Coverage by County ───────────────────────────────────────────────
-  interface ProgramCoverageEntry {
-    county: string;
-    fullCounty: string;
-    total: number;
-    [key: string]: string | number;
-  }
-  const programCoverageByCounty = useMemo((): ProgramCoverageEntry[] => {
-    const schoolCountyMap = new Map(state.schools.map((s) => [s.id, s.county]));
-    const countyProgramMap = new Map<string, Map<ProgramCategory, number>>();
-    for (const p of state.programs) {
-      const county = schoolCountyMap.get(p.schoolId);
-      if (!county || !county.trim()) continue;
-      if (!countyProgramMap.has(county)) countyProgramMap.set(county, new Map());
-      const catMap = countyProgramMap.get(county)!;
-      catMap.set(p.category, (catMap.get(p.category) ?? 0) + 1);
-    }
-    return Array.from(countyProgramMap.entries())
-      .map(([county, catMap]) => {
-        const entry: ProgramCoverageEntry = {
-          county: county.length > 12 ? county.slice(0, 10) + '…' : county,
-          fullCounty: county,
-          total: 0,
-        };
-        for (const cat of Object.values(ProgramCategory)) {
-          const count = catMap.get(cat) ?? 0;
-          entry[cat] = count;
-          entry.total += count;
-        }
-        return entry;
-      })
-      .sort((a, b) => b.total - a.total)
-      .slice(0, 10);
-  }, [state.programs, state.schools]);
 
   // ── Export ───────────────────────────────────────────────────────────────────
   const handleExportReport = () => {
@@ -434,8 +289,8 @@ export function ReportsPage() {
 
         </div>
 
-        {/* ── Events by Type + Engagement Rate by County ────────────────────── */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* ── Events by Type ───────────────────────────────────────────────── */}
+        <div>
           <Card>
             <h3 className="text-sm font-semibold text-neutral-700 mb-4">Events by Type</h3>
             {eventTypeData.length > 0 ? (
@@ -480,33 +335,6 @@ export function ReportsPage() {
             )}
           </Card>
 
-          <Card className="lg:col-span-2">
-            <h3 className="text-sm font-semibold text-neutral-700 mb-1">Engagement Rate by County</h3>
-            <p className="text-xs text-neutral-400 mb-5">
-              Worst-performing counties first.{' '}
-              {countyEngagement.length > 0 ? '"Engaged" = appeared at an event.' : '"Engaged" = has at least one contact.'}
-            </p>
-            {engagementRateByCounty.length > 0 ? (
-              <div className="space-y-2.5">
-                {engagementRateByCounty.map((c) => (
-                  <div key={c.county} className="flex items-center gap-3">
-                    <span className="w-28 text-sm text-neutral-700 truncate shrink-0">{c.county}</span>
-                    <div className="flex-1 h-2 bg-neutral-100 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-siue-red rounded-full"
-                        style={{ width: `${Math.round(c.rate * 100)}%` }}
-                      />
-                    </div>
-                    <span className="text-xs text-neutral-500 w-40 text-right shrink-0">
-                      {c.engaged}/{c.total} {c.label} = <span className="font-medium text-neutral-700">{Math.round(c.rate * 100)}%</span>
-                    </span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-neutral-400 text-sm py-12 text-center">No school data yet.</p>
-            )}
-          </Card>
         </div>
 
         {/* ── Recent Activity Feed ─────────────────────────────────────────── */}
@@ -548,96 +376,6 @@ export function ReportsPage() {
 
         </div>
 
-        {/* ── County Comparison (collapsible) ──────────────────────────────── */}
-        <Card padding={false}>
-          <button
-            className="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-neutral-50 rounded-xl transition-colors"
-            onClick={() => setCountyComparisonExpanded((v) => !v)}
-          >
-            <div>
-              <h3 className="text-sm font-semibold text-neutral-700 flex items-center gap-2">
-                <BarChart3 size={15} className="text-neutral-400" />
-                County Comparison
-              </h3>
-              <p className="text-xs text-neutral-400 mt-0.5">
-                Total schools vs. schools that appeared at an event, per county.
-              </p>
-            </div>
-            <div className="flex items-center gap-3 shrink-0 ml-4">
-              <Badge variant="default">{countyComparisonData.length} counties</Badge>
-              {countyComparisonExpanded
-                ? <ChevronUp size={18} className="text-neutral-400" />
-                : <ChevronDown size={18} className="text-neutral-400" />}
-            </div>
-          </button>
-          {countyComparisonExpanded && (
-            <div className="border-t border-neutral-100 px-6 py-5">
-              {countyComparisonData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={320}>
-                  <BarChart data={countyComparisonData} margin={{ top: 4, right: 24, left: 0, bottom: 64 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E8E9EA" vertical={false} />
-                    <XAxis dataKey="county" tick={{ fontSize: 11, fill: '#8A8D8F' }} angle={-35} textAnchor="end" interval={0} />
-                    <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: '#8A8D8F' }} />
-                    <Tooltip content={<ChartTooltipContent />} />
-                    <Legend wrapperStyle={{ fontSize: '12px', color: '#54585A' }} />
-                    <Bar dataKey="total" fill="#54585A" radius={[4, 4, 0, 0]} name="Total Schools" />
-                    <Bar dataKey="engaged" fill="#CE1126" radius={[4, 4, 0, 0]} name="Engaged Schools" />
-                  </BarChart>
-                </ResponsiveContainer>
-              ) : (
-                <p className="text-neutral-400 text-sm py-8 text-center">No school data yet.</p>
-              )}
-            </div>
-          )}
-        </Card>
-
-        {/* ── Program Coverage by County (collapsible) ──────────────────────── */}
-        <Card padding={false}>
-          <button
-            className="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-neutral-50 rounded-xl transition-colors"
-            onClick={() => setProgramCoverageExpanded((v) => !v)}
-          >
-            <div>
-              <h3 className="text-sm font-semibold text-neutral-700 flex items-center gap-2">
-                <BookOpen size={15} className="text-neutral-400" />
-                Program Coverage by County
-              </h3>
-              <p className="text-xs text-neutral-400 mt-0.5">
-                Programs per county broken down by category — top 10 counties by total programs.
-              </p>
-            </div>
-            <div className="flex items-center gap-3 shrink-0 ml-4">
-              <Badge variant="default">{state.programs.length} programs</Badge>
-              {programCoverageExpanded
-                ? <ChevronUp size={18} className="text-neutral-400" />
-                : <ChevronDown size={18} className="text-neutral-400" />}
-            </div>
-          </button>
-          {programCoverageExpanded && (
-            <div className="border-t border-neutral-100 px-6 py-5">
-              {programCoverageByCounty.length > 0 ? (
-                <ResponsiveContainer width="100%" height={320}>
-                  <BarChart data={programCoverageByCounty} margin={{ top: 4, right: 24, left: 0, bottom: 64 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E8E9EA" vertical={false} />
-                    <XAxis dataKey="county" tick={{ fontSize: 11, fill: '#8A8D8F' }} angle={-35} textAnchor="end" interval={0} />
-                    <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: '#8A8D8F' }} />
-                    <Tooltip content={<ChartTooltipContent />} />
-                    <Legend wrapperStyle={{ fontSize: '12px', color: '#54585A' }} />
-                    {Object.values(ProgramCategory).map((cat, i) => (
-                      <Bar key={cat} dataKey={cat} stackId="a" fill={CHART_COLORS[i % CHART_COLORS.length]} name={ProgramCategoryLabels[cat]} />
-                    ))}
-                  </BarChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="py-8 text-center">
-                  <BookOpen size={28} className="mx-auto mb-3 text-neutral-300" />
-                  <p className="text-sm font-medium text-neutral-500">No programs recorded yet</p>
-                  <p className="text-xs text-neutral-400 mt-1">Add programs from a school's detail page.</p>
-                </div>
-              )}
-            </div>
-          )}
-        </Card>
 
 
       </div>

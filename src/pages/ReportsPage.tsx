@@ -96,7 +96,7 @@ function PieEventTooltip({ active, payload }: {
   );
 }
 
-export function AnalyticsPage() {
+export function ReportsPage() {
   const { state } = useAppContext();
 
   // ── Supabase view data ───────────────────────────────────────────────────────
@@ -494,8 +494,8 @@ export function AnalyticsPage() {
   return (
     <div>
 <Header
-        title="Analytics & Reports"
-        subtitle="Actionable insights into your K-12 engagement program"
+        title="Reports"
+        subtitle="How your K-12 engagement program is tracking"
         actions={
           <Button size="sm" onClick={handleExportReport}>
             <Download size={16} />

@@ -12,7 +12,7 @@ import { ContactsPage } from './pages/ContactsPage';
 import { EventsPage } from './pages/EventsPage';
 import { ImportPage } from './pages/ImportPage';
 import { GenerateListsPage } from './pages/GenerateListsPage';
-import { AnalyticsPage } from './pages/AnalyticsPage';
+import { ReportsPage } from './pages/ReportsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { CountiesPage } from './pages/CountiesPage';
 import { CountyDetailPage } from './pages/CountyDetailPage';
@@ -45,7 +45,9 @@ function App() {
               <Route path="/events" element={<EventsPage />} />
               <Route path="/import" element={<ImportPage />} />
               <Route path="/generate" element={<GenerateListsPage />} />
-              <Route path="/analytics" element={<AnalyticsPage />} />
+              <Route path="/reports" element={<ReportsPage />} />
+              {/* Kept so existing bookmarks and links to the old Analytics page still work. */}
+              <Route path="/analytics" element={<Navigate to="/reports" replace />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/counties" element={<CountiesPage />} />
               <Route path="/counties/:countyName" element={<CountyDetailPage />} />

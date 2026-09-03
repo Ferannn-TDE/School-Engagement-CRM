@@ -235,7 +235,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load all data from Supabase on mount (activities from localStorage)
+  // Load all data from Supabase on mount
   useEffect(() => {
     async function loadData() {
       try {

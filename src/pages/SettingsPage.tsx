@@ -1,8 +1,7 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import {
   Database,
   Download,
-  Upload,
   RotateCcw,
   Info,
   CheckCircle,
@@ -16,7 +15,6 @@ import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import { useAppContext } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import { seedSchools, seedContacts, seedEvents, seedActivities } from '../constants/seedData';
-import { importDatabase } from '../utils/storage';
 import { downloadFile } from '../utils/helpers';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
@@ -25,7 +23,6 @@ export function SettingsPage() {
   const { dispatch, state } = useAppContext();
   const { user, signOut } = useAuth();
   const [showResetConfirm, setShowResetConfirm] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExportDatabase = () => {
     const data = {
@@ -37,24 +34,6 @@ export function SettingsPage() {
     const json = JSON.stringify(data, null, 2);
     downloadFile(json, `siue-crm-backup-${format(new Date(), 'yyyy-MM-dd')}.json`, 'application/json');
     toast.success('Database exported successfully');
-  };
-
-  const handleImportDatabase = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const json = ev.target?.result as string;
-      const ok = importDatabase(json);
-      if (ok) {
-        toast.success('Database imported. Reload the page to see changes.');
-      } else {
-        toast.error('Failed to import — invalid file format.');
-      }
-    };
-    reader.readAsText(file);
-    // reset input so re-selecting same file works
-    e.target.value = '';
   };
 
   const handleResetToSeed = () => {
@@ -87,7 +66,7 @@ export function SettingsPage() {
             </div>
             <div>
               <h2 className="text-sm font-semibold text-neutral-800">Database Management</h2>
-              <p className="text-xs text-neutral-400">Export, import, or reset your CRM data</p>
+              <p className="text-xs text-neutral-400">Export or reset your CRM data</p>
             </div>
           </div>
 
@@ -103,32 +82,6 @@ export function SettingsPage() {
                 <Download size={15} />
                 Export
               </Button>
-            </div>
-
-            <div className="flex items-start justify-between p-4 rounded-lg border border-neutral-100 bg-neutral-50">
-              <div>
-                <p className="text-sm font-medium text-neutral-700">Import Database</p>
-                <p className="text-xs text-neutral-400 mt-0.5">
-                  Restore from a previously exported JSON backup file.
-                </p>
-              </div>
-              <div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".json"
-                  className="hidden"
-                  onChange={handleImportDatabase}
-                />
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <Upload size={15} />
-                  Import
-                </Button>
-              </div>
             </div>
 
             <div className="flex items-start justify-between p-4 rounded-lg border border-red-100 bg-red-50">

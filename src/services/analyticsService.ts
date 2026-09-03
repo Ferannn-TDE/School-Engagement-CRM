@@ -16,15 +16,6 @@ export interface CountySchoolSummaryRow {
   total_programs: number;
 }
 
-export interface SchoolEngagementSummaryRow {
-  facility_key: string;
-  name: string;
-  county_name: string | null;
-  contact_count: number;
-  event_count: number;
-  last_event_date: string | null;
-}
-
 export async function fetchCountyEngagementRate(): Promise<CountyEngagementRow[]> {
   const { data, error } = await supabase
     .from('county_engagement_rate')
@@ -32,14 +23,6 @@ export async function fetchCountyEngagementRate(): Promise<CountyEngagementRow[]
     .order('total_schools', { ascending: false });
   if (error) throw error;
   return data as CountyEngagementRow[];
-}
-
-export async function fetchSchoolEngagementSummary(): Promise<SchoolEngagementSummaryRow[]> {
-  const { data, error } = await supabase
-    .from('school_engagement_summary')
-    .select('*');
-  if (error) throw error;
-  return data as SchoolEngagementSummaryRow[];
 }
 
 export async function fetchCountySchoolSummary(): Promise<CountySchoolSummaryRow[]> {

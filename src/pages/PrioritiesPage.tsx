@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { subMonths, isAfter, differenceInDays } from 'date-fns';
 import {
@@ -9,10 +9,6 @@ import { Header } from '../components/layout/Header';
 import { Card } from '../components/common/Card';
 import { Badge } from '../components/common/Badge';
 import { useEngagementMaps, useSchoolsNeedingAttention } from '../hooks/useEngagementMaps';
-import {
-  fetchSchoolEngagementSummary,
-  type SchoolEngagementSummaryRow,
-} from '../services/analyticsService';
 
 /** How overdue something is, used to colour the left edge of a row.
  *  Deliberately distinct from SIUE red, which means "brand", not "urgent". */
@@ -128,11 +124,6 @@ function WorkRow({
 export function PrioritiesPage() {
   const { state, schoolContactsMap, schoolActivitiesMap } = useEngagementMaps();
 
-  const [schoolSummary, setSchoolSummary] = useState<SchoolEngagementSummaryRow[]>([]);
-  useEffect(() => {
-    fetchSchoolEngagementSummary().then(setSchoolSummary).catch(() => {});
-  }, []);
-
   const [attentionSort, setAttentionSort] = useState<'name' | 'county'>('name');
 
   // ── Schools that attended something recently, or have gone quiet ─────────────
@@ -206,7 +197,7 @@ export function PrioritiesPage() {
       }
     }
 
-    return result.sort((a, b) => b.urgency - a.urgency).slice(0, 25);
+    return result.sort((a, b) => b.urgency - a.urgency);
   }, [state.schools, state.events, schoolContactsMap, schoolActivitiesMap]);
 
   const schoolsNeedingAttention = useSchoolsNeedingAttention();
@@ -223,19 +214,11 @@ export function PrioritiesPage() {
 
   // ── Schools that have never appeared at an event ─────────────────────────────
   const schoolsWithNoEvents = useMemo(() => {
-    if (schoolSummary.length > 0) {
-      const zeroEventIds = new Set(
-        schoolSummary.filter((r) => r.event_count === 0).map((r) => r.facility_key)
-      );
-      return state.schools
-        .filter((s) => zeroEventIds.has(s.id))
-        .sort((a, b) => a.county.localeCompare(b.county) || a.name.localeCompare(b.name));
-    }
     const schoolIdsInEvents = new Set(state.events.flatMap((e) => e.participatingSchools));
     return state.schools
       .filter((s) => !schoolIdsInEvents.has(s.id))
       .sort((a, b) => a.county.localeCompare(b.county) || a.name.localeCompare(b.name));
-  }, [schoolSummary, state.schools, state.events]);
+  }, [state.schools, state.events]);
 
   // ── Counties with the most schools still out of contact ──────────────────────
   const countiesAtRisk = useMemo(() => {
@@ -256,12 +239,18 @@ export function PrioritiesPage() {
         rate: total > 0 ? withContacts / total : 0,
       }))
       .filter((c) => c.total >= 2 && c.gap > 0)
-      .sort((a, b) => b.gap - a.gap)
-      .slice(0, 8);
+      .sort((a, b) => b.gap - a.gap);
   }, [state.schools, schoolContactsMap]);
 
-  const totalOutstanding =
-    upcomingFollowups.length + schoolsNeedingAttention.length + schoolsWithNoEvents.length;
+  // Distinct schools, not a sum: a school can appear on more than one list, and
+  // adding the lists together produced a total larger than the school count.
+  const schoolsOutstanding = useMemo(() => {
+    const ids = new Set<string>();
+    for (const s of upcomingFollowups) ids.add(s.id);
+    for (const s of schoolsNeedingAttention) ids.add(s.id);
+    for (const s of schoolsWithNoEvents) ids.add(s.id);
+    return ids.size;
+  }, [upcomingFollowups, schoolsNeedingAttention, schoolsWithNoEvents]);
 
   return (
     <div>
@@ -271,12 +260,15 @@ export function PrioritiesPage() {
       />
       <div className="p-8 space-y-6 max-w-5xl">
         <p className="text-lg text-neutral-600 max-w-2xl">
-          {totalOutstanding === 0 ? (
+          {schoolsOutstanding === 0 ? (
             <>Nothing is waiting. Every school has active contacts and recent engagement.</>
           ) : (
             <>
-              <span className="font-semibold text-neutral-800">{totalOutstanding} schools</span> need
-              attention. Start at the top — each list is ordered by how long it has been waiting.
+              <span className="font-semibold text-neutral-800">
+                {schoolsOutstanding.toLocaleString()} of {state.schools.length.toLocaleString()} schools
+              </span>{' '}
+              need attention. A school can appear on more than one list below. Start at the top —
+              each list is ordered by how long it has been waiting.
             </>
           )}
         </p>

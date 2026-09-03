@@ -33,12 +33,12 @@ export function LoginPage() {
           </div>
           <div>
             <p className="text-sm font-bold text-neutral-800 leading-tight">SIUE Engineering</p>
-            <p className="text-xs text-neutral-400">Engagement CRM</p>
+            <p className="text-xs text-neutral-500">Engagement CRM</p>
           </div>
         </div>
 
         <h2 className="text-xl font-bold text-neutral-800 mb-1">Sign in</h2>
-        <p className="text-sm text-neutral-400 mb-6">Access the K-12 outreach dashboard</p>
+        <p className="text-sm text-neutral-500 mb-6">Access the K-12 outreach dashboard</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

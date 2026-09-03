@@ -59,12 +59,12 @@ export function ContactsPage() {
               {row.original.firstName} {row.original.lastName}
             </p>
             <div className="flex items-center gap-3 mt-0.5">
-              <span className="text-xs text-neutral-400 flex items-center gap-1">
+              <span className="text-xs text-neutral-500 flex items-center gap-1">
                 <Mail size={12} />
                 {row.original.email}
               </span>
               {row.original.phone && (
-                <span className="text-xs text-neutral-400 flex items-center gap-1">
+                <span className="text-xs text-neutral-500 flex items-center gap-1">
                   <Phone size={12} />
                   {row.original.phone}
                 </span>

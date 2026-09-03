@@ -47,7 +47,7 @@ export function EventsPage() {
           <div>
             <p className="font-medium text-neutral-800">{row.original.name}</p>
             <div className="flex items-center gap-2 mt-0.5">
-              <span className="text-xs text-neutral-400 flex items-center gap-1">
+              <span className="text-xs text-neutral-500 flex items-center gap-1">
                 <MapPin size={12} />
                 {row.original.location}
               </span>

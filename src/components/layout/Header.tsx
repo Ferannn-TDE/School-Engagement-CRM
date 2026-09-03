@@ -65,7 +65,7 @@ export function Header({ title, subtitle, actions }: HeaderProps) {
           </button>
           <div>
             <h1 className="text-xl font-bold text-neutral-800">{title}</h1>
-            {subtitle && <p className="text-sm text-neutral-400 mt-0.5">{subtitle}</p>}
+            {subtitle && <p className="text-sm text-neutral-500 mt-0.5">{subtitle}</p>}
           </div>
         </div>
 
@@ -95,7 +95,7 @@ export function Header({ title, subtitle, actions }: HeaderProps) {
             {showResults && query.trim() && (
               <div className="absolute right-0 top-full mt-1 w-80 bg-white rounded-xl shadow-lg border border-neutral-100 z-50 overflow-hidden">
                 {totalResults === 0 ? (
-                  <p className="px-4 py-3 text-sm text-neutral-400">
+                  <p className="px-4 py-3 text-sm text-neutral-500">
                     No results for &ldquo;{query}&rdquo;
                   </p>
                 ) : (
@@ -114,7 +114,7 @@ export function Header({ title, subtitle, actions }: HeaderProps) {
                             <School size={15} className="text-neutral-400 shrink-0" />
                             <div className="min-w-0">
                               <p className="text-sm font-medium text-neutral-800 truncate">{school.name}</p>
-                              <p className="text-xs text-neutral-400">{school.county} County</p>
+                              <p className="text-xs text-neutral-500">{school.county} County</p>
                             </div>
                           </button>
                         ))}
@@ -136,7 +136,7 @@ export function Header({ title, subtitle, actions }: HeaderProps) {
                               <p className="text-sm font-medium text-neutral-800 truncate">
                                 {contact.firstName} {contact.lastName}
                               </p>
-                              <p className="text-xs text-neutral-400 truncate">{contact.email}</p>
+                              <p className="text-xs text-neutral-500 truncate">{contact.email}</p>
                             </div>
                           </button>
                         ))}
@@ -156,7 +156,7 @@ export function Header({ title, subtitle, actions }: HeaderProps) {
                             <Calendar size={15} className="text-neutral-400 shrink-0" />
                             <div className="min-w-0">
                               <p className="text-sm font-medium text-neutral-800 truncate">{event.name}</p>
-                              <p className="text-xs text-neutral-400 truncate">{event.location}</p>
+                              <p className="text-xs text-neutral-500 truncate">{event.location}</p>
                             </div>
                           </button>
                         ))}

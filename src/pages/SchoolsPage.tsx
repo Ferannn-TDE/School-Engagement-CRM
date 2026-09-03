@@ -98,7 +98,7 @@ export function SchoolsPage() {
               {row.original.name}
             </Link>
             {row.original.district && (
-              <p className="text-xs text-neutral-400">{row.original.district}</p>
+              <p className="text-xs text-neutral-500">{row.original.district}</p>
             )}
           </div>
         ),

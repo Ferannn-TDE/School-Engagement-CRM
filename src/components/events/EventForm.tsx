@@ -169,12 +169,12 @@ export function EventForm({ event, onClose }: EventFormProps) {
                   className="rounded border-neutral-300 text-siue-red focus:ring-siue-red"
                 />
                 <span className="text-sm text-neutral-700">{school.name}</span>
-                <span className="text-xs text-neutral-400">({school.county})</span>
+                <span className="text-xs text-neutral-500">({school.county})</span>
               </label>
             ))}
         </div>
         {selectedSchools && selectedSchools.length > 0 && (
-          <p className="mt-1 text-xs text-neutral-400">
+          <p className="mt-1 text-xs text-neutral-500">
             {selectedSchools.length} school{selectedSchools.length !== 1 ? 's' : ''} selected
           </p>
         )}

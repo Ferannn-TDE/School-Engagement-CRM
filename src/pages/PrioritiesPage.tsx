@@ -423,7 +423,7 @@ export function PrioritiesPage() {
           </div>
         </WorkSection>
 
-        <p className="text-xs text-neutral-400 flex items-center gap-1.5 pt-2">
+        <p className="text-xs text-neutral-500 flex items-center gap-1.5 pt-2">
           <School size={13} />
           Charts and totals for the whole program live on the Reports page.
         </p>

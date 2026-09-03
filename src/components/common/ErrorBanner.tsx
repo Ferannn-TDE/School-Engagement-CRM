@@ -13,7 +13,7 @@ export function ErrorBanner({ message }: ErrorBannerProps) {
       </div>
       <div>
         <p className="text-sm font-medium text-neutral-800 mb-1">Failed to load data</p>
-        <p className="text-xs text-neutral-400 max-w-sm">{message}</p>
+        <p className="text-xs text-neutral-500 max-w-sm">{message}</p>
       </div>
       <Button
         size="sm"

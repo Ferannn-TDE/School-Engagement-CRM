@@ -104,7 +104,7 @@ function DropzoneBody({
       <>
         <Loader2 className="w-12 h-12 mx-auto mb-4 text-siue-red animate-spin" />
         <p className="text-lg text-neutral-700 mb-2">Reading your file…</p>
-        <p className="text-sm text-neutral-400">This can take a moment for large spreadsheets.</p>
+        <p className="text-sm text-neutral-500">This can take a moment for large spreadsheets.</p>
       </>
     );
   }
@@ -114,7 +114,7 @@ function DropzoneBody({
       <p className="text-lg text-neutral-700 mb-2">
         {isDragActive ? 'Drop file here' : idleLabel}
       </p>
-      <p className="text-sm text-neutral-400">{hint}</p>
+      <p className="text-sm text-neutral-500">{hint}</p>
     </>
   );
 }
@@ -714,11 +714,11 @@ export function ImportPage() {
                 <div className="flex items-center justify-between mb-6">
                   <div>
                     <h2 className="text-lg font-semibold text-neutral-800">Import Preview</h2>
-                    <p className="text-sm text-neutral-400 flex items-center gap-2 mt-1">
+                    <p className="text-sm text-neutral-500 flex items-center gap-2 mt-1">
                       <FileSpreadsheet size={16} />
                       {combinedPreview.fileName}
                     </p>
-                    <p className="text-xs text-neutral-400 mt-1">
+                    <p className="text-xs text-neutral-500 mt-1">
                       Reading schools from the &ldquo;{combinedPreview.schoolSheetName}&rdquo; sheet
                       {combinedPreview.contactSheetName
                         ? ` and contacts from the “${combinedPreview.contactSheetName}” sheet.`
@@ -749,7 +749,7 @@ export function ImportPage() {
                   <div className="p-4 bg-neutral-50 rounded-lg">
                     <div className="flex items-center gap-2 mb-2">
                       <SchoolIcon size={16} className="text-siue-red" />
-                      <p className="text-sm font-semibold text-neutral-700">Schools</p>
+                      <p className="text-base font-semibold text-neutral-800">Schools</p>
                     </div>
                     <p className="text-2xl font-bold text-neutral-800">{combinedPreview.schoolRows.length}</p>
                     {combinedPreview.duplicateNames.length > 0 && (
@@ -757,17 +757,17 @@ export function ImportPage() {
                         {combinedPreview.duplicateNames.length} already exist (will skip)
                       </p>
                     )}
-                    <p className="text-xs text-neutral-400 mt-1">
+                    <p className="text-xs text-neutral-500 mt-1">
                       {combinedPreview.schoolRows.length - combinedPreview.duplicateNames.length} new schools
                     </p>
                   </div>
                   <div className="p-4 bg-neutral-50 rounded-lg">
                     <div className="flex items-center gap-2 mb-2">
                       <Users size={16} className="text-siue-red" />
-                      <p className="text-sm font-semibold text-neutral-700">Contacts</p>
+                      <p className="text-base font-semibold text-neutral-800">Contacts</p>
                     </div>
                     <p className="text-2xl font-bold text-neutral-800">{combinedPreview.contactRows.length}</p>
-                    <p className="text-xs text-neutral-400 mt-1">will be linked by school name</p>
+                    <p className="text-xs text-neutral-500 mt-1">will be linked by school name</p>
                   </div>
                 </div>
 
@@ -813,7 +813,7 @@ export function ImportPage() {
                         </tbody>
                       </table>
                       {combinedPreview.schoolRows.length > 8 && (
-                        <p className="text-xs text-neutral-400 p-3 text-center bg-neutral-50">
+                        <p className="text-xs text-neutral-500 p-3 text-center bg-neutral-50">
                           Showing first 8 of {combinedPreview.schoolRows.length} schools
                         </p>
                       )}
@@ -848,7 +848,7 @@ export function ImportPage() {
                         </tbody>
                       </table>
                       {combinedPreview.contactRows.length > 8 && (
-                        <p className="text-xs text-neutral-400 p-3 text-center bg-neutral-50">
+                        <p className="text-xs text-neutral-500 p-3 text-center bg-neutral-50">
                           Showing first 8 of {combinedPreview.contactRows.length} contacts
                         </p>
                       )}
@@ -957,7 +957,7 @@ export function ImportPage() {
                 <div className="flex items-center justify-between mb-6">
                   <div>
                     <h2 className="text-lg font-semibold text-neutral-800">Map Columns</h2>
-                    <p className="text-sm text-neutral-400 flex items-center gap-2 mt-1">
+                    <p className="text-sm text-neutral-500 flex items-center gap-2 mt-1">
                       <FileSpreadsheet size={16} />
                       {fileName} - {parsedData.length} rows found
                     </p>
@@ -999,7 +999,7 @@ export function ImportPage() {
                   <div>
                     <h2 className="text-lg font-semibold text-neutral-800">Import Preview</h2>
                     <div className="flex gap-4 mt-1">
-                      <span className="text-sm text-neutral-400">{parsedData.length} total rows</span>
+                      <span className="text-sm text-neutral-500">{parsedData.length} total rows</span>
                       {validationErrors.filter((e) => e.severity === 'error').length > 0 && (
                         <Badge variant="error">
                           <AlertCircle size={12} className="mr-1" />
@@ -1034,7 +1034,7 @@ export function ImportPage() {
                         </li>
                       ))}
                       {validationErrors.length > 20 && (
-                        <li className="text-xs text-neutral-400">
+                        <li className="text-xs text-neutral-500">
                           ...and {validationErrors.length - 20} more issues
                         </li>
                       )}
@@ -1089,7 +1089,7 @@ export function ImportPage() {
                     </tbody>
                   </table>
                   {parsedData.length > 10 && (
-                    <p className="text-xs text-neutral-400 p-3 text-center bg-neutral-50">
+                    <p className="text-xs text-neutral-500 p-3 text-center bg-neutral-50">
                       Showing first 10 of {parsedData.length} rows
                     </p>
                   )}

@@ -137,7 +137,7 @@ export function SchoolDetailPage() {
               <div className="mt-2 pt-2 border-t border-neutral-50 flex gap-4">
                 {school.enrollment != null && (
                   <div>
-                    <p className="text-xs text-neutral-400">Enrollment</p>
+                    <p className="text-xs text-neutral-500">Enrollment</p>
                     <p className="text-sm font-medium text-neutral-700">
                       {school.enrollment.toLocaleString()}
                     </p>
@@ -145,7 +145,7 @@ export function SchoolDetailPage() {
                 )}
                 {school.gradeRange && (
                   <div>
-                    <p className="text-xs text-neutral-400">Grades</p>
+                    <p className="text-xs text-neutral-500">Grades</p>
                     <p className="text-sm font-medium text-neutral-700">{school.gradeRange}</p>
                   </div>
                 )}
@@ -158,7 +158,7 @@ export function SchoolDetailPage() {
               <span className="text-sm font-medium">Contacts</span>
             </div>
             <p className="text-2xl font-bold text-neutral-800">{contacts.length}</p>
-            <p className="text-sm text-neutral-400">{contacts.filter((c) => c.isActive).length} active</p>
+            <p className="text-sm text-neutral-500">{contacts.filter((c) => c.isActive).length} active</p>
           </Card>
           <Card>
             <div className="flex items-center gap-2 text-neutral-500 mb-2">
@@ -166,7 +166,7 @@ export function SchoolDetailPage() {
               <span className="text-sm font-medium">Events</span>
             </div>
             <p className="text-2xl font-bold text-neutral-800">{events.length}</p>
-            <p className="text-sm text-neutral-400">{activities.length} total activities</p>
+            <p className="text-sm text-neutral-500">{activities.length} total activities</p>
           </Card>
         </div>
 
@@ -177,8 +177,8 @@ export function SchoolDetailPage() {
               <TrendingUp size={20} className="text-siue-red" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-neutral-800">Engagement Overview</h3>
-              <p className="text-xs text-neutral-400">
+              <h3 className="text-base font-semibold text-neutral-800">Engagement Overview</h3>
+              <p className="text-xs text-neutral-500">
                 Computed from contacts, activities, events, and programs
               </p>
             </div>
@@ -186,7 +186,7 @@ export function SchoolDetailPage() {
           <div className="flex gap-6">
             <div className="text-center shrink-0 w-20">
               <p className="text-3xl font-bold text-neutral-800">{engagementResult.score}</p>
-              <p className="text-xs text-neutral-400 mb-2">/ 100</p>
+              <p className="text-xs text-neutral-500 mb-2">/ 100</p>
               <Badge
                 variant={
                   engagementResult.tier === 'high'
@@ -221,7 +221,7 @@ export function SchoolDetailPage() {
 
         {/* Contacts List */}
         <Card>
-          <h3 className="text-sm font-semibold text-neutral-700 mb-4">Contact Roster</h3>
+          <h3 className="text-base font-semibold text-neutral-800 mb-4">Contact Roster</h3>
           {contacts.length > 0 ? (
             <div className="divide-y divide-neutral-50">
               {contacts.map((contact) => (
@@ -230,7 +230,7 @@ export function SchoolDetailPage() {
                     <p className="text-sm font-medium text-neutral-700">
                       {contact.firstName} {contact.lastName}
                     </p>
-                    <p className="text-xs text-neutral-400">{contact.email}</p>
+                    <p className="text-xs text-neutral-500">{contact.email}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge>{ContactRoleLabels[contact.role]}</Badge>
@@ -242,7 +242,7 @@ export function SchoolDetailPage() {
               ))}
             </div>
           ) : (
-            <p className="text-sm text-neutral-400 py-4 text-center">No contacts for this school.</p>
+            <p className="text-sm text-neutral-500 py-4 text-center">No contacts for this school.</p>
           )}
         </Card>
 
@@ -254,8 +254,8 @@ export function SchoolDetailPage() {
                 <BookOpen size={20} className="text-siue-red" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-neutral-800">Programs & Offerings</h3>
-                <p className="text-xs text-neutral-400">
+                <h3 className="text-base font-semibold text-neutral-800">Programs & Offerings</h3>
+                <p className="text-xs text-neutral-500">
                   {programs.length} program{programs.length !== 1 ? 's' : ''} recorded
                 </p>
               </div>
@@ -284,7 +284,7 @@ export function SchoolDetailPage() {
                           <div>
                             <p className="text-sm font-medium text-neutral-700">{program.name}</p>
                             {program.description && (
-                              <p className="text-xs text-neutral-400 mt-0.5">{program.description}</p>
+                              <p className="text-xs text-neutral-500 mt-0.5">{program.description}</p>
                             )}
                           </div>
                           <button
@@ -302,7 +302,7 @@ export function SchoolDetailPage() {
               })}
             </div>
           ) : (
-            <p className="text-sm text-neutral-400 py-4 text-center">
+            <p className="text-sm text-neutral-500 py-4 text-center">
               No programs recorded — click "Add Program" to track STEM and engineering offerings.
             </p>
           )}
@@ -310,7 +310,7 @@ export function SchoolDetailPage() {
 
         {/* Activity Timeline */}
         <Card>
-          <h3 className="text-sm font-semibold text-neutral-700 mb-4">Activity History</h3>
+          <h3 className="text-base font-semibold text-neutral-800 mb-4">Activity History</h3>
           {activities.length > 0 ? (
             <div className="space-y-3">
               {activities
@@ -323,7 +323,7 @@ export function SchoolDetailPage() {
                       {activity.outcome && (
                         <p className="text-xs text-neutral-500 mt-0.5">{activity.outcome}</p>
                       )}
-                      <p className="text-xs text-neutral-400 mt-1">
+                      <p className="text-xs text-neutral-500 mt-1">
                         {format(new Date(activity.date), 'MMM d, yyyy')}
                       </p>
                     </div>
@@ -338,13 +338,13 @@ export function SchoolDetailPage() {
                 ))}
             </div>
           ) : (
-            <p className="text-sm text-neutral-400 py-4 text-center">No activities recorded yet.</p>
+            <p className="text-sm text-neutral-500 py-4 text-center">No activities recorded yet.</p>
           )}
         </Card>
 
         {school.notes && (
           <Card>
-            <h3 className="text-sm font-semibold text-neutral-700 mb-2">Notes</h3>
+            <h3 className="text-base font-semibold text-neutral-800 mb-2">Notes</h3>
             <p className="text-sm text-neutral-600 whitespace-pre-wrap">{school.notes}</p>
           </Card>
         )}

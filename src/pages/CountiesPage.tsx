@@ -171,7 +171,7 @@ export function CountiesPage() {
                         <h3 className="text-sm font-bold text-neutral-800 leading-tight">
                           {county.countyName}
                         </h3>
-                        <p className="text-xs text-neutral-400">County</p>
+                        <p className="text-xs text-neutral-500">County</p>
                       </div>
                     </div>
                     <Badge variant={engagementBadgeVariant(county.engagementPct)}>
@@ -190,7 +190,7 @@ export function CountiesPage() {
                       <div key={label} className="text-center">
                         <Icon size={14} className="mx-auto text-neutral-400 mb-0.5" />
                         <p className="text-base font-bold text-neutral-800">{value}</p>
-                        <p className="text-xs text-neutral-400">{label}</p>
+                        <p className="text-xs text-neutral-500">{label}</p>
                       </div>
                     ))}
                   </div>

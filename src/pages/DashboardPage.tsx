@@ -163,10 +163,10 @@ export function DashboardPage() {
 
         {/* ── Engagement Overview ───────────────────────────────────────────── */}
         <Card>
-          <h3 className="text-sm font-semibold text-neutral-700 mb-5">Engagement Overview</h3>
+          <h3 className="text-base font-semibold text-neutral-800 mb-5">Engagement Overview</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-neutral-100">
             <div className="pb-4 sm:pb-0 sm:pr-8">
-              <p className="text-xs text-neutral-400 uppercase tracking-wider mb-1">Schools with Contacts</p>
+              <p className="text-xs text-neutral-500 uppercase tracking-wider mb-1">Schools with Contacts</p>
               <p className="text-2xl font-bold text-neutral-800">
                 {dashboardComputed.withContacts}
                 <span className="text-base font-normal text-neutral-400">/{dashboardComputed.total}</span>
@@ -177,12 +177,12 @@ export function DashboardPage() {
                   style={{ width: `${dashboardComputed.total > 0 ? Math.round((dashboardComputed.withContacts / dashboardComputed.total) * 100) : 0}%` }}
                 />
               </div>
-              <p className="mt-1 text-xs text-neutral-400">
+              <p className="mt-1 text-xs text-neutral-500">
                 {dashboardComputed.total > 0 ? Math.round((dashboardComputed.withContacts / dashboardComputed.total) * 100) : 0}% reached
               </p>
             </div>
             <div className="py-4 sm:py-0 sm:px-8">
-              <p className="text-xs text-neutral-400 uppercase tracking-wider mb-1">With Recent Activity</p>
+              <p className="text-xs text-neutral-500 uppercase tracking-wider mb-1">With Recent Activity</p>
               <p className="text-2xl font-bold text-neutral-800">
                 {dashboardComputed.withRecentActivity}
                 <span className="text-base font-normal text-neutral-400">/{dashboardComputed.total}</span>
@@ -193,12 +193,12 @@ export function DashboardPage() {
                   style={{ width: `${dashboardComputed.total > 0 ? Math.round((dashboardComputed.withRecentActivity / dashboardComputed.total) * 100) : 0}%` }}
                 />
               </div>
-              <p className="mt-1 text-xs text-neutral-400">
+              <p className="mt-1 text-xs text-neutral-500">
                 {dashboardComputed.total > 0 ? Math.round((dashboardComputed.withRecentActivity / dashboardComputed.total) * 100) : 0}% active (6 mo)
               </p>
             </div>
             <div className="pt-4 sm:pt-0 sm:pl-8">
-              <p className="text-xs text-neutral-400 uppercase tracking-wider mb-1">Avg Contacts / School</p>
+              <p className="text-xs text-neutral-500 uppercase tracking-wider mb-1">Avg Contacts / School</p>
               <p className="text-2xl font-bold text-neutral-800">{dashboardComputed.avgContacts}</p>
               <div className="mt-2 h-1.5 bg-neutral-100 rounded-full overflow-hidden">
                 <div
@@ -206,7 +206,7 @@ export function DashboardPage() {
                   style={{ width: `${Math.min(100, parseFloat(dashboardComputed.avgContacts) * 20)}%` }}
                 />
               </div>
-              <p className="mt-1 text-xs text-neutral-400">
+              <p className="mt-1 text-xs text-neutral-500">
                 {state.contacts.length} contacts across {dashboardComputed.total} schools
               </p>
             </div>
@@ -217,7 +217,7 @@ export function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Quick Actions */}
           <Card>
-            <h3 className="text-sm font-semibold text-neutral-700 mb-4">Quick Actions</h3>
+            <h3 className="text-base font-semibold text-neutral-800 mb-4">Quick Actions</h3>
             <div className="space-y-2">
               {QUICK_ACTIONS.map(({ label, description, icon: Icon, path }) => (
                 <button
@@ -230,7 +230,7 @@ export function DashboardPage() {
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-neutral-800">{label}</p>
-                    <p className="text-xs text-neutral-400 truncate">{description}</p>
+                    <p className="text-xs text-neutral-500 truncate">{description}</p>
                   </div>
                   <ArrowRight size={14} className="text-neutral-300 group-hover:text-siue-red shrink-0 ml-auto transition-colors" />
                 </button>
@@ -241,7 +241,7 @@ export function DashboardPage() {
           {/* Upcoming Events */}
           <Card className="lg:col-span-2">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold text-neutral-700">Upcoming Events</h3>
+              <h3 className="text-base font-semibold text-neutral-800">Upcoming Events</h3>
               <button
                 onClick={() => navigate('/events')}
                 className="text-sm text-siue-red hover:text-siue-maroon font-medium flex items-center gap-1 transition-colors"
@@ -258,7 +258,7 @@ export function DashboardPage() {
                   >
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium text-neutral-800 truncate">{event.name}</p>
-                      <p className="text-xs text-neutral-400 truncate mt-0.5">{event.location}</p>
+                      <p className="text-xs text-neutral-500 truncate mt-0.5">{event.location}</p>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <Badge variant={EVENT_TYPE_VARIANT[event.type] ?? 'default'}>
@@ -290,11 +290,11 @@ export function DashboardPage() {
         <Card>
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-sm font-semibold text-neutral-700 flex items-center gap-2">
+              <h3 className="text-base font-semibold text-neutral-800 flex items-center gap-2">
                 <AlertTriangle size={15} className="text-warning" />
                 Schools Needing Attention
               </h3>
-              <p className="text-xs text-neutral-400 mt-0.5">Top 5 highest-priority schools from your engagement data.</p>
+              <p className="text-xs text-neutral-500 mt-0.5">Top 5 highest-priority schools from your engagement data.</p>
             </div>
             <Link
               to="/priorities"
@@ -314,7 +314,7 @@ export function DashboardPage() {
                     >
                       {school.name}
                     </Link>
-                    <p className="text-xs text-neutral-400 mt-0.5">{school.county} County · {school.contacts} contact{school.contacts !== 1 ? 's' : ''}</p>
+                    <p className="text-xs text-neutral-500 mt-0.5">{school.county} County · {school.contacts} contact{school.contacts !== 1 ? 's' : ''}</p>
                   </div>
                   <div className="flex flex-wrap gap-1 justify-end shrink-0">
                     {school.issues.map((issue) => (
@@ -330,7 +330,7 @@ export function DashboardPage() {
             <div className="py-8 text-center">
               <AlertTriangle size={28} className="mx-auto mb-3 text-success opacity-50" />
               <p className="text-sm font-medium text-success">All schools are in good standing.</p>
-              <p className="text-xs text-neutral-400 mt-1">Every school has contacts and recent activity.</p>
+              <p className="text-xs text-neutral-500 mt-1">Every school has contacts and recent activity.</p>
             </div>
           )}
         </Card>

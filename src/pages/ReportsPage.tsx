@@ -214,8 +214,8 @@ export function ReportsPage() {
         {/* ── Engagement Pipeline ───────────────────────────────────────────── */}
         <Card>
           <div className="mb-5">
-            <h3 className="text-sm font-semibold text-neutral-700">Engagement Pipeline</h3>
-            <p className="text-xs text-neutral-400 mt-0.5">
+            <h3 className="text-base font-semibold text-neutral-800">Engagement Pipeline</h3>
+            <p className="text-xs text-neutral-500 mt-0.5">
               Where schools stand in your outreach funnel — each stage as a % of all schools.
             </p>
           </div>
@@ -233,7 +233,7 @@ export function ReportsPage() {
                     <p className="text-xs font-medium text-neutral-500">{step.label}</p>
                   </div>
                   <p className="text-2xl font-bold text-neutral-800">{step.count.toLocaleString()}</p>
-                  <p className="text-xs text-neutral-400 mt-0.5 mb-3">
+                  <p className="text-xs text-neutral-500 mt-0.5 mb-3">
                     {i === 0 ? 'baseline' : `${Math.round((step.count / total) * 100)}% of total`}
                   </p>
                   <div className="h-1.5 bg-neutral-200 rounded-full overflow-hidden">
@@ -266,8 +266,8 @@ export function ReportsPage() {
         {/* ── Top Engaged Schools ──────────────────────────────────────────── */}
         <div>
           <Card>
-            <h3 className="text-sm font-semibold text-neutral-700 mb-1">Top Engaged Schools</h3>
-            <p className="text-xs text-neutral-400 mb-4">Composite score: activities ×3 + active contacts ×2 + event appearances ×4</p>
+            <h3 className="text-base font-semibold text-neutral-800 mb-1">Top Engaged Schools</h3>
+            <p className="text-xs text-neutral-500 mb-4">Composite score: activities ×3 + active contacts ×2 + event appearances ×4</p>
             {topEngagedSchools.length > 0 ? (
               <ResponsiveContainer width="100%" height={320}>
                 <BarChart data={topEngagedSchools} layout="vertical" margin={{ left: 0, right: 24, top: 4, bottom: 4 }}>
@@ -282,7 +282,7 @@ export function ReportsPage() {
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <BarChart3 size={28} className="text-neutral-300 mb-3" />
                 <p className="text-sm font-medium text-neutral-500">No engagement data yet</p>
-                <p className="text-xs text-neutral-400 mt-1">Add contacts, log activities, and link schools to events.</p>
+                <p className="text-xs text-neutral-500 mt-1">Add contacts, log activities, and link schools to events.</p>
               </div>
             )}
           </Card>
@@ -292,7 +292,7 @@ export function ReportsPage() {
         {/* ── Events by Type ───────────────────────────────────────────────── */}
         <div>
           <Card>
-            <h3 className="text-sm font-semibold text-neutral-700 mb-4">Events by Type</h3>
+            <h3 className="text-base font-semibold text-neutral-800 mb-4">Events by Type</h3>
             {eventTypeData.length > 0 ? (
               <>
                 <ResponsiveContainer width="100%" height={200}>
@@ -323,7 +323,7 @@ export function ReportsPage() {
                       <div className="text-right">
                         <span className="font-medium text-neutral-800">{item.value} event{item.value !== 1 ? 's' : ''}</span>
                         {item.attendees > 0 && (
-                          <span className="text-xs text-neutral-400 ml-1">· {item.attendees.toLocaleString()} attendees</span>
+                          <span className="text-xs text-neutral-500 ml-1">· {item.attendees.toLocaleString()} attendees</span>
                         )}
                       </div>
                     </div>
@@ -340,7 +340,7 @@ export function ReportsPage() {
         {/* ── Recent Activity Feed ─────────────────────────────────────────── */}
         <div>
           <Card>
-            <h3 className="text-sm font-semibold text-neutral-700 flex items-center gap-2 mb-4">
+            <h3 className="text-base font-semibold text-neutral-800 flex items-center gap-2 mb-4">
               <Activity size={15} className="text-neutral-400" />
               Recent Activity Feed
             </h3>
@@ -360,7 +360,7 @@ export function ReportsPage() {
                         <Badge variant="default">{formatActivityType(a.activityType)}</Badge>
                       </div>
                       <p className="text-xs text-neutral-500 line-clamp-1">{a.description}</p>
-                      <p className="text-xs text-neutral-300 mt-0.5">{format(new Date(a.date), 'MMM d, yyyy')}</p>
+                      <p className="text-xs text-neutral-500 mt-0.5">{format(new Date(a.date), 'MMM d, yyyy')}</p>
                     </div>
                   </div>
                 ))}
@@ -369,7 +369,7 @@ export function ReportsPage() {
               <div className="py-12 text-center">
                 <Activity size={28} className="mx-auto mb-3 text-neutral-300" />
                 <p className="text-sm font-medium text-neutral-500">No activities logged yet</p>
-                <p className="text-xs text-neutral-400 mt-1">Activities appear here once logged from a school's detail page.</p>
+                <p className="text-xs text-neutral-500 mt-1">Activities appear here once logged from a school's detail page.</p>
               </div>
             )}
           </Card>

@@ -125,7 +125,7 @@ export function GenerateListsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Filter Builder */}
           <Card className="lg:col-span-1">
-            <h3 className="text-sm font-semibold text-neutral-700 mb-4">Filter Contacts</h3>
+            <h3 className="text-base font-semibold text-neutral-800 mb-4">Filter Contacts</h3>
             <div className="space-y-4">
               <Select
                 label="County"
@@ -224,7 +224,7 @@ export function GenerateListsPage() {
           <Card className="lg:col-span-2" padding={false}>
             <div className="px-6 py-4 border-b border-neutral-100">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-neutral-700">
+                <h3 className="text-base font-semibold text-neutral-800">
                   Preview ({filteredContacts.length} contacts)
                 </h3>
                 <div className="flex gap-2">
@@ -286,7 +286,7 @@ export function GenerateListsPage() {
                 </tbody>
               </table>
               {filteredContacts.length > 50 && (
-                <p className="text-xs text-neutral-400 p-3 text-center bg-neutral-50">
+                <p className="text-xs text-neutral-500 p-3 text-center bg-neutral-50">
                   Showing first 50 of {filteredContacts.length} contacts
                 </p>
               )}

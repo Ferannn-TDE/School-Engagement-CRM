@@ -249,8 +249,8 @@ export function CountyDetailPage() {
               <School size={18} className="text-siue-red" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-neutral-800">Schools</h2>
-              <p className="text-xs text-neutral-400">{countySchools.length} schools in {countyName} County</p>
+              <h2 className="text-base font-semibold text-neutral-800">Schools</h2>
+              <p className="text-xs text-neutral-500">{countySchools.length} schools in {countyName} County</p>
             </div>
           </div>
           <div className="overflow-x-auto">
@@ -310,7 +310,7 @@ export function CountyDetailPage() {
                         {school.name}
                       </Link>
                       {school.district && (
-                        <p className="text-xs text-neutral-400 mt-0.5">{school.district}</p>
+                        <p className="text-xs text-neutral-500 mt-0.5">{school.district}</p>
                       )}
                     </td>
                     <td className="px-4 py-3 text-center">
@@ -337,8 +337,8 @@ export function CountyDetailPage() {
               <Calendar size={18} className="text-siue-red" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-neutral-800">Events</h2>
-              <p className="text-xs text-neutral-400">
+              <h2 className="text-base font-semibold text-neutral-800">Events</h2>
+              <p className="text-xs text-neutral-500">
                 Events where a {countyName} County school participated
               </p>
             </div>
@@ -353,7 +353,7 @@ export function CountyDetailPage() {
                   <div key={event.id} className="flex items-center justify-between py-3">
                     <div>
                       <p className="text-sm font-medium text-neutral-700">{event.name}</p>
-                      <p className="text-xs text-neutral-400 mt-0.5">
+                      <p className="text-xs text-neutral-500 mt-0.5">
                         {format(new Date(event.date), 'MMM d, yyyy')}
                         {' · '}
                         {schoolsInCounty} school{schoolsInCounty !== 1 ? 's' : ''} from this county
@@ -364,13 +364,13 @@ export function CountyDetailPage() {
                 );
               })}
               {countyEvents.length > 20 && (
-                <p className="text-xs text-neutral-400 pt-3 text-center">
+                <p className="text-xs text-neutral-500 pt-3 text-center">
                   Showing 20 of {countyEvents.length} events
                 </p>
               )}
             </div>
           ) : (
-            <p className="text-sm text-neutral-400 py-4 text-center">
+            <p className="text-sm text-neutral-500 py-4 text-center">
               No events recorded for schools in this county yet.
             </p>
           )}
@@ -383,8 +383,8 @@ export function CountyDetailPage() {
               <BookOpen size={18} className="text-siue-red" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-neutral-800">Program Coverage</h2>
-              <p className="text-xs text-neutral-400">
+              <h2 className="text-base font-semibold text-neutral-800">Program Coverage</h2>
+              <p className="text-xs text-neutral-500">
                 Active programs recorded across schools in {countyName} County
               </p>
             </div>
@@ -412,7 +412,7 @@ export function CountyDetailPage() {
               })}
             </div>
           ) : (
-            <p className="text-sm text-neutral-400 py-4 text-center">
+            <p className="text-sm text-neutral-500 py-4 text-center">
               No programs recorded for schools in this county. Add programs from each school's detail page.
             </p>
           )}

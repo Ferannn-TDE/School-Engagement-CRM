@@ -110,37 +110,57 @@ commit;
 
 
 -- ============================================================================
--- VERIFICATION — run these after applying. Tests 1 and 2 are rollback-wrapped
--- and cannot lose data.
+-- VERIFICATION — run in order. Tests 1 and 2 are rollback-wrapped and cannot
+-- lose data.
+--
+-- IMPORTANT — why the claim below has NO "role" key:
+-- This guard only checks whether request.jwt.claims is NON-EMPTY. It never parses
+-- the claim. An earlier version of these tests used '{"role":"authenticated"}' for
+-- cosmetic realism; that is actively harmful, because Supabase reads the `role`
+-- claim to decide what role a request runs as. Setting it in the SQL Editor drops
+-- the session out of its owner privileges, the DELETE then fails on permission,
+-- and — since this is an AFTER trigger — the row-count check never runs at all.
+-- The result is an unrelated role error that looks like a verdict on the guard but
+-- proves nothing either way. Keep the claim inert.
 -- ============================================================================
 
+-- TEST 0 — is the trigger even attached? Run this FIRST.
+-- No role games, no deletes. Expect exactly 6 rows (schools, staff, contacts,
+-- events, programs, activities) with tgenabled = 'O' (enabled, origin).
+-- If this returns fewer than 6 rows the guard is decorative and nothing below matters.
+/*
+select tgrelid::regclass as table_name, tgname, tgenabled
+from pg_trigger
+where tgname = 'guard_bulk_delete' and not tgisinternal
+order by table_name;
+*/
+
 -- TEST 1 — over-cap delete must RAISE and roll back.
--- NOTE: the SQL Editor is not a PostgREST request, so request.jwt.claims is empty
--- and the guard would exempt it. set_config simulates an API caller, which is the
--- only way this test means anything.
---   Expected: ERROR  Bulk delete blocked: 150 rows in one statement on public.staff
+-- Expected: ERROR  Bulk delete blocked: 150 rows in one statement on public.staff (limit 100)
+-- Anything else — especially a permission or role error — means the test did not
+-- reach the guard. Do not read it as a pass or a fail.
 /*
 begin;
-  select set_config('request.jwt.claims', '{"role":"authenticated"}', true);
+  select set_config('request.jwt.claims', '{"sub":"guard-verification"}', true);
   delete from public.staff
    where staff_id in (select staff_id from public.staff limit 150);
 rollback;
 */
 
 -- TEST 2 — a normal single-row delete must still SUCCEED.
---   Expected: DELETE 1, then rolled back.
+-- Expected: DELETE 1, then rolled back.
 /*
 begin;
-  select set_config('request.jwt.claims', '{"role":"authenticated"}', true);
+  select set_config('request.jwt.claims', '{"sub":"guard-verification"}', true);
   delete from public.staff
    where staff_id in (select staff_id from public.staff limit 1);
 rollback;
 */
 
--- TEST 3 — scraper exemption. On a connection with no JWT claims this returns true,
--- which is the branch that lets the pipeline through. Running it in the SQL Editor is
--- a proxy for the scraper's direct connection; confirm over DATABASE_URL for certainty.
---   Expected: exempt = true
+-- TEST 3 — scraper exemption. With no JWT claims this returns true, which is the
+-- branch that lets the pipeline through. In the SQL Editor this is a PROXY for the
+-- scraper's direct connection; confirm over DATABASE_URL for certainty.
+-- Expected: exempt = true
 /*
 select coalesce(current_setting('request.jwt.claims', true), '') = '' as exempt;
 */

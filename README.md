@@ -84,11 +84,18 @@ A web-based Customer Relationship Management system built for the **SIUE School 
 ```
 School-Engagement-CRM/
 ├── public/                      # Static assets
-├── scraper/                     # Python K-12 data pipeline
-│   ├── scraper.py               # Selenium + BeautifulSoup crawler
-│   ├── nlp_processor.py         # spaCy NLP entity extractor
-│   ├── db_writer.py             # Supabase insert layer
-│   ├── settings.json            # Target URLs and run config
+├── Scraper/                     # Python K-12 data pipeline
+│   ├── main.py                  # Pipeline entry point
+│   ├── scraper.py               # Page fetch + contact extraction
+│   ├── resolver.py              # School/district identity resolution
+│   ├── sources.py               # Source registry and seeding
+│   ├── helpers.py               # Shared utilities + SQL constants
+│   ├── models.py                # Dataclasses for schools/contacts/events
+│   ├── database.py              # Direct Postgres writer (psycopg, DATABASE_URL)
+│   ├── district_contacts.py     # District-level contact pass
+│   ├── iacac_events.py          # IACAC event ingestion
+│   ├── contact_quality.py       # Contact scoring / filtering
+│   ├── tests/
 │   └── requirements.txt
 ├── src/
 │   ├── components/
@@ -351,7 +358,7 @@ Add a `vercel.json` to handle client-side routing:
 | Variable | Required | Description |
 |---|---|---|
 | `VITE_SUPABASE_URL` | Yes | Supabase project URL — e.g. `https://xyz.supabase.co` |
-| `VITE_SUPABASE_ANON_KEY` | Yes | Supabase anon (public) key — safe to expose client-side; Row Level Security enforces access |
+| `VITE_SUPABASE_ANON_KEY` | Yes | Supabase publishable (anon) key. It ships inside the client bundle and is readable by anyone who loads the app. It is safe to expose **only because Row Level Security is enabled on every table in `public`** and access is granted to the `authenticated` role. If RLS is ever turned off, this key grants full read/write to the whole database without a login. |
 
 Create a `.env` file in the project root:
 

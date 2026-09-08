@@ -367,6 +367,22 @@ VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key-here
 ```
 
+### Scraper environment variables
+
+The Python pipeline in `Scraper/` is configured separately from the frontend. It does **not**
+use the Supabase REST API or any Supabase key — it connects straight to Postgres.
+
+| Variable | Required | Description |
+|---|---|---|
+| `DATABASE_URL` | Yes, to upload | Postgres connection string, used by `Scraper/database.py` via `psycopg`. Must connect as the table **owner** — the owner bypasses Row Level Security, which is what lets the scraper write to tables the app's `authenticated` policies otherwise govern. A lesser role will be blocked by RLS. Never commit this. |
+| `IACAC_EVENTS_API_URL` | For event ingest | Knack API endpoint for IACAC event data. |
+| `IACAC_KNACK_APP_ID` | For event ingest | Knack application ID. |
+| `IACAC_KNACK_SCENE` | For event ingest | Knack scene identifier. |
+| `IACAC_KNACK_VIEW` | For event ingest | Knack view identifier. |
+
+If `DATABASE_URL` is unset the pipeline still runs; it simply skips the upload step
+(`Scraper/main.py:279`).
+
 ---
 
 ## Roadmap

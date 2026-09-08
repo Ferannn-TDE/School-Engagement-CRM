@@ -1,8 +1,12 @@
+from io import BytesIO
 from pathlib import Path
+from urllib.parse import urljoin
 
 import requests
+from bs4 import BeautifulSoup
 
 from helpers import (
+    ISBE_DIRECTORY_PAGE_URL,
     ISBE_DIRECTORY_URL,
     MISSOURI_DISTRICTS_URL,
     MISSOURI_SCHOOLS_URL,
@@ -38,33 +42,93 @@ class IllinoisSource(OfficialSchoolSource):
     state = "IL"
 
     def download(self, raw_folder):
-        response = self.session.get(ISBE_DIRECTORY_URL, timeout=90, allow_redirects=True)
-        response.raise_for_status()
-        content = response.content
+        content = b""
+        directory_url = ""
 
-        if not content.startswith(b"\xd0\xcf\x11\xe0"):
-            raise RuntimeError("ISBE did not return its expected .xls directory file.")
+        for url in self.directory_urls():
+            try:
+                response = self.session.get(url, timeout=90, allow_redirects=True)
+                response.raise_for_status()
+            except requests.RequestException:
+                continue
+
+            if response.content.startswith((b"PK\x03\x04", b"\xd0\xcf\x11\xe0")):
+                content = response.content
+                directory_url = response.url
+                break
+
+        if not content:
+            raise RuntimeError("ISBE did not return a valid .xlsx or .xls directory file.")
 
         raw_folder = Path(raw_folder)
         raw_folder.mkdir(parents=True, exist_ok=True)
-        raw_path = raw_folder / "illinois_directory.xls"
+        suffix = ".xlsx" if content.startswith(b"PK\x03\x04") else ".xls"
+        raw_path = raw_folder / f"illinois_directory{suffix}"
         raw_path.write_bytes(content)
+        self.directory_url = directory_url
         return self.from_workbook(content)
 
-    def from_workbook(self, content):
-        import xlrd
+    def directory_urls(self):
+        urls = []
 
-        workbook = xlrd.open_workbook(file_contents=content)
+        try:
+            response = self.session.get(
+                ISBE_DIRECTORY_PAGE_URL,
+                timeout=90,
+                allow_redirects=True,
+            )
+            response.raise_for_status()
+            soup = BeautifulSoup(response.text, "html.parser")
+
+            for link in soup.find_all("a", href=True):
+                href = link.get("href", "")
+                normalized = href.casefold()
+                if ".xls" not in normalized:
+                    continue
+                if "dir_ed" not in normalized and "directory-ed-entities" not in normalized:
+                    continue
+                urls.append(urljoin(response.url, href))
+        except requests.RequestException:
+            pass
+
+        urls.append(ISBE_DIRECTORY_URL)
+        return list(dict.fromkeys(urls))
+
+    def from_workbook(self, content):
+        if content.startswith(b"PK\x03\x04"):
+            import openpyxl
+
+            workbook = openpyxl.load_workbook(
+                BytesIO(content),
+                read_only=True,
+                data_only=True,
+            )
+            sheets = [
+                (sheet.title, list(sheet.values))
+                for sheet in workbook.worksheets
+            ]
+            workbook.close()
+        else:
+            import xlrd
+
+            workbook = xlrd.open_workbook(file_contents=content)
+            sheets = [
+                (
+                    sheet.name,
+                    [sheet.row_values(index) for index in range(sheet.nrows)],
+                )
+                for sheet in workbook.sheets()
+            ]
+
         rows = []
 
-        for sheet in workbook.sheets():
-            if "public" not in sheet.name.casefold():
+        for sheet_name, sheet_rows in sheets:
+            if "public" not in sheet_name.casefold():
                 continue
-            header_index = self.header_row(sheet)
-            headers = [clean(value) for value in sheet.row_values(header_index)]
+            header_index = self.header_row(sheet_rows)
+            headers = [clean(value) for value in sheet_rows[header_index]]
 
-            for row_index in range(header_index + 1, sheet.nrows):
-                values = sheet.row_values(row_index)
+            for values in sheet_rows[header_index + 1:]:
                 row = {
                     header: self.cell(value)
                     for header, value in zip(headers, values)
@@ -78,9 +142,9 @@ class IllinoisSource(OfficialSchoolSource):
         return self.from_rows(rows)
 
     @staticmethod
-    def header_row(sheet):
-        for index in range(min(12, sheet.nrows)):
-            headings = {header_key(value) for value in sheet.row_values(index)}
+    def header_row(rows):
+        for index, row in enumerate(rows[:12]):
+            headings = {header_key(value) for value in row}
             if "facilityname" in headings and ("school" in headings or "website" in headings):
                 return index
         return 0
@@ -173,7 +237,7 @@ class IllinoisSource(OfficialSchoolSource):
                 directory_email=first_value(row, "Email", "School Email"),
                 nces_id=first_value(row, "NCES_ID", "NCES ID", "NCESID"),
                 state_id=rcdts,
-                data_source=ISBE_DIRECTORY_URL,
+                data_source=getattr(self, "directory_url", ISBE_DIRECTORY_URL),
             ))
 
         schools.sort(key=lambda school: (normalize(school.name), normalize(school.city)))

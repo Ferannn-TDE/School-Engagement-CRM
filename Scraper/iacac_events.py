@@ -11,6 +11,7 @@ from helpers import (
     IACAC_DESCRIPTION_FIELDS,
     IACAC_END_FIELDS,
     IACAC_EVENTS_API_URL,
+    IACAC_FIELD_LABELS,
     IACAC_KNACK_APP_ID,
     IACAC_KNACK_SCENE,
     IACAC_KNACK_VIEW,
@@ -103,21 +104,18 @@ class IacacEventSource:
             labels.update(self.field_labels(document))
 
         text = page.text.replace("\\\"", '"')
-        app_id = self.app_id or self.find_identifier(
-            text,
-            ("application_id", "applicationId", "app_id", "appId"),
+        app_id = self.find_identifier(
+            text, ("application_id", "applicationId", "app_id", "appId"),
             r"[A-Za-z0-9_-]{12,64}",
-        )
-        scene = self.scene or self.find_identifier(
-            text,
-            ("scene", "scene_key", "sceneKey", "key"),
+        ) or self.app_id
+        scene = self.find_identifier(
+            text, ("scene", "scene_key", "sceneKey", "key"),
             r"scene_\d+",
-        )
-        view = self.view or self.find_identifier(
-            text,
-            ("view", "view_key", "viewKey", "key"),
+        ) or self.scene
+        view = self.find_identifier(
+            text, ("view", "view_key", "viewKey", "key"),
             r"view_\d+",
-        )
+        ) or self.view
         if not scene:
             match = re.search(r"\bscene_\d+\b", text)
             scene = match.group(0) if match else ""
@@ -126,7 +124,7 @@ class IacacEventSource:
             view = match.group(0) if match else ""
 
         if app_id and scene and view:
-            endpoint = f"https://api.knack.com/v1/pages/{scene}/views/{view}/records"
+            endpoint = f"https://us-api.knack.com/v1/pages/{scene}/views/{view}/records"
             return endpoint, app_id, labels
         return "", app_id, labels
 
@@ -233,6 +231,8 @@ class IacacEventSource:
         candidates = [value]
         candidates.extend(part.strip() for part in value.split("|") if part.strip())
         for candidate in candidates:
+            candidate = re.split(r"\s+to\s+", candidate, maxsplit=1, flags=re.I)[0]
+            candidate = re.sub(r"(?<=\d)(am|pm)\b", r" \1", candidate, flags=re.I)
             try:
                 result = datetime.fromisoformat(candidate.replace("Z", "+00:00"))
                 return result.replace(tzinfo=None)
@@ -322,7 +322,7 @@ class IacacEventSource:
 
     def load(self):
         self.last_error = ""
-        labels = {}
+        labels = dict(IACAC_FIELD_LABELS)
         documents = []
 
         if self.api_url:

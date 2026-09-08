@@ -61,6 +61,14 @@ class FakeExternalEvents:
         return [Event("IACAC College Fair", "2099-10-01T18:00:00", location="Chicago")]
 
 
+class FakeDatabaseWriter:
+    def __init__(self):
+        self.calls = 0
+
+    def write(self, results, mode, external_events=()):
+        self.calls += 1
+
+
 def schools():
     return [
         School("IL:1", "Alpha High School", "IL", website="https://alpha.example/"),
@@ -90,6 +98,21 @@ class PipelineTests(unittest.TestCase):
             for name in ("results.json", "schools.json", "contacts.json", "events.json", "review.json"):
                 value = read_json(Path(folder) / name)
                 self.assertIsInstance(value, list)
+
+    def test_successful_database_upload_clears_the_checkpoint(self):
+        with tempfile.TemporaryDirectory() as folder:
+            writer = FakeDatabaseWriter()
+            SchoolReach(
+                FakeRoster(schools()),
+                CountingResolver(),
+                FakeScraper(),
+                folder,
+                workers=1,
+                database_writer=writer,
+            ).run()
+
+            self.assertEqual(writer.calls, 1)
+            self.assertEqual(read_json(Path(folder) / "checkpoint.json"), {})
 
     def test_skip_number_is_the_only_required_restart_input(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -166,6 +189,30 @@ class PipelineTests(unittest.TestCase):
             iacac = read_json(Path(folder) / "iacac_events.json")
         self.assertEqual(len(iacac), 1)
         self.assertIsNone(events[-1]["school_key"])
+
+    def test_school_event_exports_calendar_and_homepage_urls(self):
+        class EventScraper(FakeScraper):
+            def scrape(self, school, resolution):
+                result = super().scrape(school, resolution)
+                result.events.append(Event(
+                    "College Fair",
+                    "2099-10-01T18:00:00",
+                    source_url="https://alpha.example/calendar/events.ics",
+                ))
+                return result
+
+        with tempfile.TemporaryDirectory() as folder:
+            SchoolReach(
+                FakeRoster([schools()[0]]),
+                CountingResolver(),
+                EventScraper(),
+                folder,
+                workers=1,
+            ).run()
+            event = read_json(Path(folder) / "events.json")[0]
+
+        self.assertEqual(event["calendar_url"], "https://alpha.example/calendar/events.ics")
+        self.assertEqual(event["homepage_url"], "https://alpha.example/")
 
     def test_contact_quality_gate_is_part_of_the_export_pipeline(self):
         class JunkScraper(FakeScraper):

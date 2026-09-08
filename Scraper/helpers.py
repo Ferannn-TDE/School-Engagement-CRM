@@ -33,12 +33,21 @@ DATABASE_MODE = "upsert"
 
 IACAC_CALENDAR_URL = "https://iacac.knack.com/college-fairs#list"
 IACAC_EVENTS_API_URL = os.environ.get("IACAC_EVENTS_API_URL", "")
-IACAC_KNACK_APP_ID = os.environ.get("IACAC_KNACK_APP_ID", "")
-IACAC_KNACK_SCENE = os.environ.get("IACAC_KNACK_SCENE", "")
-IACAC_KNACK_VIEW = os.environ.get("IACAC_KNACK_VIEW", "")
+IACAC_KNACK_APP_ID = os.environ.get("IACAC_KNACK_APP_ID", "54a7814f317b583c5462586c")
+IACAC_KNACK_SCENE = os.environ.get("IACAC_KNACK_SCENE", "scene_13")
+IACAC_KNACK_VIEW = os.environ.get("IACAC_KNACK_VIEW", "view_17")
 IACAC_MAX_PAGES = 10
-IACAC_TITLE_FIELDS = ("fair name", "event name", "college fair", "name", "title")
+IACAC_FIELD_LABELS = {
+    "field_1": "Date & Time",
+    "field_2": "Program",
+    "field_3": "Type",
+    "field_5": "Location",
+    "field_14": "Address",
+    "field_38": "Student Scanning",
+}
+IACAC_TITLE_FIELDS = ("program", "fair name", "event name", "college fair", "name", "title")
 IACAC_START_FIELDS = (
+    "date & time",
     "start date and time",
     "start date",
     "event date",
@@ -56,6 +65,7 @@ IACAC_LOCATION_FIELDS = (
     "address",
 )
 IACAC_DESCRIPTION_FIELDS = (
+    "type",
     "description",
     "details",
     "fair type",
@@ -73,16 +83,16 @@ IACAC_DATE_FORMATS = (
     "%Y-%m-%d %H:%M:%S",
     "%Y-%m-%d",
 )
-REFRESH_CONFIRMATION = "REFRESH-SCHOOLREACH"
 
 STATE_NAMES = {
     "IL": "Illinois",
     "MO": "Missouri",
 }
 
+ISBE_DIRECTORY_PAGE_URL = "https://www.isbe.net/pages/data-analysis-directories.aspx"
 ISBE_DIRECTORY_URL = (
     "https://www.isbe.net/_layouts/Download.aspx?"
-    "SourceUrl=%2FDocuments%2Fdir_ed_entities.xls"
+    "SourceUrl=%2FDocuments%2F2025-26-Directory-Ed-Entities.xlsx"
 )
 MISSOURI_SCHOOLS_URL = (
     "https://gis.mo.gov/arcgis/rest/services/DESE/"
@@ -105,6 +115,76 @@ EMPTY_VALUES = {
     "null",
     "unknown",
 }
+
+BLOCKED_CONTACT_NAMES = frozenset(value.casefold() for value in (
+    "Closed Building",
+    "Contact Us",
+    "Preschool Teacher",
+    "BOARD OF EDUCATION",
+    "About Us",
+    "Head Custodian",
+    "Confidential Secretary",
+    "BTHS Foundation",
+    "Assistant Band Director",
+    "Fax Number",
+    "View Profile",
+    "Indicates agency accepts Medicaid",
+    "ZBE- Contact Ms. Yolanda Mckenzie",
+    "Request a Transcript",
+    "Communication Flow Chart",
+    "Close Menu",
+    "Birthday Book Club",
+        "About Fahs",
+    "Administrative Team",
+    "Ap Calendar Schedule",
+    "Athletic Director",
+    "Bell Schedule",
+    "Belmont Campus",
+    "Career And Technical Education (Cte)",
+    "Contact Mrs. DuWaldt",
+    "Contact Mrs. Jackson",
+    "Contact Mrs. Kutyna",
+    "Contact Mrs. Milletello",
+    "Contact Mrs. Wallace",
+    "Contact Mrs. Zasada",
+    "Daily Announcements",
+    "Director Of Maintenance",
+    "Donate To Care To Learn",
+    "Downtown Campus",
+    "Education Verification Request",
+    "Eshs Transcript Request Form",
+    "Important Phone Numbers",
+    "In This Section",
+    "Lhs Location",
+    "Mathematics Teacher",
+    "Mc Admissions",
+    "McCluer North's Parent-Teacher Group",
+    "Meal Menus",
+    "Media Assistant",
+    "Meet Mrs. Facio",
+    "Otc Admissions Instructions",
+    "Our Counselors",
+    "Physical Therapy (Pt)",
+    "Po Box C",
+    "Project Lead The Way (Pltw)",
+    "Request To Meet",
+    "Roosevelt's Accountability Plan",
+    "Roosevelt's Mission And Vision",
+    "Schedule Changes",
+    "Show Help",
+    "Special Education Director",
+    "Superintendent- Chad Gripp (",
+    "Transcript Request",
+    "Transcript Requests",
+    "Transportation Director",
+    "Unit Secretary",
+    "Website Navigation",
+    "Gbs Graduates Or Former Students",
+    "Get Directions",
+    "Report Card",
+    "Sign Up For Our Newsletter",
+    "Chicago Roadmap"
+))
 
 BLOCKED_HOSTS = {
     "alumniclass.com",
@@ -456,28 +536,33 @@ REJECT_LINK = re.compile(
     re.I,
 )
 
-REFRESH_SQL = """
-    TRUNCATE TABLE
-        activities, programs, contacts, events, staff,
-        schools, district, county, state
-    RESTART IDENTITY CASCADE
-"""
-
-STATE_SQL = """
-    INSERT INTO state (state_code, state_name) VALUES (%s, %s)
-    ON CONFLICT (state_code) DO UPDATE SET
-        state_name = EXCLUDED.state_name
-"""
-
-COUNTY_SQL = """
-    INSERT INTO county (county_name, state_code) VALUES (%s, %s)
-    ON CONFLICT (county_name, state_code) DO NOTHING
-"""
 
 DISTRICT_SQL = """
     INSERT INTO district (district_name, county_name, state_code)
     VALUES (%s, %s, %s)
     RETURNING district_id
+"""
+
+DISTRICT_FIND_SQL = """
+    SELECT district_id FROM district
+    WHERE state_code = %s
+      AND LOWER(BTRIM(district_name)) = LOWER(BTRIM(%s))
+    ORDER BY
+        CASE
+            WHEN LOWER(BTRIM(COALESCE(county_name, '')))
+                = LOWER(BTRIM(COALESCE(%s, ''))) THEN 0
+            ELSE 1
+        END,
+        district_id
+    LIMIT 1
+"""
+
+DISTRICT_UPDATE_SQL = """
+    UPDATE district SET
+        district_name = %s,
+        county_name = COALESCE(%s, county_name),
+        state_code = %s
+    WHERE district_id = %s
 """
 
 SCHOOL_SQL = """
@@ -494,26 +579,32 @@ SCHOOL_SQL = """
     ON CONFLICT (facility_key) DO UPDATE SET
         name = EXCLUDED.name,
         district_id = EXCLUDED.district_id,
-        phone = EXCLUDED.phone,
-        address = EXCLUDED.address,
-        type_of_school = EXCLUDED.type_of_school,
-        admin = EXCLUDED.admin,
-        city = EXCLUDED.city,
-        zipcode = EXCLUDED.zipcode,
-        grades_served = EXCLUDED.grades_served,
-        website = EXCLUDED.website,
-        county_name = EXCLUDED.county_name,
+        phone = COALESCE(EXCLUDED.phone, schools.phone),
+        address = COALESCE(EXCLUDED.address, schools.address),
+        type_of_school = COALESCE(EXCLUDED.type_of_school, schools.type_of_school),
+        admin = COALESCE(EXCLUDED.admin, schools.admin),
+        city = COALESCE(EXCLUDED.city, schools.city),
+        zipcode = COALESCE(EXCLUDED.zipcode, schools.zipcode),
+        grades_served = COALESCE(EXCLUDED.grades_served, schools.grades_served),
+        website = COALESCE(EXCLUDED.website, schools.website),
+        county_name = COALESCE(EXCLUDED.county_name, schools.county_name),
         is_scraped = EXCLUDED.is_scraped,
         is_active = EXCLUDED.is_active,
-        notes = EXCLUDED.notes,
+        notes = COALESCE(EXCLUDED.notes, schools.notes),
         updated_at = EXCLUDED.updated_at,
-        enrollment = EXCLUDED.enrollment,
-        grade_range = EXCLUDED.grade_range,
-        data_source = EXCLUDED.data_source,
-        is_verified = EXCLUDED.is_verified,
-        last_verified_at = EXCLUDED.last_verified_at,
-        priority_tier = EXCLUDED.priority_tier,
+        enrollment = COALESCE(EXCLUDED.enrollment, schools.enrollment),
+        grade_range = COALESCE(EXCLUDED.grade_range, schools.grade_range),
+        data_source = COALESCE(EXCLUDED.data_source, schools.data_source),
+        is_verified = COALESCE(schools.is_verified, FALSE)
+            OR COALESCE(EXCLUDED.is_verified, FALSE),
+        last_verified_at = CASE
+            WHEN COALESCE(schools.is_verified, FALSE) THEN schools.last_verified_at
+            ELSE EXCLUDED.last_verified_at
+        END,
+        priority_tier = COALESCE(EXCLUDED.priority_tier, schools.priority_tier),
         state_code = EXCLUDED.state_code
+    WHERE schools.is_scraped IS TRUE
+      AND NOT COALESCE(schools.is_verified, FALSE)
 """
 
 STAFF_SQL = """
@@ -527,10 +618,10 @@ STAFF_SQL = """
 
 STAFF_FIND_EMAIL_SQL = """
     SELECT staff_id FROM staff
-    WHERE school_worked_at = %s
-      AND LOWER(name) = LOWER(%s)
-      AND LOWER(email) = LOWER(%s)
-    ORDER BY staff_id
+    WHERE LOWER(email) = LOWER(%s)
+    ORDER BY
+        CASE WHEN school_worked_at = %s THEN 0 ELSE 1 END,
+        staff_id
     LIMIT 1
 """
 
@@ -555,9 +646,9 @@ STAFF_FIND_NAME_SQL = """
 STAFF_UPDATE_SQL = """
     UPDATE staff SET
         name = %s,
-        phone = %s,
-        email = %s,
-        job_name = %s,
+        phone = COALESCE(%s, phone),
+        email = COALESCE(%s, email),
+        job_name = COALESCE(%s, job_name),
         school_worked_at = %s,
         is_active = %s,
         notes = %s,
@@ -574,20 +665,15 @@ EVENT_SQL = """
         is_scraped, external_id, fair_name, created_at, updated_at
     ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     ON CONFLICT (external_id) DO UPDATE SET
-        schools_involved = EXCLUDED.schools_involved,
-        location = EXCLUDED.location,
+        schools_involved = COALESCE(EXCLUDED.schools_involved, events.schools_involved),
+        location = COALESCE(EXCLUDED.location, events.location),
         time = EXCLUDED.time,
         date = EXCLUDED.date,
-        attendance = EXCLUDED.attendance,
+        attendance = COALESCE(EXCLUDED.attendance, events.attendance),
         is_scraped = EXCLUDED.is_scraped,
         fair_name = EXCLUDED.fair_name,
         updated_at = EXCLUDED.updated_at
     WHERE events.is_scraped IS TRUE
-"""
-
-CONTACT_SQL = """
-    INSERT INTO contacts (school_id, staff_id) VALUES (%s, %s)
-    ON CONFLICT (school_id, staff_id) DO NOTHING
 """
 
 
@@ -611,6 +697,50 @@ def normalize(value):
     text = "".join(character for character in text if not unicodedata.combining(character))
     text = re.sub(r"[^a-z0-9]+", " ", text.casefold())
     return re.sub(r"\s+", " ", text).strip()
+
+
+def canonical_facility_key(value, state=""):
+    value = clean(value)
+    if not value:
+        return ""
+    if ":" in value:
+        prefix, supplied = value.split(":", 1)
+    else:
+        prefix, supplied = state, value
+    prefix = clean(prefix).upper()
+    supplied = re.sub(r"\s+", "", clean(supplied))
+    return f"{prefix}:{supplied}" if prefix else supplied
+
+
+def score_text(value):
+    try:
+        number = round(float(value), 2)
+    except (TypeError, ValueError):
+        return None
+    return f"{number:g}"
+
+
+def normalize_event_title(value):
+    title = contact_text(value)
+    title = re.sub(r"^read\s+more\s+about\s+", "", title, flags=re.I)
+    title = re.sub(r"\s*\(opens? in (?:a )?new (?:dialog|window)\)", "", title, flags=re.I)
+    title = re.sub(r"\s+read\s+more$", "", title, flags=re.I)
+    title = re.sub(
+        r"\s+\d{1,2}\s*:\s*\d{2}\s*(?:am|pm)\s*[-–]\s*"
+        r"\d{1,2}\s*:\s*\d{2}\s*(?:am|pm)$",
+        "",
+        title,
+        flags=re.I,
+    )
+    title = re.sub(r"(?<=\d)\s*:\s*(?=\d)", ":", title)
+    title = re.sub(r"\s+([,;:])", r"\1", title)
+    title = re.sub(r"([,;])(?=\S)", r"\1 ", title)
+    title = re.sub(r"(?<!\d):(?=\S)", ": ", title)
+    if title and (title.isupper() or title.islower()):
+        title = title.title()
+    for acronym in ("ACT", "AP", "FAFSA", "IACAC", "NACAC", "NMSQT", "PSAT", "SAT"):
+        title = re.sub(rf"\b{acronym.title()}\b", acronym, title)
+    return title
 
 
 def digits(value):
@@ -903,8 +1033,10 @@ def serves_high_school(name, grades, low_grade="", high_grade=""):
 def unique_school_id(state, supplied, name, city):
     supplied = clean(supplied)
     if supplied and supplied.casefold() not in {"pending", "(pending)", "unknown"}:
-        return f"{state}:{supplied}"
-    return f"{state}:generated:{stable_text(name, city, length=16)}"
+        if supplied.partition(":")[0].casefold() == clean(state).casefold():
+            return canonical_facility_key(supplied)
+        return canonical_facility_key(supplied, state)
+    return canonical_facility_key(f"{state}:generated:{stable_text(name, city, length=16)}")
 
 
 def attach_district_context(schools):
@@ -972,3 +1104,20 @@ def school_result_from_dict(data):
         calendar_pages=list(data.get("calendar_pages", [])),
         error=clean(data.get("error")),
     )
+
+def insert_district(self, name, county, state):
+    response = (
+        self.client.table("district")
+        .insert({
+            "district_name": name,
+            "county_name": county,
+            "state_code": state,
+        })
+        .execute()
+    )
+
+    if not response.data:
+        raise RuntimeError(f"Supabase did not return an ID for {name}.")
+
+    return response.data[0]["district_id"]
+

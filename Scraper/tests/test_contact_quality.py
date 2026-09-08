@@ -22,6 +22,23 @@ class ContactTitleNormalizerTests(unittest.TestCase):
         contact, _, _ = self.gate.decision(self.contact("Associate Principal"))
         self.assertEqual(contact.title, "Associate Principal")
 
+    def test_names_and_suffixes_use_proper_noun_capitalization(self):
+        contact, reason, changed = self.gate.decision(
+            self.contact("SCHOOL COUNSELOR", role="counselor", name="DR JOHN O'NEIL JR")
+        )
+        self.assertEqual(reason, "accepted")
+        self.assertTrue(changed)
+        self.assertEqual(contact.name, "Dr. John O'Neil Jr.")
+        self.assertEqual(contact.title, "School Counselor")
+
+    def test_known_page_labels_are_hard_blocked(self):
+        for name in ("Closed Building", "BOARD OF EDUCATION", "Close Menu"):
+            contact, reason, _ = self.gate.decision(
+                self.contact("Principal", role="principal", name=name)
+            )
+            self.assertIsNone(contact)
+            self.assertEqual(reason, "blocked_contact_name")
+
     def test_page_copy_is_rejected_instead_of_fabricating_a_title(self):
         contact, reason, _ = self.gate.decision(self.contact(
             "It is with great excitement that I serve as your Assistant Principal and support every student."

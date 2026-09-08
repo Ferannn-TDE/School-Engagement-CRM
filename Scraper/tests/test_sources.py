@@ -1,6 +1,6 @@
 import unittest
 
-from helpers import canonical_url, serves_high_school
+from helpers import canonical_facility_key, canonical_url, serves_high_school, unique_school_id
 from sources import IllinoisSource, MissouriSource
 
 
@@ -113,6 +113,10 @@ class SourceTests(unittest.TestCase):
         schools = IllinoisSource().from_rows(rows)
         self.assertEqual(len({school.facility_key for school in schools}), 2)
         self.assertTrue(all("generated" in school.facility_key for school in schools))
+
+    def test_facility_keys_have_one_canonical_format(self):
+        self.assertEqual(canonical_facility_key(" mo : 001090-1050 "), "MO:001090-1050")
+        self.assertEqual(unique_school_id("MO", "mo:001090-1050", "Aurora High", "Aurora"), "MO:001090-1050")
 
 
 if __name__ == "__main__":

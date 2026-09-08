@@ -93,7 +93,7 @@ class IacacEventSourceTests(unittest.TestCase):
         })
         http = FakeHttp([
             ("https://iacac.example/calendar", landing),
-            ("https://api.knack.com/v1/pages/scene_1/views/view_2/records", api),
+            ("https://us-api.knack.com/v1/pages/scene_1/views/view_2/records", api),
         ])
         source = IacacEventSource(http, calendar_url="https://iacac.example/calendar")
         events = source.load()
@@ -102,6 +102,27 @@ class IacacEventSourceTests(unittest.TestCase):
         self.assertEqual(events[0].title, "Northern Illinois College Fair")
         self.assertEqual(events[0].start[11:16], "17:30")
         self.assertIn("Normal, IL", events[0].location)
+
+    def test_live_iacac_field_keys_work_without_embedded_labels(self):
+        event_date = date.today() + timedelta(days=60)
+        api = json.dumps({
+            "records": [{
+                "id": "live-record",
+                "field_1": event_date.strftime("%m/%d/%Y") + " 6:30pm to 8:00pm",
+                "field_2": "Maine District 207",
+                "field_3": "Illinois Regional",
+                "field_5": "Maine West High School",
+            }],
+            "total_pages": 1,
+        })
+        http = FakeHttp([("https://example.test/live", api)])
+        events = IacacEventSource(http, api_url="https://example.test/live").load()
+
+        self.assertEqual(len(events), 1)
+        self.assertEqual(events[0].title, "Maine District 207")
+        self.assertEqual(events[0].start[11:16], "18:30")
+        self.assertEqual(events[0].location, "Maine West High School")
+        self.assertEqual(events[0].description, "Illinois Regional")
 
 
 if __name__ == "__main__":

@@ -3,6 +3,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
 from pathlib import Path
 import threading
+from unittest import result
 
 from contact_quality import ContactTitleNormalizer
 from database import DatabaseWriter
@@ -144,6 +145,8 @@ class SchoolReach:
                 events.append({
                     "school_key": result.school.facility_key,
                     "school_name": result.school.name,
+                    "calendar_url": event.source_url,
+                    "homepage_url": result.resolution.resolved_url,
                     **json_value(event),
                 })
 
@@ -254,12 +257,13 @@ class SchoolReach:
         self.export_results(results, external_events, contact_quality)
 
         if self.database_writer is not None:
+            print("Writing results to the database...", flush=True)
             self.database_writer.write(
                 results,
                 self.database_mode,
                 external_events=external_events,
-            )
-
+                )
+            write_json(checkpoint_path, {})
         return results
 
 
@@ -276,9 +280,15 @@ def main():
     contact_quality = ContactTitleNormalizer()
 
     database_writer = None
-    if UPLOAD_DATABASE and os.environ.get("DATABASE_URL"):
-        database_writer = DatabaseWriter(os.environ["DATABASE_URL"])
 
+    if UPLOAD_DATABASE:
+        database_url = os.environ.get("DATABASE_URL")
+        if not database_url:
+            raise RuntimeError(
+                "DATABASE_URL is required when database upload is enabled."
+            )
+
+        database_writer = DatabaseWriter(database_url)
     pipeline = SchoolReach(
         roster,
         resolver,

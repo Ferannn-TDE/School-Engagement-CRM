@@ -1,16 +1,23 @@
 from datetime import datetime
-import json
 
 from helpers import (
+    DISTRICT_FIND_SQL,
+    DISTRICT_SQL,
+    DISTRICT_UPDATE_SQL,
     EVENT_SQL,
+    SCHOOL_SQL,
     STAFF_FIND_EMAIL_SQL,
     STAFF_FIND_NAME_SQL,
     STAFF_FIND_PHONE_SQL,
     STAFF_SQL,
     STAFF_UPDATE_SQL,
     STATE_NAMES,
+    canonical_facility_key,
+    clean,
     county_name,
     normalize,
+    normalize_event_title,
+    score_text,
     stable_text,
     utc_now,
 )
@@ -34,7 +41,7 @@ class DatabaseRows:
     def contact_key(result, contact):
         identity = contact.email or contact.phone or normalize(contact.name)
         return (
-            result.school.facility_key,
+            canonical_facility_key(result.school.facility_key, result.school.state),
             normalize(contact.name),
             normalize(identity),
             contact.role,
@@ -58,7 +65,7 @@ class DatabaseRows:
             key = self.district_key(result)
             rows[key] = (
                 result.school.district_name or "Unknown district",
-                county_name(result),
+                clean(result.school.county) or None,
                 result.school.state,
             )
         return [(key, rows[key]) for key in sorted(rows)]
@@ -68,17 +75,8 @@ class DatabaseRows:
         for result in self.results:
             school = result.school
             resolution = result.resolution
-            notes = json.dumps({
-                "state_id": school.state_id,
-                "nces_id": school.nces_id,
-                "resolution_status": resolution.status,
-                "resolution_method": resolution.method,
-                "fallback_url": resolution.fallback_url,
-                "resolution_reason": resolution.reason,
-            }, ensure_ascii=False)
-
             rows.append((
-                school.facility_key,
+                canonical_facility_key(school.facility_key, school.state),
                 school.name,
                 district_ids[self.district_key(result)],
                 school.phone or None,
@@ -89,17 +87,17 @@ class DatabaseRows:
                 school.zipcode or None,
                 school.grades or None,
                 resolution.resolved_url or None,
-                county_name(result),
+                clean(school.county) or None,
                 True,
                 True,
-                notes,
+                None,
                 self.now,
                 self.now,
                 school.enrollment,
                 school.grades or None,
                 school.data_source,
-                True,
-                self.now,
+                False,
+                None,
                 "website_verified" if resolution.resolved else "official_roster_only",
                 school.state,
             ))
@@ -117,13 +115,13 @@ class DatabaseRows:
         for result in self.results:
             for contact in result.contacts:
                 key = self.contact_key(result, contact)
-                notes = json.dumps({"score": round(float(contact.score), 2)})
+                notes = score_text(contact.score)
                 rows[key] = (
                     contact.name,
                     self.contact_phone(contact),
                     contact.email or None,
                     contact.title,
-                    result.school.facility_key,
+                    canonical_facility_key(result.school.facility_key, result.school.state),
                     True,
                     True,
                     notes,
@@ -135,13 +133,33 @@ class DatabaseRows:
                 )
         return [(key, rows[key]) for key in sorted(rows)]
 
+    @staticmethod
+    def event_location(event, homepage="", source_label="Calendar"):
+        location = clean(event.location)
+        source_url = clean(event.source_url)
+        homepage = clean(homepage)
+        values = [location] if location else []
+
+        if source_url and source_url == homepage:
+            values.append(f"{source_label}/Homepage: {source_url}")
+        else:
+            if source_url:
+                values.append(f"{source_label}: {source_url}")
+            if homepage:
+                values.append(f"Homepage: {homepage}")
+
+        return " | ".join(values) or None
+
     def contacts(self, staff_ids):
         rows = set()
         for result in self.results:
             for contact in result.contacts:
                 key = self.contact_key(result, contact)
                 if key in staff_ids:
-                    rows.add((result.school.facility_key, staff_ids[key]))
+                    rows.add((
+                        canonical_facility_key(result.school.facility_key, result.school.state),
+                        staff_ids[key],
+                    ))
         return sorted(rows)
 
     def events(self):
@@ -160,14 +178,14 @@ class DatabaseRows:
                     length=32,
                 )
                 rows[external_id] = (
-                    result.school.facility_key,
-                    event.location or None,
+                    canonical_facility_key(result.school.facility_key, result.school.state),
+                    self.event_location(event, result.resolution.resolved_url),
                     start.time().replace(microsecond=0),
                     start.date(),
                     None,
                     True,
                     external_id,
-                    event.title,
+                    normalize_event_title(event.title),
                     self.now,
                     self.now,
                 )
@@ -186,23 +204,28 @@ class DatabaseRows:
             )
             rows[external_id] = (
                 None,
-                event.location or None,
+                self.event_location(event, source_label="Source"),
                 start.time().replace(microsecond=0),
                 start.date(),
                 None,
                 True,
                 external_id,
-                event.title,
+                normalize_event_title(event.title),
                 self.now,
                 self.now,
             )
         return [rows[key] for key in sorted(rows)]
 
-
 class DatabaseWriter:
     def __init__(self, database_url, connect=None):
         if not database_url:
-            raise ValueError("DATABASE_URL is required when database upload is enabled.")
+            raise ValueError(
+                "DATABASE_URL is required when database upload is enabled."
+            )
+
+        if connect is not None and not callable(connect):
+            raise TypeError("connect must be a callable connection factory.")
+
         self.database_url = database_url
         self.connect = connect
 
@@ -211,12 +234,16 @@ class DatabaseWriter:
             return self.connect(self.database_url)
 
         import psycopg
-        return psycopg.connect(self.database_url)
+
+        return psycopg.connect(
+            self.database_url,
+            connect_timeout=15,
+        )
 
     def find_staff(self, cursor, values):
         name, phone, email, title, school_key = values[:5]
         if email:
-            cursor.execute(STAFF_FIND_EMAIL_SQL, (school_key, name, email))
+            cursor.execute(STAFF_FIND_EMAIL_SQL, (email, school_key))
             row = cursor.fetchone()
             if row:
                 return row[0]
@@ -228,6 +255,32 @@ class DatabaseWriter:
         cursor.execute(STAFF_FIND_NAME_SQL, (school_key, name, title))
         row = cursor.fetchone()
         return row[0] if row else None
+
+    @staticmethod
+    def upsert_districts(cursor, records):
+        district_ids = {}
+
+        for key, values in records:
+            name, county, state = values
+            cursor.execute(DISTRICT_FIND_SQL, (state, name, county))
+            row = cursor.fetchone()
+
+            if row:
+                district_id = row[0]
+                cursor.execute(
+                    DISTRICT_UPDATE_SQL,
+                    (name, county, state, district_id),
+                )
+            else:
+                cursor.execute(DISTRICT_SQL, values)
+                row = cursor.fetchone()
+                if not row:
+                    raise RuntimeError(f"PostgreSQL did not return an ID for {name}.")
+                district_id = row[0]
+
+            district_ids[key] = district_id
+
+        return district_ids
 
     def upsert_staff(self, cursor, records):
         for _, values in records:
@@ -262,11 +315,30 @@ class DatabaseWriter:
         if mode != "upsert":
             raise ValueError(
                 "DatabaseWriter only supports the safe 'upsert' mode. "
-                "Use refresh_database.py for a confirmed full reload."
+                "Use a separate full reload workflow for confirmed replacements."
             )
 
-        values = DatabaseRows(results, external_events=external_events)
+        values = DatabaseRows(
+            results,
+            external_events=external_events,
+        )
+
         with self.connection() as connection:
             with connection.cursor() as cursor:
-                self.upsert_staff(cursor, values.staff())
-                cursor.executemany(EVENT_SQL, values.events())
+                district_ids = self.upsert_districts(
+                    cursor,
+                    values.districts(),
+                )
+
+                schools = values.schools(district_ids)
+                if schools:
+                    cursor.executemany(SCHOOL_SQL, schools)
+
+                self.upsert_staff(
+                    cursor,
+                    values.staff(),
+                )
+
+                events = values.events()
+                if events:
+                    cursor.executemany(EVENT_SQL, events)

@@ -57,12 +57,12 @@ IACAC_START_FIELDS = (
 )
 IACAC_END_FIELDS = ("end date and time", "end date", "end", "finish")
 IACAC_LOCATION_FIELDS = (
+    "address",
     "location",
     "venue",
     "host site",
     "host school",
     "school",
-    "address",
 )
 IACAC_DESCRIPTION_FIELDS = (
     "type",

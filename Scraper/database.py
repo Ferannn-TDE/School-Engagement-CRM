@@ -134,21 +134,13 @@ class DatabaseRows:
         return [(key, rows[key]) for key in sorted(rows)]
 
     @staticmethod
-    def event_location(event, homepage="", source_label="Calendar"):
-        location = clean(event.location)
-        source_url = clean(event.source_url)
-        homepage = clean(homepage)
-        values = [location] if location else []
-
-        if source_url and source_url == homepage:
-            values.append(f"{source_label}/Homepage: {source_url}")
-        else:
-            if source_url:
-                values.append(f"{source_label}: {source_url}")
-            if homepage:
-                values.append(f"Homepage: {homepage}")
-
-        return " | ".join(values) or None
+    def school_location(school):
+        state_zip = " ".join(
+            value for value in (clean(school.state), clean(school.zipcode)) if value
+        )
+        return ", ".join(
+            value for value in (clean(school.address), clean(school.city), state_zip) if value
+        ) or None
 
     def contacts(self, staff_ids):
         rows = set()
@@ -179,7 +171,7 @@ class DatabaseRows:
                 )
                 rows[external_id] = (
                     canonical_facility_key(result.school.facility_key, result.school.state),
-                    self.event_location(event, result.resolution.resolved_url),
+                    self.school_location(result.school),
                     start.time().replace(microsecond=0),
                     start.date(),
                     None,
@@ -204,7 +196,7 @@ class DatabaseRows:
             )
             rows[external_id] = (
                 None,
-                self.event_location(event, source_label="Source"),
+                clean(event.location) or None,
                 start.time().replace(microsecond=0),
                 start.date(),
                 None,

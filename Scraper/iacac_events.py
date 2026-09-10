@@ -175,11 +175,11 @@ class IacacEventSource:
                     f"{IacacEventSource.plain(value['date'])} "
                     f"{IacacEventSource.plain(value.get('time'))}"
                 )
-            if any(value.get(key) for key in ("street", "city", "state", "zip")):
+            if any(value.get(key) for key in ("street", "street2", "city", "state", "zip")):
                 return clean(
                     ", ".join(
                         IacacEventSource.plain(value.get(key))
-                        for key in ("street", "city", "state", "zip")
+                        for key in ("street", "street2", "city", "state", "zip")
                         if value.get(key)
                     )
                 )

@@ -23,6 +23,7 @@ export function SettingsPage() {
   const { dispatch, state } = useAppContext();
   const { user, signOut } = useAuth();
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
 
   const handleExportDatabase = () => {
     const data = {
@@ -141,7 +142,7 @@ export function SettingsPage() {
               <p className="text-xs text-neutral-500">Signed in as {user?.email}</p>
             </div>
           </div>
-          <Button variant="secondary" size="sm" onClick={() => void signOut()}>
+          <Button variant="secondary" size="sm" onClick={() => setShowSignOutConfirm(true)}>
             <LogOut size={16} />
             Sign out
           </Button>
@@ -195,6 +196,16 @@ export function SettingsPage() {
         message="This will replace the current session's data with the built-in sample dataset. Refreshing the page will restore live data from the database."
         confirmLabel="Reset Data"
         variant="destructive"
+      />
+
+      <ConfirmDialog
+        open={showSignOutConfirm}
+        onClose={() => setShowSignOutConfirm(false)}
+        onConfirm={signOut}
+        title="Sign out"
+        message="You'll be returned to the sign-in screen. No data is changed or lost."
+        confirmLabel="Sign out"
+        variant="secondary"
       />
     </div>
   );

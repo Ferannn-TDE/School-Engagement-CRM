@@ -36,6 +36,8 @@ IACAC_EVENTS_API_URL = os.environ.get("IACAC_EVENTS_API_URL", "")
 IACAC_KNACK_APP_ID = os.environ.get("IACAC_KNACK_APP_ID", "54a7814f317b583c5462586c")
 IACAC_KNACK_SCENE = os.environ.get("IACAC_KNACK_SCENE", "scene_13")
 IACAC_KNACK_VIEW = os.environ.get("IACAC_KNACK_VIEW", "view_17")
+IACAC_KNACK_DETAIL_SCENE = os.environ.get("IACAC_KNACK_DETAIL_SCENE", "scene_18")
+IACAC_KNACK_DETAIL_VIEW = os.environ.get("IACAC_KNACK_DETAIL_VIEW", "view_22")
 IACAC_MAX_PAGES = 10
 IACAC_FIELD_LABELS = {
     "field_1": "Date & Time",

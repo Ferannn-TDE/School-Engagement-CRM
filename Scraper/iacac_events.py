@@ -13,6 +13,8 @@ from helpers import (
     IACAC_EVENTS_API_URL,
     IACAC_FIELD_LABELS,
     IACAC_KNACK_APP_ID,
+    IACAC_KNACK_DETAIL_SCENE,
+    IACAC_KNACK_DETAIL_VIEW,
     IACAC_KNACK_SCENE,
     IACAC_KNACK_VIEW,
     IACAC_LOCATION_FIELDS,
@@ -37,11 +39,15 @@ class IacacEventSource:
         scene=IACAC_KNACK_SCENE,
         view=IACAC_KNACK_VIEW,
         max_pages=IACAC_MAX_PAGES,
+        detail_scene=IACAC_KNACK_DETAIL_SCENE,
+        detail_view=IACAC_KNACK_DETAIL_VIEW,
     ):
         self.http = http
         self.calendar_url = calendar_url
         self.api_url = api_url
         self.app_id = app_id
+        self.detail_scene = detail_scene
+        self.detail_view = detail_view
         self.scene = scene
         self.view = view
         self.max_pages = max_pages
@@ -159,6 +165,26 @@ class IacacEventSource:
                 break
         return output
 
+    def detail_record(self, record_id, app_id=""):
+        if not record_id or not app_id or not self.detail_scene or not self.detail_view:
+            return {}
+
+        url = (
+            "https://us-api.knack.com/v1/pages/"
+            f"{self.detail_scene}/views/{self.detail_view}/records/{record_id}"
+        )
+        page = self.http.get(
+            url,
+            headers={
+                "X-Knack-Application-Id": app_id,
+                "X-Knack-REST-API-Key": "knack",
+            },
+        )
+        if not page.ok:
+            return {}
+        document = self.page_json(page)
+        return document if isinstance(document, dict) else {}
+
     @staticmethod
     def plain(value):
         if value is None:
@@ -176,11 +202,21 @@ class IacacEventSource:
                     f"{IacacEventSource.plain(value.get('time'))}"
                 )
             if any(value.get(key) for key in ("street", "street2", "city", "state", "zip")):
+                region = clean(
+                    f"{IacacEventSource.plain(value.get('state'))} "
+                    f"{IacacEventSource.plain(value.get('zip'))}"
+                )
                 return clean(
                     ", ".join(
-                        IacacEventSource.plain(value.get(key))
-                        for key in ("street", "street2", "city", "state", "zip")
-                        if value.get(key)
+                        part
+                        for part in (
+                            IacacEventSource.plain(value.get("street")),
+                            IacacEventSource.plain(value.get("street2")),
+                            IacacEventSource.plain(value.get("city")),
+                            region,
+                            IacacEventSource.plain(value.get("country")),
+                        )
+                        if part
                     )
                 )
             preferred = (
@@ -324,9 +360,12 @@ class IacacEventSource:
         self.last_error = ""
         labels = dict(IACAC_FIELD_LABELS)
         documents = []
+        app_id = self.app_id
+        use_detail_api = False
 
         if self.api_url:
             documents = self.api_documents(self.api_url, self.app_id)
+            use_detail_api = urlsplit(self.api_url).hostname == "us-api.knack.com"
         else:
             page = self.http.get(self.calendar_url)
             if not page.ok:
@@ -342,6 +381,7 @@ class IacacEventSource:
                 labels.update(discovered_labels)
                 if discovered_url:
                     documents = self.api_documents(discovered_url, app_id)
+                    use_detail_api = True
                 if not documents:
                     documents = [{"records": self.html_records(page)}]
 
@@ -349,6 +389,15 @@ class IacacEventSource:
         for document in documents:
             labels.update(self.field_labels(document))
             for record in self.records(document):
+                fields = self.fields(record, labels)
+                if use_detail_api and not self.pick(fields, ("address",)):
+                    detail = self.detail_record(
+                        clean(record.get("id") or record.get("record_id")),
+                        app_id,
+                    )
+                    if detail:
+                        labels.update(self.field_labels(detail))
+                        record = {**record, **detail}
                 event = self.event(record, labels, self.calendar_url)
                 if event:
                     events.append(event)

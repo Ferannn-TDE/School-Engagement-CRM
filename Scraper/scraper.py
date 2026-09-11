@@ -47,6 +47,19 @@ class ContactParser:
         return output
 
     @staticmethod
+    def candidate_name(line):
+        if re.fullmatch(r"send\s+(?:an?\s+)?(?:email|message)", clean(line), re.I):
+            return ""
+
+        message = MESSAGE_NAME.search(line)
+        if message and looks_like_person(message.group("name")):
+            return clean(message.group("name"))
+
+        target = re.fullmatch(r"to\s+(.+)", clean(line), re.I)
+        candidate = target.group(1) if target else line
+        return clean(candidate) if looks_like_person(candidate) else ""
+
+    @staticmethod
     def signature(node):
         classes = tuple(sorted(
             value
@@ -70,7 +83,11 @@ class ContactParser:
             return -100.0
 
         roles = sum(bool(normalized_role(line)) for line in lines)
-        names = sum(looks_like_person(line) or bool(MESSAGE_NAME.search(line)) for line in lines)
+        names = {
+            normalize(name)
+            for line in lines
+            if (name := ContactParser.candidate_name(line))
+        }
         emails = len(EMAIL.findall(text)) + len(node.find_all("a", href=re.compile(r"^mailto:", re.I)))
 
         score = min(3.0, repeat_count * 0.8)
@@ -84,7 +101,7 @@ class ContactParser:
             re.I,
         ) else 0.0
         score += 0.8 if node.find(["h2", "h3", "h4", "strong", "b"]) else 0.0
-        score -= 4.0 if names > 1 else 0.0
+        score -= 4.0 if len(names) > 1 else 0.0
         score -= 4.0 if emails > 2 else 0.0
         score -= 3.0 if roles > 3 else 0.0
         return score
@@ -150,15 +167,18 @@ class ContactParser:
         names = []
 
         for index, line in enumerate(lines):
-            message = MESSAGE_NAME.search(line)
-            if message and looks_like_person(message.group("name")):
-                names.append((3.0, -abs(index - title_index), -len(line), message.group("name")))
-
-            if looks_like_person(line):
+            candidate = ContactParser.candidate_name(line)
+            if candidate:
+                message = MESSAGE_NAME.search(line)
                 local = normalize(email.split("@", 1)[0].replace(".", " ")) if email else ""
-                parts = [normalize(part) for part in line.split()]
+                parts = [normalize(part) for part in candidate.split()]
                 affinity = sum(part in local for part in parts) / max(1, len(parts))
-                names.append((affinity, -abs(index - title_index), -len(line), line))
+                names.append((
+                    3.0 if message else affinity,
+                    -abs(index - title_index),
+                    -len(line),
+                    candidate,
+                ))
 
         if not names:
             return None
@@ -721,6 +741,31 @@ class SchoolScraper:
             allow_blocked=True,
         )
 
+    @staticmethod
+    def staff_pagination(page, resolution):
+        if resolution.platform != "apptegy":
+            return []
+
+        source = urlsplit(page.url)
+        source_path = source.path.rstrip("/").casefold()
+        if not source_path.endswith("/staff"):
+            return []
+
+        output = []
+        soup = BeautifulSoup(page.text, "html.parser")
+        for link in soup.find_all("a", href=True):
+            url = canonical_url(link.get("href"), page.url, allow_blocked=True)
+            if not url or not related_sites(url, resolution.resolved_url):
+                continue
+            target = urlsplit(url)
+            if target.path.rstrip("/").casefold() != source_path:
+                continue
+            page_no = parse_qs(target.query).get("page_no", [""])[0]
+            if page_no.isdigit() and int(page_no) > 1:
+                output.append(url)
+
+        return list(dict.fromkeys(output))
+
     def scrape(self, school, resolution):
         authority = self.contacts.authority(school, resolution)
 
@@ -761,14 +806,23 @@ class SchoolScraper:
         seen = {homepage.url}
 
         for score, url, inherited in sorted(contact_candidates, reverse=True):
-            if url in seen or len(contact_pages) >= 8:
-                continue
-            seen.add(url)
-            page = self.http.get(url)
-            if not page.ok:
-                continue
-            contact_pages.append(page.url)
-            contacts.extend(self.contacts.extract(school, resolution, page, inherited_school=inherited))
+            pending = [url]
+            while pending and len(contact_pages) < 8:
+                page_url = pending.pop(0)
+                if page_url in seen:
+                    continue
+                seen.add(page_url)
+                page = self.http.get(page_url)
+                if not page.ok:
+                    continue
+                seen.add(page.url)
+                contact_pages.append(page.url)
+                contacts.extend(self.contacts.extract(school, resolution, page, inherited_school=inherited))
+                pending.extend(
+                    item
+                    for item in self.staff_pagination(page, resolution)
+                    if item not in seen and item not in pending
+                )
 
         for score, url, inherited in sorted(calendar_candidates, reverse=True):
             if url in seen or len(calendar_pages) >= 5:

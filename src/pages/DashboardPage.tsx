@@ -102,7 +102,7 @@ export function DashboardPage() {
     <div>
 <Header
         title="Dashboard"
-        subtitle="Overview of your K-12 engagement program"
+        subtitle="Overview of your engagement program"
         actions={
           <Button size="sm" variant="secondary" onClick={() => navigate('/import')}>
             <Upload size={16} />

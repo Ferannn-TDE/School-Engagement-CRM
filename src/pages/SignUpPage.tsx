@@ -1,0 +1,154 @@
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { supabase } from '../services/supabase';
+import { Button } from '../components/common/Button';
+
+export function SignUpPage() {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [confirmationSent, setConfirmationSent] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError('');
+
+    if (!email.toLowerCase().endsWith('@siue.edu')) {
+      setError('Only @siue.edu email addresses are allowed to sign up.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters.');
+      return;
+    }
+
+    setLoading(true);
+    const { data, error: authError } = await supabase.auth.signUp({ email, password });
+
+    if (authError) {
+      setError(authError.message);
+      setLoading(false);
+      return;
+    }
+
+    if (data.user && !data.session) {
+      setConfirmationSent(true);
+      setLoading(false);
+      return;
+    }
+
+    navigate('/mfa/enroll');
+  }
+
+  if (confirmationSent) {
+    return (
+      <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl border border-neutral-100 shadow-sm p-8 w-full max-w-sm text-center">
+          <div className="w-9 h-9 bg-siue-red rounded-lg flex items-center justify-center shrink-0 mx-auto mb-4">
+            <span className="text-white font-bold text-sm">SoE</span>
+          </div>
+          <h2 className="text-xl font-bold text-neutral-800 mb-2">Check your email</h2>
+          <p className="text-sm text-neutral-400 mb-6">
+            We sent a confirmation link to <span className="font-medium text-neutral-700">{email}</span>. Click it
+            to activate your account, then sign in.
+          </p>
+          <Link to="/login" className="text-sm font-medium text-siue-red hover:underline">
+            Back to sign in
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl border border-neutral-100 shadow-sm p-8 w-full max-w-sm">
+        {/* Brand */}
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-9 h-9 bg-siue-red rounded-lg flex items-center justify-center shrink-0">
+            <span className="text-white font-bold text-sm">SoE</span>
+          </div>
+          <div>
+            <p className="text-sm font-bold text-neutral-800 leading-tight">SIUE Engineering</p>
+            <p className="text-xs text-neutral-400">Engagement CRM</p>
+          </div>
+        </div>
+
+        <h2 className="text-xl font-bold text-neutral-800 mb-1">Create an account</h2>
+        <p className="text-sm text-neutral-400 mb-6">Restricted to @siue.edu email addresses</p>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-1">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              autoComplete="email"
+              placeholder="you@siue.edu"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-3 py-2 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-siue-red/30 focus:border-siue-red"
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-1">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              autoComplete="new-password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-3 py-2 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-siue-red/30 focus:border-siue-red"
+            />
+          </div>
+          <div>
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-neutral-700 mb-1">
+              Confirm password
+            </label>
+            <input
+              id="confirmPassword"
+              type="password"
+              autoComplete="new-password"
+              required
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="w-full px-3 py-2 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-siue-red/30 focus:border-siue-red"
+            />
+          </div>
+
+          {error && (
+            <p className="text-sm text-error" role="alert">
+              {error}
+            </p>
+          )}
+
+          <Button type="submit" className="w-full" loading={loading}>
+            Create account
+          </Button>
+        </form>
+
+        <p className="text-sm text-neutral-400 mt-6 text-center">
+          Already have an account?{' '}
+          <Link to="/login" className="font-medium text-siue-red hover:underline">
+            Sign in
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
+}

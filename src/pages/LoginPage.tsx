@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../services/supabase';
 import { Button } from '../components/common/Button';
 
@@ -80,6 +80,14 @@ export function LoginPage() {
             Sign in
           </Button>
         </form>
+
+        <p className="text-sm text-neutral-400 mt-6 text-center">
+          Don't have an account?{' '}
+          <Link to="/signup" className="font-medium text-siue-red hover:underline">
+            Sign up
+          </Link>
+        </p>
+        
       </div>
     </div>
   );

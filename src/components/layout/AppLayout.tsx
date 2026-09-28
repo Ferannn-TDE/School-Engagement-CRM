@@ -4,9 +4,14 @@ import { LoadingSpinner } from '../common/LoadingSpinner';
 import { ErrorBanner } from '../common/ErrorBanner';
 import { useAppContext } from '../../context/AppContext';
 import { LayoutProvider } from '../../context/LayoutContext';
+import { usePlaceMemory } from '../../hooks/usePlaceMemory';
+import { navGroups } from './navigation';
+
+const SIDEBAR_PATHS = navGroups.flatMap((g) => g.items.map((i) => i.to));
 
 export function AppLayout() {
   const { loading, error } = useAppContext();
+  usePlaceMemory(SIDEBAR_PATHS);
 
   return (
     <LayoutProvider>

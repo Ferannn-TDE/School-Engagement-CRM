@@ -1,65 +1,13 @@
-import { NavLink } from 'react-router-dom';
-import {
-  LayoutDashboard,
-  School,
-  Users,
-  Calendar,
-  Download,
-  Upload,
-  BarChart3,
-  Settings,
-  Map,
-  ListChecks,
-} from 'lucide-react';
+import { NavLink, useLocation } from 'react-router-dom';
 import { classNames } from '../../utils/helpers';
 import { useLayout } from '../../context/LayoutContext';
-
-interface NavItem {
-  to: string;
-  icon: React.ElementType;
-  label: string;
-}
-
-interface NavGroup {
-  label: string;
-  items: NavItem[];
-}
-
-const navGroups: NavGroup[] = [
-  {
-    label: 'Data',
-    items: [
-      { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
-      { to: '/priorities', icon: ListChecks, label: 'Priorities' },
-      { to: '/schools', icon: School, label: 'Schools' },
-      { to: '/contacts', icon: Users, label: 'Contacts' },
-      { to: '/events', icon: Calendar, label: 'Events' },
-      { to: '/counties', icon: Map, label: 'Counties' },
-    ],
-  },
-  {
-    label: 'Tools',
-    items: [
-      { to: '/import', icon: Download, label: 'Import Data' },
-      { to: '/generate', icon: Upload, label: 'Generate Lists' },
-    ],
-  },
-  {
-    label: 'Insights',
-    items: [
-      { to: '/reports', icon: BarChart3, label: 'Reports' },
-    ],
-  },
-  {
-    label: 'System',
-    items: [
-      { to: '/settings', icon: Settings, label: 'Settings' },
-    ],
-  },
-];
+import { rememberedUrl } from '../../hooks/usePlaceMemory';
+import { navGroups } from './navigation';
 
 export function Sidebar() {
   const { sidebarOpen, closeSidebar } = useLayout();
+  // Re-render on every navigation so each link points at that page's last address.
+  useLocation();
 
   return (
     <>
@@ -103,7 +51,7 @@ export function Sidebar() {
                 {group.items.map((item) => (
                   <NavLink
                     key={item.to}
-                    to={item.to}
+                    to={rememberedUrl(item.to)}
                     end={item.to === '/'}
                     onClick={closeSidebar}
                     className={({ isActive }) =>

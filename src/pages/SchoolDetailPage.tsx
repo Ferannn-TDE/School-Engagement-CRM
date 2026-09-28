@@ -27,13 +27,12 @@ export function SchoolDetailPage() {
   const navigate = useNavigate();
   const {
     getSchoolById, getContactsBySchool, getActivitiesBySchool, getEventsBySchool,
-    deleteSchool, deleteActivity, verifySchool,
+    deleteSchool, verifySchool,
     addProgram, deleteProgram, getProgramsBySchool,
     loading,
   } = useAppContext();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [activityToDelete, setActivityToDelete] = useState<string | null>(null);
   const [showAddProgramModal, setShowAddProgramModal] = useState(false);
   const [programToDelete, setProgramToDelete] = useState<Program | null>(null);
   const [showLogContact, setShowLogContact] = useState(false);
@@ -347,13 +346,6 @@ export function SchoolDetailPage() {
                         {format(new Date(activity.date), 'MMM d, yyyy')}
                       </p>
                     </div>
-                    <button
-                      onClick={() => setActivityToDelete(activity.id)}
-                      className="text-neutral-300 hover:text-error transition-colors shrink-0 mt-0.5"
-                      aria-label="Delete activity"
-                    >
-                      <Trash2 size={14} />
-                    </button>
                   </div>
                   );
                 })}
@@ -430,20 +422,6 @@ export function SchoolDetailPage() {
         confirmLabel="Delete School"
       />
 
-      <ConfirmDialog
-        open={activityToDelete !== null}
-        onClose={() => setActivityToDelete(null)}
-        onConfirm={() => {
-          if (activityToDelete) {
-            deleteActivity(activityToDelete);
-            toast.success('Activity deleted');
-          }
-          setActivityToDelete(null);
-        }}
-        title="Delete Activity"
-        message="Are you sure you want to delete this activity? This action cannot be undone."
-        confirmLabel="Delete Activity"
-      />
     </div>
   );
 }

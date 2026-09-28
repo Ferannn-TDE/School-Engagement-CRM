@@ -15,6 +15,7 @@ import { EmptyState } from '../components/common/EmptyState';
 import { SchoolForm } from '../components/schools/SchoolForm';
 import { useAppContext } from '../context/AppContext';
 import { useUrlState } from '../hooks/useUrlState';
+import { countyOptions, inCounty } from '../utils/counties';
 import type { School as SchoolType } from '../types';
 import { formatSchoolType } from '../utils/helpers';
 
@@ -42,7 +43,7 @@ export function SchoolsPage() {
     let schools = state.schools;
     if (verifiedTab === 'verified') schools = schools.filter((s) => s.isVerified);
     else if (verifiedTab === 'unverified') schools = schools.filter((s) => !s.isVerified);
-    if (countyFilter) schools = schools.filter((s) => s.county === countyFilter);
+    if (countyFilter) schools = schools.filter((s) => inCounty(s, countyFilter));
     if (typeFilter) schools = schools.filter((s) => s.schoolType === typeFilter);
     if (contactsFilter === 'has') {
       schools = schools.filter((s) => getContactsBySchool(s.id).length > 0);
@@ -52,16 +53,14 @@ export function SchoolsPage() {
     return schools;
   }, [state.schools, verifiedTab, countyFilter, typeFilter, contactsFilter, getContactsBySchool]);
 
-  const uniqueCounties = useMemo(
-    () => [...new Set(state.schools.map((s) => s.county))].sort(),
-    [state.schools]
-  );
+  // Each county tied to its state: 40 names exist in both Illinois and Missouri.
+  const uniqueCounties = useMemo(() => countyOptions(state.schools), [state.schools]);
 
   const schoolFilters = useMemo((): FilterConfig[] => [
     {
       value: countyFilter,
       onChange: setCountyFilter,
-      options: uniqueCounties.map((c) => ({ value: c, label: c })),
+      options: uniqueCounties,
       placeholder: 'All Counties',
       className: 'w-48',
     },

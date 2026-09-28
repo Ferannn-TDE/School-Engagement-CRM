@@ -7,6 +7,7 @@ import { Select } from '../components/common/Select';
 import { Badge } from '../components/common/Badge';
 import { useAppContext } from '../context/AppContext';
 import { useUrlState } from '../hooks/useUrlState';
+import { countyChoiceLabel, countyOptions, inCounty } from '../utils/counties';
 import { ContactRole, ContactRoleLabels } from '../types';
 import { contactRoleLabel } from '../utils/contactRoles';
 import { contactsToCsv, downloadFile } from '../utils/helpers';
@@ -30,10 +31,8 @@ export function GenerateListsPage() {
   const exportFormat = (['email', 'csv', 'mailing'].includes(formatRaw) ? formatRaw : 'email') as 'email' | 'csv' | 'mailing';
   const setExportFormat = (f: 'email' | 'csv' | 'mailing') => setFormatRaw(f);
 
-  const uniqueCounties = useMemo(
-    () => [...new Set(state.schools.map((s) => s.county))].sort(),
-    [state.schools]
-  );
+  // Each county tied to its state: 40 names exist in both Illinois and Missouri.
+  const uniqueCounties = useMemo(() => countyOptions(state.schools), [state.schools]);
 
   const filteredContacts = useMemo(() => {
     let contacts = state.contacts;
@@ -47,7 +46,7 @@ export function GenerateListsPage() {
       const validSchoolIds = new Set(
         state.schools
           .filter((s) => {
-            if (countyFilter && s.county !== countyFilter) return false;
+            if (countyFilter && !inCounty(s, countyFilter)) return false;
             if (schoolTypeFilter && s.schoolType !== schoolTypeFilter) return false;
             return true;
           })
@@ -139,7 +138,7 @@ export function GenerateListsPage() {
             <div className="space-y-4">
               <Select
                 label="County"
-                options={uniqueCounties.map((c) => ({ value: c, label: c }))}
+                options={uniqueCounties}
                 placeholder="All Counties"
                 value={countyFilter}
                 onChange={(e) => setCountyFilter(e.target.value)}
@@ -238,7 +237,7 @@ export function GenerateListsPage() {
                   Preview ({filteredContacts.length} contacts)
                 </h3>
                 <div className="flex gap-2">
-                  {countyFilter && <Badge><MapPin size={12} className="mr-1" />{countyFilter}</Badge>}
+                  {countyFilter && <Badge><MapPin size={12} className="mr-1" />{countyChoiceLabel(countyFilter)}</Badge>}
                   {roleFilter && <Badge variant="info">{ContactRoleLabels[roleFilter as ContactRole]}</Badge>}
                 </div>
               </div>

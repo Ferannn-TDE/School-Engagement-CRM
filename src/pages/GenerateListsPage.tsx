@@ -24,8 +24,10 @@ export function GenerateListsPage() {
   const [activeRaw, setActiveRaw] = useUrlState('active', '1');
   const activeOnly = activeRaw !== '0';
   const setActiveOnly = (on: boolean) => setActiveRaw(on ? '1' : '0');
-  const [unverifiedRaw, setUnverifiedRaw] = useUrlState('unverified', '0');
-  const includeUnverified = unverifiedRaw === '1';
+  // On by default: every scraped contact starts unverified, so leaving them out
+  // produced an empty list. The export's Verified column still tells them apart.
+  const [unverifiedRaw, setUnverifiedRaw] = useUrlState('unverified', '1');
+  const includeUnverified = unverifiedRaw !== '0';
   const setIncludeUnverified = (on: boolean) => setUnverifiedRaw(on ? '1' : '0');
   const [formatRaw, setFormatRaw] = useUrlState('format', 'email');
   const exportFormat = (['email', 'csv', 'mailing'].includes(formatRaw) ? formatRaw : 'email') as 'email' | 'csv' | 'mailing';
@@ -89,11 +91,12 @@ export function GenerateListsPage() {
         city: school?.city || '',
         state: school?.state || '',
         zipCode: school?.zipCode || '',
+        verified: c.isVerified ? 'Yes' : 'No',
       };
     });
     const csv = contactsToCsv(
       rows,
-      ['firstName', 'lastName', 'email', 'phone', 'role', 'school', 'county', 'address', 'city', 'state', 'zipCode']
+      ['firstName', 'lastName', 'email', 'phone', 'role', 'school', 'county', 'address', 'city', 'state', 'zipCode', 'verified']
     );
     downloadFile(csv, 'contacts-export.csv');
     toast.success(`Exported ${rows.length} contacts`);

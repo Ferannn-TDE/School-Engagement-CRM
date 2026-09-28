@@ -13,6 +13,7 @@ import { EmptyState } from '../components/common/EmptyState';
 import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import { EventForm } from '../components/events/EventForm';
 import { useAppContext } from '../context/AppContext';
+import { useUrlState } from '../hooks/useUrlState';
 import type { Event } from '../types';
 import { EventType, EventTypeLabels } from '../types';
 import { classNames } from '../utils/helpers';
@@ -20,12 +21,19 @@ import toast from 'react-hot-toast';
 
 export function EventsPage() {
   const { state, deleteEvent } = useAppContext();
-  const [view, setView] = useState<'calendar' | 'list'>('list');
-  const [typeFilter, setTypeFilter] = useState('');
+  // Kept in the address so the view survives leaving the tab, a refresh and Back.
+  const [viewRaw, setView] = useUrlState('view', 'list');
+  const view: 'calendar' | 'list' = viewRaw === 'calendar' ? 'calendar' : 'list';
+  const [typeFilter, setTypeFilter] = useUrlState('type');
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [deletingEvent, setDeletingEvent] = useState<Event | null>(null);
-  const [calendarMonth, setCalendarMonth] = useState(new Date());
+  const [monthRaw, setMonthRaw] = useUrlState('month');
+  const calendarMonth = useMemo(() => {
+    const parsed = /^\d{4}-\d{2}$/.test(monthRaw) ? new Date(`${monthRaw}-01T12:00:00`) : null;
+    return parsed && !Number.isNaN(parsed.getTime()) ? parsed : new Date();
+  }, [monthRaw]);
+  const setCalendarMonth = (d: Date) => setMonthRaw(format(d, 'yyyy-MM'));
 
   const filteredEvents = useMemo(() => {
     let events = state.events;
@@ -194,6 +202,8 @@ export function EventsPage() {
                   data={filteredEvents}
                   columns={columns}
                   columnWidths={['32%', '15%', '18%', '10%', '10%', '15%']}
+                  urlState
+                  resetKey={typeFilter}
                   emptyMessage="No events match your filter."
                 />
               </Card>

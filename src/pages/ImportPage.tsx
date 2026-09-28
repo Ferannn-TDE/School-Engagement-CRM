@@ -210,11 +210,10 @@ export function ImportPage() {
             // Only what the file says; never assume Illinois.
             state: ((r['state'] as string) || '').trim().toUpperCase(),
             zipCode: (r['zipCode'] as string) || '',
-            schoolType: ((r['schoolType'] as string) || '')
-              .toLowerCase()
-              .includes('middle')
-              ? 'middle_school'
-              : 'high_school',
+            // Left out when the file doesn't say, so an existing school keeps its type.
+            schoolType: ((r['schoolType'] as string) || '').trim()
+              ? ((r['schoolType'] as string).toLowerCase().includes('middle') ? 'middle_school' : 'high_school')
+              : undefined,
           }))
       );
 

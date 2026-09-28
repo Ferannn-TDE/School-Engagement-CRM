@@ -155,7 +155,8 @@ export async function importSchoolsBulk(
     city: string;
     state: string;
     zipCode: string;
-    schoolType: 'high_school' | 'middle_school';
+    /** Omitted when the file doesn't say, so an existing school's type is kept. */
+    schoolType?: 'high_school' | 'middle_school';
   }>
 ): Promise<ImportSchoolsResult> {
   if (schools.length === 0) return { schools: [], created: 0, updated: 0, failed: 0 };
@@ -187,18 +188,25 @@ export async function importSchoolsBulk(
       const existing = existingByName.get(school.name.toLowerCase());
       try {
         if (existing) {
-          // UPDATE — preserve is_verified
+          // UPDATE — fill in only what the file provides. A blank cell never
+          // overwrites a stored value, and is_verified and data_source are kept.
+          const patch: Record<string, string> = {};
+          if (school.county.trim()) patch.county_name = school.county.trim();
+          if (school.address.trim()) patch.address = school.address.trim();
+          if (school.city.trim()) patch.city = school.city.trim();
+          if (school.zipCode.trim()) patch.zipcode = school.zipCode.trim();
+          if (school.state) patch.state_code = school.state;
+          if (school.schoolType) {
+            patch.type_of_school = school.schoolType === 'high_school' ? 'High School' : 'Middle School';
+          }
+          if (Object.keys(patch).length === 0) {
+            allSchools.push(rowToSchool(existing));
+            updated++;
+            return;
+          }
           const { data, error } = await supabase
             .from('schools')
-            .update({
-              county_name: school.county,
-              address: school.address,
-              city: school.city,
-              zipcode: school.zipCode,
-              type_of_school: school.schoolType === 'high_school' ? 'High School' : 'Middle School',
-              data_source: 'imported',
-              ...(school.state ? { state_code: school.state } : {}),
-            })
+            .update(patch)
             .eq('facility_key', existing.facility_key)
             .select()
             .single();
@@ -217,7 +225,7 @@ export async function importSchoolsBulk(
               city: school.city,
               zipcode: school.zipCode,
               state_code: school.state || null,
-              type_of_school: school.schoolType === 'high_school' ? 'High School' : 'Middle School',
+              type_of_school: school.schoolType === 'middle_school' ? 'Middle School' : 'High School',
               is_active: true,
               data_source: 'imported',
               is_verified: false,

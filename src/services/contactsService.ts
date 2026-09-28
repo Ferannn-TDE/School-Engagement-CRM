@@ -255,22 +255,26 @@ export async function importContactsBulk(
       try {
         let staffRow: StaffRow;
         if (existing) {
-          // UPDATE — preserve is_verified
-          const { data, error } = await supabase
-            .from('staff')
-            .update({
-              name: fullName,
-              phone: contact.phone ?? null,
-              ...(contact.title ? { job_name: contact.title } : {}),
-              school_worked_at: contact.schoolId,
-              is_active: true,
-              data_source: 'imported',
-            })
-            .eq('staff_id', existing.staff_id)
-            .select()
-            .single();
-          if (error) throw error;
-          staffRow = data as StaffRow;
+          // UPDATE — fill in only what the file provides. A blank cell never
+          // overwrites a stored value; an inactive contact stays inactive; and
+          // is_verified and data_source are kept.
+          const patch: Record<string, string> = {};
+          if (fullName) patch.name = fullName;
+          if (contact.phone?.trim()) patch.phone = contact.phone.trim();
+          if (contact.title) patch.job_name = contact.title;
+          if (contact.schoolId) patch.school_worked_at = contact.schoolId;
+          if (Object.keys(patch).length === 0) {
+            staffRow = existing;
+          } else {
+            const { data, error } = await supabase
+              .from('staff')
+              .update(patch)
+              .eq('staff_id', existing.staff_id)
+              .select()
+              .single();
+            if (error) throw error;
+            staffRow = data as StaffRow;
+          }
           updated++;
         } else {
           // INSERT — new record, is_verified=false

@@ -9,7 +9,7 @@ import { Button } from '../components/common/Button';
 import { Select } from '../components/common/Select';
 import { Badge } from '../components/common/Badge';
 import { useAppContext } from '../context/AppContext';
-import { ContactRole } from '../types';
+import { roleFromTitle } from '../utils/contactRoles';
 import {
   isValidEmail,
   downloadFile,
@@ -28,38 +28,6 @@ import { importSchoolsBulk } from '../services/schoolsService';
 import toast from 'react-hot-toast';
 
 type ImportTab = 'contacts' | 'schools' | 'combined';
-
-const ROLE_LOOKUP: Record<string, ContactRole> = {
-  superintendent:          ContactRole.SUPERINTENDENT,
-  principal:               ContactRole.PRINCIPAL,
-  counselor:               ContactRole.COUNSELOR,
-  cs_teacher:              ContactRole.CS_TEACHER,
-  engineering_teacher:     ContactRole.ENGINEERING_TEACHER,
-  math_teacher:            ContactRole.MATH_TEACHER,
-  science_teacher:         ContactRole.SCIENCE_TEACHER,
-  'cs teacher':                  ContactRole.CS_TEACHER,
-  'computer science teacher':    ContactRole.CS_TEACHER,
-  'computer science':            ContactRole.CS_TEACHER,
-  'computing teacher':           ContactRole.CS_TEACHER,
-  'engineering teacher':         ContactRole.ENGINEERING_TEACHER,
-  engineering:                   ContactRole.ENGINEERING_TEACHER,
-  'math teacher':                ContactRole.MATH_TEACHER,
-  'mathematics teacher':         ContactRole.MATH_TEACHER,
-  mathematics:                   ContactRole.MATH_TEACHER,
-  math:                          ContactRole.MATH_TEACHER,
-  'science teacher':             ContactRole.SCIENCE_TEACHER,
-  science:                       ContactRole.SCIENCE_TEACHER,
-  'guidance counselor':          ContactRole.COUNSELOR,
-  'school counselor':            ContactRole.COUNSELOR,
-  guidance:                      ContactRole.COUNSELOR,
-  'district superintendent':     ContactRole.SUPERINTENDENT,
-  supt:                          ContactRole.SUPERINTENDENT,
-};
-
-function resolveRole(value: string | undefined): ContactRole {
-  if (!value) return ContactRole.COUNSELOR;
-  return ROLE_LOOKUP[value.toLowerCase().trim()] ?? ContactRole.COUNSELOR;
-}
 
 /** Persistent, dismissible explanation of why an upload didn't work.
  *  Deliberately not a toast — toasts disappear after 3s and this is the only
@@ -239,7 +207,8 @@ export function ImportPage() {
             county: (r['county'] as string) || '',
             address: (r['address'] as string) || '',
             city: (r['city'] as string) || '',
-            state: (r['state'] as string) || 'IL',
+            // Only what the file says; never assume Illinois.
+            state: ((r['state'] as string) || '').trim().toUpperCase(),
             zipCode: (r['zipCode'] as string) || '',
             schoolType: ((r['schoolType'] as string) || '')
               .toLowerCase()
@@ -264,7 +233,8 @@ export function ImportPage() {
           lastName: (r['lastName'] as string) || '',
           email: ((r['email'] as string) || '').trim(),
           phone: (r['phone'] as string) || undefined,
-          role: resolveRole(r['role'] as string),
+          title: ((r['role'] as string) || '').trim(),
+          role: roleFromTitle(r['role'] as string),
           schoolId: nameToId.get(((r['schoolName'] as string) || '').toLowerCase()) ?? '',
         }))
         .filter((c) => c.firstName && c.email && isValidEmail(c.email));
@@ -522,7 +492,8 @@ export function ImportPage() {
               lastName: mapped.lastName || '',
               email: mapped.email || '',
               phone: mapped.phone || undefined,
-              role: resolveRole(mapped.role),
+              title: (mapped.role || '').trim() || undefined,
+              role: roleFromTitle(mapped.role),
               schoolId: school?.id ?? '',
               isActive: true,
               dataSource: 'imported' as const,
@@ -547,7 +518,7 @@ export function ImportPage() {
               county: mapped.county || '',
               address: mapped.address || '',
               city: mapped.city || '',
-              state: mapped.state || 'IL',
+              state: (mapped.state || '').trim().toUpperCase(),
               zipCode: mapped.zipCode || '',
               schoolType: (mapped.schoolType === 'middle_school' ? 'middle_school' : 'high_school') as 'high_school' | 'middle_school',
               isActive: true,

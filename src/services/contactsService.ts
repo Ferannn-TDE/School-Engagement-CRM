@@ -120,7 +120,7 @@ export async function createContactsBulk(
     name: `${c.firstName} ${c.lastName}`.trim(),
     email: c.email,
     phone: c.phone ?? null,
-    job_name: c.role,
+    job_name: c.title || null,
     school_worked_at: c.schoolId,
     is_active: c.isActive,
     notes: c.notes ?? null,
@@ -219,6 +219,8 @@ export async function importContactsBulk(
     email: string;
     phone?: string;
     role: ContactRole;
+    /** The job title as written in the file. */
+    title?: string;
     schoolId: string;
   }>
 ): Promise<ImportContactsResult> {
@@ -259,7 +261,7 @@ export async function importContactsBulk(
             .update({
               name: fullName,
               phone: contact.phone ?? null,
-              job_name: contact.role,
+              ...(contact.title ? { job_name: contact.title } : {}),
               school_worked_at: contact.schoolId,
               is_active: true,
               data_source: 'imported',
@@ -278,7 +280,7 @@ export async function importContactsBulk(
               name: fullName,
               email: contact.email,
               phone: contact.phone ?? null,
-              job_name: contact.role,
+              job_name: contact.title || null,
               school_worked_at: contact.schoolId,
               is_active: true,
               data_source: 'imported',

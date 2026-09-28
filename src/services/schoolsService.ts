@@ -117,6 +117,7 @@ export async function createSchoolsBulk(
     address: school.address,
     city: school.city,
     zipcode: school.zipCode,
+    state_code: school.state || null,
     type_of_school: school.schoolType === 'high_school' ? 'High School' : 'Middle School',
     is_active: school.isActive,
     notes: school.notes ?? null,
@@ -196,6 +197,7 @@ export async function importSchoolsBulk(
               zipcode: school.zipCode,
               type_of_school: school.schoolType === 'high_school' ? 'High School' : 'Middle School',
               data_source: 'imported',
+              ...(school.state ? { state_code: school.state } : {}),
             })
             .eq('facility_key', existing.facility_key)
             .select()
@@ -214,6 +216,7 @@ export async function importSchoolsBulk(
               address: school.address,
               city: school.city,
               zipcode: school.zipCode,
+              state_code: school.state || null,
               type_of_school: school.schoolType === 'high_school' ? 'High School' : 'Middle School',
               is_active: true,
               data_source: 'imported',

@@ -12,6 +12,7 @@ import { Modal } from '../components/common/Modal';
 import { LogContactForm } from '../components/activities/LogContactForm';
 import { useEngagementMaps, useSchoolsNeedingAttention } from '../hooks/useEngagementMaps';
 import { countyKey, countyLabel, countyPath } from '../utils/counties';
+import { useUrlState, useUrlStateBatch } from '../hooks/useUrlState';
 
 /** How overdue something is, used to colour the left edge of a row.
  *  Deliberately distinct from SIUE red, which means "brand", not "urgent". */
@@ -48,37 +49,31 @@ function WorkSection({
   description,
   count,
   countTone,
-  defaultOpen = false,
+  open,
+  onToggle,
   emptyTitle,
   emptyBody,
   children,
-  onOpenChange,
 }: {
   icon: React.ReactNode;
   title: string;
   description: string;
   count: number;
   countTone: 'attention' | 'neutral';
-  defaultOpen?: boolean;
+  /** Controlled by the page so which sections are open can live in the address. */
+  open: boolean;
+  onToggle: () => void;
   emptyTitle: string;
   emptyBody?: string;
   children: React.ReactNode;
-  onOpenChange?: (open: boolean) => void;
 }) {
-  const [open, setOpen] = useState(defaultOpen);
   const isEmpty = count === 0;
-
-  function toggle() {
-    const next = !open;
-    setOpen(next);
-    onOpenChange?.(next);
-  }
 
   return (
     <Card padding={false} className={open ? 'md:col-span-2' : undefined}>
       <button
         className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left hover:bg-neutral-50 rounded-xl transition-colors"
-        onClick={toggle}
+        onClick={onToggle}
         aria-expanded={open}
       >
         <div className="flex items-start gap-3 min-w-0">
@@ -196,8 +191,18 @@ function Pager({
 }
 
 /** A worklist rendered as aligned columns, one page at a time. */
-function WorkTable({ items, onLog }: { items: WorkItem[]; onLog: (item: WorkItem) => void }) {
-  const [page, setPage] = useState(1);
+function WorkTable({
+  items,
+  onLog,
+  page,
+  onPageChange,
+}: {
+  items: WorkItem[];
+  onLog: (item: WorkItem) => void;
+  /** Controlled by the page so each list's page number lives in the address. */
+  page: number;
+  onPageChange: (page: number) => void;
+}) {
   const pageCount = Math.max(1, Math.ceil(items.length / ROWS_PER_PAGE));
   const current = Math.min(page, pageCount);
   const start = (current - 1) * ROWS_PER_PAGE;
@@ -265,7 +270,7 @@ function WorkTable({ items, onLog }: { items: WorkItem[]; onLog: (item: WorkItem
         total={items.length}
         from={start + 1}
         to={start + slice.length}
-        onChange={setPage}
+        onChange={onPageChange}
       />
     </div>
   );
@@ -274,7 +279,23 @@ function WorkTable({ items, onLog }: { items: WorkItem[]; onLog: (item: WorkItem
 export function PrioritiesPage() {
   const { state, schoolContactsMap, schoolActivitiesMap } = useEngagementMaps();
   const schoolsNeedingAttention = useSchoolsNeedingAttention();
-  const [attentionSort, setAttentionSort] = useState<'name' | 'county'>('name');
+  // Kept in the address so the view survives leaving the tab, a refresh and Back:
+  // which sections are open, the sort, and each list's page number.
+  const [sortRaw] = useUrlState('sort', 'name');
+  const attentionSort: 'name' | 'county' = sortRaw === 'county' ? 'county' : 'name';
+  const [openRaw, setOpenRaw] = useUrlState('open');
+  const openSections = new Set(openRaw.split(',').filter(Boolean));
+  const toggleSection = (id: string) => {
+    const next = new Set(openSections);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    setOpenRaw([...next].join(','));
+  };
+  const [followPage, setFollowPage] = useUrlState('p_follow', '1');
+  const [attentionPage, setAttentionPage] = useUrlState('p_missing', '1');
+  const [noEventPage, setNoEventPage] = useUrlState('p_noevent', '1');
+  const setBatch = useUrlStateBatch();
+  const pageNum = (v: string) => Math.max(1, Number(v) || 1);
   const [logFor, setLogFor] = useState<WorkItem | null>(null);
 
   /** Fills in the columns every list shares, so rows align across sections. */
@@ -438,18 +459,27 @@ export function PrioritiesPage() {
           <WorkSection
             icon={<Clock size={18} />}
             title="Follow up"
+            open={openSections.has('follow')}
+            onToggle={() => toggleSection('follow')}
             description="Came to an event with no follow-up, or has gone quiet since the last contact."
             count={upcomingFollowups.length}
             countTone="attention"
             emptyTitle="No follow-ups waiting"
             emptyBody="Every school with contacts has been in touch recently."
           >
-            <WorkTable items={upcomingFollowups} onLog={setLogFor} />
+            <WorkTable
+              items={upcomingFollowups}
+              onLog={setLogFor}
+              page={pageNum(followPage)}
+              onPageChange={(n) => setFollowPage(String(n))}
+            />
           </WorkSection>
 
           <WorkSection
             icon={<AlertTriangle size={18} />}
             title="Missing contacts or activity"
+            open={openSections.has('missing')}
+            onToggle={() => toggleSection('missing')}
             description="No contacts on file, or nothing logged in the last six months."
             count={attentionItems.length}
             countTone="attention"
@@ -460,29 +490,44 @@ export function PrioritiesPage() {
               <span className="text-xs text-neutral-500">Sort by</span>
               <button
                 className="inline-flex items-center gap-1 text-xs font-medium text-neutral-700 hover:text-siue-red transition-colors"
-                onClick={() => setAttentionSort((v) => (v === 'county' ? 'name' : 'county'))}
+                // Re-sorting reorders the list, so start it again from page 1.
+                onClick={() => setBatch({ sort: attentionSort === 'county' ? '' : 'county', p_missing: '' })}
               >
                 {attentionSort === 'county' ? 'County' : 'School name'}
                 <ChevronsUpDown size={12} className="text-neutral-400" />
               </button>
             </div>
-            <WorkTable items={attentionItems} onLog={setLogFor} />
+            <WorkTable
+              items={attentionItems}
+              onLog={setLogFor}
+              page={pageNum(attentionPage)}
+              onPageChange={(n) => setAttentionPage(String(n))}
+            />
           </WorkSection>
 
           <WorkSection
             icon={<CalendarX size={18} />}
             title="Never been to an event"
+            open={openSections.has('noevent')}
+            onToggle={() => toggleSection('noevent')}
             description="Your coldest leads — these schools have never appeared at an event."
             count={noEventItems.length}
             countTone="neutral"
             emptyTitle="Every school has been to an event"
           >
-            <WorkTable items={noEventItems} onLog={setLogFor} />
+            <WorkTable
+              items={noEventItems}
+              onLog={setLogFor}
+              page={pageNum(noEventPage)}
+              onPageChange={(n) => setNoEventPage(String(n))}
+            />
           </WorkSection>
 
           <WorkSection
             icon={<MapPin size={18} />}
             title="Counties with the widest gaps"
+            open={openSections.has('counties')}
+            onToggle={() => toggleSection('counties')}
             description="Where the most schools are still out of contact."
             count={countiesAtRisk.length}
             countTone="neutral"

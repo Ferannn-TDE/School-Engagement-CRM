@@ -27,6 +27,7 @@ interface SchoolRow {
   is_verified: boolean | null;
   last_verified_at: string | null;
   priority_tier: string | null;
+  state_code: string | null;
 }
 
 function mapSchoolType(typeOfSchool: string | null): SchoolType {
@@ -44,7 +45,7 @@ function rowToSchool(row: SchoolRow): School {
     county: row.county_name ?? '',
     address: row.address ?? '',
     city: row.city ?? '',
-    state: 'IL',
+    state: row.state_code ?? '',
     zipCode: row.zipcode ?? '',
     schoolType: mapSchoolType(row.type_of_school),
     isActive: row.is_active ?? true,

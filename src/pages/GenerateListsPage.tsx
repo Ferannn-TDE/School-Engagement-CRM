@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Copy, Download, Mail, MapPin } from 'lucide-react';
 import { Header } from '../components/layout/Header';
 import { Card } from '../components/common/Card';
@@ -6,6 +6,7 @@ import { Button } from '../components/common/Button';
 import { Select } from '../components/common/Select';
 import { Badge } from '../components/common/Badge';
 import { useAppContext } from '../context/AppContext';
+import { useUrlState } from '../hooks/useUrlState';
 import { ContactRole, ContactRoleLabels } from '../types';
 import { contactRoleLabel } from '../utils/contactRoles';
 import { contactsToCsv, downloadFile } from '../utils/helpers';
@@ -13,13 +14,21 @@ import toast from 'react-hot-toast';
 
 export function GenerateListsPage() {
   const { state, getSchoolById } = useAppContext();
-  const [countyFilter, setCountyFilter] = useState('');
-  const [roleFilter, setRoleFilter] = useState('');
-  const [schoolTypeFilter, setSchoolTypeFilter] = useState('');
-  const [eventFilter, setEventFilter] = useState('');
-  const [activeOnly, setActiveOnly] = useState(true);
-  const [includeUnverified, setIncludeUnverified] = useState(false);
-  const [exportFormat, setExportFormat] = useState<'email' | 'csv' | 'mailing'>('email');
+  // Kept in the address so a list's settings survive leaving the tab, a refresh and
+  // Back, and a link to a list can be shared.
+  const [countyFilter, setCountyFilter] = useUrlState('county');
+  const [roleFilter, setRoleFilter] = useUrlState('role');
+  const [schoolTypeFilter, setSchoolTypeFilter] = useUrlState('type');
+  const [eventFilter, setEventFilter] = useUrlState('event');
+  const [activeRaw, setActiveRaw] = useUrlState('active', '1');
+  const activeOnly = activeRaw !== '0';
+  const setActiveOnly = (on: boolean) => setActiveRaw(on ? '1' : '0');
+  const [unverifiedRaw, setUnverifiedRaw] = useUrlState('unverified', '0');
+  const includeUnverified = unverifiedRaw === '1';
+  const setIncludeUnverified = (on: boolean) => setUnverifiedRaw(on ? '1' : '0');
+  const [formatRaw, setFormatRaw] = useUrlState('format', 'email');
+  const exportFormat = (['email', 'csv', 'mailing'].includes(formatRaw) ? formatRaw : 'email') as 'email' | 'csv' | 'mailing';
+  const setExportFormat = (f: 'email' | 'csv' | 'mailing') => setFormatRaw(f);
 
   const uniqueCounties = useMemo(
     () => [...new Set(state.schools.map((s) => s.county))].sort(),

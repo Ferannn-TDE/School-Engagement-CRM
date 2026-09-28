@@ -397,15 +397,16 @@ export function PrioritiesPage() {
       .sort((a, b) => b.gap - a.gap);
   }, [state.schools, schoolContactsMap]);
 
-  // Distinct schools, not a sum: a school can appear on more than one list, and
-  // adding the lists together produced a total larger than the school count.
+  // Distinct schools, not a sum: a school can appear on both lists. Only the two
+  // lists that logging a contact can clear count here. "Never been to an event"
+  // is reported on its own, because a call or visit never removes a school from
+  // it, and folding it in kept this number stuck at every school.
   const schoolsOutstanding = useMemo(() => {
     const ids = new Set<string>();
     for (const s of upcomingFollowups) ids.add(s.id);
     for (const s of attentionItems) ids.add(s.id);
-    for (const s of noEventItems) ids.add(s.id);
     return ids.size;
-  }, [upcomingFollowups, attentionItems, noEventItems]);
+  }, [upcomingFollowups, attentionItems]);
 
   return (
     <div>
@@ -420,10 +421,15 @@ export function PrioritiesPage() {
                 {schoolsOutstanding.toLocaleString()} of {state.schools.length.toLocaleString()}{' '}
                 schools
               </span>{' '}
-              need attention. A school can appear on more than one list below.
+              need a follow-up or are missing contacts. A school can appear on both lists.
             </>
           )}
         </p>
+        {noEventItems.length > 0 && (
+          <p className="text-sm text-neutral-500 max-w-2xl -mt-3">
+            Separately, {noEventItems.length.toLocaleString()} schools have never been to an event.
+          </p>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
           <WorkSection

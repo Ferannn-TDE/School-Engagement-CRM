@@ -11,13 +11,14 @@ import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import { SchoolForm } from '../components/schools/SchoolForm';
 import { ProgramForm } from '../components/programs/ProgramForm';
 import { LogContactForm } from '../components/activities/LogContactForm';
+import { ContactDetails } from '../components/contacts/ContactDetails';
 import { EmptyState } from '../components/common/EmptyState';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { Breadcrumb } from '../components/common/Breadcrumb';
 import type { BreadcrumbTag } from '../components/common/Breadcrumb';
 import { useAppContext } from '../context/AppContext';
 import { ContactMethodLabels, ProgramCategoryLabels, ProgramCategory } from '../types';
-import type { Program } from '../types';
+import type { Contact, Program } from '../types';
 import { formatSchoolType } from '../utils/helpers';
 import { computeEngagementScore } from '../utils/engagementScore';
 import { contactRoleLabel } from '../utils/contactRoles';
@@ -39,6 +40,7 @@ export function SchoolDetailPage() {
   const [showAddProgramModal, setShowAddProgramModal] = useState(false);
   const [programToDelete, setProgramToDelete] = useState<Program | null>(null);
   const [showLogContact, setShowLogContact] = useState(false);
+  const [openContact, setOpenContact] = useState<Contact | null>(null);
 
   const decodedId = id ? decodeURIComponent(id) : undefined;
   const school = decodedId ? getSchoolById(decodedId) : undefined;
@@ -254,20 +256,28 @@ export function SchoolDetailPage() {
           {contacts.length > 0 ? (
             <div className="divide-y divide-neutral-50">
               {contacts.map((contact) => (
-                <div key={contact.id} className="flex items-center justify-between py-3">
-                  <div>
+                <button
+                  key={contact.id}
+                  type="button"
+                  onClick={() => setOpenContact(contact)}
+                  aria-label={`Show phone and email for ${`${contact.firstName} ${contact.lastName}`.trim()}`}
+                  className="w-full flex items-center justify-between gap-3 py-3 px-2 -mx-2 rounded-lg text-left hover:bg-neutral-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-siue-red/30"
+                >
+                  <div className="min-w-0">
                     <p className="text-sm font-medium text-neutral-700">
                       {contact.firstName} {contact.lastName}
                     </p>
-                    <p className="text-xs text-neutral-500">{contact.email}</p>
+                    <p className="text-xs text-neutral-500 truncate">
+                      {contact.email || (contact.phone ? formatPhone(contact.phone) : 'No email or phone')}
+                    </p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 shrink-0">
                     <Badge>{contactRoleLabel(contact)}</Badge>
                     <Badge variant={contact.isActive ? 'success' : 'error'}>
                       {contact.isActive ? 'Active' : 'Inactive'}
                     </Badge>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           ) : (
@@ -395,6 +405,10 @@ export function SchoolDetailPage() {
 
       <Modal open={showEditModal} onClose={() => setShowEditModal(false)} title="Edit School" size="lg">
         <SchoolForm school={school} onClose={() => setShowEditModal(false)} />
+      </Modal>
+
+      <Modal open={openContact !== null} onClose={() => setOpenContact(null)} title="Contact" size="sm">
+        {openContact && <ContactDetails contact={openContact} schoolName={school.name} />}
       </Modal>
 
       <Modal open={showLogContact} onClose={() => setShowLogContact(false)} title={`Log contact — ${school.name}`} size="md">

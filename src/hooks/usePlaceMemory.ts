@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 
 // Per-tab memory for the current browser tab: the last address of each sidebar
@@ -37,13 +37,23 @@ export function rememberedUrl(path: string): string {
  */
 export function usePlaceMemory(sidebarPaths: string[]) {
   const location = useLocation();
-  const scrollY = useRef(0);
+  // The page each scroll event belongs to. Updated as soon as a new page is placed,
+  // before the browser sends any scroll events for it, so the browser adjusting the
+  // scroll for the new page can't overwrite the previous page's position.
+  const pathRef = useRef(location.pathname);
+  useLayoutEffect(() => {
+    pathRef.current = location.pathname;
+  }, [location.pathname]);
+  // True while a restore is waiting for the page to grow tall enough. Scroll events
+  // then are the browser settling, not the user, and must not be saved.
+  const pendingRef = useRef(false);
 
-  // Track scroll continuously; reading it during navigation is too late, because
-  // the new page has already replaced the old one.
+  // Save the position as the user scrolls, against the page they are on. Written
+  // straight from the event (a cheap write): animation-frame callbacks don't run in
+  // background tabs, so they can't be relied on to save anything.
   useEffect(() => {
     const onScroll = () => {
-      scrollY.current = window.scrollY;
+      if (!pendingRef.current) write(SCROLL_PREFIX + pathRef.current, String(Math.round(window.scrollY)));
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
@@ -56,7 +66,7 @@ export function usePlaceMemory(sidebarPaths: string[]) {
     }
   }, [location.pathname, location.search, sidebarPaths]);
 
-  // On arriving at a page, restore its scroll; on leaving, save it.
+  // On arriving at a page, restore its saved position.
   useEffect(() => {
     // The app restores scroll itself; the browser's own attempt runs before the
     // data has loaded and would fight it.
@@ -66,48 +76,42 @@ export function usePlaceMemory(sidebarPaths: string[]) {
       /* not supported: harmless */
     }
 
-    const path = location.pathname;
-    const saved = Number(read(SCROLL_PREFIX + path) ?? 0);
+    const saved = Number(read(SCROLL_PREFIX + location.pathname) ?? 0);
+    if (!(saved > 0)) {
+      window.scrollTo(0, 0);
+      return;
+    }
     // Pages fill in after they appear (after a refresh the data alone takes several
     // seconds), so keep trying until the page is tall enough to reach the saved
     // position. Give up after 15s, or straight away if the user scrolls themselves.
-    // Until then nothing is saved, so a slow load can't overwrite the real position.
-    let pending = saved > 0;
-    let raf = 0;
-    const stopOnUserInput = () => {
-      pending = false;
+    pendingRef.current = true;
+    // Timers rather than animation frames: frames pause in a background tab, so a
+    // page loaded behind another tab would never restore.
+    let timer = 0;
+    const stop = () => {
+      pendingRef.current = false;
     };
     const inputs = ['wheel', 'touchstart', 'keydown', 'mousedown'] as const;
-    inputs.forEach((e) => window.addEventListener(e, stopOnUserInput, { passive: true, once: true }));
+    inputs.forEach((e) => window.addEventListener(e, stop, { passive: true, once: true }));
     const started = performance.now();
     const tryRestore = () => {
-      if (!pending) return;
+      if (!pendingRef.current) return;
       if (document.documentElement.scrollHeight - window.innerHeight >= saved) {
         window.scrollTo(0, saved);
-        scrollY.current = window.scrollY;
-        pending = false;
+        pendingRef.current = false;
         return;
       }
       if (performance.now() - started > 15000) {
-        pending = false;
+        pendingRef.current = false;
         return;
       }
-      raf = requestAnimationFrame(tryRestore);
+      timer = window.setTimeout(tryRestore, 50);
     };
-    if (pending) raf = requestAnimationFrame(tryRestore);
-    else window.scrollTo(0, 0);
-
-    const save = (y: number) => {
-      if (!pending) write(SCROLL_PREFIX + path, String(y));
-    };
-    // A refresh or closing the tab doesn't run the cleanup below, so save then too.
-    const onPageHide = () => save(window.scrollY);
-    window.addEventListener('pagehide', onPageHide);
+    timer = window.setTimeout(tryRestore, 0);
     return () => {
-      cancelAnimationFrame(raf);
-      inputs.forEach((e) => window.removeEventListener(e, stopOnUserInput));
-      window.removeEventListener('pagehide', onPageHide);
-      save(scrollY.current);
+      window.clearTimeout(timer);
+      inputs.forEach((e) => window.removeEventListener(e, stop));
+      pendingRef.current = false;
     };
   }, [location.pathname]);
 }

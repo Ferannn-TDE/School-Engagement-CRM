@@ -213,7 +213,8 @@ interface AppContextValue {
   addEvent: (event: Omit<Event, 'id' | 'createdAt' | 'updatedAt'>) => void;
   updateEvent: (event: Event) => void;
   deleteEvent: (id: string) => void;
-  addActivity: (activity: Omit<ActivityRecord, 'id'>) => void;
+  /** Resolves once saved; rejects on failure so the caller can keep the form open. */
+  addActivity: (activity: Omit<ActivityRecord, 'id'>) => Promise<void>;
   deleteActivity: (id: string) => void;
   addProgram: (program: Omit<Program, 'id' | 'createdAt' | 'updatedAt'>) => void;
   updateProgram: (program: Program) => void;
@@ -385,13 +386,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   // Activities (Supabase-backed)
-  const addActivity = (activity: Omit<ActivityRecord, 'id'>): void => {
-    createActivity(activity)
-      .then((created) => dispatch({ type: 'ADD_ACTIVITY', payload: created }))
-      .catch((err) => {
-        console.error('addActivity failed:', err);
-        toast.error('Failed to save activity');
-      });
+  const addActivity = async (activity: Omit<ActivityRecord, 'id'>): Promise<void> => {
+    try {
+      const created = await createActivity(activity);
+      dispatch({ type: 'ADD_ACTIVITY', payload: created });
+    } catch (err) {
+      console.error('addActivity failed:', err);
+      throw err;
+    }
   };
 
   const deleteActivity = (id: string): void => {

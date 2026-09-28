@@ -5,14 +5,29 @@ export function countyKey(name: string, state: string | null | undefined): strin
   return `${state ?? ''}|${name}`;
 }
 
-/** "Madison County, IL". */
-export function countyLabel(name: string, state: string | null | undefined): string {
-  return state ? `${name} County, ${state}` : `${name} County`;
+/**
+ * An independent city: a city that belongs to no county and is listed in the
+ * county's place. The data has one, St. Louis City in Missouri.
+ */
+export function isIndependentCity(name: string): boolean {
+  return /\bcity$/i.test(name.trim());
 }
 
-/** Short form for chart axes: "Madison, IL". */
+/** How a county name is shown. Display only; stored names are unchanged. */
+export function countyDisplayName(name: string): string {
+  return isIndependentCity(name) ? name.replace(/^St /, 'St. ') : name;
+}
+
+/** "Madison County, IL", or "St. Louis City, MO" for an independent city. */
+export function countyLabel(name: string, state: string | null | undefined): string {
+  const place = isIndependentCity(name) ? countyDisplayName(name) : `${name} County`;
+  return state ? `${place}, ${state}` : place;
+}
+
+/** Short form for chart axes and dropdowns: "Madison, IL". */
 export function countyShortLabel(name: string, state: string | null | undefined): string {
-  return state ? `${name}, ${state}` : name;
+  const display = countyDisplayName(name);
+  return state ? `${display}, ${state}` : display;
 }
 
 export function countyPath(name: string, state: string | null | undefined): string {

@@ -15,7 +15,7 @@ import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { ChartTooltipContent } from '../components/common/ChartTooltip';
 import { CHART_COLORS } from '../constants/charts';
 import { useCountyAnalytics } from '../hooks/useCountyAnalytics';
-import { countyKey, countyPath } from '../utils/counties';
+import { countyDisplayName, countyKey, countyPath, isIndependentCity } from '../utils/counties';
 import { useStateFilter } from '../hooks/useStateFilter';
 import { ProgramCategory, ProgramCategoryLabels } from '../types';
 import {
@@ -188,10 +188,11 @@ export function CountiesPage() {
                       </div>
                       <div>
                         <h3 className="text-sm font-bold text-neutral-800 leading-tight">
-                          {county.countyName}
+                          {countyDisplayName(county.countyName)}
                         </h3>
                         <p className="text-xs text-neutral-500">
-                          {county.state ? `County, ${county.state}` : 'County'}
+                          {isIndependentCity(county.countyName) ? 'Independent city' : 'County'}
+                          {county.state ? `, ${county.state}` : ''}
                         </p>
                       </div>
                     </div>

@@ -70,6 +70,11 @@ function rowToEvent(row: EventRow): Event {
     type: row.is_scraped ? EventType.OUTREACH_FAIR : EventType.OTHER,
     date,
     hasTime,
+    source: row.external_id?.startsWith('schoolreach:')
+      ? 'school_calendar'
+      : row.external_id?.startsWith('iacac:')
+        ? 'iacac'
+        : 'manual',
     endDate: undefined,
     location: row.location ?? '',
     participatingSchools: schools,

@@ -214,7 +214,8 @@ interface AppContextValue {
   updateContact: (contact: Contact, changes?: Partial<Contact>) => void;
   deleteContact: (id: string) => void;
   addEvent: (event: Omit<Event, 'id' | 'createdAt' | 'updatedAt'>) => void;
-  updateEvent: (event: Event) => void;
+  /** `changes` limits the database write to those fields; without it every field is written. */
+  updateEvent: (event: Event, changes?: Partial<Event>) => void;
   deleteEvent: (id: string) => void;
   /** Resolves once saved; rejects on failure so the caller can keep the form open. */
   addActivity: (activity: Omit<ActivityRecord, 'id'>) => Promise<void>;
@@ -365,8 +366,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       });
   };
 
-  const updateEvent = (event: Event): void => {
-    dbUpdateEvent(event.id, event)
+  const updateEvent = (event: Event, changes?: Partial<Event>): void => {
+    dbUpdateEvent(event.id, changes ?? event)
       .then(() =>
         dispatch({
           type: 'UPDATE_EVENT',

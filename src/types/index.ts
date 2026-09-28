@@ -129,6 +129,8 @@ export interface Event {
   date: string;
   /** False for all-day events and events with no recorded time: show the date only. */
   hasTime?: boolean;
+  /** Where the event came from: a school's calendar, IACAC, or entered in the app. */
+  source?: 'school_calendar' | 'iacac' | 'manual';
   endDate?: string;
   location: string;
   participatingSchools: string[];

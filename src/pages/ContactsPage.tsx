@@ -14,6 +14,7 @@ import { EmptyState } from '../components/common/EmptyState';
 import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import { ContactForm } from '../components/contacts/ContactForm';
 import { useAppContext } from '../context/AppContext';
+import { useUrlState } from '../hooks/useUrlState';
 import type { Contact } from '../types';
 import { ContactRole, ContactRoleLabels } from '../types';
 import { contactRoleLabel } from '../utils/contactRoles';
@@ -23,11 +24,13 @@ type VerifiedTab = 'all' | 'verified' | 'unverified';
 
 export function ContactsPage() {
   const { state, getSchoolById, updateContact, deleteContact, verifyContact } = useAppContext();
-  const [search, setSearch] = useState('');
-  const [roleFilter, setRoleFilter] = useState('');
-  const [schoolFilter, setSchoolFilter] = useState('');
-  const [activeFilter, setActiveFilter] = useState('');
-  const [verifiedTab, setVerifiedTab] = useState<VerifiedTab>('all');
+  // Kept in the address so the view survives leaving the tab, a refresh and Back.
+  const [search, setSearch] = useUrlState('q');
+  const [roleFilter, setRoleFilter] = useUrlState('role');
+  const [schoolFilter, setSchoolFilter] = useUrlState('school');
+  const [activeFilter, setActiveFilter] = useUrlState('status');
+  const [tabRaw, setVerifiedTab] = useUrlState('tab', 'all');
+  const verifiedTab = (['all', 'verified', 'unverified'].includes(tabRaw) ? tabRaw : 'all') as VerifiedTab;
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingContact, setEditingContact] = useState<Contact | null>(null);
   const [deletingContact, setDeletingContact] = useState<Contact | null>(null);
@@ -275,6 +278,8 @@ export function ContactsPage() {
               data={filteredContacts}
               columns={columns}
               searchValue={search}
+              urlState
+              resetKey={[verifiedTab, roleFilter, schoolFilter, activeFilter].join('|')}
               emptyMessage="No contacts match your filters."
             />
           </Card>

@@ -11,6 +11,7 @@ import { Badge } from '../components/common/Badge';
 import { Modal } from '../components/common/Modal';
 import { LogContactForm } from '../components/activities/LogContactForm';
 import { useEngagementMaps, useSchoolsNeedingAttention } from '../hooks/useEngagementMaps';
+import { countyKey, countyLabel, countyPath } from '../utils/counties';
 
 /** How overdue something is, used to colour the left edge of a row.
  *  Deliberately distinct from SIUE red, which means "brand", not "urgent". */
@@ -377,17 +378,19 @@ export function PrioritiesPage() {
 
   // ── Counties with the most schools still out of contact ──────────────────────
   const countiesAtRisk = useMemo(() => {
-    const countyMap = new Map<string, { total: number; withContacts: number }>();
+    const countyMap = new Map<string, { county: string; state: string; total: number; withContacts: number }>();
     for (const s of state.schools) {
       if (!s.county || !s.county.trim()) continue;
-      const entry = countyMap.get(s.county) ?? { total: 0, withContacts: 0 };
+      const key = countyKey(s.county, s.state);
+      const entry = countyMap.get(key) ?? { county: s.county, state: s.state, total: 0, withContacts: 0 };
       entry.total++;
       if ((schoolContactsMap.get(s.id)?.total ?? 0) > 0) entry.withContacts++;
-      countyMap.set(s.county, entry);
+      countyMap.set(key, entry);
     }
-    return Array.from(countyMap.entries())
-      .map(([county, { total, withContacts }]) => ({
+    return Array.from(countyMap.values())
+      .map(({ county, state: st, total, withContacts }) => ({
         county,
+        state: st,
         total,
         withContacts,
         gap: total - withContacts,
@@ -487,7 +490,7 @@ export function PrioritiesPage() {
           >
             <div className="divide-y divide-neutral-50">
               {countiesAtRisk.slice(0, 12).map((c) => (
-                <div key={c.county} className="relative">
+                <div key={countyKey(c.county, c.state)} className="relative">
                   <span
                     className={`absolute left-0 top-0 bottom-0 w-1 ${
                       c.rate < 0.34 ? urgencyBar.overdue : urgencyBar.due
@@ -497,10 +500,10 @@ export function PrioritiesPage() {
                   <div className="px-6 py-3">
                     <div className="flex items-center justify-between gap-4 mb-1.5">
                       <Link
-                        to={`/counties/${encodeURIComponent(c.county)}`}
+                        to={countyPath(c.county, c.state)}
                         className="text-sm font-medium text-neutral-800 hover:text-siue-red transition-colors truncate"
                       >
-                        {c.county} County
+                        {countyLabel(c.county, c.state)}
                       </Link>
                       <span className="text-xs font-medium text-attention-high-text shrink-0">
                         {c.gap} not yet contacted

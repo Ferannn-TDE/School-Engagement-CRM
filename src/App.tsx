@@ -76,6 +76,8 @@ function App() {
               <Route path="/analytics" element={<Navigate to="/reports" replace />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/counties" element={<CountiesPage />} />
+              <Route path="/counties/:state/:countyName" element={<CountyDetailPage />} />
+              {/* Older links without a state: redirects, or asks when both states have the name. */}
               <Route path="/counties/:countyName" element={<CountyDetailPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Route>

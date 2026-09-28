@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useEngagementMaps } from './useEngagementMaps';
 import { ProgramCategory } from '../types';
 import type { CountyEngagementRow } from '../services/analyticsService';
+import { countyKey, countyShortLabel } from '../utils/counties';
 
 export interface ProgramCoverageEntry {
   county: string;
@@ -25,7 +26,7 @@ export function useCountyAnalytics(countyEngagement: CountyEngagementRow[]) {
       return countyEngagement
         .filter((r) => r.total_schools >= 2 && r.county_name && r.county_name.trim() !== '')
         .map((r) => ({
-          county: r.county_name,
+          county: countyShortLabel(r.county_name!, r.state_code),
           total: r.total_schools,
           engaged: r.engaged_schools,
           rate: r.total_schools > 0 ? r.engaged_schools / r.total_schools : 0,
@@ -34,16 +35,17 @@ export function useCountyAnalytics(countyEngagement: CountyEngagementRow[]) {
         .sort((a, b) => a.rate - b.rate)
         .slice(0, 14);
     }
-    const countyMap = new Map<string, { total: number; engaged: number }>();
+    const countyMap = new Map<string, { label: string; total: number; engaged: number }>();
     for (const s of state.schools) {
       if (!s.county || !s.county.trim()) continue;
-      const entry = countyMap.get(s.county) ?? { total: 0, engaged: 0 };
+      const key = countyKey(s.county, s.state);
+      const entry = countyMap.get(key) ?? { label: countyShortLabel(s.county, s.state), total: 0, engaged: 0 };
       entry.total++;
       if ((schoolContactsMap.get(s.id)?.total ?? 0) > 0) entry.engaged++;
-      countyMap.set(s.county, entry);
+      countyMap.set(key, entry);
     }
-    return Array.from(countyMap.entries())
-      .map(([county, { total, engaged }]) => ({
+    return Array.from(countyMap.values())
+      .map(({ label: county, total, engaged }) => ({
         county, total, engaged,
         rate: total > 0 ? engaged / total : 0,
         label: 'with contacts',
@@ -61,25 +63,26 @@ export function useCountyAnalytics(countyEngagement: CountyEngagementRow[]) {
         .filter((r): r is typeof r & { county_name: string } => Boolean(r.county_name) && r.county_name!.trim() !== '')
         .map((r) => ({
           county: r.county_name.length > 12 ? r.county_name.slice(0, 10) + '…' : r.county_name,
-          fullCounty: r.county_name,
+          fullCounty: countyShortLabel(r.county_name, r.state_code),
           total: r.total_schools,
           engaged: r.engaged_schools,
         }))
         .sort((a, b) => b.total - a.total)
         .slice(0, 12);
     }
-    const countyMap = new Map<string, { total: number; engaged: number }>();
+    const countyMap = new Map<string, { name: string; label: string; total: number; engaged: number }>();
     for (const s of state.schools) {
       if (!s.county || !s.county.trim()) continue;
-      const entry = countyMap.get(s.county) ?? { total: 0, engaged: 0 };
+      const key = countyKey(s.county, s.state);
+      const entry = countyMap.get(key) ?? { name: s.county, label: countyShortLabel(s.county, s.state), total: 0, engaged: 0 };
       entry.total++;
       if ((schoolEventCountMap.get(s.id) ?? 0) > 0) entry.engaged++;
-      countyMap.set(s.county, entry);
+      countyMap.set(key, entry);
     }
-    return Array.from(countyMap.entries())
-      .map(([county, { total, engaged }]) => ({
+    return Array.from(countyMap.values())
+      .map(({ name: county, label, total, engaged }) => ({
         county: county.length > 12 ? county.slice(0, 10) + '…' : county,
-        fullCounty: county,
+        fullCounty: label,
         total,
         engaged,
       }))
@@ -89,7 +92,9 @@ export function useCountyAnalytics(countyEngagement: CountyEngagementRow[]) {
 
   // ── Program Coverage by County ───────────────────────────────────────────────
   const programCoverageByCounty = useMemo((): ProgramCoverageEntry[] => {
-    const schoolCountyMap = new Map(state.schools.map((s) => [s.id, s.county]));
+    const schoolCountyMap = new Map(
+      state.schools.filter((s) => s.county).map((s) => [s.id, countyShortLabel(s.county, s.state)])
+    );
     const countyProgramMap = new Map<string, Map<ProgramCategory, number>>();
     for (const p of state.programs) {
       const county = schoolCountyMap.get(p.schoolId);

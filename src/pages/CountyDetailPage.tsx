@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, Navigate } from 'react-router-dom';
 import { MapPin, School, Users, Calendar, BookOpen, ChevronUp, ChevronDown, ChevronsUpDown, ArrowLeft } from 'lucide-react';
 import { format } from 'date-fns';
 import { Header } from '../components/layout/Header';
@@ -18,6 +18,7 @@ import {
   type CountySchoolSummaryRow,
 } from '../services/analyticsService';
 import { formatSchoolType } from '../utils/helpers';
+import { countyLabel, countyPath } from '../utils/counties';
 
 type SortField = 'name' | 'contacts' | 'score';
 type SortDir = 'asc' | 'desc';
@@ -30,10 +31,13 @@ function SortIcon({ field, current, dir }: { field: SortField; current: SortFiel
 }
 
 export function CountyDetailPage() {
-  const { countyName: rawCounty } = useParams<{ countyName: string }>();
+  const { state: rawState, countyName: rawCounty } = useParams<{ state?: string; countyName: string }>();
   const countyName = rawCounty ? decodeURIComponent(rawCounty) : '';
+  // Absent only on older /counties/:name links, which are resolved below.
+  const countyState = rawState ? decodeURIComponent(rawState) : undefined;
+  const title = countyLabel(countyName, countyState);
 
-  const { state } = useAppContext();
+  const { state, loading } = useAppContext();
   const [summaryRow, setSummaryRow] = useState<CountySchoolSummaryRow | null>(null);
   const [engagementPct, setEngagementPct] = useState<number>(0);
   const [loadingViews, setLoadingViews] = useState(true);
@@ -44,19 +48,22 @@ export function CountyDetailPage() {
     setLoadingViews(true);
     Promise.all([fetchCountySchoolSummary(), fetchCountyEngagementRate()])
       .then(([summary, engagement]) => {
-        setSummaryRow(summary.find((r) => r.county_name === countyName) ?? null);
-        setEngagementPct(
-          engagement.find((r) => r.county_name === countyName)?.engagement_pct ?? 0
-        );
+        const sameCounty = (r: { county_name: string | null; state_code: string | null }) =>
+          r.county_name === countyName && (!countyState || r.state_code === countyState);
+        setSummaryRow(summary.find(sameCounty) ?? null);
+        setEngagementPct(engagement.find(sameCounty)?.engagement_pct ?? 0);
       })
       .catch(() => {})
       .finally(() => setLoadingViews(false));
-  }, [countyName]);
+  }, [countyName, countyState]);
 
   // ── Per-county derived data ──────────────────────────────────────────────────
   const countySchools = useMemo(
-    () => state.schools.filter((s) => s.county === countyName),
-    [state.schools, countyName]
+    () =>
+      state.schools.filter(
+        (s) => s.county === countyName && (!countyState || s.state === countyState)
+      ),
+    [state.schools, countyName, countyState]
   );
 
   const countySchoolIds = useMemo(
@@ -166,11 +173,42 @@ export function CountyDetailPage() {
     }
   }
 
+  if (loading) return <LoadingSpinner />;
+
+  // An older link with no state: go straight to the county if only one state has
+  // it, or ask which one when both do (40 names exist in Illinois and Missouri).
+  if (!countyState) {
+    const states = [...new Set(countySchools.map((s) => s.state).filter(Boolean))].sort();
+    if (states.length === 1) return <Navigate to={countyPath(countyName, states[0])} replace />;
+    if (states.length > 1) {
+      return (
+        <EmptyState
+          icon={<MapPin size={32} />}
+          title={`There is a ${countyName} County in more than one state`}
+          description="Choose which one you meant."
+          action={
+            <div className="flex flex-col gap-2">
+              {states.map((st) => (
+                <Link
+                  key={st}
+                  to={countyPath(countyName, st)}
+                  className="text-sm font-medium text-siue-red hover:text-siue-maroon"
+                >
+                  {countyLabel(countyName, st)}
+                </Link>
+              ))}
+            </div>
+          }
+        />
+      );
+    }
+  }
+
   if (countySchools.length === 0 && !loadingViews) {
     return (
       <EmptyState
         icon={<MapPin size={32} />}
-        title={`No schools found in ${countyName}`}
+        title={`No schools found in ${title}`}
         description="This county may not exist in the database, or schools haven't been added yet."
         action={
           <Link
@@ -193,11 +231,11 @@ export function CountyDetailPage() {
       <Breadcrumb
         crumbs={[
           { label: 'Counties', href: '/counties' },
-          { label: `${countyName} County` },
+          { label: title },
         ]}
       />
       <Header
-        title={`${countyName} County`}
+        title={title}
         subtitle={`${countySchools.length} schools · ${engagementPct}% engagement rate`}
       />
 
@@ -250,7 +288,7 @@ export function CountyDetailPage() {
             </div>
             <div>
               <h2 className="text-base font-semibold text-neutral-800">Schools</h2>
-              <p className="text-xs text-neutral-500">{countySchools.length} schools in {countyName} County</p>
+              <p className="text-xs text-neutral-500">{countySchools.length} schools in {title}</p>
             </div>
           </div>
           <div className="overflow-x-auto">
@@ -339,7 +377,7 @@ export function CountyDetailPage() {
             <div>
               <h2 className="text-base font-semibold text-neutral-800">Events</h2>
               <p className="text-xs text-neutral-500">
-                Events where a {countyName} County school participated
+                Events where a {title} school participated
               </p>
             </div>
           </div>
@@ -385,7 +423,7 @@ export function CountyDetailPage() {
             <div>
               <h2 className="text-base font-semibold text-neutral-800">Program Coverage</h2>
               <p className="text-xs text-neutral-500">
-                Active programs recorded across schools in {countyName} County
+                Active programs recorded across schools in {title}
               </p>
             </div>
           </div>

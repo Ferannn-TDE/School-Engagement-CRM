@@ -5,6 +5,7 @@ export interface CountyEngagementRow {
   total_schools: number;
   engaged_schools: number;
   engagement_pct: number;
+  state_code: string | null;
 }
 
 export interface CountySchoolSummaryRow {
@@ -14,6 +15,7 @@ export interface CountySchoolSummaryRow {
   total_contacts: number;
   total_events: number;
   total_programs: number;
+  state_code: string | null;
 }
 
 export async function fetchCountyEngagementRate(): Promise<CountyEngagementRow[]> {

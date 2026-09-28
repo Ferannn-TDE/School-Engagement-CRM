@@ -15,6 +15,7 @@ import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { ChartTooltipContent } from '../components/common/ChartTooltip';
 import { CHART_COLORS } from '../constants/charts';
 import { useCountyAnalytics } from '../hooks/useCountyAnalytics';
+import { countyKey, countyPath } from '../utils/counties';
 import { ProgramCategory, ProgramCategoryLabels } from '../types';
 import {
   fetchCountySchoolSummary,
@@ -70,6 +71,7 @@ function AnalysisSection({
 
 interface CountyCardData {
   countyName: string;
+  state: string | null;
   totalSchools: number;
   verifiedSchools: number;
   totalContacts: number;
@@ -109,15 +111,16 @@ export function CountiesPage() {
     for (const row of engagementData) {
       // Skip rows with no county name — they can't be keyed or displayed
       if (!row.county_name) continue;
-      engagementMap.set(row.county_name, row);
+      engagementMap.set(countyKey(row.county_name, row.state_code), row);
     }
     return summaryData
       // Exclude schools with null/empty county — they have no place in the counties view
       .filter((s): s is typeof s & { county_name: string } => Boolean(s.county_name))
       .map((s) => {
-        const e = engagementMap.get(s.county_name);
+        const e = engagementMap.get(countyKey(s.county_name, s.state_code));
         return {
           countyName: s.county_name,
+          state: s.state_code,
           totalSchools: s.total_schools,
           verifiedSchools: s.verified_schools,
           totalContacts: s.total_contacts,
@@ -127,7 +130,7 @@ export function CountiesPage() {
           engagementPct: e?.engagement_pct ?? 0,
         };
       })
-      .sort((a, b) => (a.countyName ?? '').localeCompare(b.countyName ?? ''));
+      .sort((a, b) => a.countyName.localeCompare(b.countyName) || (a.state ?? '').localeCompare(b.state ?? ''));
   }, [summaryData, engagementData]);
 
   const { engagementRateByCounty, countyComparisonData, programCoverageByCounty } =
@@ -159,7 +162,7 @@ export function CountiesPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {counties.map((county) => (
-              <Card key={county.countyName} padding={false}>
+              <Card key={countyKey(county.countyName, county.state)} padding={false}>
                 <div className="p-5">
                   {/* Header */}
                   <div className="flex items-start justify-between mb-4">
@@ -171,7 +174,9 @@ export function CountiesPage() {
                         <h3 className="text-sm font-bold text-neutral-800 leading-tight">
                           {county.countyName}
                         </h3>
-                        <p className="text-xs text-neutral-500">County</p>
+                        <p className="text-xs text-neutral-500">
+                          {county.state ? `County, ${county.state}` : 'County'}
+                        </p>
                       </div>
                     </div>
                     <Badge variant={engagementBadgeVariant(county.engagementPct)}>
@@ -226,7 +231,7 @@ export function CountiesPage() {
                 {/* Footer link */}
                 <div className="px-5 py-3 border-t border-neutral-100">
                   <Link
-                    to={`/counties/${encodeURIComponent(county.countyName)}`}
+                    to={countyPath(county.countyName, county.state)}
                     className="flex items-center justify-between text-xs font-medium text-siue-red hover:text-siue-maroon transition-colors"
                   >
                     View Details

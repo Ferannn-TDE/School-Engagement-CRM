@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { AppProvider } from './context/AppContext';
 import { LoadingSpinner } from './components/common/LoadingSpinner';
 import { AppLayout } from './components/layout/AppLayout';
+import { RegionScope } from './components/layout/RegionScope';
 import { LoginPage } from './pages/LoginPage';
 import { SignUpPage } from './pages/SignUpPage';
 import { MfaEnrollPage } from './pages/MfaEnrollPage';
@@ -64,18 +65,21 @@ function App() {
           <Route element={<AuthGuard />}>
             <Route element={<AppLayout />}>
               <Route path="/" element={<DashboardPage />} />
-              <Route path="/priorities" element={<PrioritiesPage />} />
-              <Route path="/schools" element={<SchoolsPage />} />
+              {/* Pages limited by the shared All / IL / MO filter. */}
+              <Route element={<RegionScope><Outlet /></RegionScope>}>
+                <Route path="/priorities" element={<PrioritiesPage />} />
+                <Route path="/schools" element={<SchoolsPage />} />
+                <Route path="/contacts" element={<ContactsPage />} />
+                <Route path="/events" element={<EventsPage />} />
+                <Route path="/generate" element={<GenerateListsPage />} />
+                <Route path="/reports" element={<ReportsPage />} />
+                <Route path="/counties" element={<CountiesPage />} />
+              </Route>
               <Route path="/schools/:id" element={<SchoolDetailPage />} />
-              <Route path="/contacts" element={<ContactsPage />} />
-              <Route path="/events" element={<EventsPage />} />
               <Route path="/import" element={<ImportPage />} />
-              <Route path="/generate" element={<GenerateListsPage />} />
-              <Route path="/reports" element={<ReportsPage />} />
               {/* Kept so existing bookmarks and links to the old Analytics page still work. */}
               <Route path="/analytics" element={<Navigate to="/reports" replace />} />
               <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/counties" element={<CountiesPage />} />
               <Route path="/counties/:state/:countyName" element={<CountyDetailPage />} />
               {/* Older links without a state: redirects, or asks when both states have the name. */}
               <Route path="/counties/:countyName" element={<CountyDetailPage />} />

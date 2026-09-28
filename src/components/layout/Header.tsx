@@ -5,6 +5,8 @@ import { useAppContext } from '../../context/AppContext';
 import { useAuth } from '../../context/AuthContext';
 import { useLayout } from '../../context/LayoutContext';
 import { useGlobalSearch } from '../../hooks/useGlobalSearch';
+import { useRegionScope } from '../../context/RegionScopeContext';
+import { StateFilter } from '../common/StateFilter';
 
 interface HeaderProps {
   title: string;
@@ -13,7 +15,10 @@ interface HeaderProps {
 }
 
 export function Header({ title, subtitle, actions }: HeaderProps) {
-  const { state } = useAppContext();
+  const { state: pageState } = useAppContext();
+  // On pages limited by the state filter, header search still covers everything.
+  const scope = useRegionScope();
+  const state = scope?.fullState ?? pageState;
   const { user } = useAuth();
   const { toggleSidebar } = useLayout();
   const navigate = useNavigate();
@@ -70,6 +75,7 @@ export function Header({ title, subtitle, actions }: HeaderProps) {
         </div>
 
         <div className="flex items-center gap-2 sm:gap-4">
+          {scope && <StateFilter />}
           {actions}
 
           {/* Global search */}

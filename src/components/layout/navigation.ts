@@ -22,6 +22,9 @@ export interface NavGroup {
   items: NavItem[];
 }
 
+/** Pages limited by the shared All / IL / MO filter; the sidebar carries the choice to them. */
+export const REGION_PATHS = new Set(['/priorities', '/schools', '/contacts', '/events', '/counties', '/generate', '/reports']);
+
 export const navGroups: NavGroup[] = [
   {
     label: 'Data',

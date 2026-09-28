@@ -5,6 +5,7 @@ import {
   useReducer,
   useEffect,
   useState,
+  useMemo,
   type ReactNode,
 } from 'react';
 import toast from 'react-hot-toast';
@@ -45,7 +46,7 @@ import {
   deleteProgram as dbDeleteProgram,
 } from '../services/programsService';
 
-interface AppState {
+export interface AppState {
   schools: School[];
   contacts: Contact[];
   events: Event[];
@@ -533,6 +534,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
       {children}
     </AppContext.Provider>
   );
+}
+
+/**
+ * Re-provides the app's data with a different `state` to everything inside it,
+ * e.g. only one US state's schools. Actions and per-school lookups are unchanged.
+ */
+export function AppStateOverride({ state: scoped, children }: { state: AppState; children: ReactNode }) {
+  const ctx = useAppContext();
+  const value = useMemo(() => ({ ...ctx, state: scoped }), [ctx, scoped]);
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
 
 export function useAppContext() {

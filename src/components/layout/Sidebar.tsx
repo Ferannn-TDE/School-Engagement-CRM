@@ -2,12 +2,32 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { classNames } from '../../utils/helpers';
 import { useLayout } from '../../context/LayoutContext';
 import { rememberedUrl } from '../../hooks/usePlaceMemory';
-import { navGroups } from './navigation';
+import { navGroups, REGION_PATHS } from './navigation';
+import { rememberedRegion } from '../../hooks/useStateFilter';
+import { parseRegion, type Region } from '../../utils/region';
+
+/** A tab's last address, carrying the current All / IL / MO choice to pages it affects. */
+function linkFor(path: string, region: Region): string {
+  const url = rememberedUrl(path);
+  if (!REGION_PATHS.has(path)) return url;
+  const [base, query = ''] = url.split('?');
+  const params = new URLSearchParams(query);
+  if (region) params.set('state', region);
+  else params.delete('state');
+  const qs = params.toString();
+  return qs ? `${base}?${qs}` : base;
+}
 
 export function Sidebar() {
   const { sidebarOpen, closeSidebar } = useLayout();
   // Re-render on every navigation so each link points at that page's last address.
-  useLocation();
+  const location = useLocation();
+  // On a filtered page the current address holds the live choice; elsewhere use the
+  // last one remembered. (The remembered copy is saved just after a page draws, so
+  // reading it here would lag one step behind.)
+  const region = REGION_PATHS.has(location.pathname)
+    ? parseRegion(new URLSearchParams(location.search).get('state'))
+    : rememberedRegion();
 
   return (
     <>
@@ -51,7 +71,7 @@ export function Sidebar() {
                 {group.items.map((item) => (
                   <NavLink
                     key={item.to}
-                    to={rememberedUrl(item.to)}
+                    to={linkFor(item.to, region)}
                     end={item.to === '/'}
                     onClick={closeSidebar}
                     className={({ isActive }) =>

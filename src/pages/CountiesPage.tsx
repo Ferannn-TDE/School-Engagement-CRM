@@ -16,6 +16,7 @@ import { ChartTooltipContent } from '../components/common/ChartTooltip';
 import { CHART_COLORS } from '../constants/charts';
 import { useCountyAnalytics } from '../hooks/useCountyAnalytics';
 import { countyKey, countyPath } from '../utils/counties';
+import { useStateFilter } from '../hooks/useStateFilter';
 import { ProgramCategory, ProgramCategoryLabels } from '../types';
 import {
   fetchCountySchoolSummary,
@@ -106,14 +107,25 @@ export function CountiesPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  // The county views cover both states; apply the shared All / IL / MO choice.
+  const [region] = useStateFilter();
+  const regionSummary = useMemo(
+    () => (region ? summaryData.filter((r) => r.state_code === region) : summaryData),
+    [summaryData, region]
+  );
+  const regionEngagement = useMemo(
+    () => (region ? engagementData.filter((r) => r.state_code === region) : engagementData),
+    [engagementData, region]
+  );
+
   const counties = useMemo((): CountyCardData[] => {
     const engagementMap = new Map<string, CountyEngagementRow>();
-    for (const row of engagementData) {
+    for (const row of regionEngagement) {
       // Skip rows with no county name — they can't be keyed or displayed
       if (!row.county_name) continue;
       engagementMap.set(countyKey(row.county_name, row.state_code), row);
     }
-    return summaryData
+    return regionSummary
       // Exclude schools with null/empty county — they have no place in the counties view
       .filter((s): s is typeof s & { county_name: string } => Boolean(s.county_name))
       .map((s) => {
@@ -131,16 +143,20 @@ export function CountiesPage() {
         };
       })
       .sort((a, b) => a.countyName.localeCompare(b.countyName) || (a.state ?? '').localeCompare(b.state ?? ''));
-  }, [summaryData, engagementData]);
+  }, [regionSummary, regionEngagement]);
 
   const { engagementRateByCounty, countyComparisonData, programCoverageByCounty } =
-    useCountyAnalytics(engagementData);
+    useCountyAnalytics(regionEngagement);
 
   return (
     <div>
 <Header
         title="Counties"
-        subtitle={loading ? 'Loading...' : `${counties.length} counties in Illinois and Missouri`}
+        subtitle={
+          loading
+            ? 'Loading...'
+            : `${counties.length} counties in ${region === 'IL' ? 'Illinois' : region === 'MO' ? 'Missouri' : 'Illinois and Missouri'}`
+        }
       />
       <div className="p-8">
         {loading ? (

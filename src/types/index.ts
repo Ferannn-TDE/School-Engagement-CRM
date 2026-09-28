@@ -104,6 +104,10 @@ export interface School {
   city: string;
   state: string;
   zipCode: string;
+  /** The school's main phone number, from the state's school list. */
+  phone?: string;
+  /** The school's website as found by the scraper. */
+  website?: string;
   schoolType: SchoolType;
   isActive: boolean;
   notes?: string;

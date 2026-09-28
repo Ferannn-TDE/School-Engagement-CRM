@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Edit, MapPin, Users, Calendar, Trash2, School, ArrowLeft, Plus, BookOpen, TrendingUp, ShieldCheck } from 'lucide-react';
+import { Edit, MapPin, Users, Calendar, Trash2, School, ArrowLeft, Plus, BookOpen, TrendingUp, ShieldCheck, Phone, Globe } from 'lucide-react';
 import { format } from 'date-fns';
 import { Header } from '../components/layout/Header';
 import { Card } from '../components/common/Card';
@@ -21,6 +21,8 @@ import type { Program } from '../types';
 import { formatSchoolType } from '../utils/helpers';
 import { computeEngagementScore } from '../utils/engagementScore';
 import { contactRoleLabel } from '../utils/contactRoles';
+import { countyLabel } from '../utils/counties';
+import { formatPhone, websiteHref, websiteLabel } from '../utils/helpers';
 import toast from 'react-hot-toast';
 
 export function SchoolDetailPage() {
@@ -134,7 +136,32 @@ export function SchoolDetailPage() {
             <p className="text-sm text-neutral-700">
               {school.city}, {school.state} {school.zipCode}
             </p>
-            <p className="text-sm text-neutral-500 mt-1">{school.county} County</p>
+            <p className="text-sm text-neutral-500 mt-1">{countyLabel(school.county, undefined)}</p>
+            {/* Shown even when the school has no contacts: often the only way in. */}
+            {(school.phone || school.website) && (
+              <div className="mt-2 space-y-1">
+                {school.phone && (
+                  <a
+                    href={`tel:${school.phone.replace(/[^\d+]/g, '')}`}
+                    className="flex items-center gap-1.5 text-sm text-neutral-700 hover:text-siue-red"
+                  >
+                    <Phone size={14} className="text-neutral-400 shrink-0" />
+                    {formatPhone(school.phone)}
+                  </a>
+                )}
+                {school.website && (
+                  <a
+                    href={websiteHref(school.website)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 text-sm text-neutral-700 hover:text-siue-red min-w-0"
+                  >
+                    <Globe size={14} className="text-neutral-400 shrink-0" />
+                    <span className="truncate">{websiteLabel(school.website)}</span>
+                  </a>
+                )}
+              </div>
+            )}
             {(school.enrollment != null || school.gradeRange) && (
               <div className="mt-2 pt-2 border-t border-neutral-50 flex gap-4">
                 {school.enrollment != null && (

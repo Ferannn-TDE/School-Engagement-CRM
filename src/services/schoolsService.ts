@@ -6,7 +6,7 @@ interface SchoolRow {
   facility_key: string;
   name: string;
   district_id: number | null;
-  phone_number: string | null;
+  phone: string | null;
   address: string | null;
   class_size: number | null;
   rating: number | null;
@@ -51,6 +51,8 @@ function rowToSchool(row: SchoolRow): School {
     city: row.city ?? '',
     state: row.state_code ?? '',
     zipCode: row.zipcode ?? '',
+    phone: row.phone?.trim() || undefined,
+    website: row.website?.trim() || undefined,
     schoolType: mapSchoolType(row.type_of_school),
     isActive: row.is_active ?? true,
     notes: row.notes ?? undefined,

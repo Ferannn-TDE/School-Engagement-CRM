@@ -87,3 +87,23 @@ export function describeFileRejection(
   }
   return `"${name}" couldn't be accepted. Please upload ${accepted}.`;
 }
+
+/** A stored website as a link; some are saved without "https://". */
+export function websiteHref(url: string): string {
+  const trimmed = url.trim();
+  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+}
+
+/** A website shown compactly: "www.d219.org/nths" rather than the full URL. */
+export function websiteLabel(url: string): string {
+  return url.trim().replace(/^https?:\/\//i, '').replace(/\/$/, '');
+}
+
+/** "8168008771" shown as "816-800-8771"; anything else is shown as stored. */
+export function formatPhone(phone: string): string {
+  const digits = phone.replace(/\D/g, '');
+  const ten = digits.length === 11 && digits.startsWith('1') ? digits.slice(1) : digits;
+  return ten.length === 10 && /^[\d\s().+-]+$/.test(phone.trim())
+    ? `${ten.slice(0, 3)}-${ten.slice(3, 6)}-${ten.slice(6)}`
+    : phone;
+}

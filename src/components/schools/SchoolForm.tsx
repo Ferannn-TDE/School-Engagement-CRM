@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -6,7 +7,6 @@ import { Select } from '../common/Select';
 import { Textarea } from '../common/Textarea';
 import { Button } from '../common/Button';
 import { useAppContext } from '../../context/AppContext';
-import { ILLINOIS_COUNTIES } from '../../constants';
 import type { School } from '../../types';
 import toast from 'react-hot-toast';
 
@@ -33,12 +33,13 @@ interface SchoolFormProps {
 }
 
 export function SchoolForm({ school, onClose }: SchoolFormProps) {
-  const { addSchool, updateSchool } = useAppContext();
+  const { state: appState, addSchool, updateSchool } = useAppContext();
   const isEditing = !!school;
 
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<SchoolFormData>({
     resolver: zodResolver(schoolSchema),
@@ -63,6 +64,18 @@ export function SchoolForm({ school, onClose }: SchoolFormProps) {
           priorityTier: 'standard',
         },
   });
+
+  // County choices come from the counties that already have schools in the chosen
+  // state, so Missouri schools get Missouri counties. The school's own county is
+  // always included, so editing never silently blanks it.
+  const selectedState = watch('state');
+  const countyOptions = useMemo(() => {
+    const names = new Set(
+      appState.schools.filter((s) => s.state === selectedState && s.county).map((s) => s.county)
+    );
+    if (school?.county) names.add(school.county);
+    return [...names].sort((a, b) => a.localeCompare(b)).map((c) => ({ value: c, label: c }));
+  }, [appState.schools, selectedState, school?.county]);
 
   const onSubmit = (data: SchoolFormData) => {
     const enrollment = data.enrollment ? parseInt(data.enrollment, 10) : undefined;
@@ -112,7 +125,7 @@ export function SchoolForm({ school, onClose }: SchoolFormProps) {
         <Select
           label="County"
           required
-          options={ILLINOIS_COUNTIES.map((c) => ({ value: c, label: c }))}
+          options={countyOptions}
           placeholder="Select county"
           error={errors.county?.message}
           {...register('county')}
@@ -141,9 +154,13 @@ export function SchoolForm({ school, onClose }: SchoolFormProps) {
           error={errors.city?.message}
           {...register('city')}
         />
-        <Input
+        <Select
           label="State"
           required
+          options={[
+            { value: 'IL', label: 'Illinois' },
+            { value: 'MO', label: 'Missouri' },
+          ]}
           error={errors.state?.message}
           {...register('state')}
         />

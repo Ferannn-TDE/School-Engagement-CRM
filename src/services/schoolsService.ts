@@ -82,6 +82,7 @@ export async function createSchool(
       county_name: school.county,
       address: school.address,
       city: school.city,
+      state_code: school.state || null,
       zipcode: school.zipCode,
       type_of_school: school.schoolType === 'high_school' ? 'High School' : 'Middle School',
       is_active: school.isActive,
@@ -253,6 +254,7 @@ export async function updateSchool(id: string, updates: Partial<School>): Promis
   if (updates.county !== undefined) patch.county_name = updates.county;
   if (updates.address !== undefined) patch.address = updates.address;
   if (updates.city !== undefined) patch.city = updates.city;
+  if (updates.state) patch.state_code = updates.state;
   if (updates.zipCode !== undefined) patch.zipcode = updates.zipCode;
   if (updates.schoolType !== undefined) {
     patch.type_of_school =

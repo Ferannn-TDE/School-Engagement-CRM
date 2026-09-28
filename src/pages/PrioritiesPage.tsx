@@ -11,7 +11,7 @@ import { Badge } from '../components/common/Badge';
 import { Modal } from '../components/common/Modal';
 import { LogContactForm } from '../components/activities/LogContactForm';
 import { useEngagementMaps, useSchoolsNeedingAttention } from '../hooks/useEngagementMaps';
-import { countyKey, countyLabel, countyPath } from '../utils/counties';
+import { countyGroupName, countyKey, countyLabel, countyPath } from '../utils/counties';
 import { useUrlState, useUrlStateBatch } from '../hooks/useUrlState';
 
 /** How overdue something is, used to colour the left edge of a row.
@@ -403,7 +403,7 @@ export function PrioritiesPage() {
     for (const s of state.schools) {
       if (!s.county || !s.county.trim()) continue;
       const key = countyKey(s.county, s.state);
-      const entry = countyMap.get(key) ?? { county: s.county, state: s.state, total: 0, withContacts: 0 };
+      const entry = countyMap.get(key) ?? { county: countyGroupName(s.county), state: s.state, total: 0, withContacts: 0 };
       entry.total++;
       if ((schoolContactsMap.get(s.id)?.total ?? 0) > 0) entry.withContacts++;
       countyMap.set(key, entry);

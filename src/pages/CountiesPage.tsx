@@ -15,7 +15,7 @@ import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { ChartTooltipContent } from '../components/common/ChartTooltip';
 import { CHART_COLORS } from '../constants/charts';
 import { useCountyAnalytics } from '../hooks/useCountyAnalytics';
-import { countyDisplayName, countyKey, countyPath, isIndependentCity } from '../utils/counties';
+import { countyDisplayName, countyKey, countyPath, isIndependentCity, isStateRunGroup, mergeCountyRows } from '../utils/counties';
 import { useStateFilter } from '../hooks/useStateFilter';
 import { ProgramCategory, ProgramCategoryLabels } from '../types';
 import {
@@ -109,12 +109,13 @@ export function CountiesPage() {
 
   // The county views cover both states; apply the shared All / IL / MO choice.
   const [region] = useStateFilter();
+  // The state-run labels arrive as two rows; they are merged into one group.
   const regionSummary = useMemo(
-    () => (region ? summaryData.filter((r) => r.state_code === region) : summaryData),
+    () => mergeCountyRows(region ? summaryData.filter((r) => r.state_code === region) : summaryData),
     [summaryData, region]
   );
   const regionEngagement = useMemo(
-    () => (region ? engagementData.filter((r) => r.state_code === region) : engagementData),
+    () => mergeCountyRows(region ? engagementData.filter((r) => r.state_code === region) : engagementData),
     [engagementData, region]
   );
 
@@ -142,8 +143,17 @@ export function CountiesPage() {
           engagementPct: e?.engagement_pct ?? 0,
         };
       })
-      .sort((a, b) => a.countyName.localeCompare(b.countyName) || (a.state ?? '').localeCompare(b.state ?? ''));
+      // Real counties alphabetically; the state-run schools group after them.
+      .sort(
+        (a, b) =>
+          Number(isStateRunGroup(a.countyName)) - Number(isStateRunGroup(b.countyName)) ||
+          a.countyName.localeCompare(b.countyName) ||
+          (a.state ?? '').localeCompare(b.state ?? '')
+      );
   }, [regionSummary, regionEngagement]);
+
+  // The state-run schools group is shown with the counties but isn't one.
+  const realCountyCount = counties.filter((c) => !isStateRunGroup(c.countyName)).length;
 
   const { engagementRateByCounty, countyComparisonData, programCoverageByCounty } =
     useCountyAnalytics(regionEngagement);
@@ -155,7 +165,8 @@ export function CountiesPage() {
         subtitle={
           loading
             ? 'Loading...'
-            : `${counties.length} counties in ${region === 'IL' ? 'Illinois' : region === 'MO' ? 'Missouri' : 'Illinois and Missouri'}`
+            : `${realCountyCount} counties in ${region === 'IL' ? 'Illinois' : region === 'MO' ? 'Missouri' : 'Illinois and Missouri'}` +
+              (realCountyCount < counties.length ? ', plus state-run schools' : '')
         }
       />
       <div className="p-8">
@@ -191,7 +202,11 @@ export function CountiesPage() {
                           {countyDisplayName(county.countyName)}
                         </h3>
                         <p className="text-xs text-neutral-500">
-                          {isIndependentCity(county.countyName) ? 'Independent city' : 'County'}
+                          {isStateRunGroup(county.countyName)
+                            ? 'Not a county'
+                            : isIndependentCity(county.countyName)
+                              ? 'Independent city'
+                              : 'County'}
                           {county.state ? `, ${county.state}` : ''}
                         </p>
                       </div>

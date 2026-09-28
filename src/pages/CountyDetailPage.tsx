@@ -18,7 +18,7 @@ import {
   type CountySchoolSummaryRow,
 } from '../services/analyticsService';
 import { formatSchoolType } from '../utils/helpers';
-import { countyLabel, countyPath } from '../utils/counties';
+import { countyLabel, countyPath, mergeCountyRows, sameCounty } from '../utils/counties';
 
 type SortField = 'name' | 'contacts' | 'score';
 type SortDir = 'asc' | 'desc';
@@ -48,10 +48,10 @@ export function CountyDetailPage() {
     setLoadingViews(true);
     Promise.all([fetchCountySchoolSummary(), fetchCountyEngagementRate()])
       .then(([summary, engagement]) => {
-        const sameCounty = (r: { county_name: string | null; state_code: string | null }) =>
-          r.county_name === countyName && (!countyState || r.state_code === countyState);
-        setSummaryRow(summary.find(sameCounty) ?? null);
-        setEngagementPct(engagement.find(sameCounty)?.engagement_pct ?? 0);
+        const isThis = (r: { county_name: string | null; state_code: string | null }) =>
+          !!r.county_name && sameCounty(r.county_name, countyName) && (!countyState || r.state_code === countyState);
+        setSummaryRow(mergeCountyRows(summary.filter(isThis))[0] ?? null);
+        setEngagementPct(mergeCountyRows(engagement.filter(isThis))[0]?.engagement_pct ?? 0);
       })
       .catch(() => {})
       .finally(() => setLoadingViews(false));
@@ -61,7 +61,7 @@ export function CountyDetailPage() {
   const countySchools = useMemo(
     () =>
       state.schools.filter(
-        (s) => s.county === countyName && (!countyState || s.state === countyState)
+        (s) => sameCounty(s.county, countyName) && (!countyState || s.state === countyState)
       ),
     [state.schools, countyName, countyState]
   );

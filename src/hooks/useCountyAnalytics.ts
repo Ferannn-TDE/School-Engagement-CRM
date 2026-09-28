@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useEngagementMaps } from './useEngagementMaps';
 import { ProgramCategory } from '../types';
 import type { CountyEngagementRow } from '../services/analyticsService';
-import { countyKey, countyShortLabel } from '../utils/counties';
+import { countyDisplayName, countyKey, countyShortLabel } from '../utils/counties';
 
 export interface ProgramCoverageEntry {
   county: string;
@@ -74,7 +74,7 @@ export function useCountyAnalytics(countyEngagement: CountyEngagementRow[]) {
     for (const s of state.schools) {
       if (!s.county || !s.county.trim()) continue;
       const key = countyKey(s.county, s.state);
-      const entry = countyMap.get(key) ?? { name: s.county, label: countyShortLabel(s.county, s.state), total: 0, engaged: 0 };
+      const entry = countyMap.get(key) ?? { name: countyDisplayName(s.county), label: countyShortLabel(s.county, s.state), total: 0, engaged: 0 };
       entry.total++;
       if ((schoolEventCountMap.get(s.id) ?? 0) > 0) entry.engaged++;
       countyMap.set(key, entry);

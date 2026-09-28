@@ -123,6 +123,13 @@ export interface Event {
   updatedAt: string;
 }
 
+/** How a logged contact happened. Stored as-is in activities.activity_type. */
+export const ContactMethodLabels: Record<string, string> = {
+  call: 'Phone call',
+  email: 'Email',
+  visit: 'Visit',
+};
+
 export interface ActivityRecord {
   id: string;
   schoolId: string;

@@ -10,12 +10,13 @@ import { Modal } from '../components/common/Modal';
 import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import { SchoolForm } from '../components/schools/SchoolForm';
 import { ProgramForm } from '../components/programs/ProgramForm';
+import { LogContactForm } from '../components/activities/LogContactForm';
 import { EmptyState } from '../components/common/EmptyState';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { Breadcrumb } from '../components/common/Breadcrumb';
 import type { BreadcrumbTag } from '../components/common/Breadcrumb';
 import { useAppContext } from '../context/AppContext';
-import { ContactRoleLabels, ProgramCategoryLabels, ProgramCategory } from '../types';
+import { ContactRoleLabels, ContactMethodLabels, ProgramCategoryLabels, ProgramCategory } from '../types';
 import type { Program } from '../types';
 import { formatSchoolType } from '../utils/helpers';
 import { computeEngagementScore } from '../utils/engagementScore';
@@ -35,6 +36,7 @@ export function SchoolDetailPage() {
   const [activityToDelete, setActivityToDelete] = useState<string | null>(null);
   const [showAddProgramModal, setShowAddProgramModal] = useState(false);
   const [programToDelete, setProgramToDelete] = useState<Program | null>(null);
+  const [showLogContact, setShowLogContact] = useState(false);
 
   const decodedId = id ? decodeURIComponent(id) : undefined;
   const school = decodedId ? getSchoolById(decodedId) : undefined;
@@ -310,16 +312,34 @@ export function SchoolDetailPage() {
 
         {/* Activity Timeline */}
         <Card>
-          <h3 className="text-base font-semibold text-neutral-800 mb-4">Activity History</h3>
+          <div className="flex items-center justify-between gap-4 mb-4">
+            <h3 className="text-base font-semibold text-neutral-800">Activity History</h3>
+            <Button size="sm" onClick={() => setShowLogContact(true)}>
+              <Plus size={14} />
+              Log contact
+            </Button>
+          </div>
           {activities.length > 0 ? (
             <div className="space-y-3">
               {activities
                 .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                .map((activity) => (
+                .map((activity) => {
+                  const person = contacts.find((c) => c.id === activity.contactId);
+                  return (
                   <div key={activity.id} className="flex items-start gap-3 py-2 border-b border-neutral-50 last:border-0">
                     <div className="w-2 h-2 rounded-full bg-siue-red mt-2 shrink-0" />
                     <div className="flex-1">
-                      <p className="text-sm text-neutral-700">{activity.description}</p>
+                      <p className="text-sm font-medium text-neutral-800">
+                        {ContactMethodLabels[activity.activityType] ?? activity.activityType}
+                        {person && (
+                          <span className="font-normal text-neutral-500">
+                            {' '}with {`${person.firstName} ${person.lastName}`.trim()}
+                          </span>
+                        )}
+                      </p>
+                      {activity.description && (
+                        <p className="text-sm text-neutral-700 whitespace-pre-wrap">{activity.description}</p>
+                      )}
                       {activity.outcome && (
                         <p className="text-xs text-neutral-500 mt-0.5">{activity.outcome}</p>
                       )}
@@ -335,10 +355,13 @@ export function SchoolDetailPage() {
                       <Trash2 size={14} />
                     </button>
                   </div>
-                ))}
+                  );
+                })}
             </div>
           ) : (
-            <p className="text-sm text-neutral-500 py-4 text-center">No activities recorded yet.</p>
+            <p className="text-sm text-neutral-500 py-4 text-center">
+              No contact logged yet. Use “Log contact” after a call, email or visit.
+            </p>
           )}
         </Card>
 
@@ -352,6 +375,10 @@ export function SchoolDetailPage() {
 
       <Modal open={showEditModal} onClose={() => setShowEditModal(false)} title="Edit School" size="lg">
         <SchoolForm school={school} onClose={() => setShowEditModal(false)} />
+      </Modal>
+
+      <Modal open={showLogContact} onClose={() => setShowLogContact(false)} title={`Log contact — ${school.name}`} size="md">
+        <LogContactForm schoolId={school.id} onClose={() => setShowLogContact(false)} />
       </Modal>
 
       <Modal

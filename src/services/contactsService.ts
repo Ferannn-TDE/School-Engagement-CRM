@@ -89,7 +89,7 @@ export async function createContact(
       name: fullName,
       email: contact.email,
       phone: contact.phone ?? null,
-      job_name: contact.role,
+      job_name: contact.title || null,
       school_worked_at: contact.schoolId,
       is_active: contact.isActive,
       notes: contact.notes ?? null,
@@ -168,7 +168,8 @@ export async function updateContact(id: string, updates: Partial<Contact>): Prom
   }
   if (updates.email !== undefined) patch.email = updates.email;
   if (updates.phone !== undefined) patch.phone = updates.phone ?? null;
-  if (updates.role !== undefined) patch.job_name = updates.role;
+  // The real job title, never the derived category key.
+  if (updates.title !== undefined) patch.job_name = updates.title || null;
   if (updates.schoolId !== undefined) patch.school_worked_at = updates.schoolId;
   if (updates.isActive !== undefined) patch.is_active = updates.isActive;
   if (updates.notes !== undefined) patch.notes = updates.notes ?? null;

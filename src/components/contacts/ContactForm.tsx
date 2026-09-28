@@ -6,16 +6,18 @@ import { Select } from '../common/Select';
 import { Textarea } from '../common/Textarea';
 import { Button } from '../common/Button';
 import { useAppContext } from '../../context/AppContext';
-import { ContactRole, ContactRoleLabels } from '../../types';
+import { ContactRoleLabels } from '../../types';
 import type { Contact } from '../../types';
+import { roleFromTitle } from '../../utils/contactRoles';
 import toast from 'react-hot-toast';
 
 const contactSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
-  email: z.string().email('Invalid email address'),
+  lastName: z.string().optional(),
+  // 1,833 scraped contacts have no email; requiring one made them impossible to edit.
+  email: z.string().email('Invalid email address').or(z.literal('')),
   phone: z.string().optional(),
-  role: z.nativeEnum(ContactRole),
+  title: z.string().optional(),
   schoolId: z.string().min(1, 'School is required'),
   notes: z.string().optional(),
 });
@@ -34,7 +36,8 @@ export function ContactForm({ contact, onClose }: ContactFormProps) {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    watch,
+    formState: { errors, isSubmitting, dirtyFields },
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
     defaultValues: contact
@@ -43,29 +46,43 @@ export function ContactForm({ contact, onClose }: ContactFormProps) {
           lastName: contact.lastName,
           email: contact.email,
           phone: contact.phone || '',
-          role: contact.role,
+          title: contact.title || '',
           schoolId: contact.schoolId,
           notes: contact.notes || '',
         }
-      : {
-          role: ContactRole.COUNSELOR,
-        },
+      : { email: '', title: '' },
   });
 
+  const category = roleFromTitle(watch('title'));
+
   const onSubmit = (data: ContactFormData) => {
+    const edited: Partial<Contact> = {
+      ...data,
+      lastName: data.lastName || '',
+      phone: data.phone || undefined,
+      notes: data.notes || undefined,
+      title: data.title?.trim() ?? '',
+      role: roleFromTitle(data.title),
+    };
+
     if (isEditing && contact) {
-      updateContact({
-        ...contact,
-        ...data,
-        phone: data.phone || undefined,
-        notes: data.notes || undefined,
-      });
+      // Save only what the user changed: the job title stays as typed (never a
+      // category key), and the school link is only touched if the school changed.
+      const changes: Partial<Contact> = {};
+      for (const key of Object.keys(dirtyFields) as (keyof ContactFormData)[]) {
+        (changes as Record<string, unknown>)[key] = edited[key as keyof Contact];
+      }
+      if (Object.keys(changes).length === 0) {
+        toast('No changes to save');
+        onClose();
+        return;
+      }
+      if ('title' in changes) changes.role = edited.role;
+      updateContact({ ...contact, ...changes }, changes);
       toast.success('Contact updated successfully');
     } else {
       addContact({
-        ...data,
-        phone: data.phone || undefined,
-        notes: data.notes || undefined,
+        ...(edited as Omit<Contact, 'id' | 'createdAt' | 'updatedAt'>),
         isActive: true,
       });
       toast.success('Contact added successfully');
@@ -73,13 +90,10 @@ export function ContactForm({ contact, onClose }: ContactFormProps) {
     onClose();
   };
 
-  const roleOptions = Object.values(ContactRole).map((role) => ({
-    value: role,
-    label: ContactRoleLabels[role],
-  }));
-
+  // Active schools, plus the contact's own school even if it has been deactivated,
+  // so editing never blanks the school.
   const schoolOptions = state.schools
-    .filter((s) => s.isActive)
+    .filter((s) => s.isActive || s.id === contact?.schoolId)
     .map((s) => ({ value: s.id, label: s.name }));
 
   return (
@@ -93,7 +107,6 @@ export function ContactForm({ contact, onClose }: ContactFormProps) {
         />
         <Input
           label="Last Name"
-          required
           error={errors.lastName?.message}
           {...register('lastName')}
         />
@@ -102,7 +115,6 @@ export function ContactForm({ contact, onClose }: ContactFormProps) {
         <Input
           label="Email"
           type="email"
-          required
           error={errors.email?.message}
           {...register('email')}
         />
@@ -114,12 +126,12 @@ export function ContactForm({ contact, onClose }: ContactFormProps) {
         />
       </div>
       <div className="grid grid-cols-2 gap-4">
-        <Select
-          label="Role"
-          required
-          options={roleOptions}
-          error={errors.role?.message}
-          {...register('role')}
+        <Input
+          label="Job title"
+          placeholder="e.g. School Counselor"
+          helpText={`Category: ${ContactRoleLabels[category]}`}
+          error={errors.title?.message}
+          {...register('title')}
         />
         <Select
           label="School"

@@ -209,7 +209,8 @@ interface AppContextValue {
   deleteSchool: (id: string) => void;
   addContact: (contact: Omit<Contact, 'id' | 'createdAt' | 'updatedAt'>) => void;
   addContactsBulk: (contacts: Omit<Contact, 'id' | 'createdAt' | 'updatedAt'>[]) => void;
-  updateContact: (contact: Contact) => void;
+  /** `changes` limits the database write to those fields; without it every field is written. */
+  updateContact: (contact: Contact, changes?: Partial<Contact>) => void;
   deleteContact: (id: string) => void;
   addEvent: (event: Omit<Event, 'id' | 'createdAt' | 'updatedAt'>) => void;
   updateEvent: (event: Event) => void;
@@ -330,8 +331,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       });
   };
 
-  const updateContact = (contact: Contact): void => {
-    dbUpdateContact(contact.id, contact)
+  const updateContact = (contact: Contact, changes?: Partial<Contact>): void => {
+    dbUpdateContact(contact.id, changes ?? contact)
       .then(() =>
         dispatch({
           type: 'UPDATE_CONTACT',

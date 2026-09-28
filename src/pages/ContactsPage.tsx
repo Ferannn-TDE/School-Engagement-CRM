@@ -16,6 +16,7 @@ import { ContactForm } from '../components/contacts/ContactForm';
 import { useAppContext } from '../context/AppContext';
 import type { Contact } from '../types';
 import { ContactRole, ContactRoleLabels } from '../types';
+import { contactRoleLabel } from '../utils/contactRoles';
 import toast from 'react-hot-toast';
 
 type VerifiedTab = 'all' | 'verified' | 'unverified';
@@ -76,9 +77,7 @@ export function ContactsPage() {
       {
         accessorKey: 'role',
         header: 'Role',
-        cell: ({ getValue }) => (
-          <Badge variant="info">{ContactRoleLabels[getValue() as ContactRole]}</Badge>
-        ),
+        cell: ({ row }) => <Badge variant="info">{contactRoleLabel(row.original)}</Badge>,
       },
       {
         id: 'school',

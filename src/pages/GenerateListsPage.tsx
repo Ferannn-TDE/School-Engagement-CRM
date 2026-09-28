@@ -7,6 +7,7 @@ import { Select } from '../components/common/Select';
 import { Badge } from '../components/common/Badge';
 import { useAppContext } from '../context/AppContext';
 import { ContactRole, ContactRoleLabels } from '../types';
+import { contactRoleLabel } from '../utils/contactRoles';
 import { contactsToCsv, downloadFile } from '../utils/helpers';
 import toast from 'react-hot-toast';
 
@@ -73,7 +74,7 @@ export function GenerateListsPage() {
         lastName: c.lastName,
         email: c.email,
         phone: c.phone || '',
-        role: ContactRoleLabels[c.role],
+        role: contactRoleLabel(c),
         school: school?.name || '',
         county: school?.county || '',
         address: school?.address || '',
@@ -275,7 +276,7 @@ export function GenerateListsPage() {
                           </td>
                           <td className="px-4 py-3 text-neutral-500">{contact.email}</td>
                           <td className="px-4 py-3">
-                            <Badge variant="info">{ContactRoleLabels[contact.role]}</Badge>
+                            <Badge variant="info">{contactRoleLabel(contact)}</Badge>
                           </td>
                           <td className="px-4 py-3 text-neutral-600">{school?.name || '-'}</td>
                           <td className="px-4 py-3 text-neutral-500">{school?.county || '-'}</td>

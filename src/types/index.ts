@@ -37,6 +37,10 @@ export enum ContactRole {
   ENGINEERING_TEACHER = 'engineering_teacher',
   MATH_TEACHER = 'math_teacher',
   SCIENCE_TEACHER = 'science_teacher',
+  /** Has a job title that fits none of the categories above, e.g. Social Worker. */
+  OTHER = 'other',
+  /** No job title recorded. */
+  UNSPECIFIED = 'unspecified',
 }
 
 export const ContactRoleLabels: Record<ContactRole, string> = {
@@ -47,6 +51,8 @@ export const ContactRoleLabels: Record<ContactRole, string> = {
   [ContactRole.ENGINEERING_TEACHER]: 'Engineering Teacher',
   [ContactRole.MATH_TEACHER]: 'Math Teacher',
   [ContactRole.SCIENCE_TEACHER]: 'Science Teacher',
+  [ContactRole.OTHER]: 'Other',
+  [ContactRole.UNSPECIFIED]: 'Unspecified',
 };
 
 export enum EventType {
@@ -76,6 +82,8 @@ export interface Contact {
   email: string;
   phone?: string;
   role: ContactRole;
+  /** The job title as recorded (staff.job_name), e.g. "Social Worker". */
+  title?: string;
   schoolId: string;
   isActive: boolean;
   notes?: string;

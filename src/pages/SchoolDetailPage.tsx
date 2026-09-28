@@ -16,10 +16,11 @@ import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { Breadcrumb } from '../components/common/Breadcrumb';
 import type { BreadcrumbTag } from '../components/common/Breadcrumb';
 import { useAppContext } from '../context/AppContext';
-import { ContactRoleLabels, ContactMethodLabels, ProgramCategoryLabels, ProgramCategory } from '../types';
+import { ContactMethodLabels, ProgramCategoryLabels, ProgramCategory } from '../types';
 import type { Program } from '../types';
 import { formatSchoolType } from '../utils/helpers';
 import { computeEngagementScore } from '../utils/engagementScore';
+import { contactRoleLabel } from '../utils/contactRoles';
 import toast from 'react-hot-toast';
 
 export function SchoolDetailPage() {
@@ -234,7 +235,7 @@ export function SchoolDetailPage() {
                     <p className="text-xs text-neutral-500">{contact.email}</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge>{ContactRoleLabels[contact.role]}</Badge>
+                    <Badge>{contactRoleLabel(contact)}</Badge>
                     <Badge variant={contact.isActive ? 'success' : 'error'}>
                       {contact.isActive ? 'Active' : 'Inactive'}
                     </Badge>

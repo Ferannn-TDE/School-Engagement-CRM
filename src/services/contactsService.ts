@@ -1,7 +1,8 @@
 import { supabase, fetchAllRows } from './supabase';
 import type { Contact } from '../types';
-import { ContactRole } from '../types';
+import type { ContactRole } from '../types';
 import { nowISO } from '../utils/helpers';
+import { roleFromTitle } from '../utils/contactRoles';
 
 interface StaffRow {
   staff_id: number;
@@ -24,19 +25,6 @@ interface JunctionRow {
   staff_id: number;
 }
 
-function mapJobNameToRole(jobName: string | null): ContactRole {
-  if (!jobName) return ContactRole.PRINCIPAL;
-  const lower = jobName.toLowerCase();
-  if (lower.includes('superintendent')) return ContactRole.SUPERINTENDENT;
-  if (lower.includes('principal')) return ContactRole.PRINCIPAL;
-  if (lower.includes('counselor') || lower.includes('guidance')) return ContactRole.COUNSELOR;
-  if (lower.includes('computer science') || lower.includes('computing')) return ContactRole.CS_TEACHER;
-  if (lower.includes('engineering')) return ContactRole.ENGINEERING_TEACHER;
-  if (lower.includes('math') || lower.includes('mathematics')) return ContactRole.MATH_TEACHER;
-  if (lower.includes('science')) return ContactRole.SCIENCE_TEACHER;
-  return ContactRole.PRINCIPAL;
-}
-
 function splitName(fullName: string | null): { firstName: string; lastName: string } {
   if (!fullName || fullName.trim() === '') return { firstName: '', lastName: '' };
   const trimmed = fullName.trim();
@@ -56,7 +44,8 @@ function rowToContact(staff: StaffRow, schoolId: string): Contact {
     lastName,
     email: staff.email ?? '',
     phone: staff.phone ?? undefined,
-    role: mapJobNameToRole(staff.job_name),
+    role: roleFromTitle(staff.job_name),
+    title: staff.job_name?.trim() || undefined,
     schoolId,
     isActive: staff.is_active ?? true,
     notes: staff.notes ?? undefined,

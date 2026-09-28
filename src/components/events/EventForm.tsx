@@ -16,7 +16,9 @@ const eventSchema = z.object({
   type: z.nativeEnum(EventType),
   date: z.string().min(1, 'Date is required'),
   endDate: z.string().optional(),
-  location: z.string().min(1, 'Location is required'),
+  // Optional: 25 events from school calendars have no location, and requiring one
+  // made them impossible to save.
+  location: z.string().optional(),
   attendeeCountStr: z.string().optional(),
   notes: z.string().optional(),
   participatingSchools: z.array(z.string()),
@@ -76,7 +78,7 @@ export function EventForm({ event, onClose }: EventFormProps) {
       type: data.type,
       date: new Date(data.date).toISOString(),
       endDate: data.endDate ? new Date(data.endDate).toISOString() : undefined,
-      location: data.location,
+      location: data.location ?? '',
       notes: data.notes || undefined,
       attendeeCount,
       participatingSchools: data.participatingSchools,
@@ -129,7 +131,6 @@ export function EventForm({ event, onClose }: EventFormProps) {
         />
         <Input
           label="Location"
-          required
           error={errors.location?.message}
           {...register('location')}
         />

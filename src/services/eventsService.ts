@@ -125,7 +125,7 @@ export async function updateEvent(id: string, updates: Partial<Event>): Promise<
   const eventId = parseEventId(id);
   const patch: Partial<EventRow> = {};
   if (updates.name !== undefined) patch.fair_name = updates.name;
-  if (updates.location !== undefined) patch.location = updates.location;
+  if (updates.location !== undefined) patch.location = updates.location || null;
   if (updates.attendeeCount !== undefined) patch.attendance = updates.attendeeCount;
   if (updates.participatingSchools !== undefined) {
     patch.schools_involved = updates.participatingSchools.join(',') || null;

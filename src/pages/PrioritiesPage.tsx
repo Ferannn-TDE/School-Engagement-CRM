@@ -3,11 +3,13 @@ import { Link } from 'react-router-dom';
 import { format, subMonths, isAfter, differenceInDays } from 'date-fns';
 import {
   AlertTriangle, School, Clock, ChevronDown, ChevronUp,
-  ChevronsUpDown, MapPin, CheckCircle2, CalendarX,
+  ChevronsUpDown, MapPin, CheckCircle2, CalendarX, Plus,
 } from 'lucide-react';
 import { Header } from '../components/layout/Header';
 import { Card } from '../components/common/Card';
 import { Badge } from '../components/common/Badge';
+import { Modal } from '../components/common/Modal';
+import { LogContactForm } from '../components/activities/LogContactForm';
 import { useEngagementMaps, useSchoolsNeedingAttention } from '../hooks/useEngagementMaps';
 
 /** How overdue something is, used to colour the left edge of a row.
@@ -37,7 +39,7 @@ const ROWS_PER_PAGE = 25;
 /** Shared column widths. Kept in one place so the header and the rows cannot
  *  drift apart — a misaligned table is worse than no table. */
 const COLS =
-  'grid grid-cols-[minmax(0,1.8fr)_minmax(0,0.85fr)_4.5rem_6rem_minmax(0,3.2fr)] gap-4 items-center';
+  'grid grid-cols-[minmax(0,1.8fr)_4rem_minmax(0,0.85fr)_4.5rem_6rem_minmax(0,3.2fr)] gap-4 items-center';
 
 function WorkSection({
   icon,
@@ -193,7 +195,7 @@ function Pager({
 }
 
 /** A worklist rendered as aligned columns, one page at a time. */
-function WorkTable({ items }: { items: WorkItem[] }) {
+function WorkTable({ items, onLog }: { items: WorkItem[]; onLog: (item: WorkItem) => void }) {
   const [page, setPage] = useState(1);
   const pageCount = Math.max(1, Math.ceil(items.length / ROWS_PER_PAGE));
   const current = Math.min(page, pageCount);
@@ -203,11 +205,13 @@ function WorkTable({ items }: { items: WorkItem[] }) {
   return (
     <div>
       <div className="overflow-x-auto">
-        <div className="min-w-[48rem]">
+        <div className="min-w-[53rem]">
           <div
             className={`${COLS} px-6 py-2.5 bg-neutral-50 border-b border-neutral-100 text-xs font-semibold text-neutral-500 uppercase tracking-wider`}
           >
             <span>School</span>
+            {/* Outer span holds the grid cell; sr-only alone is absolutely positioned and would not. */}
+            <span><span className="sr-only">Actions</span></span>
             <span>County</span>
             <span className="text-right">Contacts</span>
             <span>Last contact</span>
@@ -229,6 +233,14 @@ function WorkTable({ items }: { items: WorkItem[] }) {
                   >
                     {item.name}
                   </Link>
+                  <button
+                    onClick={() => onLog(item)}
+                    className="justify-self-start inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md text-siue-red hover:bg-siue-red/10 transition-colors"
+                    aria-label={`Log contact with ${item.name}`}
+                  >
+                    <Plus size={12} />
+                    Log
+                  </button>
                   <span className="text-sm text-neutral-500 truncate">
                     {item.county || <span className="text-neutral-400">—</span>}
                   </span>
@@ -262,6 +274,7 @@ export function PrioritiesPage() {
   const { state, schoolContactsMap, schoolActivitiesMap } = useEngagementMaps();
   const schoolsNeedingAttention = useSchoolsNeedingAttention();
   const [attentionSort, setAttentionSort] = useState<'name' | 'county'>('name');
+  const [logFor, setLogFor] = useState<WorkItem | null>(null);
 
   /** Fills in the columns every list shares, so rows align across sections. */
   const toItem = useCallback(
@@ -422,7 +435,7 @@ export function PrioritiesPage() {
             emptyTitle="No follow-ups waiting"
             emptyBody="Every school with contacts has been in touch recently."
           >
-            <WorkTable items={upcomingFollowups} />
+            <WorkTable items={upcomingFollowups} onLog={setLogFor} />
           </WorkSection>
 
           <WorkSection
@@ -444,7 +457,7 @@ export function PrioritiesPage() {
                 <ChevronsUpDown size={12} className="text-neutral-400" />
               </button>
             </div>
-            <WorkTable items={attentionItems} />
+            <WorkTable items={attentionItems} onLog={setLogFor} />
           </WorkSection>
 
           <WorkSection
@@ -455,7 +468,7 @@ export function PrioritiesPage() {
             countTone="neutral"
             emptyTitle="Every school has been to an event"
           >
-            <WorkTable items={noEventItems} />
+            <WorkTable items={noEventItems} onLog={setLogFor} />
           </WorkSection>
 
           <WorkSection
@@ -515,6 +528,15 @@ export function PrioritiesPage() {
           Charts and totals for the whole program live on the Reports page.
         </p>
       </div>
+
+      <Modal
+        open={logFor !== null}
+        onClose={() => setLogFor(null)}
+        title={logFor ? `Log contact — ${logFor.name}` : 'Log contact'}
+        size="md"
+      >
+        {logFor && <LogContactForm schoolId={logFor.id} onClose={() => setLogFor(null)} />}
+      </Modal>
     </div>
   );
 }

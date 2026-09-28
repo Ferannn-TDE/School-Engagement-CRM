@@ -16,6 +16,7 @@ import { EventsPage } from './pages/EventsPage';
 import { ImportPage } from './pages/ImportPage';
 import { GenerateListsPage } from './pages/GenerateListsPage';
 import { ReportsPage } from './pages/ReportsPage';
+import { PrioritiesPage } from './pages/PrioritiesPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { CountiesPage } from './pages/CountiesPage';
 import { CountyDetailPage } from './pages/CountyDetailPage';
@@ -63,6 +64,7 @@ function App() {
           <Route element={<AuthGuard />}>
             <Route element={<AppLayout />}>
               <Route path="/" element={<DashboardPage />} />
+              <Route path="/priorities" element={<PrioritiesPage />} />
               <Route path="/schools" element={<SchoolsPage />} />
               <Route path="/schools/:id" element={<SchoolDetailPage />} />
               <Route path="/contacts" element={<ContactsPage />} />
@@ -70,6 +72,8 @@ function App() {
               <Route path="/import" element={<ImportPage />} />
               <Route path="/generate" element={<GenerateListsPage />} />
               <Route path="/reports" element={<ReportsPage />} />
+              {/* Kept so existing bookmarks and links to the old Analytics page still work. */}
+              <Route path="/analytics" element={<Navigate to="/reports" replace />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/counties" element={<CountiesPage />} />
               <Route path="/counties/:countyName" element={<CountyDetailPage />} />

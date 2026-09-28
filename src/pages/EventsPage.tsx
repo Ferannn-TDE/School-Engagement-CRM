@@ -12,6 +12,7 @@ import { Modal } from '../components/common/Modal';
 import { EmptyState } from '../components/common/EmptyState';
 import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import { EventForm } from '../components/events/EventForm';
+import { EventDetails } from '../components/events/EventDetails';
 import { useAppContext } from '../context/AppContext';
 import { useUrlState } from '../hooks/useUrlState';
 import type { Event } from '../types';
@@ -27,6 +28,7 @@ export function EventsPage() {
   const [typeFilter, setTypeFilter] = useUrlState('type');
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+  const [viewingEvent, setViewingEvent] = useState<Event | null>(null);
   const [deletingEvent, setDeletingEvent] = useState<Event | null>(null);
   const [monthRaw, setMonthRaw] = useUrlState('month');
   const calendarMonth = useMemo(() => {
@@ -210,6 +212,7 @@ export function EventsPage() {
                   columnWidths={['32%', '15%', '18%', '10%', '10%', '15%']}
                   urlState
                   resetKey={typeFilter}
+                  onRowClick={(event) => setViewingEvent(event)}
                   emptyMessage="No events match your filter."
                 />
               </Card>
@@ -267,7 +270,7 @@ export function EventsPage() {
                         key={event.id}
                         className="mt-1 px-1.5 py-0.5 bg-siue-red/10 text-siue-red text-xs rounded truncate cursor-pointer hover:bg-siue-red/20"
                         title={event.name}
-                        onClick={() => setEditingEvent(event)}
+                        onClick={() => setViewingEvent(event)}
                       >
                         {event.name}
                       </div>
@@ -282,6 +285,18 @@ export function EventsPage() {
 
       <Modal open={showAddModal} onClose={() => setShowAddModal(false)} title="Create Event" size="lg">
         <EventForm onClose={() => setShowAddModal(false)} />
+      </Modal>
+
+      <Modal open={!!viewingEvent} onClose={() => setViewingEvent(null)} title="Event" size="md">
+        {viewingEvent && (
+          <EventDetails
+            event={viewingEvent}
+            onEdit={() => {
+              setEditingEvent(viewingEvent);
+              setViewingEvent(null);
+            }}
+          />
+        )}
       </Modal>
 
       <Modal open={!!editingEvent} onClose={() => setEditingEvent(null)} title="Edit Event" size="lg">

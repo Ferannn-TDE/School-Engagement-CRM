@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -7,10 +7,13 @@ import {
   getPaginationRowModel,
   flexRender,
   type ColumnDef,
+  type PaginationState,
   type SortingState,
+  type Updater,
 } from '@tanstack/react-table';
 import { ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
 import { classNames } from '../../utils/helpers';
+import { useUrlState, useUrlStateBatch } from '../../hooks/useUrlState';
 
 interface DataTableProps<T> {
   data: T[];
@@ -22,6 +25,24 @@ interface DataTableProps<T> {
   emptyAction?: React.ReactNode;
   /** Optional column width percentages, e.g. ['30%', '20%', '15%', '15%', '20%']. Must sum to 100%. */
   columnWidths?: string[];
+  /** Keep sort, page and page size in the address (?sort=-name&page=3&size=50), so
+   *  they survive leaving the tab, a refresh and the back button. */
+  urlState?: boolean;
+  /** Changes whenever the page's own filters change; the table then returns to
+   *  page 1. Restoring a saved address is not a change. */
+  resetKey?: string;
+}
+
+const PAGE_SIZES = [25, 50, 100];
+
+function parseSort(value: string): SortingState {
+  if (!value) return [];
+  return value.startsWith('-') ? [{ id: value.slice(1), desc: true }] : [{ id: value, desc: false }];
+}
+
+function formatSort(sorting: SortingState): string {
+  const first = sorting[0];
+  return first ? `${first.desc ? '-' : ''}${first.id}` : '';
 }
 
 export function DataTable<T>({
@@ -33,20 +54,77 @@ export function DataTable<T>({
   emptyMessage = 'No data found.',
   emptyAction,
   columnWidths,
+  urlState = false,
+  resetKey,
 }: DataTableProps<T>) {
-  const [sorting, setSorting] = useState<SortingState>([]);
+  // Both stores always exist (hooks can't be conditional); urlState picks one.
+  const [localSorting, setLocalSorting] = useState<SortingState>([]);
+  const [localPagination, setLocalPagination] = useState<PaginationState>({ pageIndex: 0, pageSize });
+  const [urlSort, setUrlSort] = useUrlState('sort');
+  const [urlPage, setUrlPage] = useUrlState('page', '1');
+  const [urlSize] = useUrlState('size', String(pageSize));
+  // Page and size change together; two separate updates would each start from the
+  // old address and the second would undo the first.
+  const setUrlValues = useUrlStateBatch();
+
+  const sorting = urlState ? parseSort(urlSort) : localSorting;
+  const parsedSize = Number(urlSize);
+  const pagination: PaginationState = urlState
+    ? {
+        pageIndex: Math.max(0, (Number(urlPage) || 1) - 1),
+        pageSize: PAGE_SIZES.includes(parsedSize) ? parsedSize : pageSize,
+      }
+    : localPagination;
+
+  const onSortingChange = (updater: Updater<SortingState>) => {
+    const next = typeof updater === 'function' ? updater(sorting) : updater;
+    if (urlState) setUrlSort(formatSort(next));
+    else setLocalSorting(next);
+  };
+  const onPaginationChange = (updater: Updater<PaginationState>) => {
+    const next = typeof updater === 'function' ? updater(pagination) : updater;
+    if (urlState) {
+      setUrlValues({
+        page: next.pageIndex === 0 ? '' : String(next.pageIndex + 1),
+        size: next.pageSize === pageSize ? '' : String(next.pageSize),
+      });
+    } else {
+      setLocalPagination(next);
+    }
+  };
+
+  // Back to page 1 when the search or the page's filters change, but not on the
+  // first render: that is a saved address being restored.
+  const lastReset = useRef<string | undefined>(undefined);
+  const combinedReset = `${resetKey ?? ''}\u0000${searchValue ?? ''}`;
+  useEffect(() => {
+    if (lastReset.current !== undefined && lastReset.current !== combinedReset) {
+      if (urlState) setUrlPage('1');
+      else setLocalPagination((p) => ({ ...p, pageIndex: 0 }));
+    }
+    lastReset.current = combinedReset;
+  }, [combinedReset, urlState, setUrlPage]);
 
   const table = useReactTable({
     data,
     columns,
-    state: { sorting, globalFilter: searchValue },
-    onSortingChange: setSorting,
+    state: { sorting, globalFilter: searchValue, pagination },
+    onSortingChange,
+    onPaginationChange,
+    // Data arrives after the page renders; resetting then would throw away a
+    // restored page number. Resets happen explicitly above instead.
+    autoResetPageIndex: false,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    initialState: { pagination: { pageSize } },
   });
+
+  // A saved page number beyond the end (the data shrank since): move to the last page.
+  const pageCount = table.getPageCount();
+  useEffect(() => {
+    if (pageCount > 0 && pagination.pageIndex >= pageCount) table.setPageIndex(pageCount - 1);
+  }, [pageCount, pagination.pageIndex, table]);
 
   return (
     <div className="pb-4">
@@ -131,7 +209,7 @@ export function DataTable<T>({
             {' '}-{' '}
             {Math.min(
               (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
-              data.length
+              table.getFilteredRowModel().rows.length
             )}
             {' '}of {table.getFilteredRowModel().rows.length}
           </p>
@@ -141,7 +219,7 @@ export function DataTable<T>({
               onChange={(e) => table.setPageSize(Number(e.target.value))}
               className="border border-neutral-200 rounded-lg px-2 py-1 text-sm"
             >
-              {[25, 50, 100].map((size) => (
+              {PAGE_SIZES.map((size) => (
                 <option key={size} value={size}>
                   {size} per page
                 </option>

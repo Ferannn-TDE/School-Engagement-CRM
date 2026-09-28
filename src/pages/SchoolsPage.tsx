@@ -14,6 +14,7 @@ import { Modal } from '../components/common/Modal';
 import { EmptyState } from '../components/common/EmptyState';
 import { SchoolForm } from '../components/schools/SchoolForm';
 import { useAppContext } from '../context/AppContext';
+import { useUrlState } from '../hooks/useUrlState';
 import type { School as SchoolType } from '../types';
 import { formatSchoolType } from '../utils/helpers';
 
@@ -22,11 +23,14 @@ type VerifiedTab = 'all' | 'verified' | 'unverified';
 export function SchoolsPage() {
   const { state, getContactsBySchool, getActivitiesBySchool, verifySchool, verifySchoolsBulk } = useAppContext();
   const navigate = useNavigate();
-  const [search, setSearch] = useState('');
-  const [countyFilter, setCountyFilter] = useState('');
-  const [typeFilter, setTypeFilter] = useState('');
-  const [contactsFilter, setContactsFilter] = useState<'' | 'has' | 'none'>('');
-  const [verifiedTab, setVerifiedTab] = useState<VerifiedTab>('all');
+  // Kept in the address so the view survives leaving the tab, a refresh and Back.
+  const [search, setSearch] = useUrlState('q');
+  const [countyFilter, setCountyFilter] = useUrlState('county');
+  const [typeFilter, setTypeFilter] = useUrlState('type');
+  const [contactsRaw, setContactsFilter] = useUrlState('contacts');
+  const contactsFilter = (contactsRaw === 'has' || contactsRaw === 'none' ? contactsRaw : '') as '' | 'has' | 'none';
+  const [tabRaw, setVerifiedTab] = useUrlState('tab', 'all');
+  const verifiedTab = (['all', 'verified', 'unverified'].includes(tabRaw) ? tabRaw : 'all') as VerifiedTab;
   const [showAddModal, setShowAddModal] = useState(false);
 
   const unverifiedCount = useMemo(
@@ -81,7 +85,7 @@ export function SchoolsPage() {
       placeholder: 'Any Contacts',
       className: 'w-44',
     },
-  ], [uniqueCounties, countyFilter, typeFilter, contactsFilter]);
+  ], [uniqueCounties, countyFilter, typeFilter, contactsFilter, setCountyFilter, setTypeFilter, setContactsFilter]);
 
   const baseColumns: ColumnDef<SchoolType, unknown>[] = useMemo(
     () => [
@@ -273,6 +277,8 @@ export function SchoolsPage() {
               data={filteredSchools}
               columns={columns}
               searchValue={search}
+              urlState
+              resetKey={[verifiedTab, countyFilter, typeFilter, contactsFilter].join('|')}
               onRowClick={(school) => navigate(`/schools/${encodeURIComponent(school.id)}`)}
               emptyMessage="No schools match your filters."
             />

@@ -40,7 +40,7 @@ export function SchoolForm({ school, onClose }: SchoolFormProps) {
     register,
     handleSubmit,
     watch,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, dirtyFields },
   } = useForm<SchoolFormData>({
     resolver: zodResolver(schoolSchema),
     defaultValues: school
@@ -83,15 +83,27 @@ export function SchoolForm({ school, onClose }: SchoolFormProps) {
     const priorityTier = (data.priorityTier as 'high' | 'standard' | 'low' | undefined) || undefined;
 
     if (isEditing && school) {
-      updateSchool({
-        ...school,
+      const edited: Partial<School> = {
         ...data,
         district: data.district || undefined,
         notes: data.notes || undefined,
         enrollment,
         gradeRange,
         priorityTier,
-      });
+      };
+      // Save only what the user changed. Writing every field back would replace
+      // values the form can't show faithfully, e.g. the scraper's "Public high
+      // school" becoming "High School", or priority_tier being reset.
+      const changes: Partial<School> = {};
+      for (const key of Object.keys(dirtyFields) as (keyof SchoolFormData)[]) {
+        (changes as Record<string, unknown>)[key] = edited[key as keyof School];
+      }
+      if (Object.keys(changes).length === 0) {
+        toast('No changes to save');
+        onClose();
+        return;
+      }
+      updateSchool({ ...school, ...changes }, changes);
       toast.success('School updated successfully');
     } else {
       addSchool({

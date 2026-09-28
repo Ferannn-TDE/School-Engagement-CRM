@@ -37,6 +37,10 @@ function mapSchoolType(typeOfSchool: string | null): SchoolType {
   return 'high_school';
 }
 
+function isPriorityTier(value: string | null): value is NonNullable<School['priorityTier']> {
+  return value === 'high' || value === 'standard' || value === 'low';
+}
+
 function rowToSchool(row: SchoolRow): School {
   return {
     id: row.facility_key,
@@ -55,7 +59,10 @@ function rowToSchool(row: SchoolRow): School {
     dataSource: (row.data_source as School['dataSource']) ?? 'manual',
     isVerified: row.is_verified ?? false,
     lastVerifiedAt: row.last_verified_at ?? undefined,
-    priorityTier: (row.priority_tier as School['priorityTier']) ?? 'standard',
+    // The scraper writes its lookup result ("website_verified", "official_roster_only")
+    // into this column. Only the app's own tiers are priorities; anything else is
+    // shown as standard and left untouched in the database.
+    priorityTier: isPriorityTier(row.priority_tier) ? row.priority_tier : 'standard',
     createdAt: row.created_at ?? nowISO(),
     updatedAt: row.updated_at ?? nowISO(),
   };

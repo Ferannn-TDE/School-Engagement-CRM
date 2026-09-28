@@ -204,7 +204,8 @@ interface AppContextValue {
   error: string | null;
   addSchool: (school: Omit<School, 'id' | 'createdAt' | 'updatedAt'>) => void;
   addSchoolsBulk: (schools: Omit<School, 'id' | 'createdAt' | 'updatedAt'>[]) => Promise<School[]>;
-  updateSchool: (school: School) => void;
+  /** `changes` limits the database write to those fields; without it every field is written. */
+  updateSchool: (school: School, changes?: Partial<School>) => void;
   deleteSchool: (id: string) => void;
   addContact: (contact: Omit<Contact, 'id' | 'createdAt' | 'updatedAt'>) => void;
   addContactsBulk: (contacts: Omit<Contact, 'id' | 'createdAt' | 'updatedAt'>[]) => void;
@@ -282,8 +283,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return created;
   };
 
-  const updateSchool = (school: School): void => {
-    dbUpdateSchool(school.id, school)
+  const updateSchool = (school: School, changes?: Partial<School>): void => {
+    dbUpdateSchool(school.id, changes ?? school)
       .then(() =>
         dispatch({
           type: 'UPDATE_SCHOOL',

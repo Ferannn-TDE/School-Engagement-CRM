@@ -151,6 +151,9 @@ export function EventsPage() {
             <div className="flex rounded-lg border border-neutral-200 overflow-hidden">
               <button
                 onClick={() => setView('list')}
+                aria-label="List view"
+                title="List view"
+                aria-pressed={view === 'list'}
                 className={classNames(
                   'px-3 py-1.5 text-sm',
                   view === 'list' ? 'bg-siue-red text-white' : 'bg-white text-neutral-600 hover:bg-neutral-50'
@@ -160,6 +163,9 @@ export function EventsPage() {
               </button>
               <button
                 onClick={() => setView('calendar')}
+                aria-label="Calendar view"
+                title="Calendar view"
+                aria-pressed={view === 'calendar'}
                 className={classNames(
                   'px-3 py-1.5 text-sm',
                   view === 'calendar' ? 'bg-siue-red text-white' : 'bg-white text-neutral-600 hover:bg-neutral-50'

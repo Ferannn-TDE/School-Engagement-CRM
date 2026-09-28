@@ -1,6 +1,14 @@
 import { useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
+// Updates start from the live address, not the one captured when the component
+// last rendered. Several updates in one go (e.g. "Clear filters" resetting three
+// filters) would otherwise each start from the same old address, and only the last
+// one would survive.
+function liveParams(): URLSearchParams {
+  return new URLSearchParams(window.location.search);
+}
+
 /**
  * A piece of page state kept in the address bar (?key=value), so it survives a
  * refresh, works with the back button, and is included when a link is shared.
@@ -12,17 +20,12 @@ export function useUrlState(key: string, defaultValue = ''): [string, (value: st
 
   const setValue = useCallback(
     (next: string) => {
-      setParams(
-        (prev) => {
-          const updated = new URLSearchParams(prev);
-          if (next === defaultValue || next === '') updated.delete(key);
-          else updated.set(key, next);
-          return updated;
-        },
-        // Replace rather than push: typing in a search box shouldn't add a
-        // back-button step per keystroke.
-        { replace: true }
-      );
+      const updated = liveParams();
+      if (next === defaultValue || next === '') updated.delete(key);
+      else updated.set(key, next);
+      // Replace rather than push: typing in a search box shouldn't add a
+      // back-button step per keystroke.
+      setParams(updated, { replace: true });
     },
     [key, defaultValue, setParams]
   );
@@ -35,17 +38,12 @@ export function useUrlStateBatch(): (changes: Record<string, string>) => void {
   const [, setParams] = useSearchParams();
   return useCallback(
     (changes) => {
-      setParams(
-        (prev) => {
-          const updated = new URLSearchParams(prev);
-          for (const [k, v] of Object.entries(changes)) {
-            if (v === '') updated.delete(k);
-            else updated.set(k, v);
-          }
-          return updated;
-        },
-        { replace: true }
-      );
+      const updated = liveParams();
+      for (const [k, v] of Object.entries(changes)) {
+        if (v === '') updated.delete(k);
+        else updated.set(k, v);
+      }
+      setParams(updated, { replace: true });
     },
     [setParams]
   );

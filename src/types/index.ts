@@ -125,7 +125,10 @@ export interface Event {
   id: string;
   name: string;
   type: EventType;
+  /** Local date and time, "2026-11-12T18:30:00" (Central time for scraped events). */
   date: string;
+  /** False for all-day events and events with no recorded time: show the date only. */
+  hasTime?: boolean;
   endDate?: string;
   location: string;
   participatingSchools: string[];

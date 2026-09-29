@@ -233,6 +233,9 @@ class DatabaseWriter:
         )
 
     def find_staff(self, cursor, values):
+        # Order: email, then phone (with name), then name + school. The job title is
+        # deliberately not used: it is the field clients most often correct in the
+        # app, and matching on it inserted duplicates (plan item C10).
         name, phone, email, title, school_key = values[:5]
         if email:
             cursor.execute(STAFF_FIND_EMAIL_SQL, (email, school_key))
@@ -244,7 +247,8 @@ class DatabaseWriter:
             row = cursor.fetchone()
             if row:
                 return row[0]
-        cursor.execute(STAFF_FIND_NAME_SQL, (school_key, name, title))
+        email_or_none = email or None
+        cursor.execute(STAFF_FIND_NAME_SQL, (school_key, name, email_or_none, email_or_none))
         row = cursor.fetchone()
         return row[0] if row else None
 

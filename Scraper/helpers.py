@@ -627,6 +627,8 @@ STAFF_FIND_EMAIL_SQL = """
     LIMIT 1
 """
 
+# Phone matching also requires the name: a school's main number is shared by many of
+# its staff, so a phone on its own would merge different people.
 STAFF_FIND_PHONE_SQL = """
     SELECT staff_id FROM staff
     WHERE school_worked_at = %s
@@ -636,11 +638,20 @@ STAFF_FIND_PHONE_SQL = """
     LIMIT 1
 """
 
+# Match by name + school, never by job_name: a client can correct a title in the app
+# (and db/006 locks it), and name + title matching would then insert a duplicate of the
+# same person on the next run (plan item C10).
+# The email condition keeps genuinely different people apart: if both records have an
+# email and the emails differ, they are not the same person, whatever the name.
 STAFF_FIND_NAME_SQL = """
     SELECT staff_id FROM staff
     WHERE school_worked_at = %s
-      AND LOWER(name) = LOWER(%s)
-      AND LOWER(job_name) = LOWER(%s)
+      AND LOWER(BTRIM(name)) = LOWER(BTRIM(%s))
+      AND (
+          %s::text IS NULL
+          OR NULLIF(BTRIM(email), '') IS NULL
+          OR LOWER(email) = LOWER(%s)
+      )
     ORDER BY staff_id
     LIMIT 1
 """

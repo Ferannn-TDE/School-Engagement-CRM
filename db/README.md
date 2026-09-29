@@ -18,6 +18,7 @@ how 001 and 002 went missing once (found and re-applied on 2026-09-26/28).
 | `009_archive_instead_of_delete.sql` | `archived`, `archived_at`, `archived_by` on schools, staff, contacts, events, programs and activities; `archive_school` / `restore_school` and `archive_contact` / `restore_contact`; the county views skip archived rows. The app never deletes; Settings → Archived restores. |
 | `010_deny_deletes_from_signed_in_users.sql` | Signed-in users cannot delete from any table (001 covered the three reference tables; this covers the six data tables). The owner (scraper, SQL Editor) is unaffected. |
 | `011_freshness_tracking.sql` | Freshness columns: `last_scraped_at`, `source_status` (working / broken / not_found), `source_checked_at`, `missed_runs` and `missing_since` on schools (staff: `last_scraped_at`, `missed_runs`, `missing_since`). `missing_since` can only be set once `missed_runs` reaches 3. The scraper fills them (not yet); the app shows plain-language labels. |
+| `012_resolve_locked_fields.sql` | Revises the 006 trigger function so the client can answer "The website now says X — keep yours or use this?": accepting the website's value unlocks the field; "keep yours" is remembered until the website shows a different value. |
 
 ## Archive, never delete (009)
 
@@ -90,10 +91,14 @@ Protected columns:
 
 - **Unlocking, for the client: in the app.** Where a field is locked and
   `pending_scraped` holds a newer value from the scraper, the app asks: "The website
-  now says X — keep yours or use this?" *Use this* applies the scraper's value and
-  removes the lock; *keep yours* dismisses it (the lock stays). This is the client's
-  way to unlock after handoff. (Planned: Phase 5, right after the freshness step.
-  Until it ships, use the maintainer fallback below.)
+  now says X — keep yours or use this?" (school page, "Updates from the website").
+  *Use this* applies the scraper's value and removes the lock; *keep yours* keeps the
+  value and the lock and marks the entry `dismissed` (with `dismissed_at` and
+  `dismissed_by`), so it isn't asked again unless the website shows a different value.
+  This is the client's way to unlock after handoff (012).
+- How 012 tells them apart: an app update that sets a column to exactly the value in
+  `pending_scraped` **and** removes that entry in the same update is accepting it, so
+  the column is unlocked. Any other app edit locks the column, as in 006.
 - **SQL Editor edits cannot change a locked column.** They are treated like the
   scraper, so the change is kept aside in `pending_scraped` and the old value stays.
   **Maintainer fallback:** to change a locked column, use the app, or first remove

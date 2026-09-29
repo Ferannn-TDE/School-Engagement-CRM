@@ -1,3 +1,4 @@
+import type { PendingMap } from '../utils/pending';
 export enum ProgramCategory {
   CS = 'cs',
   ENGINEERING = 'engineering',
@@ -94,6 +95,10 @@ export interface Contact {
   lastScrapedAt?: string;
   missedRuns?: number;
   missingSince?: string;
+  /** Fields a person edited, locked against the scraper (db/006). */
+  lockedFields?: string[];
+  /** What the scraper found for locked fields (db/006, db/012). */
+  pendingScraped?: PendingMap;
   createdAt: string;
   updatedAt: string;
   lastContactDate?: string;
@@ -126,6 +131,10 @@ export interface School {
   sourceCheckedAt?: string;
   missedRuns?: number;
   missingSince?: string;
+  /** Fields a person edited, locked against the scraper (db/006). */
+  lockedFields?: string[];
+  /** What the scraper found for locked fields (db/006, db/012). */
+  pendingScraped?: PendingMap;
   priorityTier?: 'high' | 'standard' | 'low';
   createdAt: string;
   updatedAt: string;

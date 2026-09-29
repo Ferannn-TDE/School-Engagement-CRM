@@ -9,6 +9,7 @@ import { Badge } from '../components/common/Badge';
 import { Modal } from '../components/common/Modal';
 import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import { SchoolForm } from '../components/schools/SchoolForm';
+import { WebsiteUpdates } from '../components/schools/WebsiteUpdates';
 import { ProgramForm } from '../components/programs/ProgramForm';
 import { LogContactForm } from '../components/activities/LogContactForm';
 import { ContactDetails } from '../components/contacts/ContactDetails';
@@ -217,6 +218,9 @@ export function SchoolDetailPage() {
             <p className="text-sm text-neutral-500">{activities.length} total activities</p>
           </Card>
         </div>
+
+        {/* Locked fields where the website now says something else (db/012) */}
+        <WebsiteUpdates school={school} contacts={contacts} />
 
         {/* Upcoming testing dates: busy dates, not outreach */}
         {busyDates.length > 0 && (

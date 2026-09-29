@@ -1,4 +1,6 @@
 import { supabase, fetchAllRows } from './supabase';
+import { acceptPatch, dismissPatch } from '../utils/pending';
+import type { PendingMap } from '../utils/pending';
 import type { Contact } from '../types';
 import type { ContactRole } from '../types';
 import { nowISO } from '../utils/helpers';
@@ -21,6 +23,8 @@ interface StaffRow {
   last_scraped_at?: string | null;
   missed_runs?: number | null;
   missing_since?: string | null;
+  manual_fields?: string[] | null;
+  pending_scraped?: PendingMap | null;
 }
 
 interface JunctionRow {
@@ -58,6 +62,8 @@ function rowToContact(staff: StaffRow, schoolId: string): Contact {
     lastScrapedAt: staff.last_scraped_at ?? undefined,
     missedRuns: staff.missed_runs ?? undefined,
     missingSince: staff.missing_since ?? undefined,
+    lockedFields: staff.manual_fields ?? [],
+    pendingScraped: staff.pending_scraped ?? {},
     createdAt: staff.created_at ?? nowISO(),
     updatedAt: staff.updated_at ?? nowISO(),
     lastContactDate: undefined,
@@ -362,4 +368,25 @@ export async function importContactsBulk(
 export async function archiveContact(id: string): Promise<void> {
   const { error } = await supabase.rpc('archive_contact', { p_staff_id: parseInt(id, 10) });
   if (error) throw error;
+}
+
+/** Answers "The website now says X — keep yours or use this?" for a contact field. */
+export async function resolveContactPending(
+  contact: Contact,
+  column: string,
+  choice: 'use' | 'keep',
+  who: string
+): Promise<Contact> {
+  const staffId = parseInt(contact.id, 10);
+  const { data: current, error: readError } = await supabase
+    .from('staff').select('manual_fields, pending_scraped').eq('staff_id', staffId).single();
+  if (readError) throw readError;
+  const pending = (current.pending_scraped ?? {}) as PendingMap;
+  if (!pending[column]) throw new Error(`No website value waiting for ${column}`);
+  const patch = choice === 'use'
+    ? acceptPatch(column, pending, current.manual_fields ?? [])
+    : dismissPatch(column, pending, who);
+  const { data, error } = await supabase.from('staff').update(patch).eq('staff_id', staffId).select().single();
+  if (error) throw error;
+  return rowToContact(data as StaffRow, contact.schoolId);
 }

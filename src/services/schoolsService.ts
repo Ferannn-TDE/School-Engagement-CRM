@@ -1,4 +1,6 @@
 import { supabase, fetchAllRows } from './supabase';
+import { acceptPatch, dismissPatch } from '../utils/pending';
+import type { PendingMap } from '../utils/pending';
 import type { School, SchoolType } from '../types';
 import { nowISO } from '../utils/helpers';
 
@@ -31,6 +33,8 @@ interface SchoolRow {
   source_checked_at?: string | null;
   missed_runs?: number | null;
   missing_since?: string | null;
+  manual_fields?: string[] | null;
+  pending_scraped?: PendingMap | null;
   priority_tier: string | null;
   state_code: string | null;
 }
@@ -74,6 +78,8 @@ function rowToSchool(row: SchoolRow): School {
     sourceCheckedAt: row.source_checked_at ?? undefined,
     missedRuns: row.missed_runs ?? undefined,
     missingSince: row.missing_since ?? undefined,
+    lockedFields: row.manual_fields ?? [],
+    pendingScraped: row.pending_scraped ?? {},
     // The scraper writes its lookup result ("website_verified", "official_roster_only")
     // into this column. Only the app's own tiers are priorities; anything else is
     // shown as standard and left untouched in the database.
@@ -331,4 +337,27 @@ export async function markSchoolsVerifiedBulk(ids: string[]): Promise<void> {
     .update({ is_verified: true, last_verified_at: new Date().toISOString() })
     .in('facility_key', ids);
   if (error) throw error;
+}
+
+/**
+ * Answers "The website now says X — keep yours or use this?" for a school field.
+ * Reads the row fresh so the answer applies to what is stored now. Returns the school.
+ */
+export async function resolveSchoolPending(
+  id: string,
+  column: string,
+  choice: 'use' | 'keep',
+  who: string
+): Promise<School> {
+  const { data: current, error: readError } = await supabase
+    .from('schools').select('manual_fields, pending_scraped').eq('facility_key', id).single();
+  if (readError) throw readError;
+  const pending = (current.pending_scraped ?? {}) as PendingMap;
+  if (!pending[column]) throw new Error(`No website value waiting for ${column}`);
+  const patch = choice === 'use'
+    ? acceptPatch(column, pending, current.manual_fields ?? [])
+    : dismissPatch(column, pending, who);
+  const { data, error } = await supabase.from('schools').update(patch).eq('facility_key', id).select().single();
+  if (error) throw error;
+  return rowToSchool(data as SchoolRow);
 }

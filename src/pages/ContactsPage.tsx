@@ -23,7 +23,7 @@ import toast from 'react-hot-toast';
 type VerifiedTab = 'all' | 'verified' | 'unverified';
 
 export function ContactsPage() {
-  const { state, getSchoolById, updateContact, deleteContact, verifyContact } = useAppContext();
+  const { state, getSchoolById, updateContact, archiveContact, verifyContact } = useAppContext();
   // Kept in the address so the view survives leaving the tab, a refresh and Back.
   const [search, setSearch] = useUrlState('q');
   const [roleFilter, setRoleFilter] = useUrlState('role');
@@ -33,7 +33,7 @@ export function ContactsPage() {
   const verifiedTab = (['all', 'verified', 'unverified'].includes(tabRaw) ? tabRaw : 'all') as VerifiedTab;
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingContact, setEditingContact] = useState<Contact | null>(null);
-  const [deletingContact, setDeletingContact] = useState<Contact | null>(null);
+  const [archivingContact, setArchivingContact] = useState<Contact | null>(null);
 
   const unverifiedCount = useMemo(
     () => state.contacts.filter((c) => !c.isVerified).length,
@@ -159,10 +159,10 @@ export function ContactsPage() {
             </button>
             <span className="text-neutral-200">|</span>
             <button
-              onClick={() => setDeletingContact(row.original)}
+              onClick={() => setArchivingContact(row.original)}
               className="text-xs text-error hover:underline"
             >
-              Delete
+              Archive
             </button>
           </div>
         ),
@@ -307,21 +307,21 @@ export function ContactsPage() {
       </Modal>
 
       <ConfirmDialog
-        open={!!deletingContact}
-        onClose={() => setDeletingContact(null)}
+        open={!!archivingContact}
+        onClose={() => setArchivingContact(null)}
         onConfirm={() => {
-          if (deletingContact) {
-            deleteContact(deletingContact.id);
-            toast.success('Contact deleted');
+          if (archivingContact) {
+            archiveContact(archivingContact.id);
+            toast.success('Contact archived');
           }
         }}
-        title="Delete Contact"
+        title="Archive Contact"
         message={
-          deletingContact
-            ? `Delete "${deletingContact.firstName} ${deletingContact.lastName}"? This cannot be undone.`
+          archivingContact
+            ? `Archive "${archivingContact.firstName} ${archivingContact.lastName}"? They'll be hidden everywhere. You can restore them from Settings → Archived.`
             : ''
         }
-        confirmLabel="Delete Contact"
+        confirmLabel="Archive Contact"
       />
     </div>
   );

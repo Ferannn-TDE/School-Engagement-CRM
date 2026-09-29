@@ -61,8 +61,9 @@ function rowToContact(staff: StaffRow, schoolId: string): Contact {
 export async function fetchContacts(): Promise<Contact[]> {
   // Paged: staff and contacts both exceed PostgREST's single-response cap.
   const [staffRows, junctionRows] = await Promise.all([
-    fetchAllRows<StaffRow>('staff', 'staff_id'),
-    fetchAllRows<JunctionRow>('contacts', ['school_id', 'staff_id']),
+    // Archived people and school links (db/009) are left out.
+    fetchAllRows<StaffRow>('staff', 'staff_id', '*', { archived: false }),
+    fetchAllRows<JunctionRow>('contacts', ['school_id', 'staff_id'], '*', { archived: false }),
   ]);
 
   // Build staff_id -> school_id lookup from junction table
@@ -180,12 +181,21 @@ export async function updateContact(id: string, updates: Partial<Contact>): Prom
     .eq('staff_id', staffId);
   if (error) throw error;
 
-  // Re-link to new school if schoolId changed
+  // Re-link to the new school if schoolId changed. The old link is archived, not
+  // deleted, so which schools a contact belonged to stays on record. Moving back to
+  // a school they were at before brings that link back instead of adding a second.
   if (updates.schoolId !== undefined) {
-    await supabase.from('contacts').delete().eq('staff_id', staffId);
-    await supabase
+    const { error: archiveError } = await supabase
       .from('contacts')
-      .insert({ school_id: updates.schoolId, staff_id: staffId });
+      .update({ archived: true })
+      .eq('staff_id', staffId)
+      .neq('school_id', updates.schoolId)
+      .eq('archived', false);
+    if (archiveError) throw archiveError;
+    const { error: linkError } = await supabase
+      .from('contacts')
+      .upsert({ school_id: updates.schoolId, staff_id: staffId, archived: false }, { onConflict: 'school_id,staff_id' });
+    if (linkError) throw linkError;
   }
 }
 
@@ -336,13 +346,8 @@ export async function importContactsBulk(
   return { contacts: allContacts, created, updated, failed };
 }
 
-export async function deleteContact(id: string): Promise<void> {
-  const staffId = parseInt(id, 10);
-  // Remove junction rows first to avoid FK issues
-  await supabase.from('contacts').delete().eq('staff_id', staffId);
-  const { error } = await supabase
-    .from('staff')
-    .delete()
-    .eq('staff_id', staffId);
+/** Archives a contact and their school links with one timestamp (db/009 archive_contact). */
+export async function archiveContact(id: string): Promise<void> {
+  const { error } = await supabase.rpc('archive_contact', { p_staff_id: parseInt(id, 10) });
   if (error) throw error;
 }

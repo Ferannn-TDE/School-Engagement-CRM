@@ -15,6 +15,28 @@ how 001 and 002 went missing once (found and re-applied on 2026-09-26/28).
 | `006_protect_manual_edits.sql` | A client's edit is never overwritten by the scraper (below). |
 | `007_event_category_testing_dates.sql` | `events.category`; the 15 existing SAT/ACT/PSAT events are marked `school_testing_date` (busy dates, not outreach). Same rules as the scraper's testing-dates list, which also covers AP exams. |
 | `008_county_views_skip_testing_dates.sql` | The county views ignore testing dates, so they don't count as events or make a school "engaged". |
+| `009_archive_instead_of_delete.sql` | `archived`, `archived_at`, `archived_by` on schools, staff, contacts, events, programs and activities; `archive_school` / `restore_school` and `archive_contact` / `restore_contact`; the county views skip archived rows. The app never deletes; Settings → Archived restores. |
+
+## Archive, never delete (009)
+
+The app has no delete. Archiving sets `archived = true`; the row stays and is left out
+of every list, count and county view. `archived_at` and `archived_by` (the signed-in
+user's email, or `database` without sign-in claims) are stamped by a trigger and
+cleared on restore.
+
+- A school is archived with its staff and their school links in one call
+  (`archive_school`), all with the same `archived_at`. `restore_school` brings back
+  exactly the rows with that timestamp, so a contact archived separately earlier stays
+  archived. `archive_contact` / `restore_contact` do the same for a person and their
+  links.
+- Moving a contact to another school archives the old link and adds (or reactivates)
+  the new one, so the history of which schools they were at is kept.
+- To find archived rows by hand: `select * from schools where archived;` (same for the
+  other five tables). To restore by hand, use the app, or
+  `select restore_school('<facility_key>');` with claims set as in the unlock command
+  below.
+- The scraper doesn't know about archiving yet: it still updates archived rows (they
+  stay archived) and could add new staff at an archived school.
 
 ## How the app and the scraper are told apart
 

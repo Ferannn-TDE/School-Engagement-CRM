@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
+  Archive,
   Database,
   Download,
   RotateCcw,
@@ -83,6 +85,22 @@ export function SettingsPage() {
                 <Download size={15} />
                 Export
               </Button>
+            </div>
+
+            <div className="flex items-start justify-between p-4 rounded-lg border border-neutral-100 bg-neutral-50">
+              <div>
+                <p className="text-sm font-medium text-neutral-700">Archived items</p>
+                <p className="text-xs text-neutral-500 mt-0.5">
+                  Schools, contacts, events, programs and logged contacts are archived, never deleted. See who archived what and when, and restore anything.
+                </p>
+              </div>
+              <Link
+                to="/settings/archived"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg bg-white text-siue-red border border-siue-red hover:bg-red-50 shrink-0"
+              >
+                <Archive size={15} />
+                View archived
+              </Link>
             </div>
 
             <div className="flex items-start justify-between p-4 rounded-lg border border-red-100 bg-red-50">

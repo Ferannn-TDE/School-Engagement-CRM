@@ -22,7 +22,7 @@ import { isTestingDate } from '../utils/events';
 import toast from 'react-hot-toast';
 
 export function EventsPage() {
-  const { state, deleteEvent } = useAppContext();
+  const { state, archiveEvent } = useAppContext();
   // Kept in the address so the view survives leaving the tab, a refresh and Back.
   const [viewRaw, setView] = useUrlState('view', 'list');
   const view: 'calendar' | 'list' = viewRaw === 'calendar' ? 'calendar' : 'list';
@@ -33,7 +33,7 @@ export function EventsPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [viewingEvent, setViewingEvent] = useState<Event | null>(null);
-  const [deletingEvent, setDeletingEvent] = useState<Event | null>(null);
+  const [archivingEvent, setArchivingEvent] = useState<Event | null>(null);
   const [monthRaw, setMonthRaw] = useUrlState('month');
   const calendarMonth = useMemo(() => {
     const parsed = /^\d{4}-\d{2}$/.test(monthRaw) ? new Date(`${monthRaw}-01T12:00:00`) : null;
@@ -138,10 +138,10 @@ export function EventsPage() {
             </button>
             <span className="text-neutral-200">|</span>
             <button
-              onClick={() => setDeletingEvent(row.original)}
+              onClick={() => setArchivingEvent(row.original)}
               className="text-xs text-error hover:underline"
             >
-              Delete
+              Archive
             </button>
           </div>
         ),
@@ -341,17 +341,17 @@ export function EventsPage() {
       </Modal>
 
       <ConfirmDialog
-        open={!!deletingEvent}
-        onClose={() => setDeletingEvent(null)}
+        open={!!archivingEvent}
+        onClose={() => setArchivingEvent(null)}
         onConfirm={() => {
-          if (deletingEvent) {
-            deleteEvent(deletingEvent.id);
-            toast.success('Event deleted');
+          if (archivingEvent) {
+            archiveEvent(archivingEvent.id);
+            toast.success('Event archived');
           }
         }}
-        title="Delete Event"
-        message={deletingEvent ? `Delete "${deletingEvent.name}"? This cannot be undone.` : ''}
-        confirmLabel="Delete Event"
+        title="Archive Event"
+        message={archivingEvent ? `Archive "${archivingEvent.name}"? It will be hidden everywhere. You can restore it from Settings → Archived.` : ''}
+        confirmLabel="Archive Event"
       />
     </div>
   );

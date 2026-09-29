@@ -16,7 +16,7 @@ import {
   createSchool,
   createSchoolsBulk,
   updateSchool as dbUpdateSchool,
-  deleteSchool as dbDeleteSchool,
+  archiveSchool as dbArchiveSchool,
   markSchoolVerified,
   markSchoolsVerifiedBulk,
 } from '../services/schoolsService';
@@ -25,25 +25,25 @@ import {
   createContact,
   createContactsBulk,
   updateContact as dbUpdateContact,
-  deleteContact as dbDeleteContact,
+  archiveContact as dbArchiveContact,
   markContactVerified,
 } from '../services/contactsService';
 import {
   fetchEvents,
   createEvent,
   updateEvent as dbUpdateEvent,
-  deleteEvent as dbDeleteEvent,
+  archiveEvent as dbArchiveEvent,
 } from '../services/eventsService';
 import {
   fetchActivities,
   createActivity,
-  deleteActivity as dbDeleteActivity,
+  archiveActivity as dbArchiveActivity,
 } from '../services/activitiesService';
 import {
   fetchPrograms,
   createProgram,
   updateProgram as dbUpdateProgram,
-  deleteProgram as dbDeleteProgram,
+  archiveProgram as dbArchiveProgram,
 } from '../services/programsService';
 
 export interface AppState {
@@ -59,24 +59,24 @@ type Action =
   | { type: 'ADD_SCHOOL'; payload: School }
   | { type: 'ADD_SCHOOLS_BULK'; payload: School[] }
   | { type: 'UPDATE_SCHOOL'; payload: School }
-  | { type: 'DELETE_SCHOOL'; payload: string }
-  | { type: 'DELETE_CONTACTS_BY_SCHOOL'; payload: string }
+  | { type: 'ARCHIVE_SCHOOL'; payload: string }
+  | { type: 'ARCHIVE_CONTACTS_BY_SCHOOL'; payload: string }
   | { type: 'SET_CONTACTS'; payload: Contact[] }
   | { type: 'ADD_CONTACT'; payload: Contact }
   | { type: 'ADD_CONTACTS_BULK'; payload: Contact[] }
   | { type: 'UPDATE_CONTACT'; payload: Contact }
-  | { type: 'DELETE_CONTACT'; payload: string }
+  | { type: 'ARCHIVE_CONTACT'; payload: string }
   | { type: 'SET_EVENTS'; payload: Event[] }
   | { type: 'ADD_EVENT'; payload: Event }
   | { type: 'UPDATE_EVENT'; payload: Event }
-  | { type: 'DELETE_EVENT'; payload: string }
+  | { type: 'ARCHIVE_EVENT'; payload: string }
   | { type: 'SET_ACTIVITIES'; payload: ActivityRecord[] }
   | { type: 'ADD_ACTIVITY'; payload: ActivityRecord }
-  | { type: 'DELETE_ACTIVITY'; payload: string }
+  | { type: 'ARCHIVE_ACTIVITY'; payload: string }
   | { type: 'SET_PROGRAMS'; payload: Program[] }
   | { type: 'ADD_PROGRAM'; payload: Program }
   | { type: 'UPDATE_PROGRAM'; payload: Program }
-  | { type: 'DELETE_PROGRAM'; payload: string }
+  | { type: 'ARCHIVE_PROGRAM'; payload: string }
   | { type: 'VERIFY_SCHOOLS_BULK'; payload: { ids: string[]; now: string } }
   | { type: 'VERIFY_CONTACT'; payload: { id: string; now: string } }
   | { type: 'LOAD_STATE'; payload: AppState };
@@ -98,12 +98,12 @@ function reducer(state: AppState, action: Action): AppState {
           s.id === action.payload.id ? action.payload : s
         ),
       };
-    case 'DELETE_SCHOOL':
+    case 'ARCHIVE_SCHOOL':
       return {
         ...state,
         schools: state.schools.filter((s) => s.id !== action.payload),
       };
-    case 'DELETE_CONTACTS_BY_SCHOOL':
+    case 'ARCHIVE_CONTACTS_BY_SCHOOL':
       return {
         ...state,
         contacts: state.contacts.filter((c) => c.schoolId !== action.payload),
@@ -121,7 +121,7 @@ function reducer(state: AppState, action: Action): AppState {
           c.id === action.payload.id ? action.payload : c
         ),
       };
-    case 'DELETE_CONTACT':
+    case 'ARCHIVE_CONTACT':
       return {
         ...state,
         contacts: state.contacts.filter((c) => c.id !== action.payload),
@@ -137,7 +137,7 @@ function reducer(state: AppState, action: Action): AppState {
           e.id === action.payload.id ? action.payload : e
         ),
       };
-    case 'DELETE_EVENT':
+    case 'ARCHIVE_EVENT':
       return {
         ...state,
         events: state.events.filter((e) => e.id !== action.payload),
@@ -146,7 +146,7 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, activities: action.payload };
     case 'ADD_ACTIVITY':
       return { ...state, activities: [...state.activities, action.payload] };
-    case 'DELETE_ACTIVITY':
+    case 'ARCHIVE_ACTIVITY':
       return {
         ...state,
         activities: state.activities.filter((a) => a.id !== action.payload),
@@ -162,7 +162,7 @@ function reducer(state: AppState, action: Action): AppState {
           p.id === action.payload.id ? action.payload : p
         ),
       };
-    case 'DELETE_PROGRAM':
+    case 'ARCHIVE_PROGRAM':
       return {
         ...state,
         programs: state.programs.filter((p) => p.id !== action.payload),
@@ -207,22 +207,23 @@ interface AppContextValue {
   addSchoolsBulk: (schools: Omit<School, 'id' | 'createdAt' | 'updatedAt'>[]) => Promise<School[]>;
   /** `changes` limits the database write to those fields; without it every field is written. */
   updateSchool: (school: School, changes?: Partial<School>) => void;
-  deleteSchool: (id: string) => void;
+  /** Archives, never deletes (db/009): hidden everywhere, restorable in Settings → Archived. */
+  archiveSchool: (id: string) => void;
   addContact: (contact: Omit<Contact, 'id' | 'createdAt' | 'updatedAt'>) => void;
   addContactsBulk: (contacts: Omit<Contact, 'id' | 'createdAt' | 'updatedAt'>[]) => void;
   /** `changes` limits the database write to those fields; without it every field is written. */
   updateContact: (contact: Contact, changes?: Partial<Contact>) => void;
-  deleteContact: (id: string) => void;
+  archiveContact: (id: string) => void;
   addEvent: (event: Omit<Event, 'id' | 'createdAt' | 'updatedAt'>) => void;
   /** `changes` limits the database write to those fields; without it every field is written. */
   updateEvent: (event: Event, changes?: Partial<Event>) => void;
-  deleteEvent: (id: string) => void;
+  archiveEvent: (id: string) => void;
   /** Resolves once saved; rejects on failure so the caller can keep the form open. */
   addActivity: (activity: Omit<ActivityRecord, 'id'>) => Promise<void>;
-  deleteActivity: (id: string) => void;
+  archiveActivity: (id: string) => void;
   addProgram: (program: Omit<Program, 'id' | 'createdAt' | 'updatedAt'>) => void;
   updateProgram: (program: Program) => void;
-  deleteProgram: (id: string) => void;
+  archiveProgram: (id: string) => void;
   verifySchool: (id: string) => void;
   verifySchoolsBulk: (ids: string[]) => void;
   verifyContact: (id: string) => void;
@@ -231,6 +232,8 @@ interface AppContextValue {
   getActivitiesBySchool: (schoolId: string) => ActivityRecord[];
   getEventsBySchool: (schoolId: string) => Event[];
   getProgramsBySchool: (schoolId: string) => Program[];
+  /** Fetches everything again, e.g. after restoring archived items. */
+  reload: () => Promise<void>;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -240,33 +243,33 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load all data from Supabase on mount
-  useEffect(() => {
-    async function loadData() {
-      try {
-        setLoading(true);
-        setError(null);
-        const [schools, contacts, events, activities, programs] = await Promise.all([
-          fetchSchools(),
-          fetchContacts(),
-          fetchEvents(),
-          fetchActivities(),
-          fetchPrograms(),
-        ]);
-        dispatch({
-          type: 'LOAD_STATE',
-          payload: { schools, contacts, events, activities, programs },
-        });
-      } catch (err) {
-        const message = err instanceof Error ? err.message : 'Failed to load data from database';
-        setError(message);
-        console.error('AppContext load error:', err);
-      } finally {
-        setLoading(false);
-      }
+  // Load all data from Supabase on mount, and again after a restore (reload).
+  const reload = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const [schools, contacts, events, activities, programs] = await Promise.all([
+        fetchSchools(),
+        fetchContacts(),
+        fetchEvents(),
+        fetchActivities(),
+        fetchPrograms(),
+      ]);
+      dispatch({
+        type: 'LOAD_STATE',
+        payload: { schools, contacts, events, activities, programs },
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to load data from database';
+      setError(message);
+      console.error('AppContext load error:', err);
+    } finally {
+      setLoading(false);
     }
-    void loadData();
   }, []);
+  useEffect(() => {
+    void reload();
+  }, [reload]);
 
   // Schools
   const addSchool = (school: Omit<School, 'id' | 'createdAt' | 'updatedAt'>): void => {
@@ -300,15 +303,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
       });
   };
 
-  const deleteSchool = (id: string): void => {
-    dbDeleteSchool(id)
+  const archiveSchool = (id: string): void => {
+    dbArchiveSchool(id)
       .then(() => {
-        dispatch({ type: 'DELETE_CONTACTS_BY_SCHOOL', payload: id });
-        dispatch({ type: 'DELETE_SCHOOL', payload: id });
+        dispatch({ type: 'ARCHIVE_CONTACTS_BY_SCHOOL', payload: id });
+        dispatch({ type: 'ARCHIVE_SCHOOL', payload: id });
       })
       .catch((err) => {
-        console.error('deleteSchool failed:', err);
-        toast.error('Failed to delete school');
+        console.error('archiveSchool failed:', err);
+        toast.error('Failed to archive school');
       });
   };
 
@@ -347,12 +350,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       });
   };
 
-  const deleteContact = (id: string): void => {
-    dbDeleteContact(id)
-      .then(() => dispatch({ type: 'DELETE_CONTACT', payload: id }))
+  const archiveContact = (id: string): void => {
+    dbArchiveContact(id)
+      .then(() => dispatch({ type: 'ARCHIVE_CONTACT', payload: id }))
       .catch((err) => {
-        console.error('deleteContact failed:', err);
-        toast.error('Failed to delete contact');
+        console.error('archiveContact failed:', err);
+        toast.error('Failed to archive contact');
       });
   };
 
@@ -380,12 +383,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       });
   };
 
-  const deleteEvent = (id: string): void => {
-    dbDeleteEvent(id)
-      .then(() => dispatch({ type: 'DELETE_EVENT', payload: id }))
+  const archiveEvent = (id: string): void => {
+    dbArchiveEvent(id)
+      .then(() => dispatch({ type: 'ARCHIVE_EVENT', payload: id }))
       .catch((err) => {
-        console.error('deleteEvent failed:', err);
-        toast.error('Failed to delete event');
+        console.error('archiveEvent failed:', err);
+        toast.error('Failed to archive event');
       });
   };
 
@@ -400,12 +403,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const deleteActivity = (id: string): void => {
-    dbDeleteActivity(id)
-      .then(() => dispatch({ type: 'DELETE_ACTIVITY', payload: id }))
+  const archiveActivity = (id: string): void => {
+    dbArchiveActivity(id)
+      .then(() => dispatch({ type: 'ARCHIVE_ACTIVITY', payload: id }))
       .catch((err) => {
-        console.error('deleteActivity failed:', err);
-        toast.error('Failed to delete activity');
+        console.error('archiveActivity failed:', err);
+        toast.error('Failed to archive activity');
       });
   };
 
@@ -428,12 +431,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       });
   };
 
-  const deleteProgram = (id: string): void => {
-    dbDeleteProgram(id)
-      .then(() => dispatch({ type: 'DELETE_PROGRAM', payload: id }))
+  const archiveProgram = (id: string): void => {
+    dbArchiveProgram(id)
+      .then(() => dispatch({ type: 'ARCHIVE_PROGRAM', payload: id }))
       .catch((err) => {
-        console.error('deleteProgram failed:', err);
-        toast.error('Failed to delete program');
+        console.error('archiveProgram failed:', err);
+        toast.error('Failed to archive program');
       });
   };
 
@@ -509,19 +512,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
         addSchool,
         addSchoolsBulk,
         updateSchool,
-        deleteSchool,
+        archiveSchool,
         addContact,
         addContactsBulk,
         updateContact,
-        deleteContact,
+        archiveContact,
         addEvent,
         updateEvent,
-        deleteEvent,
+        archiveEvent,
         addActivity,
-        deleteActivity,
+        archiveActivity,
         addProgram,
         updateProgram,
-        deleteProgram,
+        archiveProgram,
         verifySchool,
         verifySchoolsBulk,
         verifyContact,
@@ -530,6 +533,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         getActivitiesBySchool,
         getEventsBySchool,
         getProgramsBySchool,
+        reload,
       }}
     >
       {children}

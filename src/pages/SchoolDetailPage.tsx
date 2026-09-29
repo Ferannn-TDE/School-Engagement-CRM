@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Edit, MapPin, Users, Calendar, CalendarX, Trash2, School, ArrowLeft, Plus, BookOpen, TrendingUp, ShieldCheck, Phone, Globe } from 'lucide-react';
+import { Edit, MapPin, Users, Calendar, CalendarX, Archive, School, ArrowLeft, Plus, BookOpen, TrendingUp, ShieldCheck, Phone, Globe } from 'lucide-react';
 import { format, startOfDay } from 'date-fns';
 import { Header } from '../components/layout/Header';
 import { Card } from '../components/common/Card';
@@ -32,14 +32,15 @@ export function SchoolDetailPage() {
   const navigate = useNavigate();
   const {
     getSchoolById, getContactsBySchool, getActivitiesBySchool, getEventsBySchool,
-    deleteSchool, verifySchool,
-    addProgram, deleteProgram, getProgramsBySchool,
+    archiveSchool, archiveActivity, verifySchool,
+    addProgram, archiveProgram, getProgramsBySchool,
     loading,
   } = useAppContext();
   const [showEditModal, setShowEditModal] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showArchiveConfirm, setShowArchiveConfirm] = useState(false);
   const [showAddProgramModal, setShowAddProgramModal] = useState(false);
-  const [programToDelete, setProgramToDelete] = useState<Program | null>(null);
+  const [programToArchive, setProgramToArchive] = useState<Program | null>(null);
+  const [activityToArchive, setActivityToArchive] = useState<string | null>(null);
   const [showLogContact, setShowLogContact] = useState(false);
   const [openContact, setOpenContact] = useState<Contact | null>(null);
 
@@ -82,7 +83,7 @@ export function SchoolDetailPage() {
       <EmptyState
         icon={<School size={32} />}
         title="School not found"
-        description="This school doesn't exist or may have been deleted."
+        description="This school doesn't exist or may have been archived."
         action={
           <Button variant="secondary" onClick={() => navigate('/schools')}>
             <ArrowLeft size={16} />
@@ -128,9 +129,9 @@ export function SchoolDetailPage() {
               <Edit size={16} />
               Edit
             </Button>
-            <Button size="sm" variant="destructive" onClick={() => setShowDeleteConfirm(true)}>
-              <Trash2 size={16} />
-              Delete
+            <Button size="sm" variant="destructive" onClick={() => setShowArchiveConfirm(true)}>
+              <Archive size={16} />
+              Archive
             </Button>
           </div>
         }
@@ -355,11 +356,11 @@ export function SchoolDetailPage() {
                             )}
                           </div>
                           <button
-                            onClick={() => setProgramToDelete(program)}
+                            onClick={() => setProgramToArchive(program)}
                             className="text-neutral-300 hover:text-error transition-colors shrink-0 ml-4 mt-0.5"
-                            aria-label="Remove program"
+                            aria-label="Archive program"
                           >
-                            <Trash2 size={14} />
+                            <Archive size={14} />
                           </button>
                         </div>
                       ))}
@@ -412,6 +413,13 @@ export function SchoolDetailPage() {
                         {format(new Date(activity.date), 'MMM d, yyyy')}
                       </p>
                     </div>
+                    <button
+                      onClick={() => setActivityToArchive(activity.id)}
+                      className="text-neutral-300 hover:text-error transition-colors shrink-0 mt-0.5"
+                      aria-label="Archive logged contact"
+                    >
+                      <Archive size={14} />
+                    </button>
                   </div>
                   );
                 })}
@@ -460,36 +468,52 @@ export function SchoolDetailPage() {
       </Modal>
 
       <ConfirmDialog
-        open={programToDelete !== null}
-        onClose={() => setProgramToDelete(null)}
+        open={programToArchive !== null}
+        onClose={() => setProgramToArchive(null)}
         onConfirm={() => {
-          if (programToDelete) {
-            deleteProgram(programToDelete.id);
-            toast.success('Program removed');
+          if (programToArchive) {
+            archiveProgram(programToArchive.id);
+            toast.success('Program archived');
           }
-          setProgramToDelete(null);
+          setProgramToArchive(null);
         }}
-        title="Remove Program"
-        message={`Remove "${programToDelete?.name}" from this school's programs?`}
-        confirmLabel="Remove"
+        title="Archive Program"
+        message={`Archive "${programToArchive?.name}"? It will be hidden from this school. You can restore it from Settings → Archived.`}
+        confirmLabel="Archive"
         variant="destructive"
       />
 
       <ConfirmDialog
-        open={showDeleteConfirm}
-        onClose={() => setShowDeleteConfirm(false)}
+        open={activityToArchive !== null}
+        onClose={() => setActivityToArchive(null)}
         onConfirm={() => {
-          deleteSchool(school.id);
-          toast.success('School deleted');
+          if (activityToArchive) {
+            archiveActivity(activityToArchive);
+            toast.success('Logged contact archived');
+          }
+          setActivityToArchive(null);
+        }}
+        title="Archive Logged Contact"
+        message="Archive this logged contact? It will be hidden from the school's history and counts. You can restore it from Settings → Archived."
+        confirmLabel="Archive"
+        variant="destructive"
+      />
+
+      <ConfirmDialog
+        open={showArchiveConfirm}
+        onClose={() => setShowArchiveConfirm(false)}
+        onConfirm={() => {
+          archiveSchool(school.id);
+          toast.success('School archived');
           navigate('/schools');
         }}
-        title="Delete School"
+        title="Archive School"
         message={
           contacts.length > 0
-            ? `This will permanently delete "${school.name}" and its ${contacts.length} associated contact${contacts.length !== 1 ? 's' : ''}. This action cannot be undone.`
-            : `Are you sure you want to delete "${school.name}"? This action cannot be undone.`
+            ? `Archive "${school.name}" and its ${contacts.length} contact${contacts.length !== 1 ? 's' : ''}? They'll be hidden everywhere. Restoring the school from Settings → Archived brings them all back.`
+            : `Archive "${school.name}"? It will be hidden everywhere. You can restore it from Settings → Archived.`
         }
-        confirmLabel="Delete School"
+        confirmLabel="Archive School"
       />
 
     </div>

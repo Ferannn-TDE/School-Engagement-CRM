@@ -93,7 +93,8 @@ function parseEventId(id: string): number {
 }
 
 export async function fetchEvents(): Promise<Event[]> {
-  const { data, error } = await supabase.from('events').select('*');
+  // Archived events (db/009) are left out; Settings → Archived lists them.
+  const { data, error } = await supabase.from('events').select('*').eq('archived', false);
   if (error) throw error;
   return (data as EventRow[]).map(rowToEvent);
 }
@@ -143,8 +144,11 @@ export async function updateEvent(id: string, updates: Partial<Event>): Promise<
   if (error) throw error;
 }
 
-export async function deleteEvent(id: string): Promise<void> {
-  const eventId = parseEventId(id);
-  const { error } = await supabase.from('events').delete().eq('event_id', eventId);
+/** Archives an event: it stays in the database and can be restored (db/009). */
+export async function archiveEvent(id: string): Promise<void> {
+  const { error } = await supabase
+    .from('events')
+    .update({ archived: true })
+    .eq('event_id', parseEventId(id));
   if (error) throw error;
 }

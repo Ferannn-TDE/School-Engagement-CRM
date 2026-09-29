@@ -72,7 +72,8 @@ function rowToSchool(row: SchoolRow): School {
 
 export async function fetchSchools(): Promise<School[]> {
   // Paged: there are more schools than PostgREST returns in one response.
-  const rows = await fetchAllRows<SchoolRow>('schools', 'facility_key');
+  // Archived schools (db/009) are left out; Settings → Archived lists them.
+  const rows = await fetchAllRows<SchoolRow>('schools', 'facility_key', '*', { archived: false });
   return rows
     .map(rowToSchool)
     .sort((a, b) => a.name.localeCompare(b.name));
@@ -292,32 +293,14 @@ export async function updateSchool(id: string, updates: Partial<School>): Promis
   if (error) throw error;
 }
 
-export async function deleteSchool(id: string): Promise<{ deletedContactIds: string[] }> {
-  // 1. Find all staff that reference this school so we can clean up state
-  const { data: staffData } = await supabase
-    .from('staff')
-    .select('staff_id')
-    .eq('school_worked_at', id);
-
-  const staffIds: number[] = (staffData ?? []).map((r: { staff_id: number }) => r.staff_id);
-
-  // 2. Remove junction rows first (contacts table is a school↔staff junction)
-  if (staffIds.length > 0) {
-    await supabase.from('contacts').delete().in('staff_id', staffIds);
-  }
-  // Also remove any junction rows keyed by school_id directly
-  await supabase.from('contacts').delete().eq('school_id', id);
-
-  // 3. Delete staff records — clears the FK that blocks school deletion
-  if (staffIds.length > 0) {
-    await supabase.from('staff').delete().in('staff_id', staffIds);
-  }
-
-  // 4. Now safe to delete the school
-  const { error } = await supabase.from('schools').delete().eq('facility_key', id);
+/**
+ * Archives a school with its staff and their school links, all with one timestamp,
+ * in one database call (db/009 archive_school). Nothing is deleted; Settings →
+ * Archived can restore exactly that set.
+ */
+export async function archiveSchool(id: string): Promise<void> {
+  const { error } = await supabase.rpc('archive_school', { p_facility_key: id });
   if (error) throw error;
-
-  return { deletedContactIds: staffIds.map(String) };
 }
 
 export async function markSchoolVerified(id: string): Promise<void> {

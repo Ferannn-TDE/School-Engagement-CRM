@@ -11,12 +11,17 @@ export { PAGE_SIZE };
 export async function fetchAllRows<T>(
   table: string,
   orderBy: string | string[],
-  select = '*'
+  select = '*',
+  /** Column = value filters, e.g. { archived: false } to leave archived rows out. */
+  where: Record<string, string | number | boolean> = {}
 ): Promise<T[]> {
   const orderCols = Array.isArray(orderBy) ? orderBy : [orderBy];
 
   return collectPages<T>(async (from, to) => {
     let query = supabase.from(table).select(select).range(from, to);
+    for (const [col, value] of Object.entries(where)) {
+      query = query.eq(col, value);
+    }
     for (const col of orderCols) {
       query = query.order(col, { ascending: true });
     }

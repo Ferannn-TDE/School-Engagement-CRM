@@ -27,7 +27,8 @@ function rowToProgram(row: ProgramRow): Program {
 }
 
 export async function fetchPrograms(): Promise<Program[]> {
-  const { data, error } = await supabase.from('programs').select('*');
+  // Archived programs (db/009) are left out.
+  const { data, error } = await supabase.from('programs').select('*').eq('archived', false);
   if (error) throw error;
   return (data as ProgramRow[]).map(rowToProgram);
 }
@@ -60,7 +61,8 @@ export async function updateProgram(id: string, updates: Partial<Program>): Prom
   if (error) throw error;
 }
 
-export async function deleteProgram(id: string): Promise<void> {
-  const { error } = await supabase.from('programs').delete().eq('program_id', id);
+/** Archives a program: it stays in the database and can be restored (db/009). */
+export async function archiveProgram(id: string): Promise<void> {
+  const { error } = await supabase.from('programs').update({ archived: true }).eq('program_id', id);
   if (error) throw error;
 }

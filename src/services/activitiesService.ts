@@ -41,7 +41,8 @@ function rowToActivity(row: ActivityRow): ActivityRecord {
 
 export async function fetchActivities(): Promise<ActivityRecord[]> {
   // Paged: logged contacts grow without limit, and a single request stops at 1,000.
-  const rows = await fetchAllRows<ActivityRow>('activities', ['date', 'activity_id']);
+  // Archived logged contacts (db/009) are left out.
+  const rows = await fetchAllRows<ActivityRow>('activities', ['date', 'activity_id'], '*', { archived: false });
   return rows
     .map(rowToActivity)
     .sort((a, b) => b.date.localeCompare(a.date));
@@ -67,10 +68,11 @@ export async function createActivity(
   return rowToActivity(data as ActivityRow);
 }
 
-export async function deleteActivity(id: string): Promise<void> {
+/** Archives a logged contact: it stays in the database and can be restored (db/009). */
+export async function archiveActivity(id: string): Promise<void> {
   const { error } = await supabase
     .from('activities')
-    .delete()
+    .update({ archived: true })
     .eq('activity_id', id);
   if (error) throw error;
 }

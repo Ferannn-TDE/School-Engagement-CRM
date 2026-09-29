@@ -158,8 +158,15 @@ class DatabaseRows:
         rows = {}
         for result in self.results:
             for event in result.events:
+                # Store the local (Central) start; external_id below still uses the
+                # UTC `start` so existing events keep their ids (plan item B5b).
+                # Once merged, remove the app's workarounds in the same release:
+                #   src/components/events/EventForm.tsx  (timeLocked, read-only times)
+                #   src/services/eventsService.ts        (utcToCentral on read)
+                # together with a one-time migration converting school-calendar rows
+                # already stored in UTC, or those rows will show shifted times.
                 try:
-                    start = datetime.fromisoformat(event.start)
+                    start = datetime.fromisoformat(event.start_local or event.start)
                 except ValueError:
                     continue
 

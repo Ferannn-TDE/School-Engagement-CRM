@@ -26,6 +26,7 @@ from helpers import (
     looks_like_person,
     normalize,
     normalized_role,
+    CENTRAL_TIME,
     parse_datetime,
     related_sites,
     school_words,
@@ -440,6 +441,12 @@ class EventParser:
             return None
 
         end_date = parse_datetime(end)
+        # Store school-calendar times as Central time. Before this, the UTC value was
+        # stored as if it were local: a 6:30 PM event on Nov 12 was saved as Nov 13
+        # 00:30, and all-day events at 05:00 (plan item B5b). start/end stay UTC
+        # because external_id is built from them.
+        start_local = parse_datetime(start, zone=CENTRAL_TIME)
+        end_local = parse_datetime(end, zone=CENTRAL_TIME)
         score = 5.5 + (1.5 if method in {"ics_feed", "embedded_json"} else 0.5)
         score += 1.0 if names_school else 0.0
 
@@ -453,6 +460,8 @@ class EventParser:
             source_url=page.url,
             method=method,
             score=round(min(10.0, score), 2),
+            start_local=start_local.isoformat(),
+            end_local=end_local.isoformat() if end_local else "",
         )
 
     def structured(self, school, page, inherited_school):

@@ -1,6 +1,7 @@
 from collections import defaultdict
 from dataclasses import asdict, fields, is_dataclass
 from datetime import date, datetime, time as day_time, timezone
+from zoneinfo import ZoneInfo
 from hashlib import sha256
 from html import unescape
 from ipaddress import ip_address
@@ -940,7 +941,18 @@ def split_phone(value):
     return f"{number[:3]}-{number[3:6]}-{number[6:]}", extension
 
 
-def parse_datetime(value):
+# Every school the CRM covers is in Illinois or Missouri, both on Central time.
+CENTRAL_TIME = ZoneInfo("America/Chicago")
+
+
+def parse_datetime(value, zone=None):
+    """Parse a date or date-time. Times that carry a zone are converted to `zone`.
+
+    zone=None keeps the original behaviour: convert to UTC. Event identities
+    (external_id) are built from that UTC form, so it must not change, or every
+    existing event would get a new id and be inserted again.
+    zone=CENTRAL_TIME gives the local wall-clock time to store and show (plan B5b).
+    """
     if isinstance(value, datetime):
         result = value
     elif isinstance(value, date):
@@ -966,6 +978,10 @@ def parse_datetime(value):
         for pattern in formats:
             try:
                 result = datetime.strptime(text, pattern)
+                # The trailing Z means UTC. Mark it so it can be converted to local
+                # time like any other zoned value (it was treated as local before).
+                if pattern.endswith("Z"):
+                    result = result.replace(tzinfo=timezone.utc)
                 break
             except ValueError:
                 continue
@@ -975,7 +991,7 @@ def parse_datetime(value):
             except ValueError:
                 return None
     if result.tzinfo is not None:
-        result = result.astimezone(timezone.utc).replace(tzinfo=None)
+        result = result.astimezone(zone or timezone.utc).replace(tzinfo=None)
     return result
 
 

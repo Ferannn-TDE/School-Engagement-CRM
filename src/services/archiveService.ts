@@ -1,4 +1,5 @@
-import { supabase } from './supabase';
+import { supabase, fetchAllRows } from './supabase';
+import type { ArchivedLookup } from '../utils/archivedMatches';
 
 // Settings → Archived: everything archived instead of deleted (db/009), and restore.
 
@@ -84,4 +85,16 @@ export async function restoreItem(kind: ArchivedKind, id: string): Promise<void>
             ? await supabase.from('programs').update({ archived: false }).eq('program_id', id)
             : await supabase.from('activities').update({ archived: false }).eq('activity_id', id);
   if (error) throw error;
+}
+
+/** Archived schools (by name) and contacts (by email), for matching import rows. */
+export async function fetchArchivedLookup(): Promise<ArchivedLookup> {
+  const [schools, staff] = await Promise.all([
+    fetchAllRows<{ facility_key: string; name: string }>('schools', 'facility_key', 'facility_key, name', { archived: true }),
+    fetchAllRows<{ staff_id: number; name: string; email: string | null }>('staff', 'staff_id', 'staff_id, name, email', { archived: true }),
+  ]);
+  return {
+    schools: schools.map((s) => ({ id: s.facility_key, name: s.name })),
+    contacts: staff.filter((s) => s.email).map((s) => ({ id: String(s.staff_id), name: s.name, email: s.email as string })),
+  };
 }

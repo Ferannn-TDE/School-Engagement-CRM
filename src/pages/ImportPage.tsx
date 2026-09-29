@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
@@ -25,6 +25,14 @@ import {
 } from '../utils/importParsing';
 import { importContactsBulk } from '../services/contactsService';
 import { importSchoolsBulk } from '../services/schoolsService';
+import { fetchArchivedLookup, restoreItem } from '../services/archiveService';
+import { ArchivedMatchesPanel } from '../components/imports/ArchivedMatchesPanel';
+import {
+  findArchivedMatches,
+  isRowSkipped,
+  restoredSchoolId,
+} from '../utils/archivedMatches';
+import type { ArchivedDecision, ArchivedLookup, ArchivedMatch, ImportRowRef } from '../utils/archivedMatches';
 import toast from 'react-hot-toast';
 
 type ImportTab = 'contacts' | 'schools' | 'combined';
@@ -105,7 +113,29 @@ interface CombinedPreview {
 }
 
 export function ImportPage() {
-  const { state, dispatch, addSchoolsBulk } = useAppContext();
+  const { state, dispatch, addSchoolsBulk, reload } = useAppContext();
+
+  // Archived schools and contacts (db/009). Rows that match one are listed in the
+  // preview; the person restores the record or skips those rows (the default).
+  const [archivedLookup, setArchivedLookup] = useState<ArchivedLookup>({ schools: [], contacts: [] });
+  const [archivedDecisions, setArchivedDecisions] = useState<Record<string, ArchivedDecision>>({});
+  const refreshArchivedLookup = useCallback(async () => {
+    try {
+      setArchivedLookup(await fetchArchivedLookup());
+    } catch (err) {
+      console.error('fetchArchivedLookup failed:', err);
+    }
+  }, []);
+  useEffect(() => {
+    void refreshArchivedLookup();
+  }, [refreshArchivedLookup]);
+
+  /** Restores the archived records the person chose to restore. Returns how many. */
+  const restoreChosen = async (matches: ArchivedMatch[]): Promise<number> => {
+    const chosen = matches.filter((m) => archivedDecisions[m.key] === 'restore');
+    for (const m of chosen) await restoreItem(m.kind, m.id);
+    return chosen.length;
+  };
 
   // Single-entity import state
   const [activeTab, setActiveTab] = useState<ImportTab>('combined');
@@ -128,9 +158,29 @@ export function ImportPage() {
   const [combinedResult, setCombinedResult] = useState<{
     schoolsCreated: number; schoolsUpdated: number; schoolsFailed: number;
     contactsCreated: number; contactsUpdated: number; contactsFailed: number;
+    archivedRestored: number; archivedSkipped: number;
   } | null>(null);
 
   const fieldOptions = activeTab === 'contacts' ? CONTACT_FIELD_OPTIONS : SCHOOL_FIELD_OPTIONS;
+
+  const combinedRefs = useMemo(() => {
+    if (!combinedPreview) return { schools: [] as ImportRowRef[], contacts: [] as ImportRowRef[] };
+    return {
+      schools: combinedPreview.schoolRows.map((r, i) => ({
+        label: `Schools row ${i + 1}`,
+        schoolName: ((r['name'] as string) || '').trim(),
+      })),
+      contacts: combinedPreview.contactRows.map((r, i) => ({
+        label: `Contacts row ${i + 1}`,
+        schoolName: ((r['schoolName'] as string) || '').trim(),
+        email: ((r['email'] as string) || '').trim(),
+      })),
+    };
+  }, [combinedPreview]);
+  const combinedMatches = useMemo(
+    () => findArchivedMatches(archivedLookup, [...combinedRefs.schools, ...combinedRefs.contacts]),
+    [archivedLookup, combinedRefs]
+  );
 
   // ── Combined import helpers ─────────────────────────────────────────────────
 
@@ -195,12 +245,18 @@ export function ImportPage() {
     if (!combinedPreview) return;
     setIsImporting(true);
     try {
+      // ── Archived matches: restore what the person chose, skip the rest ─────
+      const restored = await restoreChosen(combinedMatches);
+      const keepSchool = combinedPreview.schoolRows.map((_, i) => !isRowSkipped(archivedLookup, combinedRefs.schools[i], archivedDecisions));
+      const keepContact = combinedPreview.contactRows.map((_, i) => !isRowSkipped(archivedLookup, combinedRefs.contacts[i], archivedDecisions));
+      const archivedSkipped = keepSchool.filter((k) => !k).length + keepContact.filter((k) => !k).length;
+
       // ── Schools ──────────────────────────────────────────────────────────────
       // importSchoolsBulk does a fresh DB pre-fetch so it handles duplicates
       // correctly even across sessions (not relying on potentially-stale state).
       const schoolResult = await importSchoolsBulk(
         combinedPreview.schoolRows
-          .filter((r) => (r['name'] as string)?.trim())
+          .filter((r, i) => keepSchool[i] && (r['name'] as string)?.trim())
           .map((r) => ({
             name: (r['name'] as string).trim(),
             district: (r['district'] as string) || undefined,
@@ -224,9 +280,15 @@ export function ImportPage() {
       const nameToId = new Map<string, string>();
       for (const s of state.schools) nameToId.set(s.name.toLowerCase(), s.id);
       for (const s of schoolResult.schools) nameToId.set(s.name.toLowerCase(), s.id);
+      // Restored schools aren't in state yet.
+      for (const s of archivedLookup.schools) {
+        const id = restoredSchoolId(archivedLookup, s.name, archivedDecisions);
+        if (id) nameToId.set(s.name.toLowerCase(), id);
+      }
 
       // ── Contacts ─────────────────────────────────────────────────────────────
       const contactsToImport = combinedPreview.contactRows
+        .filter((_, i) => keepContact[i])
         .map((r) => ({
           firstName: (r['firstName'] as string) || '',
           lastName: (r['lastName'] as string) || '',
@@ -250,9 +312,13 @@ export function ImportPage() {
         contactsCreated: contactResult.created,
         contactsUpdated: contactResult.updated,
         contactsFailed: contactResult.failed,
+        archivedRestored: restored,
+        archivedSkipped,
       };
 
       setCombinedResult(stats);
+      if (restored > 0) await reload();
+      void refreshArchivedLookup();
       setCombinedStep('done');
 
       const totalNew = stats.schoolsCreated + stats.contactsCreated;
@@ -279,6 +345,7 @@ export function ImportPage() {
   };
 
   const resetCombined = () => {
+    setArchivedDecisions({});
     setCombinedPreview(null);
     setCombinedStep('upload');
     setCombinedResult(null);
@@ -422,6 +489,38 @@ export function ImportPage() {
     setColumnMapping(mapping);
   };
 
+  const singleRefs = useMemo<ImportRowRef[]>(
+    () =>
+      parsedData.map((row, i) => {
+        const mapped: Record<string, string> = {};
+        for (const [header, field] of Object.entries(columnMapping)) {
+          if (field && row[header] !== undefined) mapped[field] = String(row[header]).trim();
+        }
+        return activeTab === 'contacts'
+          ? { label: `Row ${i + 1}`, schoolName: mapped.schoolId, email: mapped.email }
+          : { label: `Row ${i + 1}`, schoolName: mapped.name };
+      }),
+    [parsedData, columnMapping, activeTab]
+  );
+  const singleMatches = useMemo(() => findArchivedMatches(archivedLookup, singleRefs), [archivedLookup, singleRefs]);
+
+  /** How a row that matches an archived record will be handled, for the Status column. */
+  const archivedStatus = (ref: ImportRowRef | undefined): ArchivedDecision | null => {
+    if (!ref || findArchivedMatches(archivedLookup, [ref]).length === 0) return null;
+    return isRowSkipped(archivedLookup, ref, archivedDecisions) ? 'skip' : 'restore';
+  };
+  const archivedBadge = (status: ArchivedDecision) =>
+    status === 'skip' ? (
+      <Badge variant="default">Archived — skip</Badge>
+    ) : (
+      <Badge variant="info">Archived — restore</Badge>
+    );
+  const singleSkippedCount = singleRefs.filter(
+    (ref, i) =>
+      archivedStatus(ref) === 'skip' &&
+      !validationErrors.some((e) => e.row === i && e.severity === 'error')
+  ).length;
+
   const validateData = () => {
     const errors: ValidationResult[] = [];
 
@@ -443,7 +542,9 @@ export function ImportPage() {
           const schoolMatch = state.schools.find(
             (s) => s.name.toLowerCase() === mapped.schoolId.toLowerCase()
           );
-          if (!schoolMatch) {
+          // A school that is archived is listed under "rows that match archived records" instead.
+          const archivedSchool = archivedLookup.schools.some((s) => s.name.toLowerCase() === mapped.schoolId.toLowerCase());
+          if (!schoolMatch && !archivedSchool) {
             errors.push({ row: i, field: 'schoolId', message: `School "${mapped.schoolId}" not found — row will be skipped`, severity: 'error' });
           }
         }
@@ -476,6 +577,12 @@ export function ImportPage() {
     setIsImporting(true);
     try {
       const errorRows = new Set(validationErrors.filter((e) => e.severity === 'error').map((e) => e.row));
+      // Archived matches: restore what the person chose; rows matching a record they
+      // skipped are left out, like rows with errors.
+      const restored = await restoreChosen(singleMatches);
+      parsedData.forEach((_, i) => {
+        if (isRowSkipped(archivedLookup, singleRefs[i], archivedDecisions)) errorRows.add(i);
+      });
 
       if (activeTab === 'contacts') {
         const validContacts = parsedData
@@ -493,7 +600,7 @@ export function ImportPage() {
               phone: mapped.phone || undefined,
               title: (mapped.role || '').trim() || undefined,
               role: roleFromTitle(mapped.role),
-              schoolId: school?.id ?? '',
+              schoolId: school?.id ?? restoredSchoolId(archivedLookup, mapped.schoolId || '', archivedDecisions) ?? '',
               isActive: true,
               dataSource: 'imported' as const,
               isVerified: false as const,
@@ -505,7 +612,11 @@ export function ImportPage() {
         dispatch({ type: 'ADD_CONTACTS_BULK', payload: result.contacts.slice(0, result.created) });
         toast.success(`Imported ${result.created} new, ${result.updated} updated (${result.failed + errorRows.size} skipped/failed)`);
       } else {
-        const existingNames = new Set(state.schools.map((s) => s.name.toLowerCase()));
+        // Restored archived schools already exist, so they aren't added again.
+        const existingNames = new Set([
+          ...state.schools.map((s) => s.name.toLowerCase()),
+          ...archivedLookup.schools.map((s) => s.name.toLowerCase()),
+        ]);
         const validSchools = parsedData
           .map((row, i) => ({ row, i }))
           .filter(({ i }) => !errorRows.has(i))
@@ -531,6 +642,11 @@ export function ImportPage() {
         await addSchoolsBulk(validSchools);
         toast.success(`Imported ${validSchools.length} schools (${errorRows.size + (parsedData.length - validSchools.length - errorRows.size)} skipped)`);
       }
+      if (restored > 0) {
+        toast.success(`Restored ${restored} archived record${restored !== 1 ? 's' : ''}`);
+        await reload();
+      }
+      void refreshArchivedLookup();
       setStep('done');
     } catch (err) {
       console.error('Import failed:', err);
@@ -544,6 +660,7 @@ export function ImportPage() {
   };
 
   const reset = () => {
+    setArchivedDecisions({});
     setParsedData([]);
     setHeaders([]);
     setColumnMapping({});
@@ -746,6 +863,13 @@ export function ImportPage() {
                   <span>All imported records will be marked <strong>Unverified</strong>. Review them on the Schools and Contacts pages before treating them as confirmed data.</span>
                 </div>
 
+                <ArchivedMatchesPanel
+                  matches={combinedMatches}
+                  decisions={archivedDecisions}
+                  onChange={setArchivedDecisions}
+                  disabled={isImporting}
+                />
+
                 {/* Schools preview table */}
                 {combinedPreview.schoolRows.length > 0 && (
                   <div className="mb-4">
@@ -771,7 +895,9 @@ export function ImportPage() {
                                 <td className="px-3 py-2 text-neutral-500">{row['city'] as string}</td>
                                 <td className="px-3 py-2 text-neutral-500">{row['schoolType'] as string}</td>
                                 <td className="px-3 py-2">
-                                  {isDup ? (
+                                  {archivedStatus(combinedRefs.schools[i]) ? (
+                                    archivedBadge(archivedStatus(combinedRefs.schools[i])!)
+                                  ) : isDup ? (
                                     <Badge variant="warning">Duplicate — skip</Badge>
                                   ) : (
                                     <Badge variant="success">New</Badge>
@@ -875,6 +1001,12 @@ export function ImportPage() {
                       )}
                     </div>
                   </div>
+                  {(combinedResult.archivedRestored > 0 || combinedResult.archivedSkipped > 0) && (
+                    <p className="text-sm text-neutral-600 mb-4">
+                      Archived records: <strong>{combinedResult.archivedRestored}</strong> restored,{' '}
+                      <strong>{combinedResult.archivedSkipped}</strong> row{combinedResult.archivedSkipped !== 1 ? 's' : ''} skipped.
+                    </p>
+                  )}
                   <p className="text-sm text-amber-700 bg-amber-50 rounded-lg px-4 py-2 inline-block mb-6">
                     New records are marked <strong>Unverified</strong> — navigate to Schools to review and verify.
                   </p>
@@ -989,6 +1121,13 @@ export function ImportPage() {
                   </Button>
                 </div>
 
+                <ArchivedMatchesPanel
+                  matches={singleMatches}
+                  decisions={archivedDecisions}
+                  onChange={setArchivedDecisions}
+                  disabled={isImporting}
+                />
+
                 {validationErrors.length > 0 && (
                   <div className="mb-4 p-4 bg-red-50 rounded-lg border border-red-100">
                     <h4 className="text-sm font-medium text-error mb-2">Validation Issues</h4>
@@ -1042,7 +1181,9 @@ export function ImportPage() {
                                 </td>
                               ))}
                             <td className="px-3 py-2">
-                              {hasError ? (
+                              {!hasError && archivedStatus(singleRefs[i]) ? (
+                                archivedBadge(archivedStatus(singleRefs[i])!)
+                              ) : hasError ? (
                                 <Badge variant="error">Error</Badge>
                               ) : rowErrors.length > 0 ? (
                                 <Badge variant="warning">Warning</Badge>
@@ -1074,7 +1215,7 @@ export function ImportPage() {
                         Importing…
                       </>
                     ) : (
-                      <>Import {parsedData.length - validationErrors.filter((e) => e.severity === 'error').length} Valid Rows</>
+                      <>Import {parsedData.length - validationErrors.filter((e) => e.severity === 'error').length - singleSkippedCount} Valid Rows</>
                     )}
                   </Button>
                 </div>

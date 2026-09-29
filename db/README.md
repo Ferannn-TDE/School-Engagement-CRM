@@ -35,8 +35,14 @@ cleared on restore.
   other five tables). To restore by hand, use the app, or
   `select restore_school('<facility_key>');` with claims set as in the unlock command
   below.
+- The app hides every contact whose school is archived, including staff the scraper
+  adds to that school later (they aren't archived themselves). They come back when the
+  school is restored.
+- Imports never touch an archived record silently: the preview lists rows that match
+  one, and the person restores the record or skips those rows (the default).
 - The scraper doesn't know about archiving yet: it still updates archived rows (they
-  stay archived) and could add new staff at an archived school.
+  stay archived, and hidden) and can add staff to an archived school (hidden, as
+  above). Making it skip archived schools is on seandsw's list.
 
 ## How the app and the scraper are told apart
 

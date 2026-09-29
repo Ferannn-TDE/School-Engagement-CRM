@@ -60,11 +60,15 @@ function rowToContact(staff: StaffRow, schoolId: string): Contact {
 
 export async function fetchContacts(): Promise<Contact[]> {
   // Paged: staff and contacts both exceed PostgREST's single-response cap.
-  const [staffRows, junctionRows] = await Promise.all([
+  const [staffRows, junctionRows, archivedSchools] = await Promise.all([
     // Archived people and school links (db/009) are left out.
     fetchAllRows<StaffRow>('staff', 'staff_id', '*', { archived: false }),
     fetchAllRows<JunctionRow>('contacts', ['school_id', 'staff_id'], '*', { archived: false }),
+    fetchAllRows<{ facility_key: string }>('schools', 'facility_key', 'facility_key', { archived: true }),
   ]);
+  // So are the contacts of an archived school, including staff the scraper adds to
+  // it later: they aren't archived themselves, but their school is.
+  const archivedSchoolIds = new Set(archivedSchools.map((s) => s.facility_key));
 
   // Build staff_id -> school_id lookup from junction table
   const schoolIdMap = new Map<number, string>();
@@ -72,11 +76,13 @@ export async function fetchContacts(): Promise<Contact[]> {
     schoolIdMap.set(j.staff_id, j.school_id);
   }
 
-  return staffRows.map((staff) => {
-    const schoolId =
-      schoolIdMap.get(staff.staff_id) ?? staff.school_worked_at ?? '';
-    return rowToContact(staff, schoolId);
-  });
+  return staffRows
+    .map((staff) => {
+      const schoolId =
+        schoolIdMap.get(staff.staff_id) ?? staff.school_worked_at ?? '';
+      return rowToContact(staff, schoolId);
+    })
+    .filter((contact) => !archivedSchoolIds.has(contact.schoolId));
 }
 
 

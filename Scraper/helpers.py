@@ -591,7 +591,12 @@ SCHOOL_SQL = """
         website = COALESCE(EXCLUDED.website, schools.website),
         county_name = COALESCE(EXCLUDED.county_name, schools.county_name),
         is_scraped = EXCLUDED.is_scraped,
-        is_active = EXCLUDED.is_active,
+        -- Never switch an inactive school back to active: someone deactivated it on
+        -- purpose, and the scraper always sends TRUE (plan item C10).
+        is_active = CASE
+            WHEN schools.is_active IS FALSE THEN FALSE
+            ELSE EXCLUDED.is_active
+        END,
         -- Never replace notes (see STAFF_UPDATE_SQL): keep them, or keep both.
         notes = CASE
             WHEN NULLIF(BTRIM(EXCLUDED.notes), '') IS NULL THEN schools.notes
@@ -669,7 +674,9 @@ STAFF_UPDATE_SQL = """
         email = COALESCE(%s, email),
         job_name = COALESCE(%s, job_name),
         school_worked_at = %s,
-        is_active = %s,
+        -- Never switch an inactive contact back to active: someone deactivated them
+        -- on purpose, and the scraper always sends TRUE (plan item C10).
+        is_active = CASE WHEN is_active IS FALSE THEN FALSE ELSE %s END,
         -- Never replace notes: a person may have written them. Keep them when the
         -- scraper sends nothing, and otherwise keep both, without repeating a line
         -- that is already there (plan item C10, no-loss rule).

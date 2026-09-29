@@ -13,6 +13,7 @@ how 001 and 002 went missing once (found and re-applied on 2026-09-26/28).
 | `004_restrict_signup_to_siue.sql` | Only `@siue.edu` addresses can create an account (auth hook, enabled in Authentication → Hooks). |
 | `005_county_views_by_state.sql` | County views group by county **and** state (40 names exist in both IL and MO). |
 | `006_protect_manual_edits.sql` | A client's edit is never overwritten by the scraper (below). |
+| `007_event_category_testing_dates.sql` | `events.category`; the 15 existing SAT/ACT/PSAT events are marked `school_testing_date` (busy dates, not outreach). Same rules as the scraper's testing-dates list, which also covers AP exams. |
 
 ## How the app and the scraper are told apart
 

@@ -496,6 +496,18 @@ CALENDAR_LINK_TERMS = {
     "career": 4,
 }
 
+# School testing dates: the editable list of what counts. The client doesn't do
+# outreach on these days, but wants them kept as "busy dates" for each school, so
+# matching events are stored with the category below and logged. They are never
+# skipped or deleted (plan item A3, "testing dates are a category, not a filter").
+# Matching is whole-word and case-sensitive, so "Sat" (Saturday) and words that merely
+# contain the letters (e.g. "ACTIVITY") don't match. Add or remove terms here.
+TESTING_DATE_TERMS = ["SAT", "ACT", "PSAT"]
+TESTING_DATE_CATEGORY = "school_testing_date"
+TESTING_DATE_PATTERN = re.compile(
+    r"\b(?:" + "|".join(re.escape(term) for term in TESTING_DATE_TERMS) + r")\b"
+)
+
 EVENT_PATTERNS = {
     "college_planning": re.compile(r"\bcollege\s+(?:night|fair|planning|information|application)|\bcollege\s+and\s+career\b", re.I),
     "college_visit": re.compile(r"\bcollege\s+(?:visit|representative)|\bcampus\s+visit\b", re.I),

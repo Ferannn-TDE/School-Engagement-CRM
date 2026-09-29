@@ -17,6 +17,8 @@ from helpers import (
     MESSAGE_NAME,
     PHONE,
     ROLE_ORDER,
+    TESTING_DATE_CATEGORY,
+    TESTING_DATE_PATTERN,
     canonical_url,
     clean,
     digits,
@@ -400,12 +402,23 @@ class ContactParser:
 
 
 class EventParser:
+    def __init__(self):
+        # Every testing-date match in this run, so the list in helpers.py can be tuned.
+        self.testing_date_matches = []
+
     def category(self, text):
         text = clean(text)
         if EVENT_REJECT.search(text):
             return ""
+        # Testing dates first: they get their own category and are kept, never
+        # skipped (plan item A3). The list lives in helpers.TESTING_DATE_TERMS.
+        match = TESTING_DATE_PATTERN.search(text)
+        if match:
+            self.testing_date_matches.append((match.group(0), text))
+            print(f"[testing date] {match.group(0)}: {text[:120]}", flush=True)
+            return TESTING_DATE_CATEGORY
         if re.search(r"\bSAT\b", text):
-            return "testing"
+            return TESTING_DATE_CATEGORY
         if re.search(r"\bSat\b", text) and not re.search(
             r"\b(?:exam|test|testing|assessment|administration|school day)\b",
             text,
@@ -413,7 +426,10 @@ class EventParser:
         ):
             text = re.sub(r"\bSat\b", "", text)
         if re.search(r"\bsat\s+(?:exam|test|testing|assessment|administration|school\s+day)\b", text, re.I):
-            return "testing"
+            # "Sat testing administration": the SAT exam written in lower case.
+            self.testing_date_matches.append(("SAT", text))
+            print(f"[testing date] SAT: {text[:120]}", flush=True)
+            return TESTING_DATE_CATEGORY
         for category, pattern in EVENT_PATTERNS.items():
             if pattern.search(text):
                 return category

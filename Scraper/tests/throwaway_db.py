@@ -6,7 +6,9 @@ with them. Tests that need real SQL use this module.
 
 Set SCRAPER_TEST_DATABASE_URL to a disposable database, for example a local
 PGlite server:
-    npx @electric-sql/pglite-socket --db=memory:// --port=55432
+    npx pglite-server --db=memory:// --port=55432 --max-connections=8
+    (from the @electric-sql/pglite-socket package; more than one connection is
+    needed because a test and the writer connect separately)
     SCRAPER_TEST_DATABASE_URL=postgresql://postgres@127.0.0.1:55432/postgres pytest
 Without it, these tests are skipped.
 
@@ -134,11 +136,13 @@ class ThrowawayDatabaseTest(unittest.TestCase):
 
     def tearDown(self):
         if getattr(self, "url", None):
-            with self.psycopg.connect(self.url) as conn:
+            with self.psycopg.connect(self.url, prepare_threshold=None) as conn:
                 conn.execute(f"DROP SCHEMA IF EXISTS {TEST_SCHEMA} CASCADE")
 
     def connect(self, _url=None):
-        conn = self.psycopg.connect(self.url, connect_timeout=10)
+        # prepare_threshold=None: PGlite serves every connection from one database
+        # session, so psycopg's automatically named prepared statements would collide.
+        conn = self.psycopg.connect(self.url, connect_timeout=10, prepare_threshold=None)
         conn.execute(f"SET search_path TO {TEST_SCHEMA}")
         return conn
 

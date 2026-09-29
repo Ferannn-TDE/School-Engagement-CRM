@@ -49,8 +49,22 @@ class TestingDatesTests(unittest.TestCase):
 
     def test_the_list_is_the_single_place_to_edit(self):
         original = helpers.TESTING_DATE_TERMS[:]
-        self.assertEqual(original, ["SAT", "ACT", "PSAT"])
+        self.assertEqual(original, ["SAT", "ACT", "PSAT", "AP"])
         self.assertTrue(helpers.TESTING_DATE_PATTERN.search("PSAT day"))
+
+    def test_ap_exams_are_testing_dates(self):
+        for title in ["AP Exams Begin", "AP Calculus Exam", "AP exam week", "AP Testing - Room 204",
+                      "AP Biology test"]:
+            with self.subTest(title=title):
+                self.assertEqual(self.parser.category(title), helpers.TESTING_DATE_CATEGORY)
+        self.assertEqual(self.parser.testing_date_matches[0][0], "AP")
+
+    def test_ap_without_an_exam_is_not_a_testing_date(self):
+        # "AP Celebration Day" is the only AP title in the live data (2026-09-29).
+        for title in ["AP Celebration Day", "AP Night for Parents", "APPLE Festival",
+                      "Nap time testing"]:
+            with self.subTest(title=title):
+                self.assertNotEqual(self.parser.category(title), helpers.TESTING_DATE_CATEGORY)
 
 
 if __name__ == "__main__":

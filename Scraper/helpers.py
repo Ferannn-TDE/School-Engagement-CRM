@@ -502,10 +502,20 @@ CALENDAR_LINK_TERMS = {
 # skipped or deleted (plan item A3, "testing dates are a category, not a filter").
 # Matching is whole-word and case-sensitive, so "Sat" (Saturday) and words that merely
 # contain the letters (e.g. "ACTIVITY") don't match. Add or remove terms here.
-TESTING_DATE_TERMS = ["SAT", "ACT", "PSAT"]
+TESTING_DATE_TERMS = ["SAT", "ACT", "PSAT", "AP"]
+# Terms that count only when the text also says exam or test. Schools use "AP" for
+# more than exams ("AP Celebration Day" is in the live data, "AP Night" is common),
+# so "AP Exams Begin" and "AP Calculus Exam" match but those don't.
+TESTING_DATE_TERMS_NEEDING_EXAM_WORD = {"AP"}
+TESTING_DATE_EXAM_WORD = r"(?=.*\b(?i:exams?|tests?|testing)\b)"
 TESTING_DATE_CATEGORY = "school_testing_date"
 TESTING_DATE_PATTERN = re.compile(
-    r"\b(?:" + "|".join(re.escape(term) for term in TESTING_DATE_TERMS) + r")\b"
+    r"\b(?:"
+    + "|".join(
+        re.escape(term) + (TESTING_DATE_EXAM_WORD if term in TESTING_DATE_TERMS_NEEDING_EXAM_WORD else "")
+        for term in TESTING_DATE_TERMS
+    )
+    + r")\b"
 )
 
 EVENT_PATTERNS = {

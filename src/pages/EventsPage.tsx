@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
-import { Plus, Calendar, CalendarDays, List, MapPin, Users } from 'lucide-react';
+import { Plus, Calendar, CalendarDays, CalendarX, List, MapPin, Users } from 'lucide-react';
 import { format, isAfter, isSameMonth, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, isToday } from 'date-fns';
 import { Header } from '../components/layout/Header';
 import { Card } from '../components/common/Card';
@@ -18,6 +18,7 @@ import { useUrlState } from '../hooks/useUrlState';
 import type { Event } from '../types';
 import { EventType, EventTypeLabels } from '../types';
 import { classNames } from '../utils/helpers';
+import { isTestingDate } from '../utils/events';
 import toast from 'react-hot-toast';
 
 export function EventsPage() {
@@ -26,6 +27,9 @@ export function EventsPage() {
   const [viewRaw, setView] = useUrlState('view', 'list');
   const view: 'calendar' | 'list' = viewRaw === 'calendar' ? 'calendar' : 'list';
   const [typeFilter, setTypeFilter] = useUrlState('type');
+  // SAT/ACT/PSAT/AP exam days (db/007) are busy dates, not outreach: hidden unless asked for.
+  const [testingRaw, setTestingRaw] = useUrlState('testing');
+  const showTesting = testingRaw === '1';
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [viewingEvent, setViewingEvent] = useState<Event | null>(null);
@@ -37,11 +41,18 @@ export function EventsPage() {
   }, [monthRaw]);
   const setCalendarMonth = (d: Date) => setMonthRaw(format(d, 'yyyy-MM'));
 
+  const visibleEvents = useMemo(
+    () => (showTesting ? state.events : state.events.filter((e) => !isTestingDate(e))),
+    [state.events, showTesting]
+  );
+  const testingCount = useMemo(() => state.events.filter(isTestingDate).length, [state.events]);
+  const outreachCount = state.events.length - testingCount;
+
   const filteredEvents = useMemo(() => {
-    let events = state.events;
+    let events = visibleEvents;
     if (typeFilter) events = events.filter((e) => e.type === typeFilter);
-    return events.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  }, [state.events, typeFilter]);
+    return [...events].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }, [visibleEvents, typeFilter]);
 
   const typeOptions = Object.values(EventType).map((type) => ({
     value: type,
@@ -55,7 +66,9 @@ export function EventsPage() {
         header: 'Event Name',
         cell: ({ row }) => (
           <div>
-            <p className="font-medium text-neutral-800">{row.original.name}</p>
+            <p className={classNames('font-medium', isTestingDate(row.original) ? 'text-neutral-500' : 'text-neutral-800')}>
+              {row.original.name}
+            </p>
             <div className="flex items-center gap-2 mt-0.5">
               <span className="text-xs text-neutral-500 flex items-center gap-1">
                 <MapPin size={12} />
@@ -68,9 +81,15 @@ export function EventsPage() {
       {
         accessorKey: 'type',
         header: 'Type',
-        cell: ({ getValue }) => (
-          <Badge variant="info">{EventTypeLabels[getValue() as EventType]}</Badge>
-        ),
+        cell: ({ row, getValue }) =>
+          isTestingDate(row.original) ? (
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium border border-dashed border-neutral-400 text-neutral-600">
+              <CalendarX size={12} />
+              Testing date
+            </span>
+          ) : (
+            <Badge variant="info">{EventTypeLabels[getValue() as EventType]}</Badge>
+          ),
       },
       {
         accessorKey: 'date',
@@ -139,17 +158,30 @@ export function EventsPage() {
 
   const eventsInMonth = useMemo(
     () =>
-      state.events.filter((e) => isSameMonth(new Date(e.date), calendarMonth)),
-    [state.events, calendarMonth]
+      visibleEvents.filter((e) => isSameMonth(new Date(e.date), calendarMonth)),
+    [visibleEvents, calendarMonth]
   );
 
   return (
     <div>
 <Header
         title="Events"
-        subtitle={`${state.events.length} events`}
+        subtitle={
+          showTesting
+            ? `${outreachCount} events · ${testingCount} testing dates shown`
+            : `${outreachCount} events`
+        }
         actions={
           <div className="flex gap-2">
+            <label className="flex items-center gap-2 px-3 py-1.5 text-sm text-neutral-600 border border-neutral-200 rounded-lg bg-white cursor-pointer select-none whitespace-nowrap">
+              <input
+                type="checkbox"
+                checked={showTesting}
+                onChange={(e) => setTestingRaw(e.target.checked ? '1' : '')}
+                className="accent-siue-red"
+              />
+              Show testing dates
+            </label>
             <div className="flex rounded-lg border border-neutral-200 overflow-hidden">
               <button
                 onClick={() => setView('list')}
@@ -211,7 +243,7 @@ export function EventsPage() {
                   columns={columns}
                   columnWidths={['32%', '15%', '18%', '10%', '10%', '15%']}
                   urlState
-                  resetKey={typeFilter}
+                  resetKey={`${typeFilter}|${showTesting}`}
                   onRowClick={(event) => setViewingEvent(event)}
                   emptyMessage="No events match your filter."
                 />
@@ -268,8 +300,13 @@ export function EventsPage() {
                     {dayEvents.map((event) => (
                       <div
                         key={event.id}
-                        className="mt-1 px-1.5 py-0.5 bg-siue-red/10 text-siue-red text-xs rounded truncate cursor-pointer hover:bg-siue-red/20"
-                        title={event.name}
+                        className={classNames(
+                          'mt-1 px-1.5 py-0.5 text-xs rounded truncate cursor-pointer',
+                          isTestingDate(event)
+                            ? 'border border-dashed border-neutral-400 text-neutral-500 bg-neutral-50 hover:bg-neutral-100'
+                            : 'bg-siue-red/10 text-siue-red hover:bg-siue-red/20'
+                        )}
+                        title={isTestingDate(event) ? `Testing date: ${event.name}` : event.name}
                         onClick={() => setViewingEvent(event)}
                       >
                         {event.name}

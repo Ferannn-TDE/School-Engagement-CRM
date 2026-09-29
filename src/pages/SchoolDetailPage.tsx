@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Edit, MapPin, Users, Calendar, Trash2, School, ArrowLeft, Plus, BookOpen, TrendingUp, ShieldCheck, Phone, Globe } from 'lucide-react';
-import { format } from 'date-fns';
+import { Edit, MapPin, Users, Calendar, CalendarX, Trash2, School, ArrowLeft, Plus, BookOpen, TrendingUp, ShieldCheck, Phone, Globe } from 'lucide-react';
+import { format, startOfDay } from 'date-fns';
 import { Header } from '../components/layout/Header';
 import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
@@ -21,6 +21,7 @@ import { ContactMethodLabels, ProgramCategoryLabels, ProgramCategory } from '../
 import type { Contact, Program } from '../types';
 import { formatSchoolType } from '../utils/helpers';
 import { computeEngagementScore } from '../utils/engagementScore';
+import { isTestingDate } from '../utils/events';
 import { contactRoleLabel } from '../utils/contactRoles';
 import { countyLabel } from '../utils/counties';
 import { formatPhone, websiteHref, websiteLabel } from '../utils/helpers';
@@ -46,7 +47,15 @@ export function SchoolDetailPage() {
   const school = decodedId ? getSchoolById(decodedId) : undefined;
   const contacts = useMemo(() => (decodedId ? getContactsBySchool(decodedId) : []), [decodedId, getContactsBySchool]);
   const activities = useMemo(() => (decodedId ? getActivitiesBySchool(decodedId) : []), [decodedId, getActivitiesBySchool]);
-  const events = useMemo(() => (decodedId ? getEventsBySchool(decodedId) : []), [decodedId, getEventsBySchool]);
+  const schoolEvents = useMemo(() => (decodedId ? getEventsBySchool(decodedId) : []), [decodedId, getEventsBySchool]);
+  // Testing dates are busy dates, not outreach: they never count as events here (db/007).
+  const events = useMemo(() => schoolEvents.filter((e) => !isTestingDate(e)), [schoolEvents]);
+  const busyDates = useMemo(() => {
+    const today = startOfDay(new Date());
+    return schoolEvents
+      .filter((e) => isTestingDate(e) && new Date(e.date) >= today)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }, [schoolEvents]);
   const programs = useMemo(() => (decodedId ? getProgramsBySchool(decodedId) : []), [decodedId, getProgramsBySchool]);
 
   const programsByCategory = useMemo(() => {
@@ -200,6 +209,25 @@ export function SchoolDetailPage() {
             <p className="text-sm text-neutral-500">{activities.length} total activities</p>
           </Card>
         </div>
+
+        {/* Upcoming testing dates: busy dates, not outreach */}
+        {busyDates.length > 0 && (
+          <section className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50 p-6" aria-label="Busy dates">
+            <div className="flex items-center gap-2 mb-1">
+              <CalendarX size={18} className="text-neutral-500" />
+              <h3 className="text-base font-semibold text-neutral-800">Busy dates — avoid scheduling visits</h3>
+            </div>
+            <p className="text-xs text-neutral-500 mb-3">Upcoming testing dates from the school's calendar (SAT, ACT, PSAT, AP exams).</p>
+            <ul className="divide-y divide-neutral-200">
+              {busyDates.map((e) => (
+                <li key={e.id} className="flex items-center justify-between gap-4 py-2 text-sm">
+                  <span className="text-neutral-700">{e.name}</span>
+                  <span className="text-neutral-500 whitespace-nowrap">{format(new Date(e.date), 'EEE, MMM d, yyyy')}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         {/* Engagement Overview */}
         <Card>

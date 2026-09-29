@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { format, subMonths, isAfter } from 'date-fns';
 import { useAppContext } from '../context/AppContext';
+import { outreachEvents } from '../utils/events';
 
 export interface SchoolContactCounts {
   total: number;
@@ -21,6 +22,8 @@ export interface SchoolActivitySummary {
  */
 export function useEngagementMaps() {
   const { state } = useAppContext();
+  // Testing dates are busy dates, not outreach: never counted (db/007).
+  const countedEvents = useMemo(() => outreachEvents(state.events), [state.events]);
 
   const schoolContactsMap = useMemo(() => {
     const map = new Map<string, SchoolContactCounts>();
@@ -47,13 +50,13 @@ export function useEngagementMaps() {
 
   const schoolEventCountMap = useMemo(() => {
     const map = new Map<string, number>();
-    for (const event of state.events) {
+    for (const event of countedEvents) {
       for (const schoolId of event.participatingSchools) {
         map.set(schoolId, (map.get(schoolId) ?? 0) + 1);
       }
     }
     return map;
-  }, [state.events]);
+  }, [countedEvents]);
 
   return { state, schoolContactsMap, schoolActivitiesMap, schoolEventCountMap };
 }

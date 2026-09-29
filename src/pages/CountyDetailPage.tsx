@@ -19,6 +19,7 @@ import {
 } from '../services/analyticsService';
 import { formatSchoolType } from '../utils/helpers';
 import { countyLabel, countyPath, mergeCountyRows, sameCounty } from '../utils/counties';
+import { outreachEvents } from '../utils/events';
 
 type SortField = 'name' | 'contacts' | 'score';
 type SortDir = 'asc' | 'desc';
@@ -38,6 +39,8 @@ export function CountyDetailPage() {
   const title = countyLabel(countyName, countyState);
 
   const { state, loading } = useAppContext();
+  // Testing dates are busy dates, not outreach: never counted (db/007).
+  const countedEvents = useMemo(() => outreachEvents(state.events), [state.events]);
   const [summaryRow, setSummaryRow] = useState<CountySchoolSummaryRow | null>(null);
   const [engagementPct, setEngagementPct] = useState<number>(0);
   const [loadingViews, setLoadingViews] = useState(true);
@@ -93,8 +96,8 @@ export function CountyDetailPage() {
   }, [state.activities]);
 
   const eventsBySchool = useMemo(() => {
-    const map = new Map<string, typeof state.events>();
-    for (const e of state.events) {
+    const map = new Map<string, typeof countedEvents>();
+    for (const e of countedEvents) {
       for (const sid of e.participatingSchools) {
         const list = map.get(sid) ?? [];
         list.push(e);
@@ -102,7 +105,7 @@ export function CountyDetailPage() {
       }
     }
     return map;
-  }, [state.events]);
+  }, [countedEvents]);
 
   const programsBySchool = useMemo(() => {
     const map = new Map<string, typeof state.programs>();
@@ -144,10 +147,10 @@ export function CountyDetailPage() {
   // County events: any event where at least one participating school is in this county
   const countyEvents = useMemo(
     () =>
-      state.events
+      countedEvents
         .filter((e) => e.participatingSchools.some((sid) => countySchoolIds.has(sid)))
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
-    [state.events, countySchoolIds]
+    [countedEvents, countySchoolIds]
   );
 
   // Program coverage: count per category across all county schools

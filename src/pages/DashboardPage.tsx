@@ -12,6 +12,7 @@ import { Badge } from '../components/common/Badge';
 import { useAppContext } from '../context/AppContext';
 import { EventTypeLabels } from '../types';
 import type { EventType } from '../types';
+import { outreachEvents } from '../utils/events';
 
 const EVENT_TYPE_VARIANT: Record<string, 'info' | 'success' | 'warning' | 'default'> = {
   outreach_fair: 'info',
@@ -31,6 +32,8 @@ const QUICK_ACTIONS = [
 
 export function DashboardPage() {
   const { state } = useAppContext();
+  // Testing dates are busy dates, not outreach: never counted (db/007).
+  const countedEvents = useMemo(() => outreachEvents(state.events), [state.events]);
   const navigate = useNavigate();
 
   const metrics = useMemo(() => {
@@ -39,10 +42,10 @@ export function DashboardPage() {
     return {
       activeSchools: state.schools.filter((s) => s.isActive).length,
       activeContacts: state.contacts.filter((c) => c.isActive).length,
-      upcomingEvents: state.events.filter((e) => isAfter(new Date(e.date), now)).length,
+      upcomingEvents: countedEvents.filter((e) => isAfter(new Date(e.date), now)).length,
       recentActivities: state.activities.filter((a) => isAfter(new Date(a.date), yearAgo)).length,
     };
-  }, [state]);
+  }, [state, countedEvents]);
 
   // Single O(n) pass over contacts + activities for all derived stats
   const dashboardComputed = useMemo(() => {
@@ -91,11 +94,11 @@ export function DashboardPage() {
 
   const upcomingEvents = useMemo(
     () =>
-      state.events
+      countedEvents
         .filter((e) => isAfter(new Date(e.date), new Date()))
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
         .slice(0, 6),
-    [state.events]
+    [countedEvents]
   );
 
   return (
@@ -129,7 +132,7 @@ export function DashboardPage() {
           <MetricCard
             title="Upcoming Events"
             value={metrics.upcomingEvents}
-            subtitle={`${state.events.length} total`}
+            subtitle={`${countedEvents.length} total`}
             icon={<Calendar size={20} />}
           />
           {/* Activities — CTA when empty */}

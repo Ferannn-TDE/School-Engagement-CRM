@@ -13,6 +13,7 @@ import { LogContactForm } from '../components/activities/LogContactForm';
 import { useEngagementMaps, useSchoolsNeedingAttention } from '../hooks/useEngagementMaps';
 import { countyGroupName, countyKey, countyLabel, countyPath } from '../utils/counties';
 import { useUrlState, useUrlStateBatch } from '../hooks/useUrlState';
+import { outreachEvents } from '../utils/events';
 
 /** How overdue something is, used to colour the left edge of a row.
  *  Deliberately distinct from SIUE red, which means "brand", not "urgent". */
@@ -278,6 +279,8 @@ function WorkTable({
 
 export function PrioritiesPage() {
   const { state, schoolContactsMap, schoolActivitiesMap } = useEngagementMaps();
+  // Testing dates are busy dates, not outreach: never counted (db/007).
+  const countedEvents = useMemo(() => outreachEvents(state.events), [state.events]);
   const schoolsNeedingAttention = useSchoolsNeedingAttention();
   // Kept in the address so the view survives leaving the tab, a refresh and Back:
   // which sections are open, the sort, and each list's page number.
@@ -326,7 +329,7 @@ export function PrioritiesPage() {
     const ninetyDaysAgo = subMonths(now, 3);
 
     const recentEventSchoolIds = new Set<string>();
-    for (const event of state.events) {
+    for (const event of countedEvents) {
       if (!event.date) continue;
       try {
         if (isAfter(new Date(event.date.slice(0, 10)), ninetyDaysAgo)) {
@@ -371,7 +374,7 @@ export function PrioritiesPage() {
     }
 
     return result.sort((a, b) => b.sortKey - a.sortKey);
-  }, [state.schools, state.events, schoolContactsMap, schoolActivitiesMap, toItem]);
+  }, [state.schools, countedEvents, schoolContactsMap, schoolActivitiesMap, toItem]);
 
   // ── No contacts, or nothing logged in six months ─────────────────────────────
   const attentionItems = useMemo(() => {
@@ -388,14 +391,14 @@ export function PrioritiesPage() {
 
   // ── Never appeared at an event ───────────────────────────────────────────────
   const noEventItems = useMemo(() => {
-    const inEvents = new Set(state.events.flatMap((e) => e.participatingSchools));
+    const inEvents = new Set(countedEvents.flatMap((e) => e.participatingSchools));
     return state.schools
       .filter((s) => !inEvents.has(s.id))
       .sort((a, b) => a.county.localeCompare(b.county) || a.name.localeCompare(b.name))
       .map((s) =>
         toItem(s, s.schoolType === 'high_school' ? 'High school' : 'Middle school', 'cold')
       );
-  }, [state.schools, state.events, toItem]);
+  }, [state.schools, countedEvents, toItem]);
 
   // ── Counties with the most schools still out of contact ──────────────────────
   const countiesAtRisk = useMemo(() => {

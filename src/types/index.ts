@@ -131,6 +131,8 @@ export interface Event {
   hasTime?: boolean;
   /** Where the event came from: a school's calendar, IACAC, or entered in the app. */
   source?: 'school_calendar' | 'iacac' | 'manual';
+  /** events.category (db/007). 'school_testing_date' = a busy date, not outreach. */
+  category?: string;
   endDate?: string;
   location: string;
   participatingSchools: string[];

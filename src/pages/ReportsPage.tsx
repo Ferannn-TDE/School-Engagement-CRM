@@ -19,6 +19,7 @@ import type { EventType } from '../types';
 import { CHART_COLORS, TOOLTIP_CLS } from '../constants/charts';
 import { downloadFile } from '../utils/helpers';
 import toast from 'react-hot-toast';
+import { outreachEvents } from '../utils/events';
 
 
 function formatActivityType(type: string): string {
@@ -63,6 +64,8 @@ function PieEventTooltip({ active, payload }: {
 
 export function ReportsPage() {
   const { state, schoolContactsMap, schoolActivitiesMap, schoolEventCountMap } = useEngagementMaps();
+  // Testing dates are busy dates, not outreach: never counted (db/007).
+  const countedEvents = useMemo(() => outreachEvents(state.events), [state.events]);
   const schoolsNeedingAttention = useSchoolsNeedingAttention();
 
   // ── Summary metrics ──────────────────────────────────────────────────────────
@@ -82,12 +85,12 @@ export function ReportsPage() {
     return {
       totalSchools: state.schools.length,
       totalContacts: [...schoolContactsMap.values()].reduce((sum, v) => sum + v.active, 0),
-      totalEvents: state.events.length,
+      totalEvents: countedEvents.length,
       schoolsEngaged,
       schoolsNeedingAttention: schoolsNeedingCount,
-      totalAttendees: state.events.reduce((acc, e) => acc + (e.attendeeCount ?? 0), 0),
+      totalAttendees: countedEvents.reduce((acc, e) => acc + (e.attendeeCount ?? 0), 0),
     };
-  }, [state.schools, state.events, schoolActivitiesMap, schoolContactsMap]);
+  }, [state.schools, countedEvents, schoolActivitiesMap, schoolContactsMap]);
 
   // ── Engagement pipeline (funnel) ─────────────────────────────────────────────
   const engagementPipeline = useMemo(() => {
@@ -130,7 +133,7 @@ export function ReportsPage() {
   // ── Event type distribution (enhanced with attendance) ───────────────────────
   const eventTypeData = useMemo(() => {
     const counts: Record<string, { count: number; attendees: number }> = {};
-    for (const event of state.events) {
+    for (const event of countedEvents) {
       if (!counts[event.type]) counts[event.type] = { count: 0, attendees: 0 };
       counts[event.type].count++;
       counts[event.type].attendees += event.attendeeCount ?? 0;
@@ -139,7 +142,7 @@ export function ReportsPage() {
       name: EventTypeLabels[type as EventType],
       value: count, attendees,
     }));
-  }, [state.events]);
+  }, [countedEvents]);
 
   // ── Recent activity feed ─────────────────────────────────────────────────────
   const recentActivityFeed = useMemo(() => {

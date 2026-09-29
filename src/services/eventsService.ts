@@ -17,6 +17,7 @@ interface EventRow {
   is_scraped: boolean | null;
   external_id: string | null;
   fair_name: string | null;
+  category: string | null;
   created_at: string | null;
   updated_at: string | null;
 }
@@ -75,6 +76,7 @@ function rowToEvent(row: EventRow): Event {
       : row.external_id?.startsWith('iacac:')
         ? 'iacac'
         : 'manual',
+    category: row.category ?? undefined,
     endDate: undefined,
     location: row.location ?? '',
     participatingSchools: schools,

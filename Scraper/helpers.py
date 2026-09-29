@@ -592,7 +592,13 @@ SCHOOL_SQL = """
         county_name = COALESCE(EXCLUDED.county_name, schools.county_name),
         is_scraped = EXCLUDED.is_scraped,
         is_active = EXCLUDED.is_active,
-        notes = COALESCE(EXCLUDED.notes, schools.notes),
+        -- Never replace notes (see STAFF_UPDATE_SQL): keep them, or keep both.
+        notes = CASE
+            WHEN NULLIF(BTRIM(EXCLUDED.notes), '') IS NULL THEN schools.notes
+            WHEN NULLIF(BTRIM(schools.notes), '') IS NULL THEN EXCLUDED.notes
+            WHEN POSITION(EXCLUDED.notes IN schools.notes) > 0 THEN schools.notes
+            ELSE schools.notes || E'\n' || EXCLUDED.notes
+        END,
         updated_at = EXCLUDED.updated_at,
         enrollment = COALESCE(EXCLUDED.enrollment, schools.enrollment),
         grade_range = COALESCE(EXCLUDED.grade_range, schools.grade_range),
@@ -664,7 +670,15 @@ STAFF_UPDATE_SQL = """
         job_name = COALESCE(%s, job_name),
         school_worked_at = %s,
         is_active = %s,
-        notes = %s,
+        -- Never replace notes: a person may have written them. Keep them when the
+        -- scraper sends nothing, and otherwise keep both, without repeating a line
+        -- that is already there (plan item C10, no-loss rule).
+        notes = CASE
+            WHEN NULLIF(BTRIM(%s), '') IS NULL THEN notes
+            WHEN NULLIF(BTRIM(notes), '') IS NULL THEN %s
+            WHEN POSITION(%s IN notes) > 0 THEN notes
+            ELSE notes || E'\n' || %s
+        END,
         updated_at = %s,
         data_source = %s
     WHERE staff_id = %s

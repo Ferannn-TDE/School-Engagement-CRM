@@ -300,6 +300,10 @@ class DatabaseWriter:
                     title,
                     school_key,
                     is_active,
+                    # notes appears four times in STAFF_UPDATE_SQL's keep-or-append rule.
+                    notes,
+                    notes,
+                    notes,
                     notes,
                     updated_at,
                     data_source,

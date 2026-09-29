@@ -629,8 +629,11 @@ SCHOOL_SQL = """
         END,
         priority_tier = COALESCE(EXCLUDED.priority_tier, schools.priority_tier),
         state_code = EXCLUDED.state_code
+    -- No longer skips verified schools. That whole-row freeze stopped 1,683 schools
+    -- (bulk-marked verified on 2026-09-02) from ever being refreshed. Client edits
+    -- are protected per column by db/006 instead. MUST MERGE WITH Phase 5 step 3
+    -- (the verified reset); see the commit message.
     WHERE schools.is_scraped IS TRUE
-      AND NOT COALESCE(schools.is_verified, FALSE)
 """
 
 STAFF_SQL = """
@@ -701,9 +704,10 @@ STAFF_UPDATE_SQL = """
         END,
         updated_at = %s,
         data_source = %s
+    -- No longer skips verified contacts: client edits are protected per column by
+    -- db/006. MUST MERGE WITH Phase 5 step 3 (the verified reset).
     WHERE staff_id = %s
       AND is_scraped IS TRUE
-      AND NOT COALESCE(is_verified, FALSE)
 """
 
 EVENT_SQL = """

@@ -39,6 +39,9 @@ cleared on restore.
 - Deletes are refused at the database (010): a delete sent with a signed-in user's
   token removes 0 rows on every table, silently (no error). Only the owner connection
   (the scraper, the SQL Editor) can delete, and nothing in this project should.
+- **`npm run verify:no-deletes`** fails if any code under `src/` calls a delete on the
+  database (`.delete()` or `.delete({ ... })`), and says to archive instead. Run it with
+  `verify:import` before merging; it is listed for CI under Epic 4 on the plan page.
 - The app hides every contact whose school is archived, including staff the scraper
   adds to that school later (they aren't archived themselves). They come back when the
   school is restored.

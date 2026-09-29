@@ -14,6 +14,7 @@ how 001 and 002 went missing once (found and re-applied on 2026-09-26/28).
 | `005_county_views_by_state.sql` | County views group by county **and** state (40 names exist in both IL and MO). |
 | `006_protect_manual_edits.sql` | A client's edit is never overwritten by the scraper (below). |
 | `007_event_category_testing_dates.sql` | `events.category`; the 15 existing SAT/ACT/PSAT events are marked `school_testing_date` (busy dates, not outreach). Same rules as the scraper's testing-dates list, which also covers AP exams. |
+| `008_county_views_skip_testing_dates.sql` | The county views ignore testing dates, so they don't count as events or make a school "engaged". |
 
 ## How the app and the scraper are told apart
 
@@ -51,10 +52,16 @@ Protected columns:
 
 ### Things to know
 
+- **Unlocking, for the client: in the app.** Where a field is locked and
+  `pending_scraped` holds a newer value from the scraper, the app asks: "The website
+  now says X — keep yours or use this?" *Use this* applies the scraper's value and
+  removes the lock; *keep yours* dismisses it (the lock stays). This is the client's
+  way to unlock after handoff. (Planned: Phase 5, right after the freshness step.
+  Until it ships, use the maintainer fallback below.)
 - **SQL Editor edits cannot change a locked column.** They are treated like the
   scraper, so the change is kept aside in `pending_scraped` and the old value stays.
-  To change a locked column, use the app, or first remove the column from
-  `manual_fields`. **The unlock itself must carry claims:** without them the trigger
+  **Maintainer fallback:** to change a locked column, use the app, or first remove
+  the column from `manual_fields`. **The unlock itself must carry claims:** without them the trigger
   puts `manual_fields` back as it was, so a plain `update ... set manual_fields = ...`
   silently does nothing. In the SQL Editor, set claims for that one transaction:
 

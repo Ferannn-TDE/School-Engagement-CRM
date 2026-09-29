@@ -53,15 +53,21 @@ Protected columns:
 - **SQL Editor edits cannot change a locked column.** They are treated like the
   scraper, so the change is kept aside in `pending_scraped` and the old value stays.
   To change a locked column, use the app, or first remove the column from
-  `manual_fields`, for example:
+  `manual_fields`. **The unlock itself must carry claims:** without them the trigger
+  puts `manual_fields` back as it was, so a plain `update ... set manual_fields = ...`
+  silently does nothing. In the SQL Editor, set claims for that one transaction:
 
   ```sql
+  begin;
+  select set_config('request.jwt.claims', '{"role":"maintainer"}', true);
   update schools set manual_fields = array_remove(manual_fields, 'phone')
   where facility_key = '...';
+  commit;
   ```
 
-  (This update itself runs without claims, which is fine: `manual_fields` is not a
-  protected column.)
+  The `true` limits the setting to this transaction. Only `manual_fields` changes, so
+  nothing new is locked. (Checked against the 006 trigger on 2026-09-29: the plain
+  update left the lock in place; this one removed it.)
 - **Imports run through the app**, so the columns an import fills in are locked too.
 - **Bookkeeping columns are not protected:** `updated_at`, `is_verified`,
   `last_verified_at`, `data_source` and so on.

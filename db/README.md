@@ -17,6 +17,7 @@ how 001 and 002 went missing once (found and re-applied on 2026-09-26/28).
 | `008_county_views_skip_testing_dates.sql` | The county views ignore testing dates, so they don't count as events or make a school "engaged". |
 | `009_archive_instead_of_delete.sql` | `archived`, `archived_at`, `archived_by` on schools, staff, contacts, events, programs and activities; `archive_school` / `restore_school` and `archive_contact` / `restore_contact`; the county views skip archived rows. The app never deletes; Settings → Archived restores. |
 | `010_deny_deletes_from_signed_in_users.sql` | Signed-in users cannot delete from any table (001 covered the three reference tables; this covers the six data tables). The owner (scraper, SQL Editor) is unaffected. |
+| `011_freshness_tracking.sql` | Freshness columns: `last_scraped_at`, `source_status` (working / broken / not_found), `source_checked_at`, `missed_runs` and `missing_since` on schools (staff: `last_scraped_at`, `missed_runs`, `missing_since`). `missing_since` can only be set once `missed_runs` reaches 3. The scraper fills them (not yet); the app shows plain-language labels. |
 
 ## Archive, never delete (009)
 

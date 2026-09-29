@@ -26,6 +26,11 @@ interface SchoolRow {
   data_source: string | null;
   is_verified: boolean | null;
   last_verified_at: string | null;
+  last_scraped_at?: string | null;
+  source_status?: string | null;
+  source_checked_at?: string | null;
+  missed_runs?: number | null;
+  missing_since?: string | null;
   priority_tier: string | null;
   state_code: string | null;
 }
@@ -61,6 +66,14 @@ function rowToSchool(row: SchoolRow): School {
     dataSource: (row.data_source as School['dataSource']) ?? 'manual',
     isVerified: row.is_verified ?? false,
     lastVerifiedAt: row.last_verified_at ?? undefined,
+    lastScrapedAt: row.last_scraped_at ?? undefined,
+    sourceStatus:
+      row.source_status === 'working' || row.source_status === 'broken' || row.source_status === 'not_found'
+        ? row.source_status
+        : undefined,
+    sourceCheckedAt: row.source_checked_at ?? undefined,
+    missedRuns: row.missed_runs ?? undefined,
+    missingSince: row.missing_since ?? undefined,
     // The scraper writes its lookup result ("website_verified", "official_roster_only")
     // into this column. Only the app's own tiers are priorities; anything else is
     // shown as standard and left untouched in the database.

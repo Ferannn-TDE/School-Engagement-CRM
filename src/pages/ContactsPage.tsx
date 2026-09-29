@@ -19,6 +19,8 @@ import type { Contact } from '../types';
 import { ContactRole, ContactRoleLabels } from '../types';
 import { contactRoleLabel } from '../utils/contactRoles';
 import toast from 'react-hot-toast';
+import { FreshnessBadges } from '../components/common/FreshnessBadges';
+import { contactFreshness } from '../utils/freshness';
 
 type VerifiedTab = 'all' | 'verified' | 'unverified';
 
@@ -62,6 +64,7 @@ export function ContactsPage() {
             <p className="font-medium text-neutral-800">
               {row.original.firstName} {row.original.lastName}
             </p>
+            <FreshnessBadges flags={contactFreshness(row.original)} className="mt-1 flex flex-wrap gap-1" />
             <div className="flex items-center gap-3 mt-0.5">
               <span className="text-xs text-neutral-500 flex items-center gap-1">
                 <Mail size={12} />

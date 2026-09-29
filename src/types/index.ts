@@ -90,6 +90,10 @@ export interface Contact {
   dataSource?: 'manual' | 'imported' | 'scraped';
   isVerified?: boolean;
   lastVerifiedAt?: string;
+  /** Freshness (db/011), written by the scraper. */
+  lastScrapedAt?: string;
+  missedRuns?: number;
+  missingSince?: string;
   createdAt: string;
   updatedAt: string;
   lastContactDate?: string;
@@ -116,6 +120,12 @@ export interface School {
   dataSource?: 'manual' | 'imported' | 'scraped';
   isVerified?: boolean;
   lastVerifiedAt?: string;
+  /** Freshness (db/011), written by the scraper. */
+  lastScrapedAt?: string;
+  sourceStatus?: 'working' | 'broken' | 'not_found';
+  sourceCheckedAt?: string;
+  missedRuns?: number;
+  missingSince?: string;
   priorityTier?: 'high' | 'standard' | 'low';
   createdAt: string;
   updatedAt: string;

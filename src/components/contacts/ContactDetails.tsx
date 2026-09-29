@@ -3,6 +3,8 @@ import type { Contact } from '../../types';
 import { Badge } from '../common/Badge';
 import { contactRoleLabel } from '../../utils/contactRoles';
 import { formatPhone } from '../../utils/helpers';
+import { FreshnessBadges } from '../common/FreshnessBadges';
+import { contactFreshness } from '../../utils/freshness';
 
 /** How to reach a contact: shown in a pop-up when a contact is clicked. */
 export function ContactDetails({ contact, schoolName }: { contact: Contact; schoolName?: string }) {
@@ -16,6 +18,7 @@ export function ContactDetails({ contact, schoolName }: { contact: Contact; scho
           <Badge variant={contact.isActive ? 'success' : 'error'}>
             {contact.isActive ? 'Active' : 'Inactive'}
           </Badge>
+          <FreshnessBadges flags={contactFreshness(contact)} />
         </div>
         {schoolName && (
           <p className="flex items-center gap-1.5 text-sm text-neutral-500 mt-2">

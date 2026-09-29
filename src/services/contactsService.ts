@@ -18,6 +18,9 @@ interface StaffRow {
   data_source: string | null;
   is_verified: boolean | null;
   last_verified_at: string | null;
+  last_scraped_at?: string | null;
+  missed_runs?: number | null;
+  missing_since?: string | null;
 }
 
 interface JunctionRow {
@@ -52,6 +55,9 @@ function rowToContact(staff: StaffRow, schoolId: string): Contact {
     dataSource: (staff.data_source as Contact['dataSource']) ?? 'manual',
     isVerified: staff.is_verified ?? false,
     lastVerifiedAt: staff.last_verified_at ?? undefined,
+    lastScrapedAt: staff.last_scraped_at ?? undefined,
+    missedRuns: staff.missed_runs ?? undefined,
+    missingSince: staff.missing_since ?? undefined,
     createdAt: staff.created_at ?? nowISO(),
     updatedAt: staff.updated_at ?? nowISO(),
     lastContactDate: undefined,

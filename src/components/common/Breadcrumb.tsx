@@ -24,7 +24,7 @@ interface BreadcrumbProps {
 export function Breadcrumb({ crumbs, tags }: BreadcrumbProps) {
   if (crumbs.length < 2) return null;
   return (
-    <div className="px-8 py-3 flex items-center gap-2 bg-white border-b border-neutral-200">
+    <div className="px-8 py-3 flex flex-wrap items-center gap-2 bg-white border-b border-neutral-200">
       {crumbs.map((crumb, i) => (
         <Fragment key={i}>
           {i > 0 && (
@@ -45,7 +45,7 @@ export function Breadcrumb({ crumbs, tags }: BreadcrumbProps) {
         </Fragment>
       ))}
       {tags && tags.length > 0 && (
-        <div className="ml-auto flex items-center gap-2 shrink-0">
+        <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
           {tags.map((tag, i) => (
             <Badge key={i} variant={tag.variant ?? 'default'} className={tag.className}>
               {tag.label}

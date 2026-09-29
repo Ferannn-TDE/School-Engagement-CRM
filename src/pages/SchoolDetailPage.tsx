@@ -22,6 +22,7 @@ import type { Contact, Program } from '../types';
 import { formatSchoolType } from '../utils/helpers';
 import { computeEngagementScore } from '../utils/engagementScore';
 import { isTestingDate } from '../utils/events';
+import { schoolFreshness } from '../utils/freshness';
 import { contactRoleLabel } from '../utils/contactRoles';
 import { countyLabel } from '../utils/counties';
 import { formatPhone, websiteHref, websiteLabel } from '../utils/helpers';
@@ -106,6 +107,12 @@ export function SchoolDetailPage() {
       variant: school.isVerified ? 'success' as const : 'warning' as const,
       className: school.isVerified ? 'border border-green-200' : 'border border-amber-200',
     },
+    // Freshness (db/011): "Not verified in 6+ months", "Website link broken", ...
+    ...schoolFreshness(school).map((f) => ({
+      label: f.label,
+      variant: f.variant,
+      className: f.variant === 'error' ? 'border border-red-200' : f.variant === 'warning' ? 'border border-amber-200' : 'border border-neutral-300',
+    })),
   ];
 
   return (

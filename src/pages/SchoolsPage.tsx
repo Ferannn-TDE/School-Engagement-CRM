@@ -18,6 +18,8 @@ import { useUrlState } from '../hooks/useUrlState';
 import { countyOptions, inCounty } from '../utils/counties';
 import type { School as SchoolType } from '../types';
 import { formatSchoolType } from '../utils/helpers';
+import { FreshnessBadges } from '../components/common/FreshnessBadges';
+import { schoolFreshness } from '../utils/freshness';
 
 type VerifiedTab = 'all' | 'verified' | 'unverified';
 
@@ -103,6 +105,7 @@ export function SchoolsPage() {
             {row.original.district && (
               <p className="text-xs text-neutral-500">{row.original.district}</p>
             )}
+            <FreshnessBadges flags={schoolFreshness(row.original)} className="mt-1 flex flex-wrap gap-1" />
           </div>
         ),
       },

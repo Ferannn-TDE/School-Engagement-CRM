@@ -16,6 +16,7 @@ how 001 and 002 went missing once (found and re-applied on 2026-09-26/28).
 | `007_event_category_testing_dates.sql` | `events.category`; the 15 existing SAT/ACT/PSAT events are marked `school_testing_date` (busy dates, not outreach). Same rules as the scraper's testing-dates list, which also covers AP exams. |
 | `008_county_views_skip_testing_dates.sql` | The county views ignore testing dates, so they don't count as events or make a school "engaged". |
 | `009_archive_instead_of_delete.sql` | `archived`, `archived_at`, `archived_by` on schools, staff, contacts, events, programs and activities; `archive_school` / `restore_school` and `archive_contact` / `restore_contact`; the county views skip archived rows. The app never deletes; Settings → Archived restores. |
+| `010_deny_deletes_from_signed_in_users.sql` | Signed-in users cannot delete from any table (001 covered the three reference tables; this covers the six data tables). The owner (scraper, SQL Editor) is unaffected. |
 
 ## Archive, never delete (009)
 
@@ -35,6 +36,9 @@ cleared on restore.
   other five tables). To restore by hand, use the app, or
   `select restore_school('<facility_key>');` with claims set as in the unlock command
   below.
+- Deletes are refused at the database (010): a delete sent with a signed-in user's
+  token removes 0 rows on every table, silently (no error). Only the owner connection
+  (the scraper, the SQL Editor) can delete, and nothing in this project should.
 - The app hides every contact whose school is archived, including staff the scraper
   adds to that school later (they aren't archived themselves). They come back when the
   school is restored.

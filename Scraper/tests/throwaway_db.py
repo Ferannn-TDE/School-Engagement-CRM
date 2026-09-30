@@ -66,7 +66,11 @@ CREATE TABLE events (
 );
 """
 
-# The edit lock from db/006, so tests see the same behaviour as the live database.
+# The edit lock as live since db/012 (db/006 revised), so tests see the same
+# behaviour as the live database: an app edit locks the column; the scraper's value
+# for a locked column waits in pending_scraped; "use this" (the pending value, with
+# its entry removed) unlocks; a value the client dismissed stays dismissed while the
+# scraper keeps finding the same value.
 LOCK_SQL = """
 CREATE OR REPLACE FUNCTION protect_manual_edits() RETURNS trigger LANGUAGE plpgsql AS $fn$
 DECLARE
@@ -75,11 +79,16 @@ DECLARE
   new_row jsonb := to_jsonb(new);
   old_row jsonb := to_jsonb(old);
   pending jsonb := old.pending_scraped;
+  entry jsonb;
   col text;
 BEGIN
   IF from_app THEN
     FOREACH col IN ARRAY protected LOOP
-      IF new_row -> col IS DISTINCT FROM old_row -> col AND NOT (col = ANY (new.manual_fields)) THEN
+      IF old.pending_scraped ? col
+         AND NOT (new.pending_scraped ? col)
+         AND new_row -> col = old.pending_scraped -> col -> 'value' THEN
+        new.manual_fields := array_remove(new.manual_fields, col);
+      ELSIF new_row -> col IS DISTINCT FROM old_row -> col AND NOT (col = ANY (new.manual_fields)) THEN
         new.manual_fields := array_append(new.manual_fields, col);
       END IF;
     END LOOP;
@@ -87,7 +96,14 @@ BEGIN
   END IF;
   FOREACH col IN ARRAY old.manual_fields LOOP
     IF new_row -> col IS DISTINCT FROM old_row -> col THEN
-      pending := pending || jsonb_build_object(col, jsonb_build_object('value', new_row -> col, 'seen_at', now()));
+      entry := old.pending_scraped -> col;
+      IF entry IS NOT NULL
+         AND coalesce((entry ->> 'dismissed')::boolean, false)
+         AND entry -> 'value' = new_row -> col THEN
+        pending := pending || jsonb_build_object(col, entry || jsonb_build_object('seen_at', now()));
+      ELSE
+        pending := pending || jsonb_build_object(col, jsonb_build_object('value', new_row -> col, 'seen_at', now()));
+      END IF;
       new_row := jsonb_set(new_row, ARRAY[col], old_row -> col);
     END IF;
   END LOOP;

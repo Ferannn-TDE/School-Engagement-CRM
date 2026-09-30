@@ -1,0 +1,92 @@
+name: Monthly School Scraper
+
+on:
+  schedule:
+    - cron: "0 2 1 * *"
+      timezone: "America/Chicago"
+  workflow_dispatch:
+
+
+permissions:
+  contents: read
+
+concurrency:
+  group: monthly-school-scraper
+  cancel-in-progress: false
+
+jobs:
+  scrape-and-upsert:
+    name: Scrape schools and upsert results
+    runs-on: ubuntu-latest
+    timeout-minutes: 480
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: Scraper
+
+    env:
+      PYTHONUNBUFFERED: "1"
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+    steps:
+      - name: Check out the default branch
+        uses: actions/checkout@v7
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Install scraper dependencies
+        run: |
+          set -Eeuo pipefail
+          python -m pip install --upgrade pip
+
+          if [[ -f requirements.txt ]]; then
+            python -m pip install --requirement requirements.txt
+          else
+            python -m pip install \
+              "beautifulsoup4>=4.12,<5" \
+              "openpyxl>=3.1,<4" \
+              "psycopg[binary]>=3.2,<4" \
+              "requests>=2.32,<3" \
+              "xlrd>=2.0,<3"
+          fi
+
+          python -m pip check
+
+      - name: Verify imports and Python syntax
+        run: |
+          set -Eeuo pipefail
+          python -c "import bs4, openpyxl, psycopg, requests, xlrd"
+          python -m compileall -q .
+
+      - name: Start a fresh monthly collection
+        run: |
+          set -Eeuo pipefail
+          python -c "from pathlib import Path; p = Path('output'); p.mkdir(parents=True, exist_ok=True); (p / 'checkpoint.json').write_text('{}\n', encoding='utf-8')"
+
+      - name: Run scraper and database upsert
+        run: |
+          set -Eeuo pipefail
+          python main.py
+
+      - name: Retain review reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: school-scraper-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            Scraper/output/results.json
+            Scraper/output/schools.json
+            Scraper/output/contacts.json
+            Scraper/output/events.json
+            Scraper/output/iacac_events.json
+            Scraper/output/contact_quality.json
+            Scraper/output/review.json
+            !Scraper/output/checkpoint.json
+            !Scraper/output/raw/**
+          if-no-files-found: warn
+          retention-days: 31
+          compression-level: 9

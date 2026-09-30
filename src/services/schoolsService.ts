@@ -113,6 +113,7 @@ export async function createSchool(
       city: school.city,
       state_code: school.state || null,
       zipcode: school.zipCode,
+      phone: school.phone || null,
       type_of_school: school.schoolType === 'high_school' ? 'High School' : 'Middle School',
       is_active: school.isActive,
       notes: school.notes ?? null,
@@ -296,6 +297,8 @@ export async function updateSchool(id: string, updates: Partial<School>): Promis
   if (updates.city !== undefined) patch.city = updates.city;
   if (updates.state) patch.state_code = updates.state;
   if (updates.zipCode !== undefined) patch.zipcode = updates.zipCode;
+  // Present-but-empty means the phone was cleared in the form.
+  if ('phone' in updates) patch.phone = updates.phone || null;
   if (updates.schoolType !== undefined) {
     patch.type_of_school =
       updates.schoolType === 'high_school' ? 'High School' : 'Middle School';

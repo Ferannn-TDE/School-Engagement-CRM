@@ -18,6 +18,7 @@ const schoolSchema = z.object({
   city: z.string().min(1, 'City is required'),
   state: z.string().min(1, 'State is required'),
   zipCode: z.string().min(5, 'Valid zip code required'),
+  phone: z.string().optional(),
   schoolType: z.enum(['high_school', 'middle_school']),
   notes: z.string().optional(),
   enrollment: z.string().optional(),
@@ -52,6 +53,7 @@ export function SchoolForm({ school, onClose }: SchoolFormProps) {
           city: school.city,
           state: school.state,
           zipCode: school.zipCode,
+          phone: school.phone || '',
           schoolType: school.schoolType,
           notes: school.notes || '',
           enrollment: school.enrollment != null ? String(school.enrollment) : '',
@@ -87,6 +89,8 @@ export function SchoolForm({ school, onClose }: SchoolFormProps) {
         ...data,
         district: data.district || undefined,
         notes: data.notes || undefined,
+        // Blank clears the stored number (sent as null), like the other optional fields.
+        phone: data.phone?.trim() || undefined,
         enrollment,
         gradeRange,
         priorityTier,
@@ -110,6 +114,7 @@ export function SchoolForm({ school, onClose }: SchoolFormProps) {
         ...data,
         district: data.district || undefined,
         notes: data.notes || undefined,
+        phone: data.phone?.trim() || undefined,
         isActive: true,
         enrollment,
         gradeRange,
@@ -183,6 +188,14 @@ export function SchoolForm({ school, onClose }: SchoolFormProps) {
           {...register('zipCode')}
         />
       </div>
+      <Input
+        label="Phone"
+        type="tel"
+        placeholder="e.g. 618-555-0100"
+        helpText="Editing it here keeps your number even if the school's website shows another."
+        error={errors.phone?.message}
+        {...register('phone')}
+      />
       <div className="grid grid-cols-2 gap-4">
         <Input
           label="Enrollment"

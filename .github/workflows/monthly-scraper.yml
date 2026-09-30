@@ -6,7 +6,6 @@ on:
       timezone: "America/Chicago"
   workflow_dispatch:
 
-
 permissions:
   contents: read
 
@@ -18,7 +17,7 @@ jobs:
   scrape-and-upsert:
     name: Scrape schools and upsert results
     runs-on: ubuntu-latest
-    timeout-minutes: 480
+    timeout-minutes: 360
 
     defaults:
       run:
@@ -30,7 +29,7 @@ jobs:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
     steps:
-      - name: Check out the default branch
+      - name: Check out repository
         uses: actions/checkout@v7
 
       - name: Set up Python 3.11
@@ -38,22 +37,28 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Validate database secret
+        run: |
+          set -Eeuo pipefail
+
+          if [[ -z "${DATABASE_URL:-}" ]]; then
+            echo "::error::DATABASE_URL repository secret is missing."
+            exit 1
+          fi
+
+          case "${DATABASE_URL}" in
+            postgres://*|postgresql://*) ;;
+            *)
+              echo "::error::DATABASE_URL must be a PostgreSQL connection URI."
+              exit 1
+              ;;
+          esac
+
       - name: Install scraper dependencies
         run: |
           set -Eeuo pipefail
           python -m pip install --upgrade pip
-
-          if [[ -f requirements.txt ]]; then
-            python -m pip install --requirement requirements.txt
-          else
-            python -m pip install \
-              "beautifulsoup4>=4.12,<5" \
-              "openpyxl>=3.1,<4" \
-              "psycopg[binary]>=3.2,<4" \
-              "requests>=2.32,<3" \
-              "xlrd>=2.0,<3"
-          fi
-
+          python -m pip install --requirement requirements.txt
           python -m pip check
 
       - name: Verify imports and Python syntax
@@ -72,21 +77,19 @@ jobs:
           set -Eeuo pipefail
           python main.py
 
-      - name: Retain review reports
-        if: ${{ always() }}
+      - name: Upload completed reports
+        if: ${{ success() }}
         uses: actions/upload-artifact@v7
         with:
           name: school-scraper-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
-            Scraper/output/results.json
-            Scraper/output/schools.json
-            Scraper/output/contacts.json
-            Scraper/output/events.json
-            Scraper/output/iacac_events.json
-            Scraper/output/contact_quality.json
-            Scraper/output/review.json
-            !Scraper/output/checkpoint.json
-            !Scraper/output/raw/**
-          if-no-files-found: warn
+            ${{ github.workspace }}/Scraper/output/results.json
+            ${{ github.workspace }}/Scraper/output/schools.json
+            ${{ github.workspace }}/Scraper/output/contacts.json
+            ${{ github.workspace }}/Scraper/output/events.json
+            ${{ github.workspace }}/Scraper/output/iacac_events.json
+            ${{ github.workspace }}/Scraper/output/contact_quality.json
+            ${{ github.workspace }}/Scraper/output/review.json
+          if-no-files-found: error
           retention-days: 31
           compression-level: 9

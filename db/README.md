@@ -20,6 +20,7 @@ how 001 and 002 went missing once (found and re-applied on 2026-09-26/28).
 | `011_freshness_tracking.sql` | Freshness columns: `last_scraped_at`, `source_status` (working / broken / not_found), `source_checked_at`, `missed_runs` and `missing_since` on schools (staff: `last_scraped_at`, `missed_runs`, `missing_since`). `missing_since` can only be set once `missed_runs` reaches 3. The scraper fills them (not yet); the app shows plain-language labels. |
 | `012_resolve_locked_fields.sql` | Revises the 006 trigger function so the client can answer "The website now says X — keep yours or use this?": accepting the website's value unlocks the field; "keep yours" is remembered until the website shows a different value. |
 | `013_link_overrides.sql` | `website_override` and `staff_page_override` on schools: the client's own links, stored apart from the scraped `website` and never written by the scraper. Only http(s) links are accepted. The school page shows which link is in use. |
+| `014_staff_scraper_score.sql` | `scraper_score` and `scraper_score_at` on staff, so the scraper's confidence score stops going into `notes`. The scores already in notes stay there; copying them over is a separate, approved step. |
 
 ## Archive, never delete (009)
 

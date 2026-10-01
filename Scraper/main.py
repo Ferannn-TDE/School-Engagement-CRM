@@ -298,11 +298,13 @@ class SchoolReach:
 
         if self.database_writer is not None:
             print("Writing results to the database...", flush=True)
+            # Only a run over the whole roster may count records as missed (db/011).
             self.database_writer.write(
                 results,
                 self.database_mode,
                 external_events=external_events,
-                )
+                complete=self.skip == 0,
+            )
             write_json(checkpoint_path, {})
         return results
 

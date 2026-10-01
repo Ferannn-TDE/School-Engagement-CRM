@@ -6,6 +6,8 @@ from helpers import (
     DISTRICT_SQL,
     DISTRICT_UPDATE_SQL,
     EVENT_SQL,
+    MISSED_SCHOOLS_SQL,
+    MISSED_STAFF_SQL,
     SCHOOL_SETTINGS_SQL,
     SCHOOL_SQL,
     STAFF_FIND_EMAIL_SQL,
@@ -22,6 +24,26 @@ from helpers import (
     stable_text,
     utc_now,
 )
+
+
+def source_status(result):
+    """The school website as this run saw it (db/011): working, broken or not_found."""
+    resolution = result.resolution
+    if resolution.resolved:
+        return "working"
+    if resolution.status == "error":
+        return "broken"
+    if resolution.reason == "missing_official_seed":
+        return "not_found"
+    first = resolution.trace[0] if resolution.trace else {}
+    if isinstance(first, dict) and first.get("error"):
+        return "broken"  # the school's own link didn't load
+    return "not_found"  # the link loads, but no school homepage was confirmed
+
+
+def staff_pages_read(result):
+    """True when this run actually read the school's staff pages."""
+    return bool(result.contact_pages) and not result.error
 
 
 class DatabaseRows:
@@ -99,8 +121,11 @@ class DatabaseRows:
                 school.data_source,
                 False,
                 None,
-                "website_verified" if resolution.resolved else "official_roster_only",
+                None,  # priority_tier: the client's; the lookup result is source_status
                 school.state,
+                self.now,
+                source_status(result),
+                self.now,
             ))
         return rows
 
@@ -139,6 +164,7 @@ class DatabaseRows:
                     False,
                     None,
                     self.score(contact),
+                    self.now,
                     self.now,
                 )
         return [(key, rows[key]) for key in sorted(rows)]
@@ -318,23 +344,28 @@ class DatabaseWriter:
         return district_ids
 
     def upsert_staff(self, cursor, records, archived_schools=frozenset()):
+        """Writes the staff and returns the ids of everyone found in this run."""
+        found_ids = set()
         for _, values in records:
             if values[4] in archived_schools:
                 continue  # the school is archived: leave its staff alone (Part 3)
             found = self.find_staff(cursor, values)
             if found is None:
                 cursor.execute(STAFF_SQL, values)
-                cursor.fetchone()
+                row = cursor.fetchone()
+                if row:
+                    found_ids.add(row[0])
                 continue
             staff_id, archived = found
             if archived:
                 continue  # archived on purpose: neither update nor re-add (Part 3)
+            found_ids.add(staff_id)
 
             name, phone, email, title, school_key = values[:5]
             is_active = values[6]
             updated_at = values[9]
             data_source = values[10]
-            score, score_at = values[13], values[14]
+            score, score_at, scraped_at = values[13], values[14], values[15]
             cursor.execute(
                 STAFF_UPDATE_SQL,
                 (
@@ -347,13 +378,17 @@ class DatabaseWriter:
                     score,
                     score,
                     score_at,
+                    scraped_at,
                     updated_at,
                     data_source,
                     staff_id,
                 ),
             )
+        return found_ids
 
-    def write(self, results, mode="upsert", external_events=()):
+    def write(self, results, mode="upsert", external_events=(), complete=False):
+        """complete=True only when this run covered the whole roster: then records it
+        used to find but didn't are counted as missed (db/011)."""
         if mode != "upsert":
             raise ValueError(
                 "DatabaseWriter only supports the safe 'upsert' mode. "
@@ -380,7 +415,7 @@ class DatabaseWriter:
                 if schools:
                     cursor.executemany(SCHOOL_SQL, schools)
 
-                self.upsert_staff(
+                found_staff = self.upsert_staff(
                     cursor,
                     values.staff(),
                     archived,
@@ -389,3 +424,13 @@ class DatabaseWriter:
                 events = [row for row in values.events() if row[0] not in archived]
                 if events:
                     cursor.executemany(EVENT_SQL, events)
+
+                if complete:
+                    found_schools = sorted({row[0] for row in values.schools(district_ids)})
+                    checked = sorted({
+                        canonical_facility_key(r.school.facility_key, r.school.state)
+                        for r in values.results
+                        if staff_pages_read(r)
+                    } - archived)
+                    cursor.execute(MISSED_SCHOOLS_SQL, (values.now, found_schools))
+                    cursor.execute(MISSED_STAFF_SQL, (values.now, checked, sorted(found_staff)))

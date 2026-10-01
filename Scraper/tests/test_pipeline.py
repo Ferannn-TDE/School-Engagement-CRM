@@ -64,9 +64,11 @@ class FakeExternalEvents:
 class FakeDatabaseWriter:
     def __init__(self):
         self.calls = 0
+        self.complete = None
 
-    def write(self, results, mode, external_events=()):
+    def write(self, results, mode, external_events=(), complete=False):
         self.calls += 1
+        self.complete = complete
 
 
 def schools():

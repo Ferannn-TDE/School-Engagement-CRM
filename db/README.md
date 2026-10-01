@@ -23,6 +23,8 @@ how 001 and 002 went missing once (found and re-applied on 2026-09-26/28).
 | `014_staff_scraper_score.sql` | `scraper_score` and `scraper_score_at` on staff, so the scraper's confidence score stops going into `notes`. The scores already in notes stay there; copying them over is a separate, approved step. |
 | `015_restore_scraper_run_2026-09-30.sql` | Applied 2026-10-01: undid what the old scraper (from main) overwrote in its runs of 2026-09-30 19:48 UTC and 2026-10-01 03:13 UTC: 117 staff values and 22 event locations back to the 2026-09-29 snapshot. The values it replaced are in `backup.scraper_runs_20260930_20261001`. New rows were kept. |
 | `018_copy_scores_from_notes.sql` | Applied 2026-10-01: copied each staff score from `notes` into `scraper_score` (4,352). `notes` unchanged. |
+| `016_reset_bulk_verified_flag.sql` | Applied 2026-10-01 with the scraper-fixes merge: cleared `is_verified` / `last_verified_at` on the 1,683 schools bulk-flagged on 2026-09-02 (saved in `backup.bulk_verified_20260902`). |
+| `017_school_calendar_times_to_central.sql` | Applied 2026-10-01 with the scraper-fixes merge: the 121 school-calendar event times stored in UTC are now Central (old values in `backup.school_calendar_times_utc`). The app no longer converts them or locks their time. |
 
 ## Archive, never delete (009)
 

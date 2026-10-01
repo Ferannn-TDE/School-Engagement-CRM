@@ -35,11 +35,18 @@ class School:
     data_source: str = ""
     peer_names: tuple[str, ...] = ()
     alternate_seeds: tuple[str, ...] = ()
+    # The client's own links (db/013), read from the database at the start of a run.
+    # When set, they are used first and the resolver doesn't guess (plan item C9).
+    website_override: str = ""
+    staff_page_override: str = ""
 
     @property
     def seeds(self):
         from helpers import canonical_url
 
+        if self.website_override:
+            url = canonical_url(self.website_override)
+            return [url] if url else []
         values = [self.website, self.district_website, *self.alternate_seeds]
         urls = []
         for value in values:

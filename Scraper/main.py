@@ -1,4 +1,5 @@
 from collections import defaultdict
+from dataclasses import replace
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
 from pathlib import Path
@@ -38,6 +39,19 @@ def without_archived(schools, settings):
             continue
         kept.append(school)
     return kept, skipped
+
+
+def with_overrides(schools, settings):
+    """Adds the client's own website and staff-page links (db/013) to each school."""
+    output = []
+    for school in schools:
+        setting = settings.get(canonical_facility_key(school.facility_key, school.state), {})
+        website = setting.get("website_override") or ""
+        staff_page = setting.get("staff_page_override") or ""
+        if website or staff_page:
+            school = replace(school, website_override=website, staff_page_override=staff_page)
+        output.append(school)
+    return output
 
 
 class SchoolReach:
@@ -233,6 +247,10 @@ class SchoolReach:
         schools, skipped = without_archived(schools, settings)
         if skipped:
             print(f"Skipping {skipped} archived school(s).", flush=True)
+        schools = with_overrides(schools, settings)
+        overridden = sum(1 for s in schools if s.website_override or s.staff_page_override)
+        if overridden:
+            print(f"Using the client's own links for {overridden} school(s).", flush=True)
 
         checkpoint_path = self.output / "checkpoint.json"
         saved = read_json(checkpoint_path, {})

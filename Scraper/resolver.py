@@ -831,7 +831,11 @@ class SchoolResolver:
         best = None
 
         for seed in seeds[:3]:
-            source = "school_seed" if school.website and seed == canonical_url(school.website) else "district_seed"
+            if school.website_override:
+                # The client's own link (db/013): the only seed, no guessing.
+                source = "client_override"
+            else:
+                source = "school_seed" if school.website and seed == canonical_url(school.website) else "district_seed"
             attempt = self.search_seed(school, seed, source)
             combined_trace.extend(attempt.trace)
             if attempt.resolved:

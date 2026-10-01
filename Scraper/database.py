@@ -17,7 +17,6 @@ from helpers import (
     county_name,
     normalize,
     normalize_event_title,
-    score_text,
     stable_text,
     utc_now,
 )
@@ -104,6 +103,14 @@ class DatabaseRows:
         return rows
 
     @staticmethod
+    def score(contact):
+        """The confidence score for staff.scraper_score (db/014), 2 decimals."""
+        try:
+            return round(float(contact.score), 2)
+        except (TypeError, ValueError):
+            return None
+
+    @staticmethod
     def contact_phone(contact):
         phone = contact.phone or ""
         if phone and contact.extension:
@@ -115,7 +122,6 @@ class DatabaseRows:
         for result in self.results:
             for contact in result.contacts:
                 key = self.contact_key(result, contact)
-                notes = score_text(contact.score)
                 rows[key] = (
                     contact.name,
                     self.contact_phone(contact),
@@ -124,12 +130,14 @@ class DatabaseRows:
                     canonical_facility_key(result.school.facility_key, result.school.state),
                     True,
                     True,
-                    notes,
+                    None,  # notes: never written by the scraper
                     self.now,
                     self.now,
                     contact.method,
                     False,
                     None,
+                    self.score(contact),
+                    self.now,
                 )
         return [(key, rows[key]) for key in sorted(rows)]
 
@@ -295,9 +303,9 @@ class DatabaseWriter:
 
             name, phone, email, title, school_key = values[:5]
             is_active = values[6]
-            notes = values[7]
             updated_at = values[9]
             data_source = values[10]
+            score, score_at = values[13], values[14]
             cursor.execute(
                 STAFF_UPDATE_SQL,
                 (
@@ -307,11 +315,9 @@ class DatabaseWriter:
                     title,
                     school_key,
                     is_active,
-                    # notes appears four times in STAFF_UPDATE_SQL's keep-or-append rule.
-                    notes,
-                    notes,
-                    notes,
-                    notes,
+                    score,
+                    score,
+                    score_at,
                     updated_at,
                     data_source,
                     staff_id,

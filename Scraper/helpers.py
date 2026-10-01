@@ -646,12 +646,15 @@ SCHOOL_SQL = """
     WHERE schools.is_scraped IS TRUE
 """
 
+# The scraper's confidence score goes to scraper_score (db/014), never into notes:
+# notes are for people (Part 3).
 STAFF_SQL = """
     INSERT INTO staff (
         name, phone, email, job_name, school_worked_at,
         is_scraped, is_active, notes, created_at, updated_at,
-        data_source, is_verified, last_verified_at
-    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        data_source, is_verified, last_verified_at,
+        scraper_score, scraper_score_at
+    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     RETURNING staff_id
 """
 
@@ -703,15 +706,10 @@ STAFF_UPDATE_SQL = """
         -- Never switch an inactive contact back to active: someone deactivated them
         -- on purpose, and the scraper always sends TRUE (plan item C10).
         is_active = CASE WHEN is_active IS FALSE THEN FALSE ELSE %s END,
-        -- Never replace notes: a person may have written them. Keep them when the
-        -- scraper sends nothing, and otherwise keep both, without repeating a line
-        -- that is already there (plan item C10, no-loss rule).
-        notes = CASE
-            WHEN NULLIF(BTRIM(%s), '') IS NULL THEN notes
-            WHEN NULLIF(BTRIM(notes), '') IS NULL THEN %s
-            WHEN POSITION(%s IN notes) > 0 THEN notes
-            ELSE notes || E'\n' || %s
-        END,
+        -- notes is never written: it belongs to people. The score has its own column
+        -- (db/014); a run without a score keeps the last one.
+        scraper_score = COALESCE(%s::numeric, scraper_score),
+        scraper_score_at = CASE WHEN %s::numeric IS NULL THEN scraper_score_at ELSE %s END,
         updated_at = %s,
         data_source = %s
     -- No longer skips verified contacts: client edits are protected per column by

@@ -95,7 +95,7 @@ class FakeConnection:
 
 
 class DatabaseTests(unittest.TestCase):
-    def test_rows_leave_identity_ids_to_postgresql_and_notes_only_store_score(self):
+    def test_rows_leave_identity_ids_to_postgresql_and_the_score_has_its_own_column(self):
         values = DatabaseRows([result_fixture()])
         district_key, district_row = values.districts()[0]
         staff_key, staff_row = values.staff()[0]
@@ -106,7 +106,8 @@ class DatabaseTests(unittest.TestCase):
         self.assertEqual(district_row, ("Central R-I", "Jackson", "MO"))
         self.assertEqual(school_row[0], "MO:001")
         self.assertEqual(school_row[2], 1)
-        self.assertEqual(staff_row[7], "8.5")
+        self.assertIsNone(staff_row[7])  # notes: never written by the scraper
+        self.assertEqual(staff_row[13], 8.5)  # scraper_score (db/014)
         self.assertIs(staff_row[11], False)
         self.assertIsNone(staff_row[12])
         self.assertIs(school_row[20], False)

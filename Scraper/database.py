@@ -1,10 +1,12 @@
 from datetime import datetime
 
 from helpers import (
+    ARCHIVED_SCHOOLS_SQL,
     DISTRICT_FIND_SQL,
     DISTRICT_SQL,
     DISTRICT_UPDATE_SQL,
     EVENT_SQL,
+    SCHOOL_SETTINGS_SQL,
     SCHOOL_SQL,
     STAFF_FIND_EMAIL_SQL,
     STAFF_FIND_NAME_SQL,
@@ -247,25 +249,47 @@ class DatabaseWriter:
             connect_timeout=15,
         )
 
+    def read_school_settings(self):
+        """Per school (canonical facility_key): archived, website_override and
+        staff_page_override, read at the start of a run (Part 3)."""
+        with self.connection() as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(SCHOOL_SETTINGS_SQL)
+                return {
+                    key: {
+                        "archived": bool(archived),
+                        "website_override": website or "",
+                        "staff_page_override": staff_page or "",
+                    }
+                    for key, archived, website, staff_page in cursor.fetchall()
+                }
+
+    @staticmethod
+    def archived_schools(cursor):
+        cursor.execute(ARCHIVED_SCHOOLS_SQL)
+        return {row[0] for row in (cursor.fetchall() or [])}
+
     def find_staff(self, cursor, values):
-        # Order: email, then phone (with name), then name + school. The job title is
-        # deliberately not used: it is the field clients most often correct in the
-        # app, and matching on it inserted duplicates (plan item C10).
+        """(staff_id, archived) of the matching person, or None.
+
+        Order: email, then phone (with name), then name + school. The job title is
+        deliberately not used: it is the field clients most often correct in the
+        app, and matching on it inserted duplicates (plan item C10)."""
         name, phone, email, title, school_key = values[:5]
         if email:
             cursor.execute(STAFF_FIND_EMAIL_SQL, (email, school_key))
             row = cursor.fetchone()
             if row:
-                return row[0]
+                return row[0], bool(row[1])
         if phone:
             cursor.execute(STAFF_FIND_PHONE_SQL, (school_key, name, phone))
             row = cursor.fetchone()
             if row:
-                return row[0]
+                return row[0], bool(row[1])
         email_or_none = email or None
         cursor.execute(STAFF_FIND_NAME_SQL, (school_key, name, email_or_none, email_or_none))
         row = cursor.fetchone()
-        return row[0] if row else None
+        return (row[0], bool(row[1])) if row else None
 
     @staticmethod
     def upsert_districts(cursor, records):
@@ -293,13 +317,18 @@ class DatabaseWriter:
 
         return district_ids
 
-    def upsert_staff(self, cursor, records):
+    def upsert_staff(self, cursor, records, archived_schools=frozenset()):
         for _, values in records:
-            staff_id = self.find_staff(cursor, values)
-            if staff_id is None:
+            if values[4] in archived_schools:
+                continue  # the school is archived: leave its staff alone (Part 3)
+            found = self.find_staff(cursor, values)
+            if found is None:
                 cursor.execute(STAFF_SQL, values)
                 cursor.fetchone()
                 continue
+            staff_id, archived = found
+            if archived:
+                continue  # archived on purpose: neither update nor re-add (Part 3)
 
             name, phone, email, title, school_key = values[:5]
             is_active = values[6]
@@ -338,20 +367,25 @@ class DatabaseWriter:
 
         with self.connection() as connection:
             with connection.cursor() as cursor:
+                # Archived schools, their staff and their events are left as they are
+                # (db/009, Part 3), even if the run found them.
+                archived = self.archived_schools(cursor)
+
                 district_ids = self.upsert_districts(
                     cursor,
                     values.districts(),
                 )
 
-                schools = values.schools(district_ids)
+                schools = [row for row in values.schools(district_ids) if row[0] not in archived]
                 if schools:
                     cursor.executemany(SCHOOL_SQL, schools)
 
                 self.upsert_staff(
                     cursor,
                     values.staff(),
+                    archived,
                 )
 
-                events = values.events()
+                events = [row for row in values.events() if row[0] not in archived]
                 if events:
                     cursor.executemany(EVENT_SQL, events)

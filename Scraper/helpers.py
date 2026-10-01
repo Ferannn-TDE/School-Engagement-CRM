@@ -644,6 +644,8 @@ SCHOOL_SQL = """
     -- are protected per column by db/006 instead. MUST MERGE WITH Phase 5 step 3
     -- (the verified reset); see the commit message.
     WHERE schools.is_scraped IS TRUE
+      -- Archived schools are left as they are (db/009, Part 3).
+      AND schools.archived IS NOT TRUE
 """
 
 # The scraper's confidence score goes to scraper_score (db/014), never into notes:
@@ -658,10 +660,13 @@ STAFF_SQL = """
     RETURNING staff_id
 """
 
+# Each find returns (staff_id, archived) and prefers an active record: a person who
+# matches only an archived record is skipped by the writer, not re-added (Part 3).
 STAFF_FIND_EMAIL_SQL = """
-    SELECT staff_id FROM staff
+    SELECT staff_id, archived FROM staff
     WHERE LOWER(email) = LOWER(%s)
     ORDER BY
+        archived,
         CASE WHEN school_worked_at = %s THEN 0 ELSE 1 END,
         staff_id
     LIMIT 1
@@ -670,11 +675,11 @@ STAFF_FIND_EMAIL_SQL = """
 # Phone matching also requires the name: a school's main number is shared by many of
 # its staff, so a phone on its own would merge different people.
 STAFF_FIND_PHONE_SQL = """
-    SELECT staff_id FROM staff
+    SELECT staff_id, archived FROM staff
     WHERE school_worked_at = %s
       AND LOWER(name) = LOWER(%s)
       AND phone = %s
-    ORDER BY staff_id
+    ORDER BY archived, staff_id
     LIMIT 1
 """
 
@@ -684,7 +689,7 @@ STAFF_FIND_PHONE_SQL = """
 # The email condition keeps genuinely different people apart: if both records have an
 # email and the emails differ, they are not the same person, whatever the name.
 STAFF_FIND_NAME_SQL = """
-    SELECT staff_id FROM staff
+    SELECT staff_id, archived FROM staff
     WHERE school_worked_at = %s
       AND LOWER(BTRIM(name)) = LOWER(BTRIM(%s))
       AND (
@@ -692,7 +697,7 @@ STAFF_FIND_NAME_SQL = """
           OR NULLIF(BTRIM(email), '') IS NULL
           OR LOWER(email) = LOWER(%s)
       )
-    ORDER BY staff_id
+    ORDER BY archived, staff_id
     LIMIT 1
 """
 
@@ -716,6 +721,13 @@ STAFF_UPDATE_SQL = """
     -- db/006. MUST MERGE WITH Phase 5 step 3 (the verified reset).
     WHERE staff_id = %s
       AND is_scraped IS TRUE
+      AND archived IS NOT TRUE
+"""
+
+ARCHIVED_SCHOOLS_SQL = "SELECT facility_key FROM schools WHERE archived"
+
+SCHOOL_SETTINGS_SQL = """
+    SELECT facility_key, archived, website_override, staff_page_override FROM schools
 """
 
 EVENT_SQL = """
@@ -733,6 +745,7 @@ EVENT_SQL = """
         fair_name = EXCLUDED.fair_name,
         updated_at = EXCLUDED.updated_at
     WHERE events.is_scraped IS TRUE
+      AND events.archived IS NOT TRUE
 """
 
 

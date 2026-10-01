@@ -76,6 +76,9 @@ class FakeCursor:
         self.next_row = None
         return row
 
+    def fetchall(self):
+        return []
+
     def executemany(self, sql, rows):
         self.calls.append(("executemany", (" ".join(sql.split()), list(rows))))
 

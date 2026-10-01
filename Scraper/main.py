@@ -10,6 +10,7 @@ from database import DatabaseWriter
 from iacac_events import IacacEventSource
 from helpers import (
     DATABASE_MODE,
+    canonical_facility_key,
     OUTPUT_FOLDER,
     RESOLVE_WINDOW,
     SKIP,
@@ -25,6 +26,18 @@ from models import Resolution
 from resolver import HttpClient, SchoolResolver
 from scraper import SchoolScraper
 from sources import StateRoster
+
+
+def without_archived(schools, settings):
+    """The schools to scrape: archived ones (db/009) are left out entirely."""
+    kept, skipped = [], 0
+    for school in schools:
+        setting = settings.get(canonical_facility_key(school.facility_key, school.state), {})
+        if setting.get("archived"):
+            skipped += 1
+            continue
+        kept.append(school)
+    return kept, skipped
 
 
 class SchoolReach:
@@ -207,10 +220,19 @@ class SchoolReach:
                 result.contact_pages = safe_result.contact_pages
                 result.calendar_pages = safe_result.calendar_pages
 
+    def school_settings(self):
+        reader = getattr(self.database_writer, "read_school_settings", None)
+        return reader() if callable(reader) else {}
+
     def run(self):
         self.output.mkdir(parents=True, exist_ok=True)
         schools = self.roster.load(self.output / "raw")
         schools = schools[self.skip:]
+
+        settings = self.school_settings()
+        schools, skipped = without_archived(schools, settings)
+        if skipped:
+            print(f"Skipping {skipped} archived school(s).", flush=True)
 
         checkpoint_path = self.output / "checkpoint.json"
         saved = read_json(checkpoint_path, {})

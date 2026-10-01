@@ -22,41 +22,16 @@ interface EventRow {
   updated_at: string | null;
 }
 
-// Every school the CRM covers is in Illinois or Missouri, both on Central time.
-const CENTRAL = 'America/Chicago';
-
-const centralParts = new Intl.DateTimeFormat('en-CA', {
-  timeZone: CENTRAL,
-  hourCycle: 'h23',
-  year: 'numeric',
-  month: '2-digit',
-  day: '2-digit',
-  hour: '2-digit',
-  minute: '2-digit',
-  second: '2-digit',
-});
-
-/** A UTC instant as a Central-time wall clock: "2026-11-12T18:30:00". */
-function utcToCentral(date: string, time: string): string {
-  const parts = Object.fromEntries(
-    centralParts.formatToParts(new Date(`${date}T${time}Z`)).map((p) => [p.type, p.value])
-  );
-  return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}:${parts.second}`;
-}
-
 /**
- * The event's local date and time. School-calendar events (external_id
- * "schoolreach:…") are stored in UTC by the scraper: an open house at 6:30 PM on
- * Nov 12 is stored as Nov 13 00:30. IACAC and manually entered events are stored
- * as local time. A date on its own is read as that local day, not as midnight UTC,
- * which showed every event a day early. Midnight exactly means an all-day event.
+ * The event's local date and time. Every event is stored in local (Central) time:
+ * school-calendar events since db/017 and scraper-fixes a70d4af, IACAC and manually
+ * entered events always. A date on its own is that local day. Midnight exactly means
+ * an all-day event.
  */
 function localDateTime(row: EventRow): { date: string; hasTime: boolean } {
   if (!row.date) return { date: nowISO(), hasTime: false };
   if (!row.time) return { date: `${row.date}T00:00:00`, hasTime: false };
-  const local = row.external_id?.startsWith('schoolreach:')
-    ? utcToCentral(row.date, row.time.slice(0, 8))
-    : `${row.date}T${row.time.slice(0, 8)}`;
+  const local = `${row.date}T${row.time.slice(0, 8)}`;
   return { date: local, hasTime: !local.endsWith('T00:00:00') };
 }
 

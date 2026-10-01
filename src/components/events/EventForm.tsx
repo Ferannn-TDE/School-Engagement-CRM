@@ -34,10 +34,6 @@ interface EventFormProps {
 export function EventForm({ event, onClose }: EventFormProps) {
   const { state, addEvent, updateEvent } = useAppContext();
   const isEditing = !!event;
-  // School-calendar events are stored in UTC by the scraper, while this form works
-  // in local time. Saving a date or time here would mix the two, so until the
-  // scraper stores local times they can't be changed from the app.
-  const timeLocked = event?.source === 'school_calendar';
 
   const {
     register,
@@ -86,10 +82,6 @@ export function EventForm({ event, onClose }: EventFormProps) {
 
     if (isEditing && event) {
       const changes: Partial<Event> = { ...eventData };
-      if (timeLocked) {
-        delete changes.date;
-        delete changes.endDate;
-      }
       updateEvent({ ...event, ...changes }, changes);
       toast.success('Event updated successfully');
     } else {
@@ -140,25 +132,16 @@ export function EventForm({ event, onClose }: EventFormProps) {
           label="Start Date & Time"
           type="datetime-local"
           required
-          readOnly={timeLocked}
-          className={timeLocked ? 'bg-neutral-50 text-neutral-500' : undefined}
           error={errors.date?.message}
           {...register('date')}
         />
         <Input
           label="End Date & Time"
           type="datetime-local"
-          readOnly={timeLocked}
-          className={timeLocked ? 'bg-neutral-50 text-neutral-500' : undefined}
           error={errors.endDate?.message}
           {...register('endDate')}
         />
       </div>
-      {timeLocked && (
-        <p className="text-xs text-neutral-500 -mt-2">
-          This event comes from the school’s calendar, which stores times differently, so its date and time can’t be changed here yet.
-        </p>
-      )}
       <Input
         label="Attendee Count"
         type="number"

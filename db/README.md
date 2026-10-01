@@ -26,6 +26,7 @@ how 001 and 002 went missing once (found and re-applied on 2026-09-26/28).
 | `016_reset_bulk_verified_flag.sql` | Applied 2026-10-01 with the scraper-fixes merge: cleared `is_verified` / `last_verified_at` on the 1,683 schools bulk-flagged on 2026-09-02 (saved in `backup.bulk_verified_20260902`). |
 | `017_school_calendar_times_to_central.sql` | Applied 2026-10-01 with the scraper-fixes merge: the 121 school-calendar event times stored in UTC are now Central (old values in `backup.school_calendar_times_utc`). The app no longer converts them or locks their time. |
 | `019_merge_duplicate_staff.sql` | Applied 2026-10-01: merged 6 duplicate staff added by the old scraper's run #5 into the existing records (blanks filled with no lock; 4 conflicting values waiting in `pending_scraped` with that field locked, so the school page asks "keep yours or use this?") and archived the duplicates with a note. Rows saved in `backup.duplicate_merge_20261001`. |
+| `020_clear_scores_from_notes.sql` | Applied 2026-10-01: cleared the 4,343 staff notes that were only the scraper's score (now in `scraper_score`); saved in `backup.notes_scores_20261001`. Notes with any other text were left (9). No lock added. |
 
 ## Archive, never delete (009)
 

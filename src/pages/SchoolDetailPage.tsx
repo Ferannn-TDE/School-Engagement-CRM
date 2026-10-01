@@ -10,6 +10,8 @@ import { Modal } from '../components/common/Modal';
 import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import { SchoolForm } from '../components/schools/SchoolForm';
 import { WebsiteUpdates } from '../components/schools/WebsiteUpdates';
+import { SchoolLinks } from '../components/schools/SchoolLinks';
+import { websiteInUse } from '../utils/links';
 import { ProgramForm } from '../components/programs/ProgramForm';
 import { LogContactForm } from '../components/activities/LogContactForm';
 import { ContactDetails } from '../components/contacts/ContactDetails';
@@ -158,7 +160,7 @@ export function SchoolDetailPage() {
             </p>
             <p className="text-sm text-neutral-500 mt-1">{countyLabel(school.county, undefined)}</p>
             {/* Shown even when the school has no contacts: often the only way in. */}
-            {(school.phone || school.website) && (
+            {(school.phone || websiteInUse(school).url) && (
               <div className="mt-2 space-y-1">
                 {school.phone && (
                   <a
@@ -169,15 +171,15 @@ export function SchoolDetailPage() {
                     {formatPhone(school.phone)}
                   </a>
                 )}
-                {school.website && (
+                {websiteInUse(school).url && (
                   <a
-                    href={websiteHref(school.website)}
+                    href={websiteHref(websiteInUse(school).url!)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1.5 text-sm text-neutral-700 hover:text-siue-red min-w-0"
                   >
                     <Globe size={14} className="text-neutral-400 shrink-0" />
-                    <span className="truncate">{websiteLabel(school.website)}</span>
+                    <span className="truncate">{websiteLabel(websiteInUse(school).url!)}</span>
                   </a>
                 )}
               </div>
@@ -218,6 +220,9 @@ export function SchoolDetailPage() {
             <p className="text-sm text-neutral-500">{activities.length} total activities</p>
           </Card>
         </div>
+
+        {/* Website and staff-page links: the client's own or the scraper's (db/013) */}
+        <SchoolLinks school={school} />
 
         {/* Locked fields where the website now says something else (db/012) */}
         <WebsiteUpdates school={school} contacts={contacts} />

@@ -35,6 +35,8 @@ interface SchoolRow {
   missing_since?: string | null;
   manual_fields?: string[] | null;
   pending_scraped?: PendingMap | null;
+  website_override?: string | null;
+  staff_page_override?: string | null;
   priority_tier: string | null;
   state_code: string | null;
 }
@@ -62,6 +64,8 @@ function rowToSchool(row: SchoolRow): School {
     zipCode: row.zipcode ?? '',
     phone: row.phone?.trim() || undefined,
     website: row.website?.trim() || undefined,
+    websiteOverride: row.website_override ?? undefined,
+    staffPageOverride: row.staff_page_override ?? undefined,
     schoolType: mapSchoolType(row.type_of_school),
     isActive: row.is_active ?? true,
     notes: row.notes ?? undefined,
@@ -361,6 +365,24 @@ export async function resolveSchoolPending(
     ? acceptPatch(column, pending, current.manual_fields ?? [])
     : dismissPatch(column, pending, who);
   const { data, error } = await supabase.from('schools').update(patch).eq('facility_key', id).select().single();
+  if (error) throw error;
+  return rowToSchool(data as SchoolRow);
+}
+
+/**
+ * Saves the client's own website and staff-page links (db/013). Stored apart from the
+ * scraped website; null clears an override so the scraped link is used again.
+ */
+export async function setSchoolLinks(
+  id: string,
+  links: { websiteOverride: string | null; staffPageOverride: string | null }
+): Promise<School> {
+  const { data, error } = await supabase
+    .from('schools')
+    .update({ website_override: links.websiteOverride, staff_page_override: links.staffPageOverride })
+    .eq('facility_key', id)
+    .select()
+    .single();
   if (error) throw error;
   return rowToSchool(data as SchoolRow);
 }

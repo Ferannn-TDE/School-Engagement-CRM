@@ -117,6 +117,9 @@ export interface School {
   phone?: string;
   /** The school's website as found by the scraper. */
   website?: string;
+  /** The client's own links (db/013), used instead of what the scraper found. */
+  websiteOverride?: string;
+  staffPageOverride?: string;
   schoolType: SchoolType;
   isActive: boolean;
   notes?: string;

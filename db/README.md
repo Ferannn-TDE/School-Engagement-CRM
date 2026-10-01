@@ -21,6 +21,8 @@ how 001 and 002 went missing once (found and re-applied on 2026-09-26/28).
 | `012_resolve_locked_fields.sql` | Revises the 006 trigger function so the client can answer "The website now says X — keep yours or use this?": accepting the website's value unlocks the field; "keep yours" is remembered until the website shows a different value. |
 | `013_link_overrides.sql` | `website_override` and `staff_page_override` on schools: the client's own links, stored apart from the scraped `website` and never written by the scraper. Only http(s) links are accepted. The school page shows which link is in use. |
 | `014_staff_scraper_score.sql` | `scraper_score` and `scraper_score_at` on staff, so the scraper's confidence score stops going into `notes`. The scores already in notes stay there; copying them over is a separate, approved step. |
+| `015_restore_scraper_run_2026-09-30.sql` | Applied 2026-10-01: undid what the old scraper (from main) overwrote in its runs of 2026-09-30 19:48 UTC and 2026-10-01 03:13 UTC: 117 staff values and 22 event locations back to the 2026-09-29 snapshot. The values it replaced are in `backup.scraper_runs_20260930_20261001`. New rows were kept. |
+| `018_copy_scores_from_notes.sql` | Applied 2026-10-01: copied each staff score from `notes` into `scraper_score` (4,352). `notes` unchanged. |
 
 ## Archive, never delete (009)
 

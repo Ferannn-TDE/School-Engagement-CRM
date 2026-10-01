@@ -17,6 +17,8 @@ from helpers import (
     MESSAGE_NAME,
     PHONE,
     ROLE_ORDER,
+    TESTING_DATE_CATEGORY,
+    TESTING_DATE_PATTERN,
     canonical_url,
     clean,
     digits,
@@ -26,6 +28,7 @@ from helpers import (
     looks_like_person,
     normalize,
     normalized_role,
+    CENTRAL_TIME,
     parse_datetime,
     related_sites,
     school_words,
@@ -399,12 +402,23 @@ class ContactParser:
 
 
 class EventParser:
+    def __init__(self):
+        # Every testing-date match in this run, so the list in helpers.py can be tuned.
+        self.testing_date_matches = []
+
     def category(self, text):
         text = clean(text)
         if EVENT_REJECT.search(text):
             return ""
+        # Testing dates first: they get their own category and are kept, never
+        # skipped (plan item A3). The list lives in helpers.TESTING_DATE_TERMS.
+        match = TESTING_DATE_PATTERN.search(text)
+        if match:
+            self.testing_date_matches.append((match.group(0), text))
+            print(f"[testing date] {match.group(0)}: {text[:120]}", flush=True)
+            return TESTING_DATE_CATEGORY
         if re.search(r"\bSAT\b", text):
-            return "testing"
+            return TESTING_DATE_CATEGORY
         if re.search(r"\bSat\b", text) and not re.search(
             r"\b(?:exam|test|testing|assessment|administration|school day)\b",
             text,
@@ -412,7 +426,10 @@ class EventParser:
         ):
             text = re.sub(r"\bSat\b", "", text)
         if re.search(r"\bsat\s+(?:exam|test|testing|assessment|administration|school\s+day)\b", text, re.I):
-            return "testing"
+            # "Sat testing administration": the SAT exam written in lower case.
+            self.testing_date_matches.append(("SAT", text))
+            print(f"[testing date] SAT: {text[:120]}", flush=True)
+            return TESTING_DATE_CATEGORY
         for category, pattern in EVENT_PATTERNS.items():
             if pattern.search(text):
                 return category
@@ -440,6 +457,12 @@ class EventParser:
             return None
 
         end_date = parse_datetime(end)
+        # Store school-calendar times as Central time. Before this, the UTC value was
+        # stored as if it were local: a 6:30 PM event on Nov 12 was saved as Nov 13
+        # 00:30, and all-day events at 05:00 (plan item B5b). start/end stay UTC
+        # because external_id is built from them.
+        start_local = parse_datetime(start, zone=CENTRAL_TIME)
+        end_local = parse_datetime(end, zone=CENTRAL_TIME)
         score = 5.5 + (1.5 if method in {"ics_feed", "embedded_json"} else 0.5)
         score += 1.0 if names_school else 0.0
 
@@ -453,6 +476,8 @@ class EventParser:
             source_url=page.url,
             method=method,
             score=round(min(10.0, score), 2),
+            start_local=start_local.isoformat(),
+            end_local=end_local.isoformat() if end_local else "",
         )
 
     def structured(self, school, page, inherited_school):

@@ -121,8 +121,10 @@ class EventTests(unittest.TestCase):
 
     def test_sat_weekday_is_not_the_sat_exam(self):
         self.assertEqual(self.parser.category("Sat, August 22 - Office Open"), "")
-        self.assertEqual(self.parser.category("SAT"), "testing")
-        self.assertEqual(self.parser.category("Sat testing administration"), "testing")
+        # SAT is on the testing-dates list (helpers.TESTING_DATE_TERMS), which now has
+        # its own category instead of the general "testing" one (plan item A3).
+        self.assertEqual(self.parser.category("SAT"), "school_testing_date")
+        self.assertEqual(self.parser.category("Sat testing administration"), "school_testing_date")
 
     def test_ics_keeps_outreach_and_rejects_sports(self):
         future = (date.today() + timedelta(days=30)).strftime("%Y%m%d")

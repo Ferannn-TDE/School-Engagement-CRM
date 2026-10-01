@@ -158,8 +158,15 @@ class DatabaseRows:
         rows = {}
         for result in self.results:
             for event in result.events:
+                # Store the local (Central) start; external_id below still uses the
+                # UTC `start` so existing events keep their ids (plan item B5b).
+                # Once merged, remove the app's workarounds in the same release:
+                #   src/components/events/EventForm.tsx  (timeLocked, read-only times)
+                #   src/services/eventsService.ts        (utcToCentral on read)
+                # together with a one-time migration converting school-calendar rows
+                # already stored in UTC, or those rows will show shifted times.
                 try:
-                    start = datetime.fromisoformat(event.start)
+                    start = datetime.fromisoformat(event.start_local or event.start)
                 except ValueError:
                     continue
 
@@ -233,6 +240,9 @@ class DatabaseWriter:
         )
 
     def find_staff(self, cursor, values):
+        # Order: email, then phone (with name), then name + school. The job title is
+        # deliberately not used: it is the field clients most often correct in the
+        # app, and matching on it inserted duplicates (plan item C10).
         name, phone, email, title, school_key = values[:5]
         if email:
             cursor.execute(STAFF_FIND_EMAIL_SQL, (email, school_key))
@@ -244,7 +254,8 @@ class DatabaseWriter:
             row = cursor.fetchone()
             if row:
                 return row[0]
-        cursor.execute(STAFF_FIND_NAME_SQL, (school_key, name, title))
+        email_or_none = email or None
+        cursor.execute(STAFF_FIND_NAME_SQL, (school_key, name, email_or_none, email_or_none))
         row = cursor.fetchone()
         return row[0] if row else None
 
@@ -296,6 +307,10 @@ class DatabaseWriter:
                     title,
                     school_key,
                     is_active,
+                    # notes appears four times in STAFF_UPDATE_SQL's keep-or-append rule.
+                    notes,
+                    notes,
+                    notes,
                     notes,
                     updated_at,
                     data_source,

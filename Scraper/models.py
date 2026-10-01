@@ -115,6 +115,7 @@ class Contact:
 @dataclass
 class Event:
     title: str
+    # UTC for zoned sources. Kept as-is because external_id is built from it.
     start: str
     end: str = ""
     location: str = ""
@@ -123,6 +124,10 @@ class Event:
     source_url: str = ""
     method: str = ""
     score: float = 0.0
+    # Local (Central) wall-clock start/end, which is what gets stored. Empty means
+    # `start` / `end` are already local (IACAC). Plan item B5b.
+    start_local: str = ""
+    end_local: str = ""
 
 
 @dataclass

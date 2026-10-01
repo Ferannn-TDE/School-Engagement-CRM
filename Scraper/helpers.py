@@ -1,6 +1,7 @@
 from collections import defaultdict
 from dataclasses import asdict, fields, is_dataclass
 from datetime import date, datetime, time as day_time, timezone
+from zoneinfo import ZoneInfo
 from hashlib import sha256
 from html import unescape
 from ipaddress import ip_address
@@ -495,6 +496,28 @@ CALENDAR_LINK_TERMS = {
     "career": 4,
 }
 
+# School testing dates: the editable list of what counts. The client doesn't do
+# outreach on these days, but wants them kept as "busy dates" for each school, so
+# matching events are stored with the category below and logged. They are never
+# skipped or deleted (plan item A3, "testing dates are a category, not a filter").
+# Matching is whole-word and case-sensitive, so "Sat" (Saturday) and words that merely
+# contain the letters (e.g. "ACTIVITY") don't match. Add or remove terms here.
+TESTING_DATE_TERMS = ["SAT", "ACT", "PSAT", "AP"]
+# Terms that count only when the text also says exam or test. Schools use "AP" for
+# more than exams ("AP Celebration Day" is in the live data, "AP Night" is common),
+# so "AP Exams Begin" and "AP Calculus Exam" match but those don't.
+TESTING_DATE_TERMS_NEEDING_EXAM_WORD = {"AP"}
+TESTING_DATE_EXAM_WORD = r"(?=.*\b(?i:exams?|tests?|testing)\b)"
+TESTING_DATE_CATEGORY = "school_testing_date"
+TESTING_DATE_PATTERN = re.compile(
+    r"\b(?:"
+    + "|".join(
+        re.escape(term) + (TESTING_DATE_EXAM_WORD if term in TESTING_DATE_TERMS_NEEDING_EXAM_WORD else "")
+        for term in TESTING_DATE_TERMS
+    )
+    + r")\b"
+)
+
 EVENT_PATTERNS = {
     "college_planning": re.compile(r"\bcollege\s+(?:night|fair|planning|information|application)|\bcollege\s+and\s+career\b", re.I),
     "college_visit": re.compile(r"\bcollege\s+(?:visit|representative)|\bcampus\s+visit\b", re.I),
@@ -591,8 +614,19 @@ SCHOOL_SQL = """
         website = COALESCE(EXCLUDED.website, schools.website),
         county_name = COALESCE(EXCLUDED.county_name, schools.county_name),
         is_scraped = EXCLUDED.is_scraped,
-        is_active = EXCLUDED.is_active,
-        notes = COALESCE(EXCLUDED.notes, schools.notes),
+        -- Never switch an inactive school back to active: someone deactivated it on
+        -- purpose, and the scraper always sends TRUE (plan item C10).
+        is_active = CASE
+            WHEN schools.is_active IS FALSE THEN FALSE
+            ELSE EXCLUDED.is_active
+        END,
+        -- Never replace notes (see STAFF_UPDATE_SQL): keep them, or keep both.
+        notes = CASE
+            WHEN NULLIF(BTRIM(EXCLUDED.notes), '') IS NULL THEN schools.notes
+            WHEN NULLIF(BTRIM(schools.notes), '') IS NULL THEN EXCLUDED.notes
+            WHEN POSITION(EXCLUDED.notes IN schools.notes) > 0 THEN schools.notes
+            ELSE schools.notes || E'\n' || EXCLUDED.notes
+        END,
         updated_at = EXCLUDED.updated_at,
         enrollment = COALESCE(EXCLUDED.enrollment, schools.enrollment),
         grade_range = COALESCE(EXCLUDED.grade_range, schools.grade_range),
@@ -605,8 +639,11 @@ SCHOOL_SQL = """
         END,
         priority_tier = COALESCE(EXCLUDED.priority_tier, schools.priority_tier),
         state_code = EXCLUDED.state_code
+    -- No longer skips verified schools. That whole-row freeze stopped 1,683 schools
+    -- (bulk-marked verified on 2026-09-02) from ever being refreshed. Client edits
+    -- are protected per column by db/006 instead. MUST MERGE WITH Phase 5 step 3
+    -- (the verified reset); see the commit message.
     WHERE schools.is_scraped IS TRUE
-      AND NOT COALESCE(schools.is_verified, FALSE)
 """
 
 STAFF_SQL = """
@@ -627,6 +664,8 @@ STAFF_FIND_EMAIL_SQL = """
     LIMIT 1
 """
 
+# Phone matching also requires the name: a school's main number is shared by many of
+# its staff, so a phone on its own would merge different people.
 STAFF_FIND_PHONE_SQL = """
     SELECT staff_id FROM staff
     WHERE school_worked_at = %s
@@ -636,11 +675,20 @@ STAFF_FIND_PHONE_SQL = """
     LIMIT 1
 """
 
+# Match by name + school, never by job_name: a client can correct a title in the app
+# (and db/006 locks it), and name + title matching would then insert a duplicate of the
+# same person on the next run (plan item C10).
+# The email condition keeps genuinely different people apart: if both records have an
+# email and the emails differ, they are not the same person, whatever the name.
 STAFF_FIND_NAME_SQL = """
     SELECT staff_id FROM staff
     WHERE school_worked_at = %s
-      AND LOWER(name) = LOWER(%s)
-      AND LOWER(job_name) = LOWER(%s)
+      AND LOWER(BTRIM(name)) = LOWER(BTRIM(%s))
+      AND (
+          %s::text IS NULL
+          OR NULLIF(BTRIM(email), '') IS NULL
+          OR LOWER(email) = LOWER(%s)
+      )
     ORDER BY staff_id
     LIMIT 1
 """
@@ -652,13 +700,24 @@ STAFF_UPDATE_SQL = """
         email = COALESCE(%s, email),
         job_name = COALESCE(%s, job_name),
         school_worked_at = %s,
-        is_active = %s,
-        notes = %s,
+        -- Never switch an inactive contact back to active: someone deactivated them
+        -- on purpose, and the scraper always sends TRUE (plan item C10).
+        is_active = CASE WHEN is_active IS FALSE THEN FALSE ELSE %s END,
+        -- Never replace notes: a person may have written them. Keep them when the
+        -- scraper sends nothing, and otherwise keep both, without repeating a line
+        -- that is already there (plan item C10, no-loss rule).
+        notes = CASE
+            WHEN NULLIF(BTRIM(%s), '') IS NULL THEN notes
+            WHEN NULLIF(BTRIM(notes), '') IS NULL THEN %s
+            WHEN POSITION(%s IN notes) > 0 THEN notes
+            ELSE notes || E'\n' || %s
+        END,
         updated_at = %s,
         data_source = %s
+    -- No longer skips verified contacts: client edits are protected per column by
+    -- db/006. MUST MERGE WITH Phase 5 step 3 (the verified reset).
     WHERE staff_id = %s
       AND is_scraped IS TRUE
-      AND NOT COALESCE(is_verified, FALSE)
 """
 
 EVENT_SQL = """
@@ -908,7 +967,18 @@ def split_phone(value):
     return f"{number[:3]}-{number[3:6]}-{number[6:]}", extension
 
 
-def parse_datetime(value):
+# Every school the CRM covers is in Illinois or Missouri, both on Central time.
+CENTRAL_TIME = ZoneInfo("America/Chicago")
+
+
+def parse_datetime(value, zone=None):
+    """Parse a date or date-time. Times that carry a zone are converted to `zone`.
+
+    zone=None keeps the original behaviour: convert to UTC. Event identities
+    (external_id) are built from that UTC form, so it must not change, or every
+    existing event would get a new id and be inserted again.
+    zone=CENTRAL_TIME gives the local wall-clock time to store and show (plan B5b).
+    """
     if isinstance(value, datetime):
         result = value
     elif isinstance(value, date):
@@ -934,6 +1004,10 @@ def parse_datetime(value):
         for pattern in formats:
             try:
                 result = datetime.strptime(text, pattern)
+                # The trailing Z means UTC. Mark it so it can be converted to local
+                # time like any other zoned value (it was treated as local before).
+                if pattern.endswith("Z"):
+                    result = result.replace(tzinfo=timezone.utc)
                 break
             except ValueError:
                 continue
@@ -943,7 +1017,7 @@ def parse_datetime(value):
             except ValueError:
                 return None
     if result.tzinfo is not None:
-        result = result.astimezone(timezone.utc).replace(tzinfo=None)
+        result = result.astimezone(zone or timezone.utc).replace(tzinfo=None)
     return result
 
 

@@ -37,3 +37,6 @@ dist-ssr
 .env
 .env.local
 .env.*.local
+
+# Python bytecode caches (the scraper and its tests)
+__pycache__/

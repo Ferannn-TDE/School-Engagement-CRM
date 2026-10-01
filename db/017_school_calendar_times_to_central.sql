@@ -1,0 +1,151 @@
+-- 017 — Store school-calendar event times in Central time (B5b)
+-- APPLY RIGHT AFTER scraper-fixes is merged, in the same release as a70d4af and the
+-- app change on this branch (no more UTC conversion or time lock in the app).
+--
+-- Why: the old scraper turned every school-calendar time into UTC and stored it as if
+-- it were local: a 6:30 PM information night on Nov 12 was stored as Nov 13 00:30,
+-- all-day events as 05:00. The app works around it today (eventsService.utcToCentral,
+-- EventForm's read-only date and time). a70d4af makes the scraper write Central time;
+-- this converts the rows already stored, so all events use one convention and the app
+-- workaround can go.
+--
+-- What changes: date and time of the 84 school-calendar events (external_id
+-- 'schoolreach:%') that have a time, including event 1114 "D128 Financial Aid
+-- Webinar" added by the 2026-09-30 19:48 UTC run: from UTC to America/Chicago, with
+-- daylight saving handled by the database. All-day events (05:00 UTC) become 00:00 on
+-- the same day, which the app shows as all-day. IACAC and app-made events are local
+-- already and are not touched. Event ids, and so external_id matching, don't change.
+--
+-- Safety: the stored values are saved first in backup.school_calendar_times_utc, and
+-- the migration refuses to change anything if any listed row no longer has the UTC
+-- value listed here, or if a school-calendar row with a time exists that isn't listed
+-- (e.g. a newer scraper run). Then rebuild the list from a fresh export.
+--
+-- List built from ~/Desktop/CRM-db-exports/2026-09-30-readonly-check/events.json
+-- (identical to the live data on 2026-09-30/10-01).
+--
+-- UNDO: update public.events e set date = b.date, time = b.time
+--       from backup.school_calendar_times_utc b where b.event_id = e.event_id;
+
+begin;
+
+create schema if not exists backup;
+revoke all on schema backup from public, anon, authenticated;
+
+create table backup.school_calendar_times_utc (
+  event_id integer primary key,
+  date date not null,
+  time time not null,
+  date_central date not null,
+  time_central time not null,
+  saved_at timestamptz not null default now()
+);
+alter table backup.school_calendar_times_utc enable row level security;
+revoke all on backup.school_calendar_times_utc from public, anon, authenticated;
+
+insert into backup.school_calendar_times_utc (event_id, date, time, date_central, time_central) values
+  (1, '2026-09-02', '23:15:00', '2026-09-02', '18:15:00'),
+  (2, '2026-09-03', '05:00:00', '2026-09-03', '00:00:00'),
+  (3, '2026-09-16', '16:45:00', '2026-09-16', '11:45:00'),
+  (4, '2026-09-10', '14:30:00', '2026-09-10', '09:30:00'),
+  (5, '2026-09-09', '23:30:00', '2026-09-09', '18:30:00'),
+  (6, '2026-10-09', '16:10:00', '2026-10-09', '11:10:00'),
+  (7, '2026-09-10', '22:00:00', '2026-09-10', '17:00:00'),
+  (8, '2026-09-04', '05:00:00', '2026-09-04', '00:00:00'),
+  (9, '2026-10-03', '12:00:00', '2026-10-03', '07:00:00'),
+  (10, '2026-11-13', '00:30:00', '2026-11-12', '18:30:00'),
+  (11, '2026-09-09', '22:30:00', '2026-09-09', '17:30:00'),
+  (12, '2026-11-07', '13:00:00', '2026-11-07', '07:00:00'),
+  (13, '2026-09-09', '22:30:00', '2026-09-09', '17:30:00'),
+  (14, '2026-09-03', '23:30:00', '2026-09-03', '18:30:00'),
+  (15, '2026-09-02', '23:30:00', '2026-09-02', '18:30:00'),
+  (16, '2026-09-04', '05:00:00', '2026-09-04', '00:00:00'),
+  (17, '2026-09-04', '05:00:00', '2026-09-04', '00:00:00'),
+  (18, '2026-09-25', '00:00:00', '2026-09-24', '19:00:00'),
+  (19, '2026-09-02', '22:00:00', '2026-09-02', '17:00:00'),
+  (20, '2026-10-01', '15:00:00', '2026-10-01', '10:00:00'),
+  (21, '2026-09-10', '16:30:00', '2026-09-10', '11:30:00'),
+  (22, '2026-10-07', '00:00:00', '2026-10-06', '19:00:00'),
+  (23, '2026-09-30', '05:00:00', '2026-09-30', '00:00:00'),
+  (24, '2026-09-29', '23:00:00', '2026-09-29', '18:00:00'),
+  (25, '2026-09-09', '22:00:00', '2026-09-09', '17:00:00'),
+  (26, '2026-09-12', '12:00:00', '2026-09-12', '07:00:00'),
+  (27, '2026-09-22', '23:30:00', '2026-09-22', '18:30:00'),
+  (28, '2026-09-19', '05:00:00', '2026-09-19', '00:00:00'),
+  (29, '2026-09-02', '22:30:00', '2026-09-02', '17:30:00'),
+  (30, '2026-09-04', '00:00:00', '2026-09-03', '19:00:00'),
+  (31, '2026-09-25', '05:00:00', '2026-09-25', '00:00:00'),
+  (32, '2026-09-01', '22:30:00', '2026-09-01', '17:30:00'),
+  (33, '2026-09-02', '22:00:00', '2026-09-02', '17:00:00'),
+  (34, '2026-09-03', '05:00:00', '2026-09-03', '00:00:00'),
+  (35, '2026-09-02', '22:00:00', '2026-09-02', '17:00:00'),
+  (37, '2026-09-02', '22:00:00', '2026-09-02', '17:00:00'),
+  (38, '2026-09-01', '23:00:00', '2026-09-01', '18:00:00'),
+  (39, '2026-09-14', '05:00:00', '2026-09-14', '00:00:00'),
+  (40, '2026-09-03', '23:00:00', '2026-09-03', '18:00:00'),
+  (41, '2026-09-11', '14:30:00', '2026-09-11', '09:30:00'),
+  (42, '2026-09-11', '13:00:00', '2026-09-11', '08:00:00'),
+  (43, '2026-09-19', '05:00:00', '2026-09-19', '00:00:00'),
+  (44, '2026-10-06', '23:00:00', '2026-10-06', '18:00:00'),
+  (45, '2026-09-10', '20:00:00', '2026-09-10', '15:00:00'),
+  (46, '2026-09-12', '13:00:00', '2026-09-12', '08:00:00'),
+  (47, '2026-10-08', '23:00:00', '2026-10-08', '18:00:00'),
+  (48, '2026-09-14', '16:45:00', '2026-09-14', '11:45:00'),
+  (49, '2026-09-02', '22:00:00', '2026-09-02', '17:00:00'),
+  (50, '2026-09-15', '18:15:00', '2026-09-15', '13:15:00'),
+  (51, '2026-10-22', '16:00:00', '2026-10-22', '11:00:00'),
+  (52, '2026-09-16', '13:00:00', '2026-09-16', '08:00:00'),
+  (53, '2026-09-12', '05:00:00', '2026-09-12', '00:00:00'),
+  (54, '2026-09-01', '22:00:00', '2026-09-01', '17:00:00'),
+  (55, '2026-10-13', '23:30:00', '2026-10-13', '18:30:00'),
+  (56, '2026-09-16', '14:30:00', '2026-09-16', '09:30:00'),
+  (57, '2026-09-03', '23:00:00', '2026-09-03', '18:00:00'),
+  (58, '2026-09-09', '14:00:00', '2026-09-09', '09:00:00'),
+  (59, '2026-10-13', '23:30:00', '2026-10-13', '18:30:00'),
+  (60, '2026-09-09', '00:00:00', '2026-09-08', '19:00:00'),
+  (61, '2026-10-17', '05:00:00', '2026-10-17', '00:00:00'),
+  (62, '2026-09-03', '22:30:00', '2026-09-03', '17:30:00'),
+  (194, '2026-10-21', '05:00:00', '2026-10-21', '00:00:00'),
+  (195, '2026-09-10', '00:00:00', '2026-09-09', '19:00:00'),
+  (199, '2026-09-11', '15:15:00', '2026-09-11', '10:15:00'),
+  (206, '2026-10-26', '00:00:00', '2026-10-25', '19:00:00'),
+  (207, '2026-09-21', '22:30:00', '2026-09-21', '17:30:00'),
+  (209, '2026-09-09', '22:30:00', '2026-09-09', '17:30:00'),
+  (211, '2026-10-03', '05:00:00', '2026-10-03', '00:00:00'),
+  (220, '2026-10-12', '16:15:00', '2026-10-12', '11:15:00'),
+  (224, '2026-09-09', '23:00:00', '2026-09-09', '18:00:00'),
+  (488, '2026-09-16', '13:00:00', '2026-09-16', '08:00:00'),
+  (712, '2026-09-24', '23:30:00', '2026-09-24', '18:30:00'),
+  (835, '2026-09-17', '13:00:00', '2026-09-17', '08:00:00'),
+  (836, '2026-09-11', '05:00:00', '2026-09-11', '00:00:00'),
+  (845, '2026-09-11', '00:00:00', '2026-09-10', '19:00:00'),
+  (848, '2026-09-10', '05:00:00', '2026-09-10', '00:00:00'),
+  (852, '2026-09-09', '05:00:00', '2026-09-09', '00:00:00'),
+  (857, '2026-09-09', '16:00:00', '2026-09-09', '11:00:00'),
+  (876, '2026-10-14', '23:00:00', '2026-10-14', '18:00:00'),
+  (886, '2026-09-11', '05:00:00', '2026-09-11', '00:00:00'),
+  (971, '2026-09-15', '05:00:00', '2026-09-15', '00:00:00'),
+  (985, '2026-09-17', '14:30:00', '2026-09-17', '09:30:00'),
+  (993, '2026-09-11', '05:00:00', '2026-09-11', '00:00:00'),
+  (1114, '2026-09-08', '23:30:00', '2026-09-08', '18:30:00');
+
+do $check$
+declare changed int; unlisted int;
+begin
+  select count(*) into changed from backup.school_calendar_times_utc b
+    left join public.events e on e.event_id = b.event_id
+   where e.event_id is null or e.date is distinct from b.date or e.time is distinct from b.time;
+  select count(*) into unlisted from public.events e
+   where e.external_id like 'schoolreach:%' and e.time is not null
+     and not exists (select 1 from backup.school_calendar_times_utc b where b.event_id = e.event_id);
+  if changed > 0 or unlisted > 0 then
+    raise exception '% listed event(s) changed and % school-calendar event(s) are not listed; nothing was converted. Rebuild the list.', changed, unlisted;
+  end if;
+end $check$;
+
+update public.events e
+   set date = b.date_central, time = b.time_central
+  from backup.school_calendar_times_utc b
+ where b.event_id = e.event_id;
+
+commit;

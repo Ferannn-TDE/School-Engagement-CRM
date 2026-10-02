@@ -1,4 +1,5 @@
 from collections import defaultdict
+from dataclasses import replace
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
 from pathlib import Path
@@ -10,6 +11,7 @@ from database import DatabaseWriter
 from iacac_events import IacacEventSource
 from helpers import (
     DATABASE_MODE,
+    canonical_facility_key,
     OUTPUT_FOLDER,
     RESOLVE_WINDOW,
     SKIP,
@@ -25,6 +27,31 @@ from models import Resolution
 from resolver import HttpClient, SchoolResolver
 from scraper import SchoolScraper
 from sources import StateRoster
+
+
+def without_archived(schools, settings):
+    """The schools to scrape: archived ones (db/009) are left out entirely."""
+    kept, skipped = [], 0
+    for school in schools:
+        setting = settings.get(canonical_facility_key(school.facility_key, school.state), {})
+        if setting.get("archived"):
+            skipped += 1
+            continue
+        kept.append(school)
+    return kept, skipped
+
+
+def with_overrides(schools, settings):
+    """Adds the client's own website and staff-page links (db/013) to each school."""
+    output = []
+    for school in schools:
+        setting = settings.get(canonical_facility_key(school.facility_key, school.state), {})
+        website = setting.get("website_override") or ""
+        staff_page = setting.get("staff_page_override") or ""
+        if website or staff_page:
+            school = replace(school, website_override=website, staff_page_override=staff_page)
+        output.append(school)
+    return output
 
 
 class SchoolReach:
@@ -207,10 +234,23 @@ class SchoolReach:
                 result.contact_pages = safe_result.contact_pages
                 result.calendar_pages = safe_result.calendar_pages
 
+    def school_settings(self):
+        reader = getattr(self.database_writer, "read_school_settings", None)
+        return reader() if callable(reader) else {}
+
     def run(self):
         self.output.mkdir(parents=True, exist_ok=True)
         schools = self.roster.load(self.output / "raw")
         schools = schools[self.skip:]
+
+        settings = self.school_settings()
+        schools, skipped = without_archived(schools, settings)
+        if skipped:
+            print(f"Skipping {skipped} archived school(s).", flush=True)
+        schools = with_overrides(schools, settings)
+        overridden = sum(1 for s in schools if s.website_override or s.staff_page_override)
+        if overridden:
+            print(f"Using the client's own links for {overridden} school(s).", flush=True)
 
         checkpoint_path = self.output / "checkpoint.json"
         saved = read_json(checkpoint_path, {})
@@ -258,11 +298,13 @@ class SchoolReach:
 
         if self.database_writer is not None:
             print("Writing results to the database...", flush=True)
+            # Only a run over the whole roster may count records as missed (db/011).
             self.database_writer.write(
                 results,
                 self.database_mode,
                 external_events=external_events,
-                )
+                complete=self.skip == 0,
+            )
             write_json(checkpoint_path, {})
         return results
 

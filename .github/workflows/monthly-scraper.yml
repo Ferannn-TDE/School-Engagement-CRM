@@ -1,3 +1,7 @@
+# Keep this workflow DISABLED in GitHub (Actions -> Monthly School Scraper -> Disable)
+# until the Part 3 scraper changes are merged and one watched manual run has been
+# checked. Every run now snapshots the tables into the database's backup schema first
+# and saves a list of every value it changed (Scraper/run_audit.py).
 name: Monthly School Scraper
 
 on:
@@ -27,6 +31,8 @@ jobs:
     env:
       PYTHONUNBUFFERED: "1"
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      # Names this run's snapshot: backup.scraper_run_<label>_<table>.
+      RUN_LABEL: run_${{ github.run_id }}_${{ github.run_attempt }}
 
     steps:
       - name: Check out repository
@@ -67,6 +73,12 @@ jobs:
           python -c "import bs4, openpyxl, psycopg, requests, xlrd"
           python -m compileall -q .
 
+      - name: Snapshot the database before the run
+        id: snapshot
+        run: |
+          set -Eeuo pipefail
+          python run_audit.py snapshot --label "$RUN_LABEL"
+
       - name: Start a fresh monthly collection
         run: |
           set -Eeuo pipefail
@@ -76,6 +88,23 @@ jobs:
         run: |
           set -Eeuo pipefail
           python main.py
+
+      - name: List what this run changed
+        if: ${{ always() && steps.snapshot.outcome == 'success' }}
+        run: |
+          set -Eeuo pipefail
+          python run_audit.py changes --label "$RUN_LABEL" --out output
+
+      - name: Upload the change list
+        if: ${{ always() && steps.snapshot.outcome == 'success' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: scraper-changes-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ github.workspace }}/Scraper/output/changes.csv
+            ${{ github.workspace }}/Scraper/output/changes_summary.json
+          if-no-files-found: warn
+          retention-days: 90
 
       - name: Upload completed reports
         if: ${{ success() }}

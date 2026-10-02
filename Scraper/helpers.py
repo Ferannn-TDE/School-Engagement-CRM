@@ -596,10 +596,11 @@ SCHOOL_SQL = """
         admin, city, zipcode, grades_served, website, county_name,
         is_scraped, is_active, notes, created_at, updated_at, enrollment,
         grade_range, data_source, is_verified, last_verified_at, priority_tier,
-        state_code
+        state_code, last_scraped_at, source_status, source_checked_at
     ) VALUES (
         %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+        %s, %s, %s
     )
     ON CONFLICT (facility_key) DO UPDATE SET
         name = EXCLUDED.name,
@@ -637,28 +638,44 @@ SCHOOL_SQL = """
             WHEN COALESCE(schools.is_verified, FALSE) THEN schools.last_verified_at
             ELSE EXCLUDED.last_verified_at
         END,
+        -- The lookup result goes to source_status now, not priority_tier (db/011):
+        -- the scraper sends NULL here, so a client's priority is kept.
         priority_tier = COALESCE(EXCLUDED.priority_tier, schools.priority_tier),
-        state_code = EXCLUDED.state_code
+        state_code = EXCLUDED.state_code,
+        -- Freshness (db/011): found in this run.
+        last_scraped_at = EXCLUDED.last_scraped_at,
+        source_status = EXCLUDED.source_status,
+        source_checked_at = EXCLUDED.source_checked_at,
+        missed_runs = 0,
+        missing_since = NULL
     -- No longer skips verified schools. That whole-row freeze stopped 1,683 schools
     -- (bulk-marked verified on 2026-09-02) from ever being refreshed. Client edits
     -- are protected per column by db/006 instead. MUST MERGE WITH Phase 5 step 3
     -- (the verified reset); see the commit message.
     WHERE schools.is_scraped IS TRUE
+      -- Archived schools are left as they are (db/009, Part 3).
+      AND schools.archived IS NOT TRUE
 """
 
+# The scraper's confidence score goes to scraper_score (db/014), never into notes:
+# notes are for people (Part 3).
 STAFF_SQL = """
     INSERT INTO staff (
         name, phone, email, job_name, school_worked_at,
         is_scraped, is_active, notes, created_at, updated_at,
-        data_source, is_verified, last_verified_at
-    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        data_source, is_verified, last_verified_at,
+        scraper_score, scraper_score_at, last_scraped_at
+    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     RETURNING staff_id
 """
 
+# Each find returns (staff_id, archived) and prefers an active record: a person who
+# matches only an archived record is skipped by the writer, not re-added (Part 3).
 STAFF_FIND_EMAIL_SQL = """
-    SELECT staff_id FROM staff
+    SELECT staff_id, archived FROM staff
     WHERE LOWER(email) = LOWER(%s)
     ORDER BY
+        archived,
         CASE WHEN school_worked_at = %s THEN 0 ELSE 1 END,
         staff_id
     LIMIT 1
@@ -667,11 +684,11 @@ STAFF_FIND_EMAIL_SQL = """
 # Phone matching also requires the name: a school's main number is shared by many of
 # its staff, so a phone on its own would merge different people.
 STAFF_FIND_PHONE_SQL = """
-    SELECT staff_id FROM staff
+    SELECT staff_id, archived FROM staff
     WHERE school_worked_at = %s
       AND LOWER(name) = LOWER(%s)
       AND phone = %s
-    ORDER BY staff_id
+    ORDER BY archived, staff_id
     LIMIT 1
 """
 
@@ -681,7 +698,7 @@ STAFF_FIND_PHONE_SQL = """
 # The email condition keeps genuinely different people apart: if both records have an
 # email and the emails differ, they are not the same person, whatever the name.
 STAFF_FIND_NAME_SQL = """
-    SELECT staff_id FROM staff
+    SELECT staff_id, archived FROM staff
     WHERE school_worked_at = %s
       AND LOWER(BTRIM(name)) = LOWER(BTRIM(%s))
       AND (
@@ -689,7 +706,7 @@ STAFF_FIND_NAME_SQL = """
           OR NULLIF(BTRIM(email), '') IS NULL
           OR LOWER(email) = LOWER(%s)
       )
-    ORDER BY staff_id
+    ORDER BY archived, staff_id
     LIMIT 1
 """
 
@@ -703,28 +720,62 @@ STAFF_UPDATE_SQL = """
         -- Never switch an inactive contact back to active: someone deactivated them
         -- on purpose, and the scraper always sends TRUE (plan item C10).
         is_active = CASE WHEN is_active IS FALSE THEN FALSE ELSE %s END,
-        -- Never replace notes: a person may have written them. Keep them when the
-        -- scraper sends nothing, and otherwise keep both, without repeating a line
-        -- that is already there (plan item C10, no-loss rule).
-        notes = CASE
-            WHEN NULLIF(BTRIM(%s), '') IS NULL THEN notes
-            WHEN NULLIF(BTRIM(notes), '') IS NULL THEN %s
-            WHEN POSITION(%s IN notes) > 0 THEN notes
-            ELSE notes || E'\n' || %s
-        END,
+        -- notes is never written: it belongs to people. The score has its own column
+        -- (db/014); a run without a score keeps the last one.
+        scraper_score = COALESCE(%s::numeric, scraper_score),
+        scraper_score_at = CASE WHEN %s::numeric IS NULL THEN scraper_score_at ELSE %s END,
+        -- Freshness (db/011): found in this run.
+        last_scraped_at = %s,
+        missed_runs = 0,
+        missing_since = NULL,
         updated_at = %s,
         data_source = %s
     -- No longer skips verified contacts: client edits are protected per column by
     -- db/006. MUST MERGE WITH Phase 5 step 3 (the verified reset).
     WHERE staff_id = %s
       AND is_scraped IS TRUE
+      AND archived IS NOT TRUE
 """
 
+ARCHIVED_SCHOOLS_SQL = "SELECT facility_key FROM schools WHERE archived"
+
+# After a COMPLETE run only (the whole roster, no skip): records the scraper used to
+# find but didn't this time. Flagged after 3 misses in a row, never deleted; the
+# database also refuses missing_since before 3 misses (db/011).
+MISSED_SCHOOLS_SQL = """
+    UPDATE schools SET
+        missed_runs = missed_runs + 1,
+        missing_since = CASE WHEN missed_runs + 1 >= 3 THEN COALESCE(missing_since, %s)
+                             ELSE missing_since END
+    WHERE is_scraped IS TRUE
+      AND archived IS NOT TRUE
+      AND NOT (facility_key = ANY(%s))
+"""
+
+# Staff are only counted as missed at schools whose staff pages were read in this run,
+# so a school whose website is down doesn't make all its staff look missing.
+MISSED_STAFF_SQL = """
+    UPDATE staff SET
+        missed_runs = missed_runs + 1,
+        missing_since = CASE WHEN missed_runs + 1 >= 3 THEN COALESCE(missing_since, %s)
+                             ELSE missing_since END
+    WHERE is_scraped IS TRUE
+      AND archived IS NOT TRUE
+      AND school_worked_at = ANY(%s)
+      AND NOT (staff_id = ANY(%s))
+"""
+
+SCHOOL_SETTINGS_SQL = """
+    SELECT facility_key, archived, website_override, staff_page_override FROM schools
+"""
+
+# category: school_testing_date for testing dates (TESTING_DATE_TERMS above, db/007),
+# NULL for everything else (outreach). An update can set it, never clear it.
 EVENT_SQL = """
     INSERT INTO events (
         schools_involved, location, time, date, attendance,
-        is_scraped, external_id, fair_name, created_at, updated_at
-    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        is_scraped, external_id, fair_name, created_at, updated_at, category
+    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     ON CONFLICT (external_id) DO UPDATE SET
         schools_involved = COALESCE(EXCLUDED.schools_involved, events.schools_involved),
         location = COALESCE(EXCLUDED.location, events.location),
@@ -733,8 +784,10 @@ EVENT_SQL = """
         attendance = COALESCE(EXCLUDED.attendance, events.attendance),
         is_scraped = EXCLUDED.is_scraped,
         fair_name = EXCLUDED.fair_name,
-        updated_at = EXCLUDED.updated_at
+        updated_at = EXCLUDED.updated_at,
+        category = COALESCE(EXCLUDED.category, events.category)
     WHERE events.is_scraped IS TRUE
+      AND events.archived IS NOT TRUE
 """
 
 

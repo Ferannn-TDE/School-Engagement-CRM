@@ -791,11 +791,24 @@ class SchoolScraper:
 
         return list(dict.fromkeys(output))
 
+    def override_contacts(self, school, resolution):
+        """Contacts from the client's own staff-page link (db/013), read first."""
+        url = canonical_url(school.staff_page_override, allow_blocked=True) if school.staff_page_override else ""
+        if not url:
+            return [], []
+        page = self.http.get(url)
+        if not page.ok:
+            return [], []
+        return self.contacts.extract(school, resolution, page, inherited_school=True), [page.url]
+
     def scrape(self, school, resolution):
         authority = self.contacts.authority(school, resolution)
 
         if not resolution.resolved:
+            override_contacts, override_pages = self.override_contacts(school, resolution)
             district_contacts, contact_pages = self.district_contacts.scrape(school, resolution)
+            district_contacts = override_contacts + district_contacts
+            contact_pages = override_pages + contact_pages
             district_contacts.extend(authority)
             return SchoolResult(
                 school=school,
@@ -823,6 +836,11 @@ class SchoolScraper:
         finalsite = self.finalsite_search(homepage, school)
         if finalsite:
             contact_candidates.append((14.0, finalsite, True))
+
+        # The client's own staff-page link (db/013) is read before anything found here.
+        override = canonical_url(school.staff_page_override, allow_blocked=True) if school.staff_page_override else ""
+        if override:
+            contact_candidates.append((1000.0, override, True))
 
         contacts = self.contacts.extract(school, resolution, homepage, inherited_school=True)
         events = self.events.extract(school, homepage, inherited_school=True)

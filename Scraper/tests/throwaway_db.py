@@ -23,7 +23,8 @@ import unittest
 
 TEST_SCHEMA = "scraper_test"
 
-# The live tables' columns (as of db/006), limited to what the scraper touches.
+# The live tables' columns (as of db/020), limited to what the scraper touches:
+# archive (db/009), freshness (db/011), link overrides (db/013) and score (db/014).
 SCHEMA_SQL = f"""
 DROP SCHEMA IF EXISTS {TEST_SCHEMA} CASCADE;
 CREATE SCHEMA {TEST_SCHEMA};
@@ -43,7 +44,14 @@ CREATE TABLE schools (
     grade_range text, data_source text, is_verified boolean,
     last_verified_at timestamptz, priority_tier text, state_code text,
     manual_fields text[] NOT NULL DEFAULT '{{}}',
-    pending_scraped jsonb NOT NULL DEFAULT '{{}}'
+    pending_scraped jsonb NOT NULL DEFAULT '{{}}',
+    archived boolean NOT NULL DEFAULT false, archived_at timestamptz, archived_by text,
+    last_scraped_at timestamptz,
+    source_status text CHECK (source_status IS NULL OR source_status IN ('working', 'broken', 'not_found')),
+    source_checked_at timestamptz,
+    missed_runs integer NOT NULL DEFAULT 0 CHECK (missed_runs >= 0),
+    missing_since timestamptz CHECK (missing_since IS NULL OR missed_runs >= 3),
+    website_override text, staff_page_override text
 );
 
 CREATE TABLE staff (
@@ -53,16 +61,26 @@ CREATE TABLE staff (
     created_at timestamptz, updated_at timestamptz, data_source text,
     is_verified boolean, last_verified_at timestamptz,
     manual_fields text[] NOT NULL DEFAULT '{{}}',
-    pending_scraped jsonb NOT NULL DEFAULT '{{}}'
+    pending_scraped jsonb NOT NULL DEFAULT '{{}}',
+    archived boolean NOT NULL DEFAULT false, archived_at timestamptz, archived_by text,
+    last_scraped_at timestamptz,
+    missed_runs integer NOT NULL DEFAULT 0 CHECK (missed_runs >= 0),
+    missing_since timestamptz CHECK (missing_since IS NULL OR missed_runs >= 3),
+    scraper_score numeric CHECK (scraper_score IS NULL OR scraper_score >= 0),
+    scraper_score_at timestamptz
 );
 
-CREATE TABLE contacts (school_id text, staff_id integer);
+CREATE TABLE contacts (
+    school_id text, staff_id integer,
+    archived boolean NOT NULL DEFAULT false, archived_at timestamptz, archived_by text
+);
 
 CREATE TABLE events (
     event_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     schools_involved text, location text, time time, date date, attendance integer,
     is_scraped boolean, external_id text UNIQUE, fair_name text,
-    created_at timestamptz, updated_at timestamptz
+    created_at timestamptz, updated_at timestamptz, category text,
+    archived boolean NOT NULL DEFAULT false, archived_at timestamptz, archived_by text
 );
 """
 

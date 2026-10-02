@@ -6,6 +6,7 @@ from helpers import (
     DISTRICT_SQL,
     DISTRICT_UPDATE_SQL,
     EVENT_SQL,
+    TESTING_DATE_CATEGORY,
     MISSED_SCHOOLS_SQL,
     MISSED_STAFF_SQL,
     SCHOOL_SETTINGS_SQL,
@@ -223,6 +224,9 @@ class DatabaseRows:
                     normalize_event_title(event.title),
                     self.now,
                     self.now,
+                    # Testing dates get their category (db/007); everything else is
+                    # outreach and has none.
+                    TESTING_DATE_CATEGORY if event.category == TESTING_DATE_CATEGORY else None,
                 )
 
         for event in self.external_events:
@@ -248,6 +252,7 @@ class DatabaseRows:
                 normalize_event_title(event.title),
                 self.now,
                 self.now,
+                None,  # IACAC fairs are outreach
             )
         return [rows[key] for key in sorted(rows)]
 

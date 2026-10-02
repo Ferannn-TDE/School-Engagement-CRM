@@ -769,11 +769,13 @@ SCHOOL_SETTINGS_SQL = """
     SELECT facility_key, archived, website_override, staff_page_override FROM schools
 """
 
+# category: school_testing_date for testing dates (TESTING_DATE_TERMS above, db/007),
+# NULL for everything else (outreach). An update can set it, never clear it.
 EVENT_SQL = """
     INSERT INTO events (
         schools_involved, location, time, date, attendance,
-        is_scraped, external_id, fair_name, created_at, updated_at
-    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        is_scraped, external_id, fair_name, created_at, updated_at, category
+    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     ON CONFLICT (external_id) DO UPDATE SET
         schools_involved = COALESCE(EXCLUDED.schools_involved, events.schools_involved),
         location = COALESCE(EXCLUDED.location, events.location),
@@ -782,7 +784,8 @@ EVENT_SQL = """
         attendance = COALESCE(EXCLUDED.attendance, events.attendance),
         is_scraped = EXCLUDED.is_scraped,
         fair_name = EXCLUDED.fair_name,
-        updated_at = EXCLUDED.updated_at
+        updated_at = EXCLUDED.updated_at,
+        category = COALESCE(EXCLUDED.category, events.category)
     WHERE events.is_scraped IS TRUE
       AND events.archived IS NOT TRUE
 """

@@ -98,7 +98,7 @@ export function WebsiteUpdates({ school, contacts }: { school: School; contacts:
         </h3>
       </div>
       <p className="text-xs text-neutral-500 mb-3">
-        You edited these, so the scraper left your values in place. It has since found something different.
+        These details differ from what the website shows. Keep the current value or use the new one.
       </p>
       <ul className="divide-y divide-neutral-200">
         {items.map((item) => (

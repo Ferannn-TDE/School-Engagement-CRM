@@ -49,15 +49,15 @@ class FreshnessStampTests(ThrowawayDatabaseTest):
         self.write([found(ALPHA)])
         self.assertEqual(self.school()[5], "high")
 
-    def test_a_school_missing_from_three_complete_runs_is_flagged_never_deleted(self):
+    def test_a_missing_school_is_not_flagged_without_proven_database_coverage(self):
         self.write([found(ALPHA), found(BETA)])
         for run in (1, 2):
             self.write([found(ALPHA)])
-            self.assertEqual(self.school("IL:2")[3:5], (run, None))
+            self.assertEqual(self.school("IL:2")[3:5], (0, None))
         self.write([found(ALPHA)])
         missed, missing = self.school("IL:2")[3:5]
-        self.assertEqual(missed, 3)
-        self.assertIsNotNone(missing)
+        self.assertEqual(missed, 0)
+        self.assertIsNone(missing)
         self.assertEqual(self.query("SELECT count(*) FROM schools"), [(2,)])
 
     def test_an_incomplete_run_counts_nobody_as_missed(self):

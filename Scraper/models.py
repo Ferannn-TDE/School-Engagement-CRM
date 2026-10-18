@@ -39,6 +39,7 @@ class School:
     # When set, they are used first and the resolver doesn't guess (plan item C9).
     website_override: str = ""
     staff_page_override: str = ""
+    school_type: str = "Public high school"
 
     @property
     def seeds(self):
@@ -47,10 +48,14 @@ class School:
         if self.website_override:
             url = canonical_url(self.website_override)
             return [url] if url else []
-        values = [self.website, self.district_website, *self.alternate_seeds]
+        values = [self.website, self.district_website]
         urls = []
         for value in values:
             url = canonical_url(value)
+            if url and url not in urls:
+                urls.append(url)
+        for value in self.alternate_seeds:
+            url = canonical_url(value, allow_blocked=True)
             if url and url not in urls:
                 urls.append(url)
         return urls

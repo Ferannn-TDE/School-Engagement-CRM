@@ -27,6 +27,7 @@ from models import Resolution
 from resolver import HttpClient, SchoolResolver
 from scraper import SchoolScraper
 from sources import StateRoster
+from source_resolver import StateSourceResolver
 
 
 def without_archived(schools, settings):
@@ -303,8 +304,10 @@ class SchoolReach:
                 results,
                 self.database_mode,
                 external_events=external_events,
-                complete=self.skip == 0,
+                complete=self.skip == 0 and not isinstance(self.roster, StateSourceResolver),
             )
+            write_json(self.output / "database_integrity_review.json",
+                       getattr(self.database_writer, "integrity_review", []))
             write_json(checkpoint_path, {})
         return results
 
@@ -315,7 +318,7 @@ class SchoolOutreach(SchoolReach):
 
 def main():
     client = HttpClient()
-    roster = StateRoster()
+    roster = StateSourceResolver()
     resolver = SchoolResolver(client, use_browser=USE_BROWSER)
     scraper = SchoolScraper(client)
     iacac_events = IacacEventSource(client)

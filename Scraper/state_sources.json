@@ -1,0 +1,2511 @@
+{
+  "instructions": "Set a state's enabled value to true or use SCHOOL_STATES=IL,MO,IA for a temporary run. Sources are tried in priority order inside the same group; different groups are combined.",
+  "seed_lookup": {
+    "url": "https://search-api.nfhsnetwork.com/v3/search/schools",
+    "kind": "json api",
+    "params": {
+      "sort": "school_name asc",
+      "size": 500
+    },
+    "records_path": "items",
+    "cursor_path": "cursor",
+    "cursor_parameter": "cursor",
+    "total_path": "total",
+    "partial_pages": true,
+    "state_parameter": "state",
+    "columns": {
+      "name": "name",
+      "state_id": "key",
+      "address": "address",
+      "city": "city",
+      "state": "state_code",
+      "zipcode": "postal_code",
+      "phone": "phone_number",
+      "website": "website",
+      "school_type": "school_type"
+    },
+    "profile_url": "https://www.nfhsnetwork.com/schools/{slug}",
+    "query_url": "https://search-api.nfhsnetwork.com/v3/search/schools?state={state}&search_term={name}&size=18&start=0"
+  },
+  "public_seed_source": {
+    "template": "seed_lookup",
+    "enabled": true,
+    "group": "public",
+    "sector": "public",
+    "high_school_only": true,
+    "include_rows": [
+      {
+        "column": "school_level",
+        "values": [
+          "High School"
+        ]
+      }
+    ],
+    "exclude_rows": [
+      {
+        "column": "school_type",
+        "values": [
+          "Private"
+        ]
+      },
+      {
+        "column": "name",
+        "regex": "\\b(?:catholic|christian|christ|parochial|adventist|lutheran|baptist|episcopal|jesuit|yeshiva|torah|islamic|church|faith)\\b"
+      }
+    ],
+    "coverage_note": "NFHS member directory used when a state roster is unavailable; every row carries a school profile seed."
+  },
+  "private_seed_source": {
+    "template": "seed_lookup",
+    "enabled": true,
+    "group": "private",
+    "sector": "private",
+    "high_school_only": true,
+    "include_rows": [
+      {
+        "column": "school_level",
+        "values": [
+          "High School"
+        ]
+      }
+    ],
+    "derive_private_from_public": true,
+    "coverage_note": "NFHS member directory used where the state does not publish a machine-readable private roster; every row carries a school profile seed."
+  },
+  "states": {
+    "AL": {
+      "name": "Alabama",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "al_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://eddir.alsde.edu/siteinfo/",
+          "kind": "auto",
+          "link_terms": [
+            "Alabama",
+            "Education",
+            "Directory",
+            "Site",
+            "Information"
+          ]
+        },
+        {
+          "id": "al_private_2",
+          "enabled": true,
+          "group": "private",
+          "sector": "private",
+          "url": "https://www.alabamaachieves.org/al-ppsl/",
+          "kind": "auto",
+          "link_terms": [
+            "Alabama",
+            "Public",
+            "Private",
+            "School",
+            "Listing"
+          ]
+        },
+        {
+          "id": "al_public_seed_directory",
+          "template": "public_seed_source"
+        },
+        {
+          "id": "al_private_seed_directory",
+          "template": "private_seed_source"
+        }
+      ]
+    },
+    "AK": {
+      "name": "Alaska",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "ak_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://education.alaska.gov/Stats/enrollment/2-%20Enrollment%20by%20School%20by%20Grade%202025-26.xlsx",
+          "kind": "auto",
+          "minimum_rows": 150,
+          "grade_12_column": "12",
+          "include_rows": [
+            {
+              "column": "Type",
+              "values": [
+                "School"
+              ]
+            }
+          ],
+          "columns": {
+            "name": "District/School",
+            "state_id": "id",
+            "enrollment": "Total PK-12"
+          }
+        },
+        {
+          "id": "ak_private_seed_directory",
+          "template": "private_seed_source"
+        }
+      ]
+    },
+    "AZ": {
+      "name": "Arizona",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "az_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://azreportcards.azed.gov/api/Entity/GetEntityList?fiscalYear=2026",
+          "kind": "auto",
+          "minimum_rows": 800,
+          "include_rows": [
+            {
+              "column": "entityType",
+              "values": [
+                "School"
+              ]
+            }
+          ],
+          "columns": {
+            "name": "nameOfInstitution",
+            "state_id": "educationOrganizationId",
+            "district_code": "districtId",
+            "district_name": "districtName",
+            "grades": "gradesOffered",
+            "school_type": "schoolTypes"
+          }
+        },
+        {
+          "id": "az_private_seed_directory",
+          "template": "private_seed_source"
+        }
+      ]
+    },
+    "AR": {
+      "name": "Arkansas",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "ar_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://adedata.arkansas.gov/statewide/reportlist/State/SchoolList.aspx",
+          "kind": "form",
+          "posts": [
+            {
+              "event_target": "ctl00$ctl00$MainContent$lnkCsv"
+            }
+          ],
+          "columns": {
+            "name": "Location Description",
+            "state_id": "Location ID",
+            "address": "Address",
+            "city": "City",
+            "state": "State",
+            "zipcode": "Zip"
+          }
+        },
+        {
+          "id": "ar_private_2",
+          "enabled": true,
+          "group": "private",
+          "sector": "private",
+          "url": "https://adedata.arkansas.gov/statewide/reportlist/Schools/PrivateSchools.aspx",
+          "kind": "form",
+          "posts": [
+            {
+              "event_target": "ctl00$ctl00$MainContent$lnkCsv"
+            }
+          ],
+          "columns": {
+            "name": "School Name",
+            "district_name": "District Description",
+            "district_code": "District LEA",
+            "address": "Mail Address",
+            "city": "Mail City",
+            "state": "Mail State",
+            "zipcode": "Mail Zip",
+            "low_grade": "Low Grade Level",
+            "high_grade": "High Grade Level",
+            "enrollment": "Students Enrolled"
+          },
+          "join_columns": {
+            "administrator": [
+              "Administrator Prefix",
+              "Administrator First Name",
+              "Administrator Last Name"
+            ]
+          }
+        }
+      ]
+    },
+    "CA": {
+      "name": "California",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "ca_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://www.cde.ca.gov/SchoolDirectory/report?rid=dl1&tp=xlsx&ict=Y",
+          "kind": "xlsx",
+          "link_terms": [
+            "Public",
+            "Schools",
+            "Districts",
+            "Data",
+            "Files"
+          ]
+        },
+        {
+          "id": "ca_private_2",
+          "enabled": true,
+          "group": "private",
+          "sector": "private",
+          "url": "https://www.cde.ca.gov/ds/si/ps/documents/privateschooldata2526.xlsx",
+          "kind": "xlsx",
+          "link_terms": [
+            "Private",
+            "School",
+            "Data"
+          ],
+          "grade_12_column": "Grade 12 Enroll",
+          "columns": {
+            "state_id": "CDS Code",
+            "name": "School Name",
+            "district_name": "Public School District"
+          },
+          "minimum_rows": 200
+        }
+      ]
+    },
+    "CO": {
+      "name": "Colorado",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "co_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://cedar.cde.state.co.us/edulibdir/School%20Addresses-en.xlsx",
+          "kind": "auto",
+          "id_columns": [
+            "District Code",
+            "School Code"
+          ]
+        },
+        {
+          "id": "co_private_2",
+          "enabled": true,
+          "group": "private",
+          "sector": "private",
+          "url": "https://cedar.cde.state.co.us/edulibdir/Non-Public%20School%20Addresses-en.xlsx",
+          "kind": "auto",
+          "id_columns": [
+            "District Code",
+            "School Code"
+          ]
+        }
+      ]
+    },
+    "CT": {
+      "name": "Connecticut",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "ct_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://data.ct.gov/resource/9k2y-kqxn.json?$limit=50000",
+          "kind": "auto",
+          "minimum_rows": 150,
+          "grade_12_column": "grade_12",
+          "include_rows": [
+            {
+              "column": "organization_type",
+              "values": [
+                "Public Schools",
+                "Public Charter Schools",
+                "Regional Schools",
+                "CT Technical Education and Career Schools",
+                "Endowed and Incorporated Academies Schools",
+                "College Affiliated Schools",
+                "Regional Education Service Center Schools",
+                "State Agency Facilities"
+              ]
+            }
+          ],
+          "columns": {
+            "name": "name",
+            "state_id": "organization_code",
+            "district_name": "district_name",
+            "address": "address",
+            "city": "town",
+            "zipcode": "zipcode",
+            "phone": "phone"
+          }
+        },
+        {
+          "id": "ct_private_2",
+          "enabled": false,
+          "group": "private",
+          "sector": "private",
+          "url": "https://public-edsight.ct.gov/",
+          "kind": "auto",
+          "link_terms": [
+            "EdSight",
+            "Nonpublic",
+            "Enrollment",
+            "Staffing"
+          ]
+        },
+        {
+          "id": "ct_private_seed_directory",
+          "template": "private_seed_source"
+        }
+      ]
+    },
+    "DE": {
+      "name": "Delaware",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "de_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://data.delaware.gov/resource/p3ez-si4g.json?$limit=50000",
+          "kind": "auto",
+          "minimum_rows": 40,
+          "columns": {
+            "name": "organization",
+            "state_id": "school_code",
+            "district_code": "district_code",
+            "district_name": "district",
+            "county": "county",
+            "address": "street1",
+            "city": "city",
+            "zipcode": "zip",
+            "school_type": "school_type",
+            "low_grade": "lowest_grade_served",
+            "high_grade": "highest_grade_served"
+          }
+        },
+        {
+          "id": "de_private_seed_directory",
+          "template": "private_seed_source"
+        }
+      ]
+    },
+    "FL": {
+      "name": "Florida",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "fl_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://eds.fldoe.org/EDS/MasterSchoolID/",
+          "kind": "form",
+          "posts": [
+            {
+              "url": "Downloads.cfm",
+              "hidden": false
+            },
+            {
+              "url": "Downloads/Active_schools.cfm",
+              "hidden": false
+            }
+          ],
+          "columns": {
+            "name": "SCHOOL_NAME_LONG",
+            "state_id": "SCHOOL",
+            "district_name": "DISTRICT_NAME",
+            "district_code": "DISTRICT",
+            "address": "PHYSICAL_ADDRESS",
+            "city": "PHYSICAL_CITY",
+            "state": "PHYSICAL_STATE",
+            "zipcode": "PHYSICAL_ZIP",
+            "phone": "PHONE_NUMBER",
+            "grades": "GRADE_CODE",
+            "website": "WEB_ADDRESS"
+          },
+          "join_columns": {
+            "administrator": [
+              "PRINCIPAL_FIRST",
+              "PRINCIPAL_LAST"
+            ]
+          }
+        },
+        {
+          "id": "fl_private_2",
+          "enabled": true,
+          "group": "private",
+          "sector": "private",
+          "url": "https://web09.fldoe.org/PrivateSchoolDirectory/DownloadSchools",
+          "kind": "form",
+          "posts": [
+            {
+              "url": "/PrivateSchoolDirectory/DownloadSchools?handler=DownloadAll"
+            }
+          ],
+          "id_columns": [
+            "District",
+            "School Code"
+          ],
+          "columns": {
+            "district_name": "District",
+            "address": "Address 1",
+            "zipcode": "Zip",
+            "grades": "Grade Levels",
+            "administrator": "Director",
+            "directory_email": "Director Email"
+          }
+        }
+      ]
+    },
+    "GA": {
+      "name": "Georgia",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "ga_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://download.gosa.ga.gov/2025/Enrollment_by_Grade_2024-25_2026-02-19_00_31_56.csv",
+          "kind": "auto",
+          "header_row": 0,
+          "minimum_rows": 350,
+          "id_columns": [
+            "SCHOOL_DSTRCT_CD",
+            "INSTN_NUMBER"
+          ],
+          "columns": {
+            "name": "INSTN_NAME",
+            "state_id": "INSTN_NUMBER",
+            "district_name": "SCHOOL_DSTRCT_NM",
+            "district_code": "SCHOOL_DSTRCT_CD",
+            "grades": "GRADES_SERVED_DESC",
+            "enrollment": "ENROLLMENT_COUNT"
+          },
+          "include_rows": [
+            {
+              "column": "DETAIL_LVL_DESC",
+              "values": [
+                "School"
+              ]
+            },
+            {
+              "column": "ENROLLMENT_PERIOD",
+              "values": [
+                "Fall"
+              ]
+            },
+            {
+              "column": "GRADE_LEVEL",
+              "values": [
+                "12th"
+              ]
+            }
+          ],
+          "high_school_only": true
+        },
+        {
+          "id": "ga_private_2",
+          "enabled": false,
+          "group": "private",
+          "sector": "private",
+          "url": "https://app3.doe.k12.ga.us/ows-bin/owa/psc_pack_mainmenu.pvsch_list_public?p_sort=1",
+          "kind": "auto",
+          "coverage_note": "The official registry does not publish grade spans, so it cannot reliably identify high schools."
+        },
+        {
+          "id": "ga_private_seed_directory",
+          "template": "private_seed_source"
+        }
+      ]
+    },
+    "HI": {
+      "name": "Hawaii",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "hi_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://geodata.hawaii.gov/arcgis/rest/services/Infrastructure/MapServer/7",
+          "kind": "arcgis",
+          "minimum_rows": 30,
+          "columns": {
+            "name": "sch_name",
+            "state_id": "sch_code",
+            "administrator": "principal",
+            "address": "address",
+            "city": "city",
+            "zipcode": "zip",
+            "phone": "phone",
+            "website": "website",
+            "district_name": "district",
+            "low_grade": "grade_from",
+            "high_grade": "grade_to",
+            "school_type": "sch_type"
+          }
+        },
+        {
+          "id": "hi_private_2",
+          "enabled": true,
+          "group": "private",
+          "sector": "private",
+          "url": "https://geodata.hawaii.gov/arcgis/rest/services/Infrastructure/MapServer/8",
+          "kind": "arcgis",
+          "minimum_rows": 35,
+          "columns": {
+            "name": "school",
+            "state_id": "objectid",
+            "address": "address",
+            "city": "city",
+            "state": "state",
+            "zipcode": "zipcode",
+            "website": "website",
+            "grades": "grades",
+            "enrollment": "enrollment21"
+          },
+          "coverage_note": "The official Hawaii GIS layer is sourced from HAIS and covers its member private schools; it was last updated in 2021."
+        }
+      ]
+    },
+    "ID": {
+      "name": "Idaho",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "id_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://services1.arcgis.com/CNPdEkvnGl65jCX8/arcgis/rest/services/Idaho_Public_Schools/FeatureServer/0",
+          "kind": "arcgis",
+          "minimum_rows": 175,
+          "high_school_only": true,
+          "columns": {
+            "name": "School_Name",
+            "state_id": "OBJECTID",
+            "address": "Address",
+            "school_type": "School_type",
+            "grades": "School_level"
+          },
+          "include_rows": [
+            {
+              "column": "School_level",
+              "values": [
+                "High"
+              ]
+            }
+          ],
+          "split_address": true
+        },
+        {
+          "id": "id_private_seed_directory",
+          "template": "private_seed_source"
+        }
+      ]
+    },
+    "IL": {
+      "name": "Illinois",
+      "enabled": true,
+      "sources": [
+        {
+          "id": "il_isbe_directory",
+          "enabled": true,
+          "group": "all",
+          "sector": "mixed",
+          "url": "https://www.isbe.net/_layouts/Download.aspx?SourceUrl=%2FDocuments%2Fdir_ed_entities.xls",
+          "kind": "auto",
+          "sheets": [
+            "public",
+            "non pub"
+          ],
+          "id_columns": [
+            "Region-2 County-3 District-4",
+            "Type",
+            "School"
+          ],
+          "minimum_rows": 900,
+          "columns": {
+            "name": "FacilityName",
+            "grades": "GradeServed",
+            "district_code": "Region-2 County-3 District-4"
+          },
+          "exclude_rows": [
+            {
+              "column": "RecType",
+              "values": [
+                "Dist"
+              ]
+            },
+            {
+              "column": "School",
+              "values": [
+                "0000"
+              ],
+              "unless_sheet_contains": [
+                "non pub"
+              ]
+            }
+          ],
+          "lookup": {
+            "same_source": true,
+            "source_key": "Region-2 County-3 District-4",
+            "lookup_key": "Region-2 County-3 District-4",
+            "match": {
+              "School": "0000"
+            },
+            "columns": {
+              "district_name": "FacilityName",
+              "district_website": "Website"
+            }
+          },
+          "id_separator": "",
+          "id_widths": [
+            9,
+            2,
+            4
+          ]
+        }
+      ]
+    },
+    "IN": {
+      "name": "Indiana",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "in_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://secure.in.gov/doe/it/data-center-and-reports/",
+          "kind": "auto",
+          "link_terms": [
+            "Indiana",
+            "School",
+            "Directory"
+          ]
+        },
+        {
+          "id": "in_private_2",
+          "enabled": true,
+          "group": "private",
+          "sector": "private",
+          "url": "https://secure.in.gov/doe/it/data-center-and-reports/",
+          "kind": "auto",
+          "link_terms": [
+            "Accredited",
+            "Public",
+            "School",
+            "Enrollment"
+          ]
+        }
+      ]
+    },
+    "IA": {
+      "name": "Iowa",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "ia_public_buildings",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://educate.iowa.gov/media/13350/download?inline=",
+          "kind": "auto",
+          "minimum_rows": 200,
+          "id_columns": [
+            "District Code",
+            "School Code"
+          ]
+        },
+        {
+          "id": "ia_private_buildings",
+          "enabled": true,
+          "group": "private",
+          "sector": "private",
+          "url": "https://educate.iowa.gov/media/13349/download?inline=",
+          "kind": "auto",
+          "minimum_rows": 40,
+          "id_columns": [
+            "District Code",
+            "School Code"
+          ]
+        }
+      ]
+    },
+    "KS": {
+      "name": "Kansas",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "ks_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://services1.arcgis.com/q2CglofYX6ACNEeu/arcgis/rest/services/KS_Schools/FeatureServer/0",
+          "kind": "arcgis",
+          "minimum_rows": 300,
+          "coverage_note": "The official Kansas GIS roster has no grade-span field; high-school status is inferred from school names.",
+          "id_columns": [
+            "ORG",
+            "BldID"
+          ],
+          "columns": {
+            "name": "School",
+            "state_id": "BldID",
+            "district_code": "ORG",
+            "address": "Address",
+            "city": "City",
+            "state": "State",
+            "zipcode": "Zip"
+          }
+        },
+        {
+          "id": "ks_private_2",
+          "enabled": false,
+          "group": "private",
+          "sector": "private",
+          "url": "https://uapps.ksde.gov/directory_rpts/default.aspx",
+          "kind": "auto",
+          "coverage_note": "The official directory currently rejects automated export requests and no equivalent state bulk roster is published."
+        },
+        {
+          "id": "ks_private_seed_directory",
+          "template": "private_seed_source"
+        }
+      ]
+    },
+    "KY": {
+      "name": "Kentucky",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "ky_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://services3.arcgis.com/ghsX9CKghMvyYjBU/arcgis/rest/services/Ky_Public_Schools_WM_gdb/FeatureServer/0",
+          "kind": "arcgis",
+          "minimum_rows": 400,
+          "high_school_only": true,
+          "columns": {
+            "name": "SCHNAME",
+            "state_id": "KDEID",
+            "district_name": "KDEDIST_NM",
+            "district_code": "KDEDIST_ID",
+            "address": "STREETADDRESS",
+            "city": "CITY",
+            "state": "STATE",
+            "zipcode": "ZIP",
+            "county": "COUNTY",
+            "school_type": "CLASSIFICA",
+            "low_grade": "LOW_GRADE",
+            "high_grade": "HIGH_GRADE"
+          },
+          "include_rows": [
+            {
+              "column": "CLASSIFICA",
+              "values": [
+                "Four-year High School",
+                "Junior-Senior combined or Undivided HS",
+                "Elementary/High School Combination",
+                "Senior High School"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ky_private_2",
+          "enabled": false,
+          "group": "private",
+          "sector": "private",
+          "url": "https://education.ky.gov/",
+          "kind": "auto",
+          "coverage_note": "No current official machine-readable private-school roster with grade spans is published at this route."
+        },
+        {
+          "id": "ky_private_seed_directory",
+          "template": "private_seed_source"
+        }
+      ]
+    },
+    "LA": {
+      "name": "Louisiana",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "la_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://doe.louisiana.gov/docs/default-source/fiscal-data/feb-2026-multi-stats-(total-by-site-and-school-system)-web.xlsx?sfvrsn=a43aa9ee_5",
+          "kind": "auto",
+          "sheets": [
+            "Total by Site"
+          ],
+          "header_rows": [
+            3,
+            4
+          ],
+          "grade_12_column": "Grade 12",
+          "columns": {
+            "name": "Site Name",
+            "state_id": "SIS Submit Site Code",
+            "district_name": "School System Name",
+            "district_code": "School System",
+            "enrollment": "Total Enrollment",
+            "school_type": "School Type"
+          }
+        },
+        {
+          "id": "la_private_2",
+          "enabled": true,
+          "group": "private",
+          "sector": "private",
+          "url": "https://doe.louisiana.gov/docs/default-source/nonpublic-schools/nonpublic-enrollment-by-grade-and-race-2005-2023_4_2_2024.xlsx?sfvrsn=fea96e18_6",
+          "kind": "auto",
+          "sheets": [
+            "2025"
+          ],
+          "header_row": 4,
+          "grade_12_column": "12",
+          "columns": {
+            "name": "Site Name",
+            "state_id": "Site Code",
+            "district_name": "District",
+            "enrollment": "Total Enrolled",
+            "school_type": "Classification"
+          }
+        }
+      ]
+    },
+    "ME": {
+      "name": "Maine",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "me_school_directory",
+          "enabled": true,
+          "group": "all",
+          "sector": "mixed",
+          "url": "https://neo.maine.gov/DOE/neo/Supersearch/ContactSearch/SearchForMaineSchools",
+          "kind": "form",
+          "posts": [
+            {
+              "values": {
+                "action:MaineSchoolsExportToExcel": "Export to Excel"
+              }
+            }
+          ],
+          "columns": {
+            "district_name": "SAU",
+            "district_code": "SAU ID",
+            "city": "Location",
+            "address": "Mailing Street",
+            "zipcode": "Mailing Zip",
+            "low_grade": "Grade Low",
+            "high_grade": "Grade High",
+            "school_type": "School Type",
+            "administrator": "Contact",
+            "directory_email": "Contact Email"
+          }
+        }
+      ]
+    },
+    "MD": {
+      "name": "Maryland",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "md_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://reportcard.msde.maryland.gov/SchoolsList/Index?l={value}",
+          "kind": "html_select",
+          "url_values": [
+            "01",
+            "02",
+            "30",
+            "03",
+            "04",
+            "05",
+            "06",
+            "07",
+            "08",
+            "09",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20",
+            "32",
+            "21",
+            "22",
+            "23"
+          ],
+          "row_selector": "li.list-group-item a[href*='/ReportCardSchool/1/H/']",
+          "high_school_only": true,
+          "minimum_rows": 150,
+          "fields": {
+            "School Name": {
+              "regex": "^(.*?)\\s*\\("
+            },
+            "School ID": {
+              "attribute": "href"
+            },
+            "Profile URL": {
+              "attribute": "href",
+              "resolve_url": true
+            }
+          }
+        },
+        {
+          "id": "md_private_pay_2",
+          "enabled": true,
+          "group": "private_pay",
+          "sector": "private",
+          "url": "https://oitinfo.msde.maryland.gov/NSAB/NSABSchoolList/TotalPrivateSchoolList",
+          "kind": "auto",
+          "minimum_rows": 20,
+          "columns": {
+            "state_id": "Advanced Link Number",
+            "name": "School Name and Classification",
+            "grades": "School Name and Classification",
+            "county": "County",
+            "address": "Address",
+            "phone": "Phone Number"
+          },
+          "extract": {
+            "name": "^(.*?)(?=\\s+(?:Kindergarten|Grades?\\s|Elementary School|Secondary School|Type I|Nongraded|Preschool|Nursery))"
+          },
+          "split_address": true
+        },
+        {
+          "id": "md_private_funded_3",
+          "enabled": true,
+          "group": "private_funded",
+          "sector": "private",
+          "url": "https://oitinfo.msde.maryland.gov/NSAB/NSABSchoolList/TotalPubliclyFundedList",
+          "kind": "auto",
+          "minimum_rows": 10,
+          "columns": {
+            "state_id": "Advanced Link Number",
+            "name": "School Name and Classification",
+            "grades": "School Name and Classification",
+            "county": "County",
+            "address": "Address",
+            "phone": "Phone Number"
+          },
+          "extract": {
+            "name": "^(.*?)(?=\\s+(?:Kindergarten|Grades?\\s|Elementary School|Secondary School|Type I|Nongraded|Preschool|Nursery))"
+          },
+          "split_address": true
+        }
+      ]
+    },
+    "MA": {
+      "name": "Massachusetts",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "ma_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://profiles.doe.mass.edu/search/search_export.aspx?orgCode=&orgType=6,13&runOrgSearch=Y&searchType=0&leftNavId=11238&showEmail=N",
+          "kind": "auto",
+          "columns": {
+            "name": "Org Name",
+            "state_id": "Org Code",
+            "school_type": "Org Type",
+            "address": "Address 1",
+            "city": "Town",
+            "state": "State",
+            "zipcode": "Zip",
+            "phone": "Phone",
+            "grades": "Grade",
+            "administrator": "Contact Name",
+            "administrator_title": "Function"
+          }
+        },
+        {
+          "id": "ma_private_2",
+          "enabled": true,
+          "group": "private",
+          "sector": "private",
+          "url": "https://profiles.doe.mass.edu/statereport/nonpublicschoolreport.aspx",
+          "kind": "auto",
+          "minimum_rows": 150,
+          "grade_12_column": "12",
+          "grade_columns": [
+            "PK",
+            "K",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13"
+          ],
+          "columns": {
+            "name": "School Name",
+            "city": "Location",
+            "enrollment": "TOTAL"
+          }
+        }
+      ]
+    },
+    "MI": {
+      "name": "Michigan",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "mi_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://cepi.state.mi.us/eem/reports.aspx",
+          "kind": "form",
+          "posts": [
+            {
+              "event_target": "ctl00$cphMain$lbEEMDataExcel",
+              "for_each_option": "ctl00$cphMain$ddlISD"
+            }
+          ],
+          "columns": {
+            "name": "EntityOfficialName",
+            "state_id": "OriginalEntityCode",
+            "district_name": "ParentOfficialName",
+            "district_code": "ParentEntityCode",
+            "address": "PhysicalStreet",
+            "city": "PhysicalCity",
+            "state": "PhysicalState",
+            "zipcode": "PhysicalZip",
+            "phone": "LeadAdministratorPhone",
+            "grades": "ActualGradeList",
+            "school_type": "EntityTypeName",
+            "administrator": "LeadAdministratorName",
+            "administrator_title": "LeadAdministratorTitle",
+            "directory_email": "LeadAdministratorEMail"
+          },
+          "include_rows": [
+            {
+              "column": "EntityTypeName",
+              "values": [
+                "LEA School",
+                "PSA School"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mi_private_2",
+          "enabled": true,
+          "group": "private",
+          "sector": "private",
+          "url": "https://www.michigan.gov/cepi/nonpub",
+          "kind": "auto",
+          "link_terms": [
+            "Nonpublic",
+            "Facilities"
+          ]
+        },
+        {
+          "id": "mi_private_seed_directory",
+          "template": "private_seed_source"
+        }
+      ]
+    },
+    "MN": {
+      "name": "Minnesota",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "mn_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://pub.education.mn.gov/MdeOrgView/search/tagged/Grade-12,MDEORG_PUBLIC_SCHOOL",
+          "kind": "auto",
+          "minimum_rows": 500,
+          "high_school_only": true,
+          "columns": {
+            "state_id": "Number",
+            "name": "Name",
+            "directory_email": "Email",
+            "phone": "Phone"
+          }
+        },
+        {
+          "id": "mn_private_2",
+          "enabled": true,
+          "group": "private",
+          "sector": "private",
+          "url": "https://pub.education.mn.gov/MdeOrgView/search/tagged/NonPublicSchool,MDE_ACTIVE,Grade-12",
+          "kind": "auto",
+          "minimum_rows": 100,
+          "high_school_only": true,
+          "columns": {
+            "state_id": "Number",
+            "name": "Name",
+            "directory_email": "Email",
+            "phone": "Phone"
+          }
+        }
+      ]
+    },
+    "MS": {
+      "name": "Mississippi",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "ms_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://mdek12.org/",
+          "kind": "auto",
+          "link_terms": [
+            "Mississippi",
+            "School",
+            "District",
+            "Data"
+          ]
+        },
+        {
+          "id": "ms_public_seed_directory",
+          "template": "public_seed_source"
+        },
+        {
+          "id": "ms_private_seed_directory",
+          "template": "private_seed_source"
+        }
+      ]
+    },
+    "MO": {
+      "name": "Missouri",
+      "enabled": true,
+      "sources": [
+        {
+          "id": "mo_dese_schools",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://gis.mo.gov/arcgis/rest/services/DESE/Missouri_Public_Schools/MapServer/0",
+          "kind": "arcgis",
+          "order_by": "OBJECTID",
+          "minimum_rows": 600,
+          "columns": {
+            "name": "Facility",
+            "state_id": "SchID",
+            "district_name": "NAME",
+            "district_code": "CtyDist",
+            "low_grade": "BGrade",
+            "high_grade": "EGrade"
+          },
+          "lookup": {
+            "source_key": "CtyDist",
+            "lookup_key": "CTYDIST",
+            "url": "https://gis.mo.gov/arcgis/rest/services/DESE/schoolDistrict/MapServer/1",
+            "kind": "arcgis",
+            "order_by": "ESRI_OID",
+            "columns": {
+              "district_name": "DNAME",
+              "district_website": "URL"
+            }
+          }
+        },
+        {
+          "id": "mo_private_seed_directory",
+          "template": "private_seed_source"
+        }
+      ]
+    },
+    "MT": {
+      "name": "Montana",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "mt_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://gisservice.mt.gov/arcgis/rest/services/msdi_structures_addresses_map_v1/MapServer/0",
+          "kind": "arcgis",
+          "where": "DiscrpAgID = 'Montana Office of Public Instruction' AND Addtl_Desc = 'PUBLIC, HS'",
+          "minimum_rows": 175,
+          "high_school_only": true,
+          "columns": {
+            "name": "LandmkName",
+            "state_id": "LocalID",
+            "city": "Post_Comm",
+            "state": "State",
+            "zipcode": "Post_Code",
+            "county": "County",
+            "school_type": "Addtl_Desc"
+          },
+          "join_columns": {
+            "address": [
+              "AddNum_Pre",
+              "Add_Number",
+              "AddNum_Suf",
+              "St_PreMod",
+              "St_PreDir",
+              "St_PreTyp",
+              "St_PreSep",
+              "St_Name",
+              "St_PosTyp",
+              "St_PosDir",
+              "St_PosMod"
+            ]
+          },
+          "coverage_note": "Official Montana State Library school locations supplied by OPI. The state layer classifies public high schools directly."
+        },
+        {
+          "id": "mt_private_2",
+          "enabled": false,
+          "group": "private",
+          "sector": "private",
+          "url": "https://opi.mt.gov/Leadership/Academic-Success/Federal-Programs/Private-Schools",
+          "kind": "auto",
+          "coverage_note": "The current OPI private-school page does not publish a machine-readable row-level roster with grade spans.",
+          "link_terms": [
+            "Private",
+            "Schools",
+            "Participating",
+            "Schools"
+          ]
+        },
+        {
+          "id": "mt_private_seed_directory",
+          "template": "private_seed_source"
+        }
+      ]
+    },
+    "NE": {
+      "name": "Nebraska",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "ne_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://gis.ne.gov/Enterprise/rest/services/Public_Schools/FeatureServer/0",
+          "kind": "arcgis",
+          "minimum_rows": 275,
+          "high_school_only": true,
+          "columns": {
+            "name": "School_Nam",
+            "state_id": "Co_Dist_Sc",
+            "district_name": "District_N",
+            "district_code": "Co_DistNum",
+            "phone": "Phone",
+            "address": "Address",
+            "city": "City_1",
+            "state": "State",
+            "zipcode": "Zip",
+            "school_type": "Type_of_Sc"
+          },
+          "include_rows": [
+            {
+              "column": "Type_of_Sc",
+              "values": [
+                "7-12 SECONDARY",
+                "9-12 SENIOR HIGH",
+                "10-12 SENIOR HIGH"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ne_private_2",
+          "enabled": true,
+          "group": "private",
+          "sector": "private",
+          "url": "https://gis.ne.gov/Enterprise/rest/services/Private_Schools/FeatureServer/0",
+          "kind": "arcgis",
+          "minimum_rows": 15,
+          "coverage_note": "The state GIS private roster has no grade-span field; high-school status is inferred from school names.",
+          "columns": {
+            "name": "School_Nam",
+            "state_id": "Co_DistNum",
+            "address": "Address",
+            "city": "City_1",
+            "state": "State",
+            "zipcode": "Zip",
+            "county": "County",
+            "phone": "Phone"
+          }
+        }
+      ]
+    },
+    "NV": {
+      "name": "Nevada",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "nv_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://doe.nv.gov/school-and-district-information",
+          "kind": "auto",
+          "link_terms": [
+            "School",
+            "District",
+            "Information"
+          ]
+        },
+        {
+          "id": "nv_private_2",
+          "enabled": true,
+          "group": "private",
+          "sector": "private",
+          "url": "https://doe.nv.gov/offices/office-of-student-and-school-supports/private-schools/",
+          "kind": "auto",
+          "link_terms": [
+            "Private",
+            "Schools"
+          ]
+        }
+      ]
+    },
+    "NH": {
+      "name": "New Hampshire",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "nh_public_1",
+          "enabled": true,
+          "group": "all",
+          "sector": "mixed",
+          "url": "https://services9.arcgis.com/wnvDDrXX8EouLkZP/arcgis/rest/services/CRA_Broadband_schooldatagdb/FeatureServer/0",
+          "kind": "arcgis",
+          "minimum_rows": 130,
+          "high_school_only": true,
+          "private_column": "Group_",
+          "private_values": [
+            "Private Schools"
+          ],
+          "columns": {
+            "name": "School_Name",
+            "state_id": "School_ID",
+            "nces_id": "NCES_ID",
+            "district_name": "District_Name",
+            "district_code": "Dist_ID",
+            "school_type": "School_Type",
+            "grades": "Grade_Span",
+            "enrollment": "Enrollment",
+            "administrator": "Title",
+            "phone": "Phone",
+            "directory_email": "Email",
+            "address": "Address",
+            "city": "CIty",
+            "state": "State",
+            "zipcode": "Zip_Code",
+            "county": "County"
+          },
+          "include_rows": [
+            {
+              "column": "Grade_Span",
+              "regex": "(?:^|[- ])12(?:$|[- ])"
+            }
+          ],
+          "coverage_note": "Official NH GRANIT school data; the source is retained until the department's replacement directory allows bulk access."
+        },
+        {
+          "id": "nh_private_2",
+          "enabled": false,
+          "group": "private",
+          "sector": "private",
+          "url": "https://www.education.nh.gov/who-we-are/division-of-education-and-analytic-resources/bureau-educational-opportunities/office-nonpublic-schools",
+          "kind": "auto",
+          "coverage_note": "Private schools are included by the combined official NH GRANIT roster above."
+        }
+      ]
+    },
+    "NJ": {
+      "name": "New Jersey",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "nj_public_1",
+          "enabled": true,
+          "group": "all",
+          "sector": "mixed",
+          "url": "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/School_Point_Locations_of_NJ/FeatureServer/0",
+          "kind": "arcgis",
+          "minimum_rows": 250,
+          "high_school_only": true,
+          "private_column": "CATEGORY",
+          "private_values": [
+            "2"
+          ],
+          "columns": {
+            "name": "SCHOOLNAME",
+            "state_id": "OGIS_ID",
+            "district_name": "DIST_NAME",
+            "district_code": "DIST_CODE",
+            "school_type": "SCHOOLTYPE",
+            "address": "ADDRESS1",
+            "city": "CITY",
+            "state": "STATE",
+            "zipcode": "ZIP",
+            "county": "COUNTY",
+            "phone": "PHONE"
+          },
+          "include_rows": [
+            {
+              "column": "SCHOOLTYPE",
+              "regex": "HIGH SCHOOL|SECONDARY|K-12|GRADES? [A-Z0-9-]*12|VOCATIONAL-TECHNICAL"
+            }
+          ]
+        },
+        {
+          "id": "nj_private_2",
+          "enabled": false,
+          "group": "private",
+          "sector": "private",
+          "url": "https://homeroom6.doe.state.nj.us/directory/nonpub",
+          "kind": "auto",
+          "coverage_note": "Public, private, and charter schools are included by the combined NJ Office of GIS roster above."
+        }
+      ]
+    },
+    "NM": {
+      "name": "New Mexico",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "nm_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://webed.ped.state.nm.us/",
+          "kind": "auto",
+          "link_terms": [
+            "Mexico",
+            "Public",
+            "Schools",
+            "Directory"
+          ]
+        },
+        {
+          "id": "nm_public_seed_directory",
+          "template": "public_seed_source"
+        },
+        {
+          "id": "nm_private_seed_directory",
+          "template": "private_seed_source"
+        }
+      ]
+    },
+    "NY": {
+      "name": "New York",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "ny_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://services6.arcgis.com/EbVsqZ18sv1kVJ3k/arcgis/rest/services/NYS_Schools/FeatureServer/2",
+          "kind": "arcgis",
+          "minimum_rows": 700,
+          "coverage_note": "The official GIS roster has no grade-span field; high-school status is inferred from school names.",
+          "columns": {
+            "name": "LEGAL_NAME",
+            "state_id": "SED_CODE",
+            "district_name": "SDL_DESC",
+            "address": "PHYSADDRLINE1",
+            "city": "PHYSCITY",
+            "state": "PHYSICALSTATE",
+            "zipcode": "PHYSZIPCD5",
+            "county": "COUNTY_DESC",
+            "phone": "CEO_PHONENUM",
+            "administrator": "Contact_Name",
+            "administrator_title": "CEO_TITLE",
+            "directory_email": "CEO_EMAIL",
+            "school_type": "INST_TYPE_DESC"
+          }
+        },
+        {
+          "id": "ny_private_2",
+          "enabled": true,
+          "group": "private",
+          "sector": "private",
+          "url": "https://services6.arcgis.com/EbVsqZ18sv1kVJ3k/arcgis/rest/services/NYS_Schools/FeatureServer/3",
+          "kind": "arcgis",
+          "minimum_rows": 75,
+          "coverage_note": "The official GIS roster has no grade-span field; high-school status is inferred from school names.",
+          "columns": {
+            "name": "LEGAL_NAME",
+            "state_id": "SED_CODE",
+            "address": "PHYSADDRLINE1",
+            "city": "PHYSCITY",
+            "state": "PHYSICALSTATE",
+            "zipcode": "PHYSZIPCD5",
+            "county": "COUNTY_DESC",
+            "phone": "CEO_PHONENUM",
+            "administrator": "Contact_Name",
+            "administrator_title": "CEO_TITLE",
+            "directory_email": "CEO_EMAIL",
+            "school_type": "INST_TYPE_DESC"
+          }
+        }
+      ]
+    },
+    "NC": {
+      "name": "North Carolina",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "nc_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://services.nconemap.gov/secure/rest/services/NC1Map_Education/MapServer/3",
+          "kind": "arcgis",
+          "minimum_rows": 500,
+          "columns": {
+            "name": "school_nam",
+            "state_id": "lea_school",
+            "administrator": "principal",
+            "address": "phys_addr",
+            "city": "phys_city",
+            "zipcode": "phys_zip",
+            "phone": "phone",
+            "website": "url_addres",
+            "county": "county",
+            "status": "accr_stat",
+            "school_type": "sch_type",
+            "low_grade": "bgn_grade",
+            "high_grade": "end_grade"
+          }
+        },
+        {
+          "id": "nc_private_2",
+          "enabled": true,
+          "group": "private",
+          "sector": "private",
+          "url": "https://www.doa.nc.gov/dnpe/current-open-private-schools-july-6/open",
+          "kind": "auto",
+          "minimum_rows": 100,
+          "columns": {
+            "name": "SchoolName",
+            "address": "PhysicalAddress",
+            "city": "PhysicalCity",
+            "zipcode": "PhysicalZip",
+            "phone": "Phone",
+            "county": "County",
+            "administrator": "Administrator",
+            "status": "Status"
+          }
+        },
+        {
+          "id": "nc_private_seed_directory",
+          "template": "private_seed_source"
+        }
+      ]
+    },
+    "ND": {
+      "name": "North Dakota",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "nd_school_directory",
+          "enabled": true,
+          "group": "all",
+          "sector": "mixed",
+          "url": "https://www.nd.gov/dpi/sites/www/files/documents/Data/falldir25-26.xlsx",
+          "kind": "auto",
+          "columns": {
+            "name": "District/School Name",
+            "state_id": "StateIssuedID",
+            "county": "CountyName",
+            "grades": "Grade Span",
+            "school_type": "Type",
+            "address": "Physical Address",
+            "city": "Physical City",
+            "state": "State 2",
+            "zipcode": "Zip 2",
+            "administrator_title": "Position",
+            "directory_email": "EmailAddress"
+          },
+          "join_columns": {
+            "administrator": [
+              "FirstName",
+              "LastName"
+            ]
+          },
+          "include_rows": [
+            {
+              "column": "Type",
+              "values": [
+                "Public School",
+                "Nonpublic School",
+                "BIE / Grant School",
+                "State Institution School"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "OH": {
+      "name": "Ohio",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "oh_oeds_directory",
+          "enabled": true,
+          "group": "all",
+          "sector": "mixed",
+          "url": "https://oeds.education.ohio.gov/DataExtract",
+          "kind": "form",
+          "posts": [
+            {
+              "url": "/DataExtract/GetRequestOrgExtract",
+              "values": {
+                "jsonData": "{\"OrgTypes\":[5,6,7,45,48],\"OrgCats\":[],\"Selected\":[\"IRN\",\"Organization Name\",\"Organization Type\",\"Organization Category\",\"Status\",\"Mailing Address\",\"Designated County\",\"Organization Email Address\",\"Organization Phone\",\"Organization Fax\",\"Web URL\",\"Principal Name\",\"Principal Email\",\"Principal Phone\",\"Parent IRN\",\"Parent Organization Name\",\"School Type\",\"Grade Span\"]}"
+              }
+            }
+          ],
+          "header_row": 1,
+          "split_address": true,
+          "private_column": "ORGANIZATION TYPE",
+          "private_values": [
+            "Nonpublic School"
+          ],
+          "columns": {
+            "name": "ORGANIZATION NAME",
+            "state_id": "IRN",
+            "district_name": "PARENT ORGANIZATION NAME",
+            "district_code": "PARENT IRN",
+            "county": "DESIGNATED COUNTY",
+            "address": "ORG MAILING ADDRESS",
+            "phone": "ORG PHONE",
+            "grades": "GRADE SPAN",
+            "school_type": "SCHOOL TYPE",
+            "website": "WEB URL",
+            "administrator": "PRINCIPAL",
+            "directory_email": "PRINCIPAL EMAIL",
+            "status": "STATUS"
+          },
+          "exclude_rows": [
+            {
+              "column": "STATUS",
+              "values": [
+                "Closed",
+                "Inactive"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "OK": {
+      "name": "Oklahoma",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "ok_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://oklahoma.gov/content/dam/ok/en/osde/documents/resources/state-directory/FY26EOYOnlineDirectorySiteList.xlsx",
+          "kind": "auto",
+          "id_columns": [
+            "Co/Dist Code",
+            "Site Code"
+          ],
+          "columns": {
+            "name": "School Site",
+            "district_name": "District Name",
+            "district_code": "Co/Dist Code",
+            "county": "County Name",
+            "enrollment": "Total Enrollment",
+            "administrator": "Principal",
+            "directory_email": "Principal's Email",
+            "address": "Physical Address",
+            "city": "Physical City",
+            "state": "Physical State",
+            "zipcode": "Physical Zip",
+            "grades": "Grades (Low-High)"
+          }
+        },
+        {
+          "id": "ok_private_2",
+          "enabled": true,
+          "group": "private",
+          "sector": "private",
+          "url": "https://opsac.org/",
+          "kind": "auto",
+          "link_terms": [
+            "OPSAC",
+            "Accredited",
+            "Education",
+            "Sites"
+          ]
+        },
+        {
+          "id": "ok_private_seed_directory",
+          "template": "private_seed_source"
+        }
+      ]
+    },
+    "OR": {
+      "name": "Oregon",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "or_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://www.ode.state.or.us/instID/",
+          "kind": "auto",
+          "link_terms": [
+            "Institution",
+            "Lookup",
+            "Daily",
+            "Extract"
+          ]
+        },
+        {
+          "id": "or_private_2",
+          "enabled": true,
+          "group": "private",
+          "sector": "private",
+          "url": "https://www.ode.state.or.us/instID/",
+          "kind": "auto",
+          "link_terms": [
+            "Institution",
+            "Lookup",
+            "Private",
+            "Schools"
+          ]
+        },
+        {
+          "id": "or_private_seed_directory",
+          "template": "private_seed_source"
+        }
+      ]
+    },
+    "PA": {
+      "name": "Pennsylvania",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "pa_edna_directory",
+          "enabled": true,
+          "group": "all",
+          "sector": "mixed",
+          "url": "https://data.pa.gov/resource/knsp-q7fv.json?$limit=50000",
+          "kind": "auto",
+          "columns": {
+            "name": "instname",
+            "state_id": "school",
+            "district_code": "aun",
+            "address": "addressline1",
+            "city": "city",
+            "state": "state",
+            "zipcode": "zipcode",
+            "website": "webaddress",
+            "grades": "grades"
+          }
+        },
+        {
+          "id": "pa_private_seed_directory",
+          "template": "private_seed_source"
+        }
+      ]
+    },
+    "RI": {
+      "name": "Rhode Island",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "ri_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://services.arcgis.com/ZiGFbvajHaihlBRa/arcgis/rest/services/RIDE_Public_Dash_Bldgs_2/FeatureServer/0",
+          "kind": "arcgis",
+          "minimum_rows": 50,
+          "high_school_only": true,
+          "columns": {
+            "name": "School_Name",
+            "state_id": "School_ID",
+            "district_name": "LEA_Name",
+            "district_code": "LEA_ID",
+            "school_type": "School_Type",
+            "address": "Street_Address",
+            "city": "City",
+            "state": "State",
+            "zipcode": "Zip_Code",
+            "enrollment": "Enrollment"
+          },
+          "include_rows": [
+            {
+              "column": "Scenario",
+              "values": [
+                "2026"
+              ]
+            },
+            {
+              "column": "School_Type",
+              "values": [
+                "7 - High School",
+                "6 - Middle/High School",
+                "8 - K-12 School"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ri_private_2",
+          "enabled": false,
+          "group": "private",
+          "sector": "private",
+          "url": "https://ride.ri.gov/students-families/ri-public-schools/school-directory",
+          "kind": "auto",
+          "coverage_note": "A current official machine-readable private-school roster with grade spans has not been identified."
+        },
+        {
+          "id": "ri_private_seed_directory",
+          "template": "private_seed_source"
+        }
+      ]
+    },
+    "SC": {
+      "name": "South Carolina",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "sc_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://services5.arcgis.com/tMDU4iABlmKqkZWJ/arcgis/rest/services/SC_SchoolDirectory_view/FeatureServer/18",
+          "kind": "arcgis",
+          "minimum_rows": 250,
+          "columns": {
+            "name": "SchoolName",
+            "state_id": "SID",
+            "district_name": "District_Name",
+            "district_code": "Dist_Code",
+            "address": "Address",
+            "city": "city",
+            "phone": "SchoolPhone",
+            "website": "chWebUrl",
+            "grades": "GradeServedRange",
+            "school_type": "School_Type",
+            "administrator": "PrinFullName",
+            "enrollment": "EnrollmentCount"
+          },
+          "coverage_note": "Current South Carolina Department of Education school-directory service used by the official dashboard."
+        },
+        {
+          "id": "sc_private_2",
+          "enabled": true,
+          "group": "private",
+          "sector": "private",
+          "url": "https://ed.sc.gov/districts-schools/schools/school-directory/private-schools-listings-040424/",
+          "kind": "auto",
+          "minimum_rows": 35,
+          "columns": {
+            "name": "SCHOOL NAME",
+            "state_id": "Response ID",
+            "district_name": "DISTRICT",
+            "address": "STREET ADDRESS",
+            "city": "CITY",
+            "zipcode": "ZIP",
+            "phone": "PHONE",
+            "grades": "GRADE SPAN",
+            "county": "COUNTY"
+          },
+          "coverage_note": "The official directory notes that this private-school listing is partial because publication requires consent."
+        }
+      ]
+    },
+    "SD": {
+      "name": "South Dakota",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "sd_school_directory",
+          "enabled": true,
+          "group": "all",
+          "sector": "mixed",
+          "url": "https://doe.sd.gov/ofm/documents/0926-Principal.xlsx",
+          "kind": "auto",
+          "id_columns": [
+            "District Number",
+            "School Number"
+          ],
+          "columns": {
+            "name": "School Name",
+            "district_name": "District Name",
+            "district_code": "District Number",
+            "school_type": "District Type",
+            "address": "Physical Address",
+            "city": "Physical Address City",
+            "state": "Physical Address State",
+            "zipcode": "Physical Address Zip Code",
+            "county": "Physical County",
+            "phone": "Principal Phone Number",
+            "grades": "Grade Span"
+          },
+          "join_columns": {
+            "administrator": [
+              "Principal First Name",
+              "Principal Last Name"
+            ]
+          }
+        }
+      ]
+    },
+    "TN": {
+      "name": "Tennessee",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "tn_school_directory",
+          "enabled": true,
+          "group": "all",
+          "sector": "mixed",
+          "url": "https://tnschooldirectory.tnedu.gov/Results/?customertypecode=100000001&statecode=0",
+          "kind": "powerapps",
+          "api_path": "/_api/accounts",
+          "token_path": "/_services/auth/portalusertoken",
+          "entity": "account",
+          "fields": [
+            "statecode",
+            "address1_composite",
+            "address1_line1",
+            "address1_line2",
+            "address1_city",
+            "address1_stateorprovince",
+            "address1_postalcode",
+            "sde_county",
+            "telephone1",
+            "telephone2",
+            "fax",
+            "name",
+            "sde_schooldistrictname",
+            "sde_schooldistrictnumber",
+            "mshied_schooltype",
+            "sde_districttype",
+            "sde_ncesnumber",
+            "primarycontactid",
+            "parentaccountid",
+            "sde_gradesummary",
+            "sde_categoriessummary",
+            "statuscode",
+            "customertypecode",
+            "accountid",
+            "websiteurl"
+          ],
+          "filters": [
+            {
+              "field": "statecode",
+              "operator": "eq",
+              "value": "0"
+            },
+            {
+              "field": "customertypecode",
+              "operator": "eq",
+              "value": "100000001"
+            },
+            {
+              "field": "statuscode",
+              "operator": "ne",
+              "value": "919400002"
+            },
+            {
+              "field": "statuscode",
+              "operator": "ne",
+              "value": "751910001"
+            },
+            {
+              "field": "statuscode",
+              "operator": "ne",
+              "value": "919400003"
+            }
+          ],
+          "profile_url": "https://tnschooldirectory.tnedu.gov/BUProfile/?accountid={accountid}&customertypecode=100000001",
+          "columns": {
+            "name": "sde_schooldistrictname",
+            "state_id": "sde_schooldistrictnumber",
+            "nces_id": "sde_ncesnumber",
+            "district_name": "_parentaccountid_value@OData.Community.Display.V1.FormattedValue",
+            "district_code": "_parentaccountid_value",
+            "address": "address1_line1",
+            "city": "address1_city",
+            "state": "address1_stateorprovince",
+            "county": "sde_county@OData.Community.Display.V1.FormattedValue",
+            "zipcode": "address1_postalcode",
+            "phone": "telephone1",
+            "grades": "sde_gradesummary",
+            "website": "websiteurl",
+            "administrator": "_primarycontactid_value@OData.Community.Display.V1.FormattedValue",
+            "status": "statecode@OData.Community.Display.V1.FormattedValue",
+            "school_type": "mshied_schooltype@OData.Community.Display.V1.FormattedValue"
+          }
+        }
+      ]
+    },
+    "TX": {
+      "name": "Texas",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "tx_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://tealprod.tea.state.tx.us/Tea.AskTed.Web/Forms/Home.aspx",
+          "kind": "auto",
+          "link_terms": [
+            "AskTED",
+            "Downloadable",
+            "School",
+            "District",
+            "Files"
+          ]
+        },
+        {
+          "id": "tx_private_seed_directory",
+          "template": "private_seed_source"
+        }
+      ]
+    },
+    "UT": {
+      "name": "Utah",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "ut_school_directory",
+          "enabled": true,
+          "group": "all",
+          "sector": "mixed",
+          "url": "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/Schools_PreKto12/FeatureServer/0",
+          "kind": "arcgis",
+          "private_column": "PrivateSchool",
+          "private_values": [
+            "True"
+          ],
+          "columns": {
+            "name": "SchoolName",
+            "state_id": "SchoolID",
+            "district_name": "LEAName",
+            "district_code": "LEAID",
+            "address": "Address",
+            "city": "City",
+            "state": "State",
+            "zipcode": "ZipCode",
+            "phone": "PhoneNumber",
+            "low_grade": "GradeLow",
+            "high_grade": "GradeHigh",
+            "school_type": "SchoolType",
+            "website": "Website",
+            "enrollment": "TotalK12"
+          }
+        }
+      ]
+    },
+    "VT": {
+      "name": "Vermont",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "vt_public_1",
+          "enabled": true,
+          "group": "all",
+          "sector": "mixed",
+          "url": "https://services1.arcgis.com/BkFxaEFNwHqX3tAw/arcgis/rest/services/FS_VCGI_OPENDATA_Facilities_PTSCHOOL_point_K12_SP_v1/FeatureServer/0",
+          "kind": "arcgis",
+          "minimum_rows": 75,
+          "high_school_only": true,
+          "private_column": "Sector",
+          "private_values": [
+            "Independent"
+          ],
+          "columns": {
+            "name": "ORGANIZATI",
+            "state_id": "ORGID",
+            "address": "ADDRESS",
+            "city": "CITY",
+            "state": "STATE",
+            "zipcode": "ZIP",
+            "grades": "GRTYPE",
+            "school_type": "Sector"
+          },
+          "include_rows": [
+            {
+              "column": "GRTYPE",
+              "regex": "Secondary|grades?[: ]+.*12|K-12"
+            }
+          ]
+        },
+        {
+          "id": "vt_private_2",
+          "enabled": false,
+          "group": "private",
+          "sector": "private",
+          "url": "https://education.vermont.gov/vermont-schools/school-operations/independent-schools",
+          "kind": "auto",
+          "coverage_note": "Independent schools are included by the combined Vermont state GIS roster above."
+        }
+      ]
+    },
+    "VA": {
+      "name": "Virginia",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "va_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://www.doe.virginia.gov/about-vdoe/virginia-school-directories",
+          "kind": "auto",
+          "link_terms": [
+            "Virginia",
+            "Public",
+            "School",
+            "Directories"
+          ]
+        },
+        {
+          "id": "va_public_seed_directory",
+          "template": "public_seed_source",
+          "include_rows": [
+            {
+              "column": "school_level",
+              "values": [
+                "High School"
+              ]
+            },
+            {
+              "column": "school_type",
+              "values": [
+                "Public"
+              ]
+            }
+          ],
+          "coverage_note": "Limited NFHS fallback: only explicitly Public high schools; not a complete official roster."
+        },
+        {
+          "id": "va_private_2",
+          "enabled": true,
+          "group": "private",
+          "sector": "private",
+          "url": "https://vcpe.org/",
+          "kind": "auto",
+          "link_terms": [
+            "VCPE",
+            "Recognized",
+            "Schools",
+            "Directory"
+          ]
+        },
+        {
+          "id": "va_private_seed_directory",
+          "template": "private_seed_source",
+          "derive_private_from_public": false,
+          "include_rows": [
+            {
+              "column": "school_level",
+              "values": [
+                "High School"
+              ]
+            },
+            {
+              "column": "school_type",
+              "values": [
+                "Private"
+              ]
+            }
+          ],
+          "coverage_note": "Limited NFHS fallback: only explicitly Private high schools; not a complete official roster."
+        }
+      ]
+    },
+    "WA": {
+      "name": "Washington",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "wa_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://eds.ospi.k12.wa.us/directoryeds.aspx",
+          "kind": "form",
+          "posts": [
+            {
+              "values": {
+                "ctl00$PageContent$DirectoryReportTypeDropDownList": "2",
+                "ctl00$PageContent$ExportToExcelButton": "Export To Excel"
+              }
+            }
+          ],
+          "id_columns": [
+            "LEACode",
+            "SchoolCode"
+          ],
+          "columns": {
+            "name": "SchoolName",
+            "district_name": "LEAName",
+            "district_code": "LEACode",
+            "address": "AddressLine1",
+            "city": "City",
+            "state": "State",
+            "zipcode": "ZipCode",
+            "phone": "Phone",
+            "low_grade": "LowestGrade",
+            "high_grade": "HighestGrade",
+            "school_type": "OrgCategoryList",
+            "administrator": "PrincipalName",
+            "directory_email": "Email"
+          }
+        },
+        {
+          "id": "wa_private_2",
+          "enabled": true,
+          "group": "private",
+          "sector": "private",
+          "url": "https://sbe.wa.gov/sites/default/files/2025-03/2024-2025%20Private%20School%20Enrollment%20Data%20%28Amended%20March%202025%29_0.xlsx",
+          "kind": "auto",
+          "grade_12_column": "Grade 12",
+          "columns": {
+            "district_name": "Public School District",
+            "enrollment": "K-12 Total"
+          }
+        },
+        {
+          "id": "wa_public_seed_directory",
+          "template": "public_seed_source"
+        }
+      ]
+    },
+    "WV": {
+      "name": "West Virginia",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "wv_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://services1.arcgis.com/cTNi34MxOdcfum3A/arcgis/rest/services/WVDE_Schools_List/FeatureServer/0",
+          "kind": "arcgis",
+          "minimum_rows": 180,
+          "columns": {
+            "name": "name",
+            "state_id": "FID",
+            "school_type": "type",
+            "county": "county",
+            "address": "address",
+            "city": "city",
+            "zipcode": "zip",
+            "phone": "phone",
+            "website": "url",
+            "grades": "grades"
+          }
+        }
+      ]
+    },
+    "WI": {
+      "name": "Wisconsin",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "wi_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://services8.arcgis.com/o4NJgD3NfeHnWy06/arcgis/rest/services/Wisconsin_Public_Schools/FeatureServer/20",
+          "kind": "arcgis",
+          "id_columns": [
+            "SDID",
+            "SCH_CODE"
+          ],
+          "columns": {
+            "name": "SCHOOL",
+            "state_id": "UNIQUE_",
+            "nces_id": "NCES_CODE",
+            "district_name": "DISTRICT",
+            "district_code": "SDID",
+            "address": "PHYS_ADDR",
+            "city": "CITY",
+            "state": "STATE",
+            "zipcode": "ZIP_CODE",
+            "county": "COUNTY",
+            "low_grade": "LOW_GRADE",
+            "high_grade": "HIGH_GRADE",
+            "grades": "GRADE_RANGE",
+            "school_type": "SCHOOLTYPE",
+            "website": "SCHOOL_URL"
+          }
+        },
+        {
+          "id": "wi_private_2",
+          "enabled": true,
+          "group": "private",
+          "sector": "private",
+          "url": "https://services8.arcgis.com/o4NJgD3NfeHnWy06/arcgis/rest/services/WI_Private_Schools/FeatureServer/2",
+          "kind": "arcgis",
+          "id_columns": [
+            "SDID",
+            "SCH_CODE"
+          ],
+          "columns": {
+            "name": "SCHOOL",
+            "state_id": "DPI_UNIQUE",
+            "district_name": "DISTRICT",
+            "district_code": "SDID",
+            "address": "PHYS_ADDR",
+            "city": "CITY",
+            "state": "STATE",
+            "zipcode": "ZIP_CODE",
+            "county": "COUNTY",
+            "low_grade": "LOW_GRADE",
+            "high_grade": "HIGH_GRADE",
+            "grades": "GRADE_RANGE",
+            "school_type": "SCHOOL_TYPE",
+            "website": "SCHOOL_URL"
+          }
+        }
+      ]
+    },
+    "WY": {
+      "name": "Wyoming",
+      "enabled": false,
+      "sources": [
+        {
+          "id": "wy_public_1",
+          "enabled": true,
+          "group": "public",
+          "sector": "public",
+          "url": "https://portals.edu.wyoming.gov/wyedpro/Pages/OnlineDirectory/OnlineDirectoryOrganizationSearch.aspx",
+          "kind": "form",
+          "minimum_rows": 90,
+          "high_school_only": true,
+          "posts": [
+            {
+              "values": {
+                "ctl00$ctl00$ctl00$ContentPlaceHolder1$CphBody$CphODBody$drpOrgtype$0": "on",
+                "ctl00$ctl00$ctl00$ContentPlaceHolder1$CphBody$CphODBody$chklstOrgGrades$11": "on",
+                "ctl00$ctl00$ctl00$ContentPlaceHolder1$CphBody$CphODBody$ImgSearch": "Search"
+              }
+            }
+          ],
+          "postback_selector": ".rgNumPart a",
+          "postback_values": {
+            "ctl00$ctl00$ctl00$ContentPlaceHolder1$CphBody$CphODBody$drpOrgtype$0": "on",
+            "ctl00$ctl00$ctl00$ContentPlaceHolder1$CphBody$CphODBody$chklstOrgGrades$11": "on"
+          },
+          "include_rows": [
+            {
+              "column": "Organization Type",
+              "values": [
+                "Public School"
+              ]
+            }
+          ],
+          "columns": {
+            "name": "Name",
+            "state_id": "Org Code",
+            "district_name": "Parent",
+            "address": "Address",
+            "city": "Location",
+            "zipcode": "Zip Code",
+            "phone": "Phone",
+            "website": "Url",
+            "grades": "Grades Served",
+            "school_type": "Organization Type"
+          }
+        },
+        {
+          "id": "wy_private_2",
+          "enabled": true,
+          "group": "private",
+          "sector": "private",
+          "url": "https://portals.edu.wyoming.gov/wyedpro/Pages/OnlineDirectory/OnlineDirectoryOrganizationSearch.aspx",
+          "kind": "form",
+          "minimum_rows": 30,
+          "high_school_only": true,
+          "posts": [
+            {
+              "values": {
+                "ctl00$ctl00$ctl00$ContentPlaceHolder1$CphBody$CphODBody$drpOrgtype$5": "on",
+                "ctl00$ctl00$ctl00$ContentPlaceHolder1$CphBody$CphODBody$chklstOrgGrades$11": "on",
+                "ctl00$ctl00$ctl00$ContentPlaceHolder1$CphBody$CphODBody$ImgSearch": "Search"
+              }
+            }
+          ],
+          "postback_selector": ".rgNumPart a",
+          "postback_values": {
+            "ctl00$ctl00$ctl00$ContentPlaceHolder1$CphBody$CphODBody$drpOrgtype$5": "on",
+            "ctl00$ctl00$ctl00$ContentPlaceHolder1$CphBody$CphODBody$chklstOrgGrades$11": "on"
+          },
+          "include_rows": [
+            {
+              "column": "Organization Type",
+              "values": [
+                "Private or Parochial School"
+              ]
+            }
+          ],
+          "columns": {
+            "name": "Name",
+            "state_id": "Org Code",
+            "district_name": "Parent",
+            "address": "Address",
+            "city": "Location",
+            "zipcode": "Zip Code",
+            "phone": "Phone",
+            "website": "Url",
+            "grades": "Grades Served",
+            "school_type": "Organization Type"
+          }
+        }
+      ]
+    }
+  }
+}

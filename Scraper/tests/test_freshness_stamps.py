@@ -65,12 +65,12 @@ class FreshnessStampTests(ThrowawayDatabaseTest):
         self.write([found(ALPHA)], complete=False)
         self.assertEqual(self.school("IL:2")[3], 0)
 
-    def test_staff_are_missed_only_where_the_staff_pages_were_read(self):
+    def test_read_pages_do_not_prove_complete_staff_coverage(self):
         self.write([found(ALPHA, PAT, SAM)])
         self.write([found(ALPHA, PAT)])  # pages read, Sam not there
-        self.assertEqual(self.staff("sroe@alpha.org")[1], 1)
+        self.assertEqual(self.staff("sroe@alpha.org")[1], 0)
         self.write([found(ALPHA, pages=(), error="http_500")])  # site down: nobody counted
-        self.assertEqual(self.staff("sroe@alpha.org")[1], 1)
+        self.assertEqual(self.staff("sroe@alpha.org")[1], 0)
         self.assertEqual(self.staff("plee@alpha.org")[1], 0)
 
     def test_archived_records_are_never_counted(self):

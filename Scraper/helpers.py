@@ -28,6 +28,7 @@ OUTPUT_FOLDER = "output"
 UPLOAD_DATABASE = True
 USE_BROWSER = False
 WORKERS = 6
+RESUME_CHECKPOINT = False
 SKIP = 0
 RESOLVE_WINDOW = 48
 DATABASE_MODE = "upsert"
@@ -679,7 +680,6 @@ STAFF_FIND_EMAIL_SQL = """
         archived,
         CASE WHEN school_worked_at = %s THEN 0 ELSE 1 END,
         staff_id
-    LIMIT 1
 """
 
 # Phone matching also requires the name: a school's main number is shared by many of
@@ -690,7 +690,6 @@ STAFF_FIND_PHONE_SQL = """
       AND LOWER(name) = LOWER(%s)
       AND phone = %s
     ORDER BY archived, staff_id
-    LIMIT 1
 """
 
 # Match by name + school, never by job_name: a client can correct a title in the app
@@ -708,7 +707,6 @@ STAFF_FIND_NAME_SQL = """
           OR LOWER(email) = LOWER(%s)
       )
     ORDER BY archived, staff_id
-    LIMIT 1
 """
 
 STAFF_UPDATE_SQL = """

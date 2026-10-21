@@ -79,20 +79,16 @@ def schools():
 
 
 class PipelineTests(unittest.TestCase):
-    def test_checkpoint_resume_makes_no_second_resolver_call(self):
+    def test_successful_export_starts_fresh_on_the_next_run(self):
         with tempfile.TemporaryDirectory() as folder:
-            resolver = CountingResolver()
-            scraper = FakeScraper()
-            pipeline = SchoolReach(FakeRoster(schools()), resolver, scraper, folder, workers=2)
-            first = pipeline.run()
-            self.assertEqual(len(first), 2)
-            self.assertEqual(resolver.calls, 2)
-            self.assertTrue((Path(folder) / "checkpoint.json").exists())
-
-            second_resolver = CountingResolver(fail=True)
-            second = SchoolReach(FakeRoster(schools()), second_resolver, FakeScraper(), folder, workers=2).run()
+            first_resolver = CountingResolver()
+            SchoolReach(FakeRoster(schools()), first_resolver, FakeScraper(), folder).run()
+            self.assertEqual(first_resolver.calls, 2)
+            self.assertEqual(read_json(Path(folder) / "checkpoint.json"), {})
+            second_resolver = CountingResolver()
+            second = SchoolReach(FakeRoster(schools()), second_resolver, FakeScraper(), folder).run()
             self.assertEqual(len(second), 2)
-            self.assertEqual(second_resolver.calls, 0)
+            self.assertEqual(second_resolver.calls, 2)
 
     def test_exports_are_simple_valid_json_files(self):
         with tempfile.TemporaryDirectory() as folder:

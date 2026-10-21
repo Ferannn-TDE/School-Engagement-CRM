@@ -32,13 +32,13 @@ class ScoreHasItsOwnColumnTests(ThrowawayDatabaseTest):
         self.assertEqual(float(score), 8.54)
         self.assertIsNotNone(score_at)
 
-    def test_a_persons_note_is_never_touched_and_the_score_updates(self):
+    def test_a_persons_note_and_stronger_score_survive_weaker_evidence(self):
         self.write(run(CENTRAL, person(8.5)))
         self.run_sql("UPDATE staff SET notes = 'Prefers email. Call after 3pm.'")
         self.write(run(CENTRAL, person(7.96)))
         notes, score, _ = self.row()
         self.assertEqual(notes, "Prefers email. Call after 3pm.")
-        self.assertEqual(float(score), 7.96)
+        self.assertEqual(float(score), 8.5)
 
     def test_a_run_without_a_score_keeps_the_last_one(self):
         self.write(run(CENTRAL, person(8.5)))

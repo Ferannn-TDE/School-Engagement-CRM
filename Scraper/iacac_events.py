@@ -22,6 +22,7 @@ from helpers import (
     IACAC_START_FIELDS,
     IACAC_TITLE_FIELDS,
     clean,
+    CENTRAL_TIME,
     iter_json,
     json_documents,
     normalize,
@@ -271,6 +272,8 @@ class IacacEventSource:
             candidate = re.sub(r"(?<=\d)(am|pm)\b", r" \1", candidate, flags=re.I)
             try:
                 result = datetime.fromisoformat(candidate.replace("Z", "+00:00"))
+                if result.tzinfo is not None:
+                    result = result.astimezone(CENTRAL_TIME)
                 return result.replace(tzinfo=None)
             except ValueError:
                 pass

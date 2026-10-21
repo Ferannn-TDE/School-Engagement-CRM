@@ -309,28 +309,48 @@ class DatabaseWriter:
         deliberately not used: it is the field clients most often correct in the
         app, and matching on it inserted duplicates (plan item C10)."""
         name, phone, email, title, school_key = values[:5]
+        queries = []
         if email:
-            cursor.execute(STAFF_FIND_EMAIL_SQL, (email, school_key))
-            row = cursor.fetchone()
-            if row:
-                return row[0], bool(row[1])
+            queries.append((STAFF_FIND_EMAIL_SQL, (email, school_key)))
         if phone:
-            cursor.execute(STAFF_FIND_PHONE_SQL, (school_key, name, phone))
-            row = cursor.fetchone()
-            if row:
-                return row[0], bool(row[1])
-        email_or_none = email or None
-        cursor.execute(STAFF_FIND_NAME_SQL, (school_key, name, email_or_none, email_or_none))
-        row = cursor.fetchone()
-        return (row[0], bool(row[1])) if row else None
+            queries.append((STAFF_FIND_PHONE_SQL, (school_key, name, phone)))
+        queries.append((STAFF_FIND_NAME_SQL, (school_key, name, email or None, email or None)))
+        for query, params in queries:
+            cursor.execute(query, params)
+            rows = cursor.fetchall()
+            active = [row for row in rows if not row[1]]
+            rows = active or rows
+            if len(rows) > 1:
+                self.integrity_review.append({"table": "staff", "reason": "ambiguous_staff_match",
+                                              "school": school_key, "name": name,
+                                              "candidate_ids": [row[0] for row in rows]})
+                return None, False
+            if rows:
+                return rows[0][0], bool(rows[0][1])
+        return None
 
     def upsert_districts(self, cursor, records):
         district_ids = {}
 
         for key, values in records:
             name, county, state = values
-            cursor.execute(DISTRICT_FIND_SQL, (state, name, county))
-            row = cursor.fetchone()
+            if not clean(name) or normalize(name) == "unknown district":
+                self.integrity_review.append({"table": "district", "reason": "missing_district_identity",
+                                              "district_key": list(key), "proposed": list(values)})
+                district_ids[key] = None
+                continue
+            cursor.execute("SELECT district_id, county_name FROM district "
+                           "WHERE state_code = %s AND LOWER(BTRIM(district_name)) = LOWER(BTRIM(%s)) "
+                           "ORDER BY district_id FOR UPDATE", (state, name))
+            candidates = cursor.fetchall()
+            if (len(candidates) > 1 or (candidates and
+                    normalize(candidates[0][1]) != normalize(county))):
+                self.integrity_review.append({"table": "district", "reason": "ambiguous_district_match",
+                                              "district_key": list(key), "proposed": list(values),
+                                              "candidate_ids": [item[0] for item in candidates]})
+                district_ids[key] = None
+                continue
+            row = candidates[0] if candidates else None
 
             if row:
                 district_id = row[0]
@@ -354,7 +374,16 @@ class DatabaseWriter:
     def upsert_staff(self, cursor, records, archived_schools=frozenset()):
         """Writes the staff and returns the ids of everyone found in this run."""
         found_ids = set()
+        email_people = {}
         for _, values in records:
+            if values[2]:
+                email_people.setdefault(values[2].strip().casefold(), set()).add(
+                    (values[4], normalize(values[0])))
+        for _, values in records:
+            if values[2] and len(email_people[values[2].strip().casefold()]) > 1:
+                self.integrity_review.append({"table": "staff", "reason": "shared_email_in_batch",
+                                              "school": values[4], "name": values[0]})
+                continue
             if values[4] in archived_schools:
                 continue  # the school is archived: leave its staff alone (Part 3)
             found = self.find_staff(cursor, values)
@@ -366,14 +395,32 @@ class DatabaseWriter:
                     cursor.execute(CONTACT_SQL, (values[4], row[0]))
                 continue
             staff_id, archived = found
+            if staff_id is None:
+                continue
             if archived:
                 continue  # archived on purpose: neither update nor re-add (Part 3)
-            cursor.execute("SELECT school_worked_at FROM staff WHERE staff_id = %s FOR UPDATE", (staff_id,))
+            cursor.execute("SELECT school_worked_at, name, email, scraper_score FROM staff "
+                           "WHERE staff_id = %s FOR UPDATE", (staff_id,))
             parent = cursor.fetchone()
             if not parent or parent[0] != values[4]:
                 self.integrity_review.append({"table": "staff", "id": staff_id,
                                               "reason": "cross_school_match_preserved",
                                               "proposed_school": values[4]})
+                continue
+            old_email = clean(parent[2]).casefold()
+            new_email = clean(values[2]).casefold()
+            reason = None
+            if normalize(parent[1]) != normalize(values[0]):
+                reason = "staff_name_conflict"
+            elif old_email and new_email and old_email != new_email:
+                reason = "staff_email_conflict"
+            elif parent[3] is not None and (values[13] is None or values[13] < parent[3]):
+                reason = "weaker_staff_evidence"
+            elif values[10] in {"official_state_record", "district_contact_fallback"}:
+                reason = "fallback_staff_update_held"
+            if reason:
+                self.integrity_review.append({"table": "staff", "id": staff_id, "reason": reason,
+                                              "school": values[4], "proposed_name": values[0]})
                 continue
             found_ids.add(staff_id)
 
@@ -511,4 +558,4 @@ class DatabaseWriter:
                     # There is no source/state coverage proof here for the entire database.
                     # Preserve existing missing-school counters rather than flag other states.
                     logging.getLogger(__name__).info("Global missing-school updates are disabled; coverage is not proven.")
-                    cursor.execute(MISSED_STAFF_SQL, (values.now, checked, sorted(found_staff)))
+                    logging.getLogger(__name__).info("Missing-staff increments are disabled until directory coverage is proven.")

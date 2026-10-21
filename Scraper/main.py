@@ -305,6 +305,8 @@ class SchoolReach:
                 external_events=external_events,
                 complete=self.skip == 0,
             )
+            write_json(self.output / "database_integrity_review.json",
+                       getattr(self.database_writer, "integrity_review", []))
             write_json(checkpoint_path, {})
         return results
 

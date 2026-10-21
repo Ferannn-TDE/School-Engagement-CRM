@@ -3,6 +3,8 @@ from datetime import date, timedelta
 
 from database import DatabaseRows, DatabaseWriter
 from helpers import DISTRICT_SQL, EVENT_SQL, STAFF_SQL, STAFF_UPDATE_SQL
+from data_integrity import PROTECTED_FIELDS
+from tests.throwaway_db import LOCK_SQL
 from models import Contact, Event, Resolution, School, SchoolResult
 
 
@@ -52,6 +54,7 @@ class FakeCursor:
     def __init__(self, calls):
         self.calls = calls
         self.next_row = None
+        self.next_rows = []
         self.identities = {"district": 0, "staff": 0}
 
     def __enter__(self):
@@ -64,7 +67,14 @@ class FakeCursor:
         normalized = " ".join(sql.split())
         self.calls.append(("execute", (normalized, params)))
         self.next_row = None
-        if normalized.startswith("INSERT INTO district"):
+        self.next_rows = []
+        if "current_setting('session_replication_role')" in normalized:
+            self.next_row = ("origin", "")
+        elif "FROM pg_trigger" in normalized:
+            self.next_rows = [(table, "O", 19, ("\0".join(sorted(fields)) + "\0").encode(),
+                               LOCK_SQL.split("$fn$")[1], True, True)
+                              for table, fields in PROTECTED_FIELDS.items()]
+        elif normalized.startswith("INSERT INTO district"):
             self.identities["district"] += 1
             self.next_row = (self.identities["district"],)
         elif normalized.startswith("INSERT INTO staff"):
@@ -77,7 +87,9 @@ class FakeCursor:
         return row
 
     def fetchall(self):
-        return []
+        rows = self.next_rows
+        self.next_rows = []
+        return rows
 
     def executemany(self, sql, rows):
         self.calls.append(("executemany", (" ".join(sql.split()), list(rows))))

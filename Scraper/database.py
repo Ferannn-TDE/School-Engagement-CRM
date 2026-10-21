@@ -1,13 +1,14 @@
+import logging
+from data_integrity import COUNTY_SQL, STATE_SQL, CONTACT_SQL, verify_protection
+
 from datetime import datetime
 
 from helpers import (
     ARCHIVED_SCHOOLS_SQL,
     DISTRICT_FIND_SQL,
     DISTRICT_SQL,
-    DISTRICT_UPDATE_SQL,
     EVENT_SQL,
     TESTING_DATE_CATEGORY,
-    MISSED_SCHOOLS_SQL,
     MISSED_STAFF_SQL,
     SCHOOL_SETTINGS_SQL,
     SCHOOL_SQL,
@@ -268,6 +269,7 @@ class DatabaseWriter:
 
         self.database_url = database_url
         self.connect = connect
+        self.integrity_review = []
 
     def connection(self):
         if self.connect is not None:
@@ -322,8 +324,7 @@ class DatabaseWriter:
         row = cursor.fetchone()
         return (row[0], bool(row[1])) if row else None
 
-    @staticmethod
-    def upsert_districts(cursor, records):
+    def upsert_districts(self, cursor, records):
         district_ids = {}
 
         for key, values in records:
@@ -333,10 +334,12 @@ class DatabaseWriter:
 
             if row:
                 district_id = row[0]
-                cursor.execute(
-                    DISTRICT_UPDATE_SQL,
-                    (name, county, state, district_id),
-                )
+                cursor.execute("SELECT district_name, county_name, state_code FROM district WHERE district_id = %s", (district_id,))
+                existing = cursor.fetchone()
+                if existing and tuple(existing) != tuple(values):
+                    self.integrity_review.append({"table": "district", "id": district_id,
+                                                  "reason": "existing_district_preserved",
+                                                  "stored": list(existing), "proposed": list(values)})
             else:
                 cursor.execute(DISTRICT_SQL, values)
                 row = cursor.fetchone()
@@ -360,10 +363,18 @@ class DatabaseWriter:
                 row = cursor.fetchone()
                 if row:
                     found_ids.add(row[0])
+                    cursor.execute(CONTACT_SQL, (values[4], row[0]))
                 continue
             staff_id, archived = found
             if archived:
                 continue  # archived on purpose: neither update nor re-add (Part 3)
+            cursor.execute("SELECT school_worked_at FROM staff WHERE staff_id = %s FOR UPDATE", (staff_id,))
+            parent = cursor.fetchone()
+            if not parent or parent[0] != values[4]:
+                self.integrity_review.append({"table": "staff", "id": staff_id,
+                                              "reason": "cross_school_match_preserved",
+                                              "proposed_school": values[4]})
+                continue
             found_ids.add(staff_id)
 
             name, phone, email, title, school_key = values[:5]
@@ -378,7 +389,6 @@ class DatabaseWriter:
                     phone,
                     email,
                     title,
-                    school_key,
                     is_active,
                     score,
                     score,
@@ -387,6 +397,7 @@ class DatabaseWriter:
                     updated_at,
                     data_source,
                     staff_id,
+                    school_key,
                 ),
             )
         return found_ids
@@ -400,6 +411,7 @@ class DatabaseWriter:
                 "Use a separate full reload workflow for confirmed replacements."
             )
 
+        self.integrity_review = []
         values = DatabaseRows(
             results,
             external_events=external_events,
@@ -409,12 +421,60 @@ class DatabaseWriter:
             with connection.cursor() as cursor:
                 # Archived schools, their staff and their events are left as they are
                 # (db/009, Part 3), even if the run found them.
+                verify_protection(cursor)
                 archived = self.archived_schools(cursor)
+                cursor.execute("SELECT facility_key, state_code, name, is_scraped, archived, is_active, district_id FROM schools")
+                existing = {row[0]: row for row in cursor.fetchall()}
+                keys = [canonical_facility_key(r.school.facility_key, r.school.state) for r in values.results]
+                cursor.execute("SELECT facility_key, state_code, name, is_scraped, archived, is_active, district_id FROM schools WHERE facility_key = ANY(%s) ORDER BY facility_key FOR UPDATE", (keys,))
+                existing.update({row[0]: row for row in cursor.fetchall()})
+                names = {(row[1], normalize(row[2])): row[0] for row in existing.values()}
+                accepted = []
+                seen_keys = set()
+                for result in values.results:
+                    school = result.school
+                    key = canonical_facility_key(school.facility_key, school.state)
+                    old = existing.get(key)
+                    duplicate = names.get((school.state, normalize(school.name)))
+                    reason = None
+                    if not school.name or school.state not in STATE_NAMES or not key.startswith(school.state + ":"):
+                        reason = "invalid_source_identity"
+                    elif key in seen_keys:
+                        reason = "repeated_source_identity"
+                    elif old and (old[1] != school.state or not old[3] or old[4] or old[5] is False):
+                        reason = "protected_or_mismatched_school"
+                    elif not old and duplicate and duplicate != key:
+                        reason = "possible_duplicate_school"
+                    if reason:
+                        self.integrity_review.append({"table": "schools", "id": key, "reason": reason})
+                        continue
+                    accepted.append(result)
+                    seen_keys.add(key)
+                    names[(school.state, normalize(school.name))] = key
+                values.results = accepted
+                if values.results:
+                    cursor.executemany(STATE_SQL, values.states())
+                    cursor.executemany(COUNTY_SQL, sorted({
+                        (clean(r.school.county), r.school.state) for r in values.results if clean(r.school.county)
+                    }))
 
-                district_ids = self.upsert_districts(
-                    cursor,
-                    values.districts(),
-                )
+                new_results = [r for r in values.results
+                               if canonical_facility_key(r.school.facility_key, r.school.state) not in existing]
+                district_ids = self.upsert_districts(cursor, DatabaseRows(new_results).districts())
+                for result in values.results:
+                    school = result.school
+                    old = existing.get(canonical_facility_key(school.facility_key, school.state))
+                    if old is None:
+                        continue
+                    district_ids.setdefault(values.district_key(result), old[6])
+                    cursor.execute("SELECT district_name, county_name, state_code FROM district WHERE district_id = %s", (old[6],))
+                    stored = cursor.fetchone()
+                    proposed = (school.district_name or "Unknown district", clean(school.county) or None, school.state)
+                    if stored is None or tuple(stored) != proposed:
+                        self.integrity_review.append({"table": "district", "id": old[6],
+                                                      "school": old[0], "reason": "existing_district_preserved",
+                                                      "stored": list(stored) if stored else None,
+                                                      "proposed": list(proposed)})
 
                 schools = [row for row in values.schools(district_ids) if row[0] not in archived]
                 if schools:
@@ -427,15 +487,28 @@ class DatabaseWriter:
                 )
 
                 events = [row for row in values.events() if row[0] not in archived]
-                if events:
-                    cursor.executemany(EVENT_SQL, events)
+                for event in events:
+                    cursor.execute("SELECT event_id, schools_involved, location, time, date, attendance, is_scraped, external_id, fair_name, created_at, updated_at, category FROM events WHERE external_id = %s", (event[6],))
+                    old_event = cursor.fetchone()
+                    if old_event:
+                        columns = (0, 1, 2, 3, 7, 10)
+                        if any(old_event[i + 1] != event[i] for i in columns):
+                            self.integrity_review.append({"table": "events", "id": old_event[0],
+                                                          "reason": "existing_event_preserved",
+                                                          "external_id": event[6],
+                                                          "fields": ["schools_involved", "location", "time", "date", "fair_name", "category"],
+                                                          "stored": [old_event[i + 1] for i in columns],
+                                                          "proposed": [event[i] for i in columns]})
+                        continue
+                    cursor.execute(EVENT_SQL, event)
 
                 if complete:
-                    found_schools = sorted({row[0] for row in values.schools(district_ids)})
                     checked = sorted({
                         canonical_facility_key(r.school.facility_key, r.school.state)
                         for r in values.results
                         if staff_pages_read(r)
                     } - archived)
-                    cursor.execute(MISSED_SCHOOLS_SQL, (values.now, found_schools))
+                    # There is no source/state coverage proof here for the entire database.
+                    # Preserve existing missing-school counters rather than flag other states.
+                    logging.getLogger(__name__).info("Global missing-school updates are disabled; coverage is not proven.")
                     cursor.execute(MISSED_STAFF_SQL, (values.now, checked, sorted(found_staff)))

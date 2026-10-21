@@ -568,6 +568,9 @@ class EventParser:
                                     "reason": "invalid_calendar_event", "detail": str(error)})
                 continue
             if event:
+                # The old ICS reader ignored TZID but retained a literal trailing Z.
+                legacy_start = parse_datetime(item["DTSTART"].to_ical().decode("utf-8"))
+                event.identity_start = legacy_start.isoformat() if legacy_start else event.start
                 output.append(event)
         return output
 
@@ -623,7 +626,9 @@ class EventParser:
         priority = {"ics_feed": 3, "embedded_json": 2, "html_time": 1}
         best = {}
         for event in events:
-            key = f"{normalize(event.title)}|{event.start}|{normalize(event.location)}"
+            local_start = parse_datetime(event.start_local or event.start, zone=CENTRAL_TIME)
+            start_key = local_start.isoformat() if local_start else event.start_local or event.start
+            key = f"{normalize(event.title)}|{start_key}|{normalize(event.location)}"
             old = best.get(key)
             if old is None or (priority.get(event.method, 0), event.score) > (priority.get(old.method, 0), old.score):
                 best[key] = event

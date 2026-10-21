@@ -82,7 +82,7 @@ class CalendarStabilizationTests(unittest.TestCase):
 class CheckpointStabilizationTests(unittest.TestCase):
     def saved(self, target):
         output = FakeScraper().scrape(target, Resolution('resolved', resolved_url=target.website))
-        return {'version': 1, 'completed': {target.facility_key: json_value(output)}}
+        return {'version': 2, 'calendar_review': [], 'completed': {target.facility_key: json_value(output)}}
 
     def test_explicit_resume_reuses_compatible_interrupted_result(self):
         target = schools()[0]
@@ -112,8 +112,8 @@ class CheckpointStabilizationTests(unittest.TestCase):
 
     def test_old_and_malformed_checkpoints_are_discarded(self):
         target = schools()[0]
-        for value in ({target.facility_key: {}}, {'version': 1, 'completed': {target.facility_key: {}}},
-                      {'version': 1, 'completed': []}, []):
+        for value in ({target.facility_key: {}}, {'version': 2, 'calendar_review': [], 'completed': {target.facility_key: {}}},
+                      {'version': 2, 'calendar_review': [], 'completed': []}, []):
             self.assertEqual(restore_checkpoint(value, [target]), {})
 
     def test_failed_and_unresolved_results_are_retried(self):
@@ -131,7 +131,7 @@ class CheckpointStabilizationTests(unittest.TestCase):
             with self.assertRaises(RuntimeError):
                 SchoolReach(FakeRoster([schools()[0]]), CountingResolver(), FakeScraper(), folder,
                             database_writer=FailedWriter()).run()
-            self.assertEqual(read_json(Path(folder) / 'checkpoint.json')['version'], 1)
+            self.assertEqual(read_json(Path(folder) / 'checkpoint.json')['version'], 2)
 
 
 class StaffStabilizationTests(ThrowawayDatabaseTest):

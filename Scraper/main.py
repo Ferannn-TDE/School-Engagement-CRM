@@ -24,7 +24,7 @@ from helpers import (
     school_result_from_dict,
     write_json,
 )
-from stabilization import restore_checkpoint
+from stabilization import CHECKPOINT_VERSION, restore_calendar_review, restore_checkpoint
 from models import Resolution
 from resolver import HttpClient, SchoolResolver
 from scraper import SchoolScraper
@@ -124,7 +124,10 @@ class SchoolReach:
 
     def save_checkpoint(self, completed):
         with self.checkpoint_lock:
-            write_json(self.output / "checkpoint.json", {"version": 1, "completed": completed})
+            parser = getattr(self.scraper, "events", None)
+            review = list(getattr(parser, "review", []))
+            write_json(self.output / "checkpoint.json", {"version": CHECKPOINT_VERSION,
+                       "completed": completed, "calendar_review": review})
 
     def load_external_events(self):
         events = []
@@ -261,6 +264,9 @@ class SchoolReach:
         checkpoint_path = self.output / "checkpoint.json"
         saved = read_json(checkpoint_path, {}) if self.resume else {}
         completed = restore_checkpoint(saved, schools)
+        parser = getattr(self.scraper, "events", None)
+        if parser is not None:
+            parser.review = restore_calendar_review(saved, completed)
         pending = [school for school in schools if school.facility_key not in completed]
         total = len(schools)
         finished = len(completed)

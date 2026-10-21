@@ -2,6 +2,7 @@ import logging
 from data_integrity import COUNTY_SQL, STATE_SQL, CONTACT_SQL, verify_protection
 
 from datetime import datetime
+from stabilization import score_is_weaker
 
 from helpers import (
     ARCHIVED_SCHOOLS_SQL,
@@ -106,7 +107,7 @@ class DatabaseRows:
                 district_ids[self.district_key(result)],
                 school.phone or None,
                 school.address or None,
-                "Public high school",
+                school.school_type,
                 school.administrator or None,
                 school.city or None,
                 school.zipcode or None,
@@ -211,7 +212,7 @@ class DatabaseRows:
                 external_id = "schoolreach:" + stable_text(
                     result.school.facility_key,
                     event.title,
-                    event.start[:16],
+                    (event.identity_start or event.start)[:16],
                     length=32,
                 )
                 rows[external_id] = (
@@ -239,7 +240,7 @@ class DatabaseRows:
             external_id = "iacac:" + stable_text(
                 event.source_url,
                 event.title,
-                event.start[:16],
+                (event.identity_start or event.start)[:16],
                 length=32,
             )
             rows[external_id] = (
@@ -414,7 +415,7 @@ class DatabaseWriter:
                 reason = "staff_name_conflict"
             elif old_email and new_email and old_email != new_email:
                 reason = "staff_email_conflict"
-            elif parent[3] is not None and (values[13] is None or values[13] < parent[3]):
+            elif score_is_weaker(values[13], parent[3]):
                 reason = "weaker_staff_evidence"
             elif values[10] in {"official_state_record", "district_contact_fallback"}:
                 reason = "fallback_staff_update_held"

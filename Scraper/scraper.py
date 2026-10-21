@@ -1,4 +1,5 @@
 from collections import Counter
+from dataclasses import replace
 from datetime import date, datetime, timedelta
 import json
 import re
@@ -624,15 +625,27 @@ class EventParser:
     @staticmethod
     def deduplicate(events):
         priority = {"ics_feed": 3, "embedded_json": 2, "html_time": 1}
-        best = {}
+        groups = {}
         for event in events:
             local_start = parse_datetime(event.start_local or event.start, zone=CENTRAL_TIME)
             start_key = local_start.isoformat() if local_start else event.start_local or event.start
-            key = f"{normalize(event.title)}|{start_key}|{normalize(event.location)}"
-            old = best.get(key)
-            if old is None or (priority.get(event.method, 0), event.score) > (priority.get(old.method, 0), old.score):
-                best[key] = event
-        return sorted(best.values(), key=lambda item: (item.start, item.title))
+            key = (normalize(event.title), start_key)
+            groups.setdefault(key, []).append(event)
+        output = []
+        for group in groups.values():
+            known = {normalize(event.location): event.location for event in group if normalize(event.location)}
+            best = {}
+            for event in group:
+                location = normalize(event.location)
+                # A blank venue can match one known venue, but cannot choose between two.
+                if not location and len(known) == 1:
+                    location = next(iter(known))
+                    event = replace(event, location=known[location])
+                old = best.get(location)
+                if old is None or (priority.get(event.method, 0), event.score) > (priority.get(old.method, 0), old.score):
+                    best[location] = event
+            output.extend(best.values())
+        return sorted(output, key=lambda item: (item.start, item.title))
 
 
 class SchoolScraper:

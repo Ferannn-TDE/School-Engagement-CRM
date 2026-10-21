@@ -420,6 +420,16 @@ class DatabaseWriter:
             elif values[10] in {"official_state_record", "district_contact_fallback"}:
                 reason = "fallback_staff_update_held"
             if reason:
+                if reason == "weaker_staff_evidence":
+                    # The same person was seen; weaker evidence cannot replace their details.
+                    cursor.execute(
+                        "UPDATE staff SET last_scraped_at = %s, missed_runs = 0, missing_since = NULL "
+                        "WHERE staff_id = %s AND school_worked_at = %s "
+                        "AND is_scraped IS TRUE AND archived IS NOT TRUE RETURNING staff_id",
+                        (values[15], staff_id, values[4]),
+                    )
+                    if cursor.fetchone():
+                        found_ids.add(staff_id)
                 self.integrity_review.append({"table": "staff", "id": staff_id, "reason": reason,
                                               "school": values[4], "proposed_name": values[0]})
                 continue

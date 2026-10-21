@@ -13,3 +13,4 @@ typing_extensions==4.16.0
 tzdata==2026.4
 urllib3==2.8.0
 xlrd==2.0.2
+icalendar==6.3.1

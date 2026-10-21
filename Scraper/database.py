@@ -29,6 +29,24 @@ from helpers import (
 )
 
 
+def venue_event_id(base_id, location):
+    return base_id + ":venue:" + stable_text(normalize(location), length=16)
+
+
+def same_school_place(school, evidence):
+    proposed = (school.city, school.address, school.zipcode, school.district_name)
+    matches = []
+    for index, (new, old) in enumerate(zip(proposed, evidence)):
+        new, old = normalize(new), normalize(old)
+        if not new or not old or new == "unknown district" or old == "unknown district":
+            continue
+        if new != old:
+            return False
+        if index != 2:  # A shared ZIP alone does not identify a school.
+            matches.append(index)
+    return bool(matches)
+
+
 def source_status(result):
     """The school website as this run saw it (db/011): working, broken or not_found."""
     resolution = result.resolution
@@ -195,6 +213,7 @@ class DatabaseRows:
 
     def events(self):
         rows = {}
+        school_events = {}
         for result in self.results:
             for event in result.events:
                 # Store the local (Central) start; external_id below still uses the
@@ -215,9 +234,10 @@ class DatabaseRows:
                     (event.identity_start or event.start)[:16],
                     length=32,
                 )
-                rows[external_id] = (
+                location = clean(event.location) or self.school_location(result.school)
+                school_events.setdefault(external_id, {})[normalize(location)] = (
                     canonical_facility_key(result.school.facility_key, result.school.state),
-                    self.school_location(result.school),
+                    location,
                     start.time().replace(microsecond=0),
                     start.date(),
                     None,
@@ -230,6 +250,13 @@ class DatabaseRows:
                     # outreach and has none.
                     TESTING_DATE_CATEGORY if event.category == TESTING_DATE_CATEGORY else None,
                 )
+
+        # Keep the historical ID for a single venue; give collisions stable extra IDs.
+        for base_id, venues in school_events.items():
+            for index, venue in enumerate(sorted(venues)):
+                row = venues[venue]
+                external_id = base_id if index == 0 else venue_event_id(base_id, row[1])
+                rows[external_id] = row[:6] + (external_id,) + row[7:]
 
         for event in self.external_events:
             try:
@@ -460,6 +487,51 @@ class DatabaseWriter:
             )
         return found_ids
 
+    def match_event_ids(self, cursor, events):
+        groups = {}
+        output = []
+        for event in events:
+            if not event[6].startswith("schoolreach:"):
+                output.append(event)
+                continue
+            base_id = event[6].split(":venue:", 1)[0]
+            groups.setdefault(base_id, []).append(event)
+        for base_id, group in groups.items():
+            cursor.execute(
+                "SELECT external_id, location FROM events "
+                "WHERE external_id = %s OR external_id LIKE %s FOR UPDATE",
+                (base_id, base_id + ":venue:%"),
+            )
+            existing = dict(cursor.fetchall())
+            if not existing:
+                output.extend(group)
+                continue
+            if len(group) == 1 and set(existing) == {base_id}:
+                # An unambiguous legacy event keeps its identity even after a venue edit.
+                event = group[0]
+                output.append(event[:6] + (base_id,) + event[7:])
+                continue
+            venues = {normalize(event[1]) for event in group}
+            base_known = base_id not in existing or normalize(existing[base_id]) in venues
+            for event in group:
+                suffix_id = venue_event_id(base_id, event[1])
+                if suffix_id in existing:
+                    external_id = suffix_id
+                elif base_id in existing and normalize(existing[base_id]) == normalize(event[1]):
+                    external_id = base_id
+                elif not base_known:
+                    # Old rows may contain only the school's address or a client-edited venue.
+                    self.integrity_review.append({"table": "events",
+                                                  "reason": "ambiguous_legacy_event_venue",
+                                                  "external_id": base_id,
+                                                  "stored_location": existing[base_id],
+                                                  "proposed_location": event[1]})
+                    continue
+                else:
+                    external_id = suffix_id
+                output.append(event[:6] + (external_id,) + event[7:])
+        return output
+
     def write(self, results, mode="upsert", external_events=(), complete=False):
         """complete=True only when this run covered the whole roster: then records it
         used to find but didn't are counted as missed (db/011)."""
@@ -481,19 +553,28 @@ class DatabaseWriter:
                 # (db/009, Part 3), even if the run found them.
                 verify_protection(cursor)
                 archived = self.archived_schools(cursor)
-                cursor.execute("SELECT facility_key, state_code, name, is_scraped, archived, is_active, district_id FROM schools")
+                school_lookup = (
+                    "SELECT facility_key, state_code, name, is_scraped, archived, is_active, district_id, "
+                    "city, address, zipcode, (SELECT district_name FROM district "
+                    "WHERE district.district_id = schools.district_id) FROM schools"
+                )
+                cursor.execute(school_lookup)
                 existing = {row[0]: row for row in cursor.fetchall()}
                 keys = [canonical_facility_key(r.school.facility_key, r.school.state) for r in values.results]
-                cursor.execute("SELECT facility_key, state_code, name, is_scraped, archived, is_active, district_id FROM schools WHERE facility_key = ANY(%s) ORDER BY facility_key FOR UPDATE", (keys,))
+                cursor.execute(school_lookup + " WHERE facility_key = ANY(%s) ORDER BY facility_key FOR UPDATE", (keys,))
                 existing.update({row[0]: row for row in cursor.fetchall()})
-                names = {(row[1], normalize(row[2])): row[0] for row in existing.values()}
+                names = {}
+                for row in existing.values():
+                    names.setdefault((row[1], normalize(row[2])), []).append((row[0], row[7:11]))
                 accepted = []
                 seen_keys = set()
                 for result in values.results:
                     school = result.school
                     key = canonical_facility_key(school.facility_key, school.state)
                     old = existing.get(key)
-                    duplicate = names.get((school.state, normalize(school.name)))
+                    candidates = names.get((school.state, normalize(school.name)), [])
+                    duplicate = any(candidate_key != key and same_school_place(school, evidence)
+                                    for candidate_key, evidence in candidates)
                     reason = None
                     if not school.name or school.state not in STATE_NAMES or not key.startswith(school.state + ":"):
                         reason = "invalid_source_identity"
@@ -501,14 +582,15 @@ class DatabaseWriter:
                         reason = "repeated_source_identity"
                     elif old and (old[1] != school.state or not old[3] or old[4] or old[5] is False):
                         reason = "protected_or_mismatched_school"
-                    elif not old and duplicate and duplicate != key:
+                    elif not old and duplicate:
                         reason = "possible_duplicate_school"
                     if reason:
                         self.integrity_review.append({"table": "schools", "id": key, "reason": reason})
                         continue
                     accepted.append(result)
                     seen_keys.add(key)
-                    names[(school.state, normalize(school.name))] = key
+                    evidence = (school.city, school.address, school.zipcode, school.district_name)
+                    names.setdefault((school.state, normalize(school.name)), []).append((key, evidence))
                 values.results = accepted
                 if values.results:
                     cursor.executemany(STATE_SQL, values.states())
@@ -545,7 +627,7 @@ class DatabaseWriter:
                 )
 
                 events = [row for row in values.events() if row[0] not in archived]
-                for event in events:
+                for event in self.match_event_ids(cursor, events):
                     cursor.execute("SELECT event_id, schools_involved, location, time, date, attendance, is_scraped, external_id, fair_name, created_at, updated_at, category FROM events WHERE external_id = %s", (event[6],))
                     old_event = cursor.fetchone()
                     if old_event:

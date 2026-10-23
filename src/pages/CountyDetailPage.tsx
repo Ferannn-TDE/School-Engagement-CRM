@@ -41,24 +41,42 @@ export function CountyDetailPage() {
   const { state, loading } = useAppContext();
   // Testing dates are busy dates, not outreach: never counted (db/007).
   const countedEvents = useMemo(() => outreachEvents(state.events), [state.events]);
-  const [summaryRow, setSummaryRow] = useState<CountySchoolSummaryRow | null>(null);
-  const [engagementPct, setEngagementPct] = useState<number>(0);
-  const [loadingViews, setLoadingViews] = useState(true);
+  // The county views' figures, tagged with the county they belong to, so moving to
+  // another county reads as loading until its own figures arrive.
+  const viewKey = `${countyState ?? ''}|${countyName}`;
+  const [views, setViews] = useState<{
+    key: string;
+    summaryRow: CountySchoolSummaryRow | null;
+    engagementPct: number;
+  } | null>(null);
+  const loadingViews = views?.key !== viewKey;
+  const summaryRow = loadingViews ? null : views.summaryRow;
+  const engagementPct = loadingViews ? 0 : views.engagementPct;
   const [sortField, setSortField] = useState<SortField>('score');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
 
   useEffect(() => {
-    setLoadingViews(true);
+    let current = true;
     Promise.all([fetchCountySchoolSummary(), fetchCountyEngagementRate()])
       .then(([summary, engagement]) => {
         const isThis = (r: { county_name: string | null; state_code: string | null }) =>
           !!r.county_name && sameCounty(r.county_name, countyName) && (!countyState || r.state_code === countyState);
-        setSummaryRow(mergeCountyRows(summary.filter(isThis))[0] ?? null);
-        setEngagementPct(mergeCountyRows(engagement.filter(isThis))[0]?.engagement_pct ?? 0);
+        if (current) {
+          setViews({
+            key: viewKey,
+            summaryRow: mergeCountyRows(summary.filter(isThis))[0] ?? null,
+            engagementPct: mergeCountyRows(engagement.filter(isThis))[0]?.engagement_pct ?? 0,
+          });
+        }
       })
-      .catch(() => {})
-      .finally(() => setLoadingViews(false));
-  }, [countyName, countyState]);
+      .catch(() => {
+        if (current) setViews({ key: viewKey, summaryRow: null, engagementPct: 0 });
+      });
+    // A reply for a county the user has already left is ignored.
+    return () => {
+      current = false;
+    };
+  }, [countyName, countyState, viewKey]);
 
   // ── Per-county derived data ──────────────────────────────────────────────────
   const countySchools = useMemo(

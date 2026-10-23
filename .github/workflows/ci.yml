@@ -1,0 +1,44 @@
+name: App CI
+
+# The web app's checks on every push and pull request to main. No secrets and no
+# database: the build doesn't need the Supabase address or key (they're only read in
+# the browser), and the verify scripts run on files and fixtures only.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: app-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Lint, typecheck, build and verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Typecheck
+        run: npx tsc -b
+      - name: Build
+        run: npm run build
+      - name: Verify import parsing
+        run: npm run verify:import
+      - name: Verify no database deletes
+        run: npm run verify:no-deletes

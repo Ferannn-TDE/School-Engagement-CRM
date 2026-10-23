@@ -10,6 +10,9 @@ interface ActivityRow {
   date: string;
   description: string;
   outcome: string | null;
+  /** db/022; absent until that migration is applied. */
+  import_batch_id?: string | null;
+  attendee_count?: number | null;
 }
 
 // The column is a plain calendar date ("2026-09-28"). new Date() reads that form as
@@ -36,6 +39,8 @@ function rowToActivity(row: ActivityRow): ActivityRecord {
     date: toLocalDay(row.date),
     description: row.description,
     outcome: row.outcome ?? undefined,
+    importBatchId: row.import_batch_id ?? undefined,
+    attendeeCount: row.attendee_count ?? undefined,
   };
 }
 

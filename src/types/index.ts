@@ -180,6 +180,10 @@ export interface ActivityRecord {
   date: string;
   description: string;
   outcome?: string;
+  /** Set on activities saved by Import → Import Activities (db/022). */
+  importBatchId?: string;
+  /** How many people the activity stands for, when an import counted repeats. */
+  attendeeCount?: number;
 }
 
 export interface FilterState {

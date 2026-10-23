@@ -21,7 +21,8 @@ const PAGE_TABLES: [pattern: string, tables: DataTable[]][] = [
   ['/counties', ALL],
   ['/counties/:countyName', ALL],
   ['/counties/:state/:countyName', ALL],
-  ['/import', ['schools', 'contacts']],
+  // Import Activities checks for duplicate activities and lists events to link.
+  ['/import', ['schools', 'contacts', 'events', 'activities']],
   ['/settings', ['schools', 'contacts', 'events', 'activities']],
   // Reads the database itself, so it works whatever failed at startup.
   ['/settings/archived', []],

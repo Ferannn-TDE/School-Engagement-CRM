@@ -27,6 +27,7 @@ import { importContactsBulk } from '../services/contactsService';
 import { importSchoolsBulk } from '../services/schoolsService';
 import { fetchArchivedLookup, restoreItem } from '../services/archiveService';
 import { ArchivedMatchesPanel } from '../components/imports/ArchivedMatchesPanel';
+import { ActivityImport } from '../components/imports/ActivityImport';
 import {
   findArchivedMatches,
   isRowSkipped,
@@ -35,7 +36,7 @@ import {
 import type { ArchivedDecision, ArchivedLookup, ArchivedMatch, ImportRowRef } from '../utils/archivedMatches';
 import toast from 'react-hot-toast';
 
-type ImportTab = 'contacts' | 'schools' | 'combined';
+type ImportTab = 'contacts' | 'schools' | 'combined' | 'activities';
 
 /** Persistent, dismissible explanation of why an upload didn't work.
  *  Deliberately not a toast — toasts disappear after 3s and this is the only
@@ -726,7 +727,7 @@ export function ImportPage() {
     <div>
       <Header
         title="Import Data"
-        subtitle="Import contacts and schools from spreadsheets"
+        subtitle="Import contacts, schools and activities from spreadsheets"
       />
       <div className="p-8 space-y-6">
         {/* Tabs */}
@@ -735,6 +736,7 @@ export function ImportPage() {
             { key: 'combined', label: 'Import Schools + Contacts' },
             { key: 'contacts', label: 'Import Contacts' },
             { key: 'schools', label: 'Import Schools' },
+            { key: 'activities', label: 'Import Activities' },
           ] as const).map(({ key, label }) => (
             <button
               key={key}
@@ -1019,8 +1021,11 @@ export function ImportPage() {
           </>
         )}
 
+        {/* ── Activities from a list of schools (db/022) ─────────────────────── */}
+        {activeTab === 'activities' && <ActivityImport />}
+
         {/* ── Single-entity Import Tabs ───────────────────────────────────── */}
-        {activeTab !== 'combined' && (
+        {(activeTab === 'contacts' || activeTab === 'schools') && (
           <>
             {step === 'upload' && (
               <Card>

@@ -10,7 +10,7 @@ import { EmptyState } from '../components/common/EmptyState';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { useAppContext } from '../context/useAppContext';
 import { EventTypeLabels, ProgramCategory, ProgramCategoryLabels } from '../types';
-import type { EventType } from '../types';
+import type { ActivityRecord, Contact, EventType, Program } from '../types';
 import { computeEngagementScore } from '../utils/engagementScore';
 import {
   fetchCountySchoolSummary,
@@ -94,7 +94,7 @@ export function CountyDetailPage() {
 
   // Build lookup maps for engagement score computation
   const contactsBySchool = useMemo(() => {
-    const map = new Map<string, typeof state.contacts>();
+    const map = new Map<string, Contact[]>();
     for (const c of state.contacts) {
       const list = map.get(c.schoolId) ?? [];
       list.push(c);
@@ -104,7 +104,7 @@ export function CountyDetailPage() {
   }, [state.contacts]);
 
   const activitiesBySchool = useMemo(() => {
-    const map = new Map<string, typeof state.activities>();
+    const map = new Map<string, ActivityRecord[]>();
     for (const a of state.activities) {
       const list = map.get(a.schoolId) ?? [];
       list.push(a);
@@ -126,7 +126,7 @@ export function CountyDetailPage() {
   }, [countedEvents]);
 
   const programsBySchool = useMemo(() => {
-    const map = new Map<string, typeof state.programs>();
+    const map = new Map<string, Program[]>();
     for (const p of state.programs) {
       const list = map.get(p.schoolId) ?? [];
       list.push(p);

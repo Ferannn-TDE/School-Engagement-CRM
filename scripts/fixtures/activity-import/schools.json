@@ -1,0 +1,18 @@
+[
+  { "id": "IL-alton", "name": "Alton High School", "city": "Alton", "state": "IL" },
+  { "id": "IL-barrington", "name": "Barrington High School", "city": "Barrington", "state": "IL" },
+  { "id": "IL-ofallon", "name": "O Fallon High School", "city": "O Fallon", "state": "IL" },
+  { "id": "IL-pana-sr", "name": "Pana Sr High School", "city": "Pana", "state": "IL" },
+  { "id": "IL-pana-jr", "name": "Pana Jr High School", "city": "Pana", "state": "IL" },
+  { "id": "MO-poplar-bluff", "name": "Poplar Bluff High", "city": "Poplar Bluff", "state": "MO" },
+  { "id": "MO-poplar-bluff-tech", "name": "Poplar Bluff Tech. Career Center", "city": "Poplar Bluff", "state": "MO" },
+  { "id": "IL-eureka", "name": "Eureka High School", "city": "Eureka", "state": "IL" },
+  { "id": "MO-eureka", "name": "Eureka Sr. High", "city": "Eureka", "state": "MO" },
+  { "id": "IL-bloomington", "name": "Bloomington High School", "city": "Bloomington", "state": "IL" },
+  { "id": "IL-bloomington-jr", "name": "Bloomington Jr High School", "city": "Bloomington", "state": "IL" },
+  { "id": "IL-taylorville", "name": "Taylorville Sr High School", "city": "Taylorville", "state": "IL" },
+  { "id": "IL-southwestern", "name": "Southwestern High School", "city": "Piasa", "state": "IL" },
+  { "id": "IL-king", "name": "King College Prep High School", "city": "Chicago", "state": "IL" },
+  { "id": "MO-digital", "name": "Missouri Digital Academy", "city": "Laquey", "state": "MO" },
+  { "id": "IL-triad", "name": "Triad High School", "city": "Troy", "state": "IL", "archived": true }
+]

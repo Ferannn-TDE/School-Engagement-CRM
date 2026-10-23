@@ -1,7 +1,5 @@
 import {
-  createContext,
   useCallback,
-  useContext,
   useReducer,
   useEffect,
   useState,
@@ -9,6 +7,7 @@ import {
   type ReactNode,
 } from 'react';
 import toast from 'react-hot-toast';
+import { AppContext, useAppContext } from './useAppContext';
 import type { School, Contact, Event, ActivityRecord, Program } from '../types';
 import { nowISO } from '../utils/helpers';
 import {
@@ -207,7 +206,7 @@ const initialState: AppState = {
   programs: [],
 };
 
-interface AppContextValue {
+export interface AppContextValue {
   state: AppState;
   dispatch: React.Dispatch<Action>;
   loading: boolean;
@@ -277,8 +276,6 @@ async function loadStartupTables(): Promise<StartupLoad> {
   });
   return { loaded, errors };
 }
-
-const AppContext = createContext<AppContextValue | null>(null);
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -580,10 +577,4 @@ export function AppStateOverride({ state: scoped, children }: { state: AppState;
   const ctx = useAppContext();
   const value = useMemo(() => ({ ...ctx, state: scoped }), [ctx, scoped]);
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
-}
-
-export function useAppContext() {
-  const ctx = useContext(AppContext);
-  if (!ctx) throw new Error('useAppContext must be used within AppProvider');
-  return ctx;
 }

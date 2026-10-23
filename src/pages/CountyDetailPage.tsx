@@ -8,7 +8,7 @@ import { Card, MetricCard } from '../components/common/Card';
 import { Badge } from '../components/common/Badge';
 import { EmptyState } from '../components/common/EmptyState';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
-import { useAppContext } from '../context/AppContext';
+import { useAppContext } from '../context/useAppContext';
 import { EventTypeLabels, ProgramCategory, ProgramCategoryLabels } from '../types';
 import type { EventType } from '../types';
 import { computeEngagementScore } from '../utils/engagementScore';

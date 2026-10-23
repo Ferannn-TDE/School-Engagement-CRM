@@ -1,5 +1,6 @@
 import { useMemo, type ReactNode } from 'react';
-import { AppStateOverride, useAppContext } from '../../context/AppContext';
+import { AppStateOverride } from '../../context/AppContext';
+import { useAppContext } from '../../context/useAppContext';
 import { RegionScopeContext } from '../../context/RegionScopeContext';
 import { useStateFilter } from '../../hooks/useStateFilter';
 import { eventStates } from '../../utils/region';

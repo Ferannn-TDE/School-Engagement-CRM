@@ -5,7 +5,7 @@ import type { Event } from '../../types';
 import { EventTypeLabels } from '../../types';
 import { Badge } from '../common/Badge';
 import { Button } from '../common/Button';
-import { useAppContext } from '../../context/AppContext';
+import { useAppContext } from '../../context/useAppContext';
 
 /** Everything about an event at a glance: shown in a pop-up when an event is clicked. */
 export function EventDetails({ event, onEdit }: { event: Event; onEdit?: () => void }) {

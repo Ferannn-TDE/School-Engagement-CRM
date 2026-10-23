@@ -5,7 +5,7 @@ import { Input } from '../common/Input';
 import { Select } from '../common/Select';
 import { Textarea } from '../common/Textarea';
 import { Button } from '../common/Button';
-import { useAppContext } from '../../context/AppContext';
+import { useAppContext } from '../../context/useAppContext';
 import { EventType, EventTypeLabels } from '../../types';
 import type { Event } from '../../types';
 import toast from 'react-hot-toast';

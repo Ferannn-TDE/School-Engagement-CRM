@@ -13,7 +13,7 @@ import { Modal } from '../components/common/Modal';
 import { EmptyState } from '../components/common/EmptyState';
 import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import { ContactForm } from '../components/contacts/ContactForm';
-import { useAppContext } from '../context/AppContext';
+import { useAppContext } from '../context/useAppContext';
 import { useUrlState } from '../hooks/useUrlState';
 import type { Contact } from '../types';
 import { ContactRole, ContactRoleLabels } from '../types';

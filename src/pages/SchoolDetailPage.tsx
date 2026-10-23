@@ -19,7 +19,7 @@ import { EmptyState } from '../components/common/EmptyState';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { Breadcrumb } from '../components/common/Breadcrumb';
 import type { BreadcrumbTag } from '../components/common/Breadcrumb';
-import { useAppContext } from '../context/AppContext';
+import { useAppContext } from '../context/useAppContext';
 import { ContactMethodLabels, ProgramCategoryLabels, ProgramCategory } from '../types';
 import type { Contact, Program } from '../types';
 import { formatSchoolType } from '../utils/helpers';

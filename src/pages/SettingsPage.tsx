@@ -14,7 +14,7 @@ import { Header } from '../components/layout/Header';
 import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { ConfirmDialog } from '../components/common/ConfirmDialog';
-import { useAppContext } from '../context/AppContext';
+import { useAppContext } from '../context/useAppContext';
 import { useAuth } from '../context/AuthContext';
 import { seedSchools, seedContacts, seedEvents, seedActivities } from '../constants/seedData';
 import { downloadFile } from '../utils/helpers';

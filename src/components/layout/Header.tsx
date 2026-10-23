@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search, Bell, Menu, School, Users, Calendar } from 'lucide-react';
 import { useAppContext } from '../../context/useAppContext';
 import { useAuth } from '../../context/useAuth';
-import { useLayout } from '../../context/LayoutContext';
+import { useLayout } from '../../context/useLayout';
 import { useGlobalSearch } from '../../hooks/useGlobalSearch';
 import { useRegionScope } from '../../context/RegionScopeContext';
 import { StateFilter } from '../common/StateFilter';

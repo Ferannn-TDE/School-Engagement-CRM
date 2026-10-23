@@ -23,7 +23,11 @@ import re
 import sys
 from pathlib import Path
 
+# Include reference rows introduced by the 50-state writer as well.
 TABLES = {
+    "state": ("state_code",),
+    "county": ("county_name", "state_code"),
+    "district": ("district_id",),
     "schools": ("facility_key",),
     "staff": ("staff_id",),
     "contacts": ("school_id", "staff_id"),

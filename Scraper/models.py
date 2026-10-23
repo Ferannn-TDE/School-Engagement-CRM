@@ -39,6 +39,7 @@ class School:
     # When set, they are used first and the resolver doesn't guess (plan item C9).
     website_override: str = ""
     staff_page_override: str = ""
+    school_type: str = "Public high school"
 
     @property
     def seeds(self):
@@ -135,6 +136,8 @@ class Event:
     # `start` / `end` are already local (IACAC). Plan item B5b.
     start_local: str = ""
     end_local: str = ""
+    # Historical source timestamp used only for stable external IDs, before timezone fixes.
+    identity_start: str = ""
 
 
 @dataclass

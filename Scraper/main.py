@@ -14,6 +14,7 @@ from helpers import (
     canonical_facility_key,
     OUTPUT_FOLDER,
     RESOLVE_WINDOW,
+    RESUME_CHECKPOINT,
     SKIP,
     UPLOAD_DATABASE,
     USE_BROWSER,
@@ -23,6 +24,7 @@ from helpers import (
     school_result_from_dict,
     write_json,
 )
+from stabilization import CHECKPOINT_VERSION, restore_calendar_review, restore_checkpoint
 from models import Resolution
 from resolver import HttpClient, SchoolResolver
 from scraper import SchoolScraper
@@ -68,6 +70,7 @@ class SchoolReach:
         database_mode=DATABASE_MODE,
         external_event_sources=(),
         contact_quality=None,
+        resume=RESUME_CHECKPOINT,
     ):
         self.roster = roster
         self.resolver = resolver
@@ -81,6 +84,7 @@ class SchoolReach:
         self.external_event_sources = tuple(external_event_sources)
         self.contact_quality = contact_quality
         self.checkpoint_lock = threading.Lock()
+        self.resume = resume
 
     def release_runtime_memory(self):
         seen = set()
@@ -120,7 +124,10 @@ class SchoolReach:
 
     def save_checkpoint(self, completed):
         with self.checkpoint_lock:
-            write_json(self.output / "checkpoint.json", completed)
+            parser = getattr(self.scraper, "events", None)
+            review = list(getattr(parser, "review", []))
+            write_json(self.output / "checkpoint.json", {"version": CHECKPOINT_VERSION,
+                       "completed": completed, "calendar_review": review})
 
     def load_external_events(self):
         events = []
@@ -201,6 +208,8 @@ class SchoolReach:
         write_json(self.output / "iacac_events.json", external_events)
         write_json(self.output / "contact_quality.json", contact_quality or {})
         write_json(self.output / "review.json", review)
+        parser = getattr(self.scraper, "events", None)
+        write_json(self.output / "calendar_review.json", getattr(parser, "review", []))
 
     def quarantine_results(self, results):
         groups = defaultdict(list)
@@ -253,16 +262,11 @@ class SchoolReach:
             print(f"Using the client's own links for {overridden} school(s).", flush=True)
 
         checkpoint_path = self.output / "checkpoint.json"
-        saved = read_json(checkpoint_path, {})
-        if not isinstance(saved, dict):
-            saved = {}
-
-        selected_keys = {school.facility_key for school in schools}
-        completed = {
-            key: value
-            for key, value in saved.items()
-            if key in selected_keys and isinstance(value, dict)
-        }
+        saved = read_json(checkpoint_path, {}) if self.resume else {}
+        completed = restore_checkpoint(saved, schools)
+        parser = getattr(self.scraper, "events", None)
+        if parser is not None:
+            parser.review = restore_calendar_review(saved, completed)
         pending = [school for school in schools if school.facility_key not in completed]
         total = len(schools)
         finished = len(completed)
@@ -305,7 +309,9 @@ class SchoolReach:
                 external_events=external_events,
                 complete=self.skip == 0,
             )
-            write_json(checkpoint_path, {})
+            write_json(self.output / "database_integrity_review.json",
+                       getattr(self.database_writer, "integrity_review", []))
+        write_json(checkpoint_path, {})
         return results
 
 

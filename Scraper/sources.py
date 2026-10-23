@@ -1,6 +1,8 @@
+import re
+from concurrent.futures import ThreadPoolExecutor
 from io import BytesIO
 from pathlib import Path
-from urllib.parse import urljoin
+from urllib.parse import parse_qs, urljoin, urlsplit
 
 import requests
 from bs4 import BeautifulSoup
@@ -352,9 +354,113 @@ class MissouriSource(OfficialSchoolSource):
         return attach_district_context(schools)
 
 
+class MissouriPrivateSource(OfficialSchoolSource):
+    state = "MO"
+    directory_url = "https://www.mshsaa.org/Schools/SchoolListing.aspx"
+    profile_url = "https://www.mshsaa.org/Schools/AccountInfo.aspx?s={}"
+
+    def download(self, raw_folder):
+        response = self.session.get(self.directory_url, timeout=60)
+        response.raise_for_status()
+        candidates = self.profile_ids(response.text)
+        folder = Path(raw_folder) / "missouri_private"
+        folder.mkdir(parents=True, exist_ok=True)
+        (folder / "listing.html").write_text(response.text, encoding="utf-8")
+
+        # Each worker owns its session; the directory session is not shared between threads.
+        def load_profile(school_id):
+            url = self.profile_url.format(school_id)
+            with requests.Session() as session:
+                session.headers["User-Agent"] = USER_AGENT
+                reply = session.get(url, timeout=60)
+                reply.raise_for_status()
+            (folder / f"{school_id}.html").write_text(reply.text, encoding="utf-8")
+            return self.from_profile(reply.text, school_id)
+
+        with ThreadPoolExecutor(max_workers=4) as pool:
+            schools = [school for school in pool.map(load_profile, candidates) if school]
+        if not schools:
+            raise RuntimeError("MSHSAA returned no confirmed Missouri private high schools.")
+        keys = [school.facility_key for school in schools]
+        if len(keys) != len(set(keys)):
+            raise RuntimeError("MSHSAA returned duplicate Missouri private school IDs.")
+        schools.sort(key=lambda school: (normalize(school.name), normalize(school.city)))
+        write_json(folder / "schools.json", schools)
+        return schools
+
+    @staticmethod
+    def profile_ids(html):
+        soup = BeautifulSoup(html, "html.parser")
+        ids = []
+        for row in soup.select("tr[data-organizationtype]"):
+            if row.get("data-organizationtype") not in {"1", "3"}:
+                continue
+            if row.get("data-membertype") not in {"member", "affiliate"}:
+                continue
+            link = row.select_one('a[href*="?s="]')
+            if not link:
+                raise RuntimeError("MSHSAA school listing is missing a profile link.")
+            school_id = parse_qs(urlsplit(link["href"]).query).get("s", [""])[0]
+            if not school_id.isdigit():
+                raise RuntimeError("MSHSAA school listing has an invalid profile ID.")
+            if school_id not in ids:
+                ids.append(school_id)
+        if not ids:
+            raise RuntimeError("MSHSAA school listing could not be read.")
+        return ids
+
+    @classmethod
+    def from_profile(cls, html, school_id):
+        soup = BeautifulSoup(html, "html.parser")
+        fields = {}
+        for row in soup.select("tr"):
+            label, value = row.find("th", recursive=False), row.find("td", recursive=False)
+            if label and value:
+                fields[clean(label.get_text(" ")).rstrip(":")] = value
+
+        def value(label):
+            cell = fields.get(label)
+            return clean(cell.get_text(" ")) if cell else ""
+
+        kind = value("School Type").casefold()
+        if kind not in {"public", "private", "charter", "public (charter school)"}:
+            raise RuntimeError(f"MSHSAA profile {school_id} has no recognized school type.")
+        if kind != "private":
+            return None
+        if "home school" in value("Membership Type").casefold():
+            return None
+        name, grades = value("School Name"), value("Grades Served")
+        if not name or not grades:
+            raise RuntimeError(f"MSHSAA private profile {school_id} lacks name or grades.")
+        if not serves_high_school(name, grades):
+            return None
+        location = soup.select_one('[id$="lbl911CityStateZipView"]')
+        location = clean(location.get_text(" ")) if location else ""
+        match = re.fullmatch(r"(.+),\s*MO\s+(\d{5}(?:-\d{4})?)", location)
+        if not match:
+            raise RuntimeError(f"MSHSAA private profile {school_id} lacks a Missouri mailing location.")
+        city, zipcode = match.groups()
+        street = soup.select_one('[id$="lbl911StreetAddressLine1View"]')
+        website_cell = fields.get("School Website")
+        website_link = website_cell.find("a", href=True) if website_cell else None
+        website = canonical_url(website_link["href"]) if website_link else ""
+        dese = digits(value("DESE Code"))
+        supplied_id = f"{dese[:6]}-{dese[6:]}" if len(dese) == 10 else f"mshsaa-{school_id}"
+        profile = cls.profile_url.format(school_id)
+        return School(
+            facility_key=unique_school_id("MO", supplied_id, name, city),
+            name=name, state="MO", city=city, county=value("County").replace(".", ""),
+            address=clean(street.get_text(" ")) if street else "", zipcode=zipcode,
+            phone=value("Phone"), grades=grades, website=website,
+            state_id=supplied_id, data_source=profile,
+            alternate_seeds=(profile,) if not website else (),
+            school_type="Private high school",
+        )
+
+
 class StateRoster:
     def __init__(self, sources=None):
-        self.sources = list(sources or (IllinoisSource(), MissouriSource()))
+        self.sources = list(sources or (IllinoisSource(), MissouriSource(), MissouriPrivateSource()))
 
     def load(self, raw_folder):
         raw_folder = Path(raw_folder)

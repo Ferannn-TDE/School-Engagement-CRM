@@ -38,7 +38,7 @@ class RunAuditTests(ThrowawayDatabaseTest):
     def test_a_snapshot_copies_the_tables_and_refuses_to_overwrite(self):
         self.write(found(ALPHA, PAT))
         counts = self.snapshot()
-        self.assertEqual(counts, {"schools": 1, "staff": 1, "contacts": 0, "events": 0})
+        self.assertEqual(counts, {"state": 1, "county": 1, "district": 1, "schools": 1, "staff": 1, "contacts": 1, "events": 0})
         self.assertEqual(self.query(f"SELECT name, phone FROM {BACKUP}.scraper_run_run_1_1_staff"),
                          [("Pat Lee", "618-555-0101")])
         with self.assertRaisesRegex(RuntimeError, "already exists"):

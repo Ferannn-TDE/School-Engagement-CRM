@@ -8,7 +8,7 @@ import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { Select } from '../components/common/Select';
 import { Badge } from '../components/common/Badge';
-import { useAppContext } from '../context/AppContext';
+import { useAppContext } from '../context/useAppContext';
 import { roleFromTitle } from '../utils/contactRoles';
 import {
   isValidEmail,

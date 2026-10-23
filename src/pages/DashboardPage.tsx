@@ -9,7 +9,7 @@ import { Header } from '../components/layout/Header';
 import { MetricCard, Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { Badge } from '../components/common/Badge';
-import { useAppContext } from '../context/AppContext';
+import { useAppContext } from '../context/useAppContext';
 import { EventTypeLabels } from '../types';
 import type { EventType } from '../types';
 import { outreachEvents } from '../utils/events';

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { format, subMonths, isAfter } from 'date-fns';
-import { useAppContext } from '../context/AppContext';
+import { useAppContext } from '../context/useAppContext';
 import { outreachEvents } from '../utils/events';
 
 export interface SchoolContactCounts {

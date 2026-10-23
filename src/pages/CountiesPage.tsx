@@ -94,8 +94,8 @@ export function CountiesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Runs once, and `loading` starts true, so it isn't set here.
   useEffect(() => {
-    setLoading(true);
     Promise.all([fetchCountySchoolSummary(), fetchCountyEngagementRate()])
       .then(([summary, engagement]) => {
         setSummaryData(summary);

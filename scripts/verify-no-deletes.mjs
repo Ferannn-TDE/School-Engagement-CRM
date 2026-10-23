@@ -3,9 +3,9 @@
  *
  * Run:  npm run verify:no-deletes
  *
- * The database refuses deletes from signed-in users (db/010), silently: the request
- * succeeds and removes 0 rows, so a delete in the app would look like it worked and
- * the item would come back on the next load. The app archives instead (db/009).
+ * The database refuses deletes from signed-in users: since db/021 they have no DELETE
+ * privilege, so a delete fails with "permission denied" (before that, db/010 made it
+ * remove 0 rows silently). The app archives instead (db/009).
  *
  * A Supabase delete is `.delete()` with no argument or with an options object
  * (`.delete({ count: 'exact' })`). Deletes on a Map, Set or URLSearchParams always
@@ -40,9 +40,9 @@ if (found.length > 0) {
   console.error(`\nverify:no-deletes FAILED: ${found.length} database delete call${found.length === 1 ? '' : 's'} in src/\n`);
   console.error(found.join('\n'));
   console.error(`
-The database refuses deletes from signed-in users (db/010). A delete sent from the
-app removes 0 rows without an error, so the item would seem to disappear and then
-come back on reload. Archive instead: set archived = true (events, programs,
+The database refuses deletes from signed-in users (db/010, db/021). A delete sent
+from the app fails with "permission denied for table ...", so the action would fail
+for the user. Archive instead: set archived = true (events, programs,
 activities) or call archive_school / archive_contact (see the archive functions in
 src/services and db/009). Settings → Archived lets people restore.
 `);

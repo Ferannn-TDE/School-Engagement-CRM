@@ -8,9 +8,9 @@ import { Card, MetricCard } from '../components/common/Card';
 import { Badge } from '../components/common/Badge';
 import { EmptyState } from '../components/common/EmptyState';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
-import { useAppContext } from '../context/AppContext';
+import { useAppContext } from '../context/useAppContext';
 import { EventTypeLabels, ProgramCategory, ProgramCategoryLabels } from '../types';
-import type { EventType } from '../types';
+import type { ActivityRecord, Contact, EventType, Program } from '../types';
 import { computeEngagementScore } from '../utils/engagementScore';
 import {
   fetchCountySchoolSummary,
@@ -41,24 +41,42 @@ export function CountyDetailPage() {
   const { state, loading } = useAppContext();
   // Testing dates are busy dates, not outreach: never counted (db/007).
   const countedEvents = useMemo(() => outreachEvents(state.events), [state.events]);
-  const [summaryRow, setSummaryRow] = useState<CountySchoolSummaryRow | null>(null);
-  const [engagementPct, setEngagementPct] = useState<number>(0);
-  const [loadingViews, setLoadingViews] = useState(true);
+  // The county views' figures, tagged with the county they belong to, so moving to
+  // another county reads as loading until its own figures arrive.
+  const viewKey = `${countyState ?? ''}|${countyName}`;
+  const [views, setViews] = useState<{
+    key: string;
+    summaryRow: CountySchoolSummaryRow | null;
+    engagementPct: number;
+  } | null>(null);
+  const loadingViews = views?.key !== viewKey;
+  const summaryRow = loadingViews ? null : views.summaryRow;
+  const engagementPct = loadingViews ? 0 : views.engagementPct;
   const [sortField, setSortField] = useState<SortField>('score');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
 
   useEffect(() => {
-    setLoadingViews(true);
+    let current = true;
     Promise.all([fetchCountySchoolSummary(), fetchCountyEngagementRate()])
       .then(([summary, engagement]) => {
         const isThis = (r: { county_name: string | null; state_code: string | null }) =>
           !!r.county_name && sameCounty(r.county_name, countyName) && (!countyState || r.state_code === countyState);
-        setSummaryRow(mergeCountyRows(summary.filter(isThis))[0] ?? null);
-        setEngagementPct(mergeCountyRows(engagement.filter(isThis))[0]?.engagement_pct ?? 0);
+        if (current) {
+          setViews({
+            key: viewKey,
+            summaryRow: mergeCountyRows(summary.filter(isThis))[0] ?? null,
+            engagementPct: mergeCountyRows(engagement.filter(isThis))[0]?.engagement_pct ?? 0,
+          });
+        }
       })
-      .catch(() => {})
-      .finally(() => setLoadingViews(false));
-  }, [countyName, countyState]);
+      .catch(() => {
+        if (current) setViews({ key: viewKey, summaryRow: null, engagementPct: 0 });
+      });
+    // A reply for a county the user has already left is ignored.
+    return () => {
+      current = false;
+    };
+  }, [countyName, countyState, viewKey]);
 
   // ── Per-county derived data ──────────────────────────────────────────────────
   const countySchools = useMemo(
@@ -76,7 +94,7 @@ export function CountyDetailPage() {
 
   // Build lookup maps for engagement score computation
   const contactsBySchool = useMemo(() => {
-    const map = new Map<string, typeof state.contacts>();
+    const map = new Map<string, Contact[]>();
     for (const c of state.contacts) {
       const list = map.get(c.schoolId) ?? [];
       list.push(c);
@@ -86,7 +104,7 @@ export function CountyDetailPage() {
   }, [state.contacts]);
 
   const activitiesBySchool = useMemo(() => {
-    const map = new Map<string, typeof state.activities>();
+    const map = new Map<string, ActivityRecord[]>();
     for (const a of state.activities) {
       const list = map.get(a.schoolId) ?? [];
       list.push(a);
@@ -108,7 +126,7 @@ export function CountyDetailPage() {
   }, [countedEvents]);
 
   const programsBySchool = useMemo(() => {
-    const map = new Map<string, typeof state.programs>();
+    const map = new Map<string, Program[]>();
     for (const p of state.programs) {
       const list = map.get(p.schoolId) ?? [];
       list.push(p);

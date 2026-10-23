@@ -7,7 +7,7 @@ import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { EmptyState } from '../components/common/EmptyState';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
-import { useAppContext } from '../context/AppContext';
+import { useAppContext } from '../context/useAppContext';
 import { fetchArchivedItems, restoreItem } from '../services/archiveService';
 import type { ArchivedItem, ArchivedKind } from '../services/archiveService';
 import toast from 'react-hot-toast';

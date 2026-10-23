@@ -13,7 +13,7 @@ import { EmptyState } from '../components/common/EmptyState';
 import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import { EventForm } from '../components/events/EventForm';
 import { EventDetails } from '../components/events/EventDetails';
-import { useAppContext } from '../context/AppContext';
+import { useAppContext } from '../context/useAppContext';
 import { useUrlState } from '../hooks/useUrlState';
 import type { Event } from '../types';
 import { EventType, EventTypeLabels } from '../types';

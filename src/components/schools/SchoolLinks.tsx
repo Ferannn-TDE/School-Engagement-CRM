@@ -5,7 +5,7 @@ import { Card } from '../common/Card';
 import { Button } from '../common/Button';
 import { Input } from '../common/Input';
 import { Badge } from '../common/Badge';
-import { useAppContext } from '../../context/AppContext';
+import { useAppContext } from '../../context/useAppContext';
 import { setSchoolLinks } from '../../services/schoolsService';
 import { normalizeLink, staffPageInUse, websiteInUse } from '../../utils/links';
 import type { LinkInUse } from '../../utils/links';

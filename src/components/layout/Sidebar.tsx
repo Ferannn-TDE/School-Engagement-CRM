@@ -1,6 +1,6 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import { classNames } from '../../utils/helpers';
-import { useLayout } from '../../context/LayoutContext';
+import { useLayout } from '../../context/useLayout';
 import { rememberedUrl } from '../../hooks/usePlaceMemory';
 import { navGroups, REGION_PATHS } from './navigation';
 import { rememberedRegion } from '../../hooks/useStateFilter';

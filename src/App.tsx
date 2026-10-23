@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext';
+import { useAuth } from './context/useAuth';
 import { AppProvider } from './context/AppContext';
 import { LoadingSpinner } from './components/common/LoadingSpinner';
 import { AppLayout } from './components/layout/AppLayout';

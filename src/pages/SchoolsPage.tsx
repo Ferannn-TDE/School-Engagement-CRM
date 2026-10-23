@@ -13,7 +13,7 @@ import { DataTable } from '../components/common/DataTable';
 import { Modal } from '../components/common/Modal';
 import { EmptyState } from '../components/common/EmptyState';
 import { SchoolForm } from '../components/schools/SchoolForm';
-import { useAppContext } from '../context/AppContext';
+import { useAppContext } from '../context/useAppContext';
 import { useUrlState } from '../hooks/useUrlState';
 import { countyOptions, inCounty } from '../utils/counties';
 import type { School as SchoolType } from '../types';

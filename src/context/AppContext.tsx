@@ -1,7 +1,5 @@
 import {
-  createContext,
   useCallback,
-  useContext,
   useReducer,
   useEffect,
   useState,
@@ -9,6 +7,7 @@ import {
   type ReactNode,
 } from 'react';
 import toast from 'react-hot-toast';
+import { AppContext, useAppContext } from './useAppContext';
 import type { School, Contact, Event, ActivityRecord, Program } from '../types';
 import { nowISO } from '../utils/helpers';
 import {
@@ -54,6 +53,12 @@ export interface AppState {
   programs: Program[];
 }
 
+/** One of the five tables loaded at startup. */
+export type DataTable = keyof AppState;
+
+/** The tables that failed to load, with the error for each. */
+export type LoadErrors = Partial<Record<DataTable, string>>;
+
 type Action =
   | { type: 'SET_SCHOOLS'; payload: School[] }
   | { type: 'ADD_SCHOOL'; payload: School }
@@ -79,12 +84,15 @@ type Action =
   | { type: 'ARCHIVE_PROGRAM'; payload: string }
   | { type: 'VERIFY_SCHOOLS_BULK'; payload: { ids: string[]; now: string } }
   | { type: 'VERIFY_CONTACT'; payload: { id: string; now: string } }
-  | { type: 'LOAD_STATE'; payload: AppState };
+  | { type: 'LOAD_STATE'; payload: AppState }
+  | { type: 'LOAD_PARTIAL'; payload: Partial<AppState> };
 
 function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
     case 'LOAD_STATE':
       return action.payload;
+    case 'LOAD_PARTIAL':
+      return { ...state, ...action.payload };
     case 'SET_SCHOOLS':
       return { ...state, schools: action.payload };
     case 'ADD_SCHOOL':
@@ -198,11 +206,12 @@ const initialState: AppState = {
   programs: [],
 };
 
-interface AppContextValue {
+export interface AppContextValue {
   state: AppState;
   dispatch: React.Dispatch<Action>;
   loading: boolean;
-  error: string | null;
+  /** Tables whose startup load failed. Pages that need one of them show a retry message. */
+  loadErrors: LoadErrors;
   addSchool: (school: Omit<School, 'id' | 'createdAt' | 'updatedAt'>) => void;
   addSchoolsBulk: (schools: Omit<School, 'id' | 'createdAt' | 'updatedAt'>[]) => Promise<School[]>;
   /** `changes` limits the database write to those fields; without it every field is written. */
@@ -236,40 +245,59 @@ interface AppContextValue {
   reload: () => Promise<void>;
 }
 
-const AppContext = createContext<AppContextValue | null>(null);
+interface StartupLoad {
+  loaded: Partial<AppState>;
+  errors: LoadErrors;
+}
+
+/** Fetches the five tables independently; never rejects. */
+async function loadStartupTables(): Promise<StartupLoad> {
+  const tables: DataTable[] = ['schools', 'contacts', 'events', 'activities', 'programs'];
+  const results = await Promise.allSettled([
+    fetchSchools(),
+    fetchContacts(),
+    fetchEvents(),
+    fetchActivities(),
+    fetchPrograms(),
+  ]);
+  const loaded: Partial<AppState> = {};
+  const errors: LoadErrors = {};
+  results.forEach((result, i) => {
+    const table = tables[i];
+    if (result.status === 'fulfilled') {
+      (loaded as Record<DataTable, unknown>)[table] = result.value;
+    } else {
+      const err: unknown = result.reason;
+      // Supabase errors are plain objects with a message, not always Error instances.
+      const message = (err as { message?: unknown } | null)?.message;
+      errors[table] = typeof message === 'string' && message ? message : String(err);
+      console.error(`AppContext load error (${table}):`, err);
+    }
+  });
+  return { loaded, errors };
+}
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [loadErrors, setLoadErrors] = useState<LoadErrors>({});
 
   // Load all data from Supabase on mount, and again after a restore (reload).
-  const reload = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const [schools, contacts, events, activities, programs] = await Promise.all([
-        fetchSchools(),
-        fetchContacts(),
-        fetchEvents(),
-        fetchActivities(),
-        fetchPrograms(),
-      ]);
-      dispatch({
-        type: 'LOAD_STATE',
-        payload: { schools, contacts, events, activities, programs },
-      });
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to load data from database';
-      setError(message);
-      console.error('AppContext load error:', err);
-    } finally {
-      setLoading(false);
-    }
+  // Each table loads on its own: one failure keeps the others, and only the pages
+  // that need the failed table are paused (AppLayout).
+  const applyLoad = useCallback(({ loaded, errors }: StartupLoad) => {
+    dispatch({ type: 'LOAD_PARTIAL', payload: loaded });
+    setLoadErrors(errors);
+    setLoading(false);
   }, []);
+  const reload = useCallback(async () => {
+    setLoading(true);
+    applyLoad(await loadStartupTables());
+  }, [applyLoad]);
+  // `loading` starts true, so the first load only has to apply the result.
   useEffect(() => {
-    void reload();
-  }, [reload]);
+    void loadStartupTables().then(applyLoad);
+  }, [applyLoad]);
 
   // Schools
   const addSchool = (school: Omit<School, 'id' | 'createdAt' | 'updatedAt'>): void => {
@@ -508,7 +536,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         state,
         dispatch,
         loading,
-        error,
+        loadErrors,
         addSchool,
         addSchoolsBulk,
         updateSchool,
@@ -549,10 +577,4 @@ export function AppStateOverride({ state: scoped, children }: { state: AppState;
   const ctx = useAppContext();
   const value = useMemo(() => ({ ...ctx, state: scoped }), [ctx, scoped]);
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
-}
-
-export function useAppContext() {
-  const ctx = useContext(AppContext);
-  if (!ctx) throw new Error('useAppContext must be used within AppProvider');
-  return ctx;
 }

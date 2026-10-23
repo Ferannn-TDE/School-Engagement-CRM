@@ -27,6 +27,7 @@ how 001 and 002 went missing once (found and re-applied on 2026-09-26/28).
 | `017_school_calendar_times_to_central.sql` | Applied 2026-10-01 with the scraper-fixes merge: the 121 school-calendar event times stored in UTC are now Central (old values in `backup.school_calendar_times_utc`). The app no longer converts them or locks their time. |
 | `019_merge_duplicate_staff.sql` | Applied 2026-10-01: merged 6 duplicate staff added by the old scraper's run #5 into the existing records (blanks filled with no lock; 4 conflicting values waiting in `pending_scraped` with that field locked, so the school page asks "keep yours or use this?") and archived the duplicates with a note. Rows saved in `backup.duplicate_merge_20261001`. |
 | `020_clear_scores_from_notes.sql` | Applied 2026-10-01: cleared the 4,343 staff notes that were only the scraper's score (now in `scraper_score`); saved in `backup.notes_scores_20261001`. Notes with any other text were left (9). No lock added. |
+| `021_tighten_grants_and_search_path.sql` | Applied 2026-10-23: signed-in users keep SELECT, INSERT and UPDATE on tables and SELECT on the two county views; TRUNCATE, TRIGGER, REFERENCES and DELETE are revoked, so a delete now fails with a permission error instead of silently removing 0 rows. Fixes `search_path` on four functions and removes the unused `restrict_signup_domain`. `anon` has no grants (checked 2026-10-20), so it isn't covered. |
 
 ## Archive, never delete (009)
 
@@ -46,9 +47,13 @@ cleared on restore.
   other five tables). To restore by hand, use the app, or
   `select restore_school('<facility_key>');` with claims set as in the unlock command
   below.
-- Deletes are refused at the database (010): a delete sent with a signed-in user's
-  token removes 0 rows on every table, silently (no error). Only the owner connection
-  (the scraper, the SQL Editor) can delete, and nothing in this project should.
+- Deletes are refused at the database. Since 021, signed-in users have no DELETE (or
+  TRUNCATE) privilege on any table, so a delete sent with their token fails with
+  `permission denied for table ...` (code 42501). Before 021 it was refused by the
+  deny-delete policies (010) instead, which removed 0 rows silently (no error); those
+  policies stay as a second layer. Only the owner connection (the scraper, the SQL
+  Editor) can delete, and nothing in this project should. Archive and restore are
+  updates, so they don't need DELETE.
 - **`npm run verify:no-deletes`** fails if any code under `src/` calls a delete on the
   database (`.delete()` or `.delete({ ... })`), and says to archive instead. Run it with
   `verify:import` before merging; it is listed for CI under Epic 4 on the plan page.

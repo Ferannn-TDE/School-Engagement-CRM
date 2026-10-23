@@ -15,7 +15,7 @@ import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import { useAppContext } from '../context/useAppContext';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 import { seedSchools, seedContacts, seedEvents, seedActivities } from '../constants/seedData';
 import { downloadFile } from '../utils/helpers';
 import toast from 'react-hot-toast';

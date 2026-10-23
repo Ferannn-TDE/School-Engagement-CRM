@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { Button } from '../common/Button';
 import { useAppContext } from '../../context/useAppContext';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/useAuth';
 import { resolveSchoolPending } from '../../services/schoolsService';
 import { resolveContactPending } from '../../services/contactsService';
 import { displayValue, fieldLabel, openPending } from '../../utils/pending';

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Bell, Menu, School, Users, Calendar } from 'lucide-react';
 import { useAppContext } from '../../context/useAppContext';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/useAuth';
 import { useLayout } from '../../context/LayoutContext';
 import { useGlobalSearch } from '../../hooks/useGlobalSearch';
 import { useRegionScope } from '../../context/RegionScopeContext';

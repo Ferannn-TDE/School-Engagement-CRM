@@ -1,4 +1,5 @@
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
+import { AuthContext } from './useAuth';
 import type { User } from '@supabase/supabase-js';
 import { supabase } from '../services/supabase';
 
@@ -9,7 +10,7 @@ interface MfaLevel {
   nextLevel: AalLevel;
 }
 
-interface AuthContextValue {
+export interface AuthContextValue {
   user: User | null;
   loading: boolean;
   mfaLevel: MfaLevel | null;
@@ -17,8 +18,6 @@ interface AuthContextValue {
   refreshMfaLevel: () => Promise<void>;
   signOut: () => Promise<void>;
 }
-
-const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -73,10 +72,4 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
-  return ctx;
 }

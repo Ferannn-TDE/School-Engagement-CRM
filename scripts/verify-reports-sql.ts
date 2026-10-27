@@ -50,7 +50,7 @@ create schema ${SCHEMA};
 set search_path to ${SCHEMA};
 create table schools (facility_key text primary key, name text, state_code text, county_name text,
   archived boolean not null default false, source_status text);
-create table activities (activity_id text primary key, school_id text, activity_type text not null, date date not null,
+create table activities (activity_id text primary key, event_id integer, school_id text, activity_type text not null, date date not null,
   archived boolean not null default false, import_batch_id text, attendee_count integer);
 create table events (event_id integer primary key, fair_name text, date date, time time, schools_involved text,
   location text, category text, archived boolean not null default false);
@@ -58,7 +58,7 @@ create table staff (staff_id integer primary key, school_worked_at text, is_acti
   archived boolean not null default false, last_verified_at timestamptz, last_scraped_at timestamptz);
 create table contacts (school_id text, staff_id integer, archived boolean not null default false);
 ${insert('schools', rows.schools, ['facility_key', 'name', 'state_code', 'county_name', 'archived', 'source_status'])}
-${insert('activities', rows.activities, ['activity_id', 'school_id', 'activity_type', 'date', 'archived', 'import_batch_id', 'attendee_count'])}
+${insert('activities', rows.activities, ['activity_id', 'event_id', 'school_id', 'activity_type', 'date', 'archived', 'import_batch_id', 'attendee_count'])}
 ${insert('events', rows.events, ['event_id', 'fair_name', 'date', 'time', 'schools_involved', 'location', 'category', 'archived'])}
 ${insert('staff', rows.staff, ['staff_id', 'school_worked_at', 'is_active', 'archived', 'last_verified_at', 'last_scraped_at'])}
 ${insert('contacts', rows.contacts, ['school_id', 'staff_id', 'archived'])}

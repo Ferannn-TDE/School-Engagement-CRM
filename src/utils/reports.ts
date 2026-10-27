@@ -109,7 +109,7 @@ export interface ReportRange extends DayRange {
 
 /**
  * The days a preset covers, up to today. "This semester" is the SIUE term holding
- * today, or the last one to end when today falls between terms; "This year" is the
+ * today, or the last one to end when today falls between terms (labelled with its end); "This year" is the
  * school year (Aug 1 – Jul 31). A custom range is used as given (start ≤ end).
  */
 export function resolveRange(
@@ -121,13 +121,15 @@ export function resolveRange(
   const upToToday = (periodEnd: Day) => (periodEnd < today ? periodEnd : today);
 
   if (preset === 'custom' && custom && custom.start <= custom.end) {
-    return { preset, start: custom.start, end: custom.end, periodEnd: custom.end, label: formatRange(custom) };
+    return { preset, start: custom.start, end: custom.end, periodEnd: custom.end, label: 'Custom range' };
   }
   if (preset === 'semester') {
     const current = terms.find((t) => inRange(today, t));
     const term = current ?? [...terms].filter((t) => t.end < today).sort((a, b) => (a.end < b.end ? 1 : -1))[0];
     if (term) {
-      return { preset, start: term.start, end: upToToday(term.end), periodEnd: term.end, label: term.name };
+      // Between terms: the one that just ended, labelled with its end, "Fall 2026 (ended Dec 18)".
+      const label = current ? term.name : `${term.name} (ended ${formatDay(term.end).replace(/, \d{4}$/, '')})`;
+      return { preset, start: term.start, end: upToToday(term.end), periodEnd: term.end, label };
     }
   }
   if (preset === 'year') {
@@ -415,35 +417,44 @@ export function eventSummary(events: Event[], range: DayRange, today: Day): Even
   };
 }
 
-export interface EventFollowUp {
+export interface EventImpact {
   eventId: string;
   day: Day;
-  /** Listed schools that are on the schools list. */
+  /** Schools with imported attendance for the event (listed schools only). */
   schoolIds: string[];
-  /** Of those, the ones with a call, email or visit within FOLLOW_UP_DAYS after. */
+  /** Students: the imported attendee counts for the event. */
+  students: number;
+  /** Of those schools, the ones with a call, email or visit within FOLLOW_UP_DAYS after. */
   followedIds: string[];
   /** The follow-up window hasn't closed yet: the rate isn't final. */
   windowOpen: boolean;
 }
 
 /**
- * For each outreach event in the range that has happened: did each listed school get
- * a call, email or visit in the FOLLOW_UP_DAYS days after it? Attendance rows don't
- * count as follow-up.
+ * Events in the range that have happened and have imported attendance (rows saved
+ * by Import → Import activities with this event chosen), most schools first. Events
+ * with no imported attendance aren't ranked: their listed schools are mostly the
+ * calendar a scraped event came from, not who attended. A follow-up is a call, email
+ * or visit with the school in the FOLLOW_UP_DAYS days after the event, not itself
+ * attendance and not linked to the same event.
  */
-export function eventFollowUps(events: Event[], activities: ActivityRecord[], schools: School[], range: DayRange, today: Day): EventFollowUp[] {
-  const ids = new Set(schools.map((s) => s.id));
-  const contacts = onListedSchools(activities, schools).filter((a) => a.activityType !== EVENT_ATTENDANCE_TYPE);
+export function eventImpact(events: Event[], activities: ActivityRecord[], schools: School[], range: DayRange, today: Day): EventImpact[] {
+  const listed = onListedSchools(activities, schools);
   return events
     .filter((e) => !isTestingDate(e) && inRange(dayOf(e.date), range) && dayOf(e.date) < today)
     .map((e) => {
       const day = dayOf(e.date);
       const until = addDays(day, FOLLOW_UP_DAYS);
-      const schoolIds = [...new Set(e.participatingSchools)].filter((id) => ids.has(id));
-      const followedIds = schoolIds.filter((id) => contacts.some((a) => a.schoolId === id && dayOf(a.date) > day && dayOf(a.date) <= until));
-      return { eventId: e.id, day, schoolIds, followedIds, windowOpen: until >= today };
+      const rows = listed.filter((a) => a.importBatchId && a.eventId === e.id);
+      const schoolIds = [...new Set(rows.map((a) => a.schoolId))];
+      const followedIds = schoolIds.filter((id) => listed.some((a) => a.schoolId === id
+        && a.activityType !== EVENT_ATTENDANCE_TYPE && a.eventId !== e.id
+        && dayOf(a.date) > day && dayOf(a.date) <= until));
+      return { eventId: e.id, day, schoolIds, students: rows.reduce((n, a) => n + (a.attendeeCount ?? 0), 0), followedIds, windowOpen: until >= today };
     })
-    .sort((a, b) => b.schoolIds.length - a.schoolIds.length || (a.day < b.day ? 1 : a.day > b.day ? -1 : a.eventId.localeCompare(b.eventId)));
+    .filter((x) => x.schoolIds.length > 0)
+    .sort((a, b) => b.schoolIds.length - a.schoolIds.length || b.students - a.students
+      || (a.day < b.day ? 1 : a.day > b.day ? -1 : a.eventId.localeCompare(b.eventId)));
 }
 
 // ── Coverage gaps ───────────────────────────────────────────────────────────────
@@ -455,6 +466,8 @@ export interface Gaps {
   quietIds: string[];
   /** "State|County" keys of counties where no school has any activity. */
   untouchedCounties: string[];
+  /** Per county: its schools and those with any activity; lowest share contacted first. */
+  byCounty: { state: string; county: string; schoolIds: string[]; contactedIds: string[] }[];
   /** The day a school's last activity must be before to count as quiet. */
   quietBefore: Day;
 }
@@ -468,17 +481,22 @@ export function gaps(schools: School[], activities: ActivityRecord[], asOf: Day)
     if (!seen || d > seen) last.set(a.schoolId, d);
   }
   const quietBefore = addMonths(asOf, -QUIET_MONTHS);
-  const touched = new Set<string>();
-  const all = new Set<string>();
+  const counties = new Map<string, Gaps['byCounty'][number]>();
   for (const s of schools) {
-    const key = `${s.state}|${s.county.trim() || NO_COUNTY}`;
-    all.add(key);
-    if (last.has(s.id)) touched.add(key);
+    const county = s.county.trim() || NO_COUNTY;
+    const key = `${s.state}|${county}`;
+    const c = counties.get(key) ?? { state: s.state, county, schoolIds: [], contactedIds: [] };
+    c.schoolIds.push(s.id);
+    if (last.has(s.id)) c.contactedIds.push(s.id);
+    counties.set(key, c);
   }
+  const share = (c: Gaps['byCounty'][number]) => c.contactedIds.length / c.schoolIds.length;
   return {
     neverIds: schools.filter((s) => !last.has(s.id)).map((s) => s.id),
     quietIds: schools.filter((s) => last.has(s.id) && last.get(s.id)! < quietBefore).map((s) => s.id),
-    untouchedCounties: [...all].filter((k) => !touched.has(k)).sort(),
+    untouchedCounties: [...counties.values()].filter((c) => c.contactedIds.length === 0).map((c) => `${c.state}|${c.county}`).sort(),
+    byCounty: [...counties.values()].sort((a, b) => share(a) - share(b) || b.schoolIds.length - a.schoolIds.length
+      || (a.state + a.county).localeCompare(b.state + b.county)),
     quietBefore,
   };
 }
@@ -537,7 +555,7 @@ export function reportSnapshot(data: ReportInput, range: DayRange, today: Day): 
   const mon = monthly(activities, schools, range);
   const cov = contactCoverage(schools, contacts);
   const ev = eventSummary(events, range, today);
-  const fu = eventFollowUps(events, activities, schools, range, today);
+  const fu = eventImpact(events, activities, schools, range, today);
   const g = gaps(schools, activities, range.end);
   const h = dataHealth(schools, contacts, range.end);
   const out: Record<string, number> = {
@@ -555,11 +573,12 @@ export function reportSnapshot(data: ReportInput, range: DayRange, today: Day): 
     'events.past': ev.pastIds.length,
     'events.upcoming': ev.upcomingIds.length,
     'events.upcoming_with_schools': ev.upcomingWithSchoolsIds.length,
-    'followup.events': fu.length,
-    'followup.schools': fu.reduce((n, e) => n + e.schoolIds.length, 0),
-    'followup.followed': fu.reduce((n, e) => n + e.followedIds.length, 0),
-    'followup.closed_schools': fu.filter((e) => !e.windowOpen).reduce((n, e) => n + e.schoolIds.length, 0),
-    'followup.closed_followed': fu.filter((e) => !e.windowOpen).reduce((n, e) => n + e.followedIds.length, 0),
+    'impact.events': fu.length,
+    'impact.schools': fu.reduce((n, e) => n + e.schoolIds.length, 0),
+    'impact.students': fu.reduce((n, e) => n + e.students, 0),
+    'impact.followed': fu.reduce((n, e) => n + e.followedIds.length, 0),
+    'impact.closed_schools': fu.filter((e) => !e.windowOpen).reduce((n, e) => n + e.schoolIds.length, 0),
+    'impact.closed_followed': fu.filter((e) => !e.windowOpen).reduce((n, e) => n + e.followedIds.length, 0),
     'gaps.never': g.neverIds.length,
     'gaps.quiet': g.quietIds.length,
     'gaps.untouched_counties': g.untouchedCounties.length,
@@ -579,6 +598,7 @@ export function reportSnapshot(data: ReportInput, range: DayRange, today: Day): 
     out[`coverage.county.${c.state}|${c.county}.total`] = c.schoolIds.length;
     out[`coverage.county.${c.state}|${c.county}.without`] = c.withoutIds.length;
   }
+  for (const c of g.byCounty) out[`gaps.county.${c.state}|${c.county}.contacted`] = c.contactedIds.length;
   for (const [type, list] of Object.entries(act.byType)) out[`activity.type.${type}`] = list.length;
   for (const row of mon.months) if (row.activityIds.length) {
     out[`month.${row.month}.activities`] = row.activityIds.length;

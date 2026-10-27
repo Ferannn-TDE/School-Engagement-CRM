@@ -9,7 +9,8 @@
 -- It follows the app's loading rules, not just the tables: archived rows left out;
 -- a contact belongs to its junction row's school, else staff.school_worked_at, and is
 -- dropped when that school is archived; activities count only on listed schools;
--- testing dates are never outreach; an event with no known school is placed in a
+-- testing dates are never outreach; Event impact ranks only events with imported
+-- attendance (activities with an import batch and this event); an event with no known school is placed in a
 -- state by its location (as utils/region.ts does). The thresholds are the ones in
 -- src/constants/reportSettings.ts: keep the two in step.
 with
@@ -26,7 +27,7 @@ all_sch as (
 ),
 sch as (select s.* from all_sch s, params p where p.region = '' or s.state = p.region),
 act as (
-  select a.activity_id as id, a.school_id, a.activity_type as type, a.date::date as day,
+  select a.activity_id as id, a.event_id, a.school_id, a.activity_type as type, a.date::date as day,
          a.import_batch_id, a.attendee_count
   from activities a join sch on sch.id = a.school_id
   where not a.archived
@@ -70,17 +71,20 @@ ev as (
 ),
 first_day as (select school_id, min(day) as day from act group by school_id),
 last_day as (select act.school_id, max(act.day) as day from act, params p where act.day <= p.range_end group by act.school_id),
-fu as (
-  select ev.id, ev.day, x.school_id,
-         exists (select 1 from act a, params p where a.school_id = x.school_id and a.type <> p.attendance
-                 and a.day > ev.day and a.day <= ev.day + p.follow_up_days) as followed,
-         ev.day + p.follow_up_days >= p.today as window_open
-  from ev, params p,
-       lateral (select distinct s as school_id from unnest(ev.schools) s where s in (select id from sch)) x
+-- Event impact: past events in the range with imported attendance (rows saved with the event chosen).
+att as (
+  select ev.id as event_id, ev.day, a.school_id, a.attendee_count
+  from ev join act a on a.event_id = ev.id and a.import_batch_id is not null, params p
   where ev.day between p.range_start and p.range_end and ev.day < p.today
 ),
-fu_events as (select ev.id, ev.day + p.follow_up_days >= p.today as window_open from ev, params p
-              where ev.day between p.range_start and p.range_end and ev.day < p.today),
+fu as (
+  select x.event_id, x.day, x.school_id,
+         exists (select 1 from act a, params p where a.school_id = x.school_id and a.type <> p.attendance
+                 and a.event_id is distinct from x.event_id
+                 and a.day > x.day and a.day <= x.day + p.follow_up_days) as followed,
+         x.day + p.follow_up_days >= p.today as window_open
+  from (select distinct event_id, day, school_id from att) x, params p
+),
 figures(k, v) as (
             select 'schools.total', count(*) from sch
   union all select 'reach.engaged', count(distinct school_id) from act_in
@@ -119,16 +123,19 @@ figures(k, v) as (
   union all select 'events.upcoming', count(*) from ev, params p where ev.day >= p.today
   union all select 'events.upcoming_with_schools', count(*) from ev, params p where ev.day >= p.today and cardinality(ev.schools) > 0
   union all select 'events.upcoming.' || to_char(ev.day, 'YYYY-MM'), count(*) from ev, params p where ev.day >= p.today group by 1
-  union all select 'followup.events', count(*) from fu_events
-  union all select 'followup.schools', count(*) from fu
-  union all select 'followup.followed', count(*) from fu where followed
-  union all select 'followup.closed_schools', count(*) from fu where not window_open
-  union all select 'followup.closed_followed', count(*) from fu where followed and not window_open
+  union all select 'impact.events', count(distinct event_id) from att
+  union all select 'impact.schools', count(*) from fu
+  union all select 'impact.students', coalesce(sum(attendee_count), 0) from att
+  union all select 'impact.followed', count(*) from fu where followed
+  union all select 'impact.closed_schools', count(*) from fu where not window_open
+  union all select 'impact.closed_followed', count(*) from fu where followed and not window_open
   union all select 'gaps.never', count(*) from sch where id not in (select school_id from last_day)
   union all select 'gaps.quiet', count(*) from last_day, params p where last_day.day < (p.range_end - p.quiet)::date
   union all select 'gaps.untouched_counties', count(*) from (
               select state, county from sch group by state, county
               having count(*) filter (where id in (select school_id from last_day)) = 0) c
+  union all select 'gaps.county.' || state || '|' || county || '.contacted',
+                   count(*) filter (where id in (select school_id from last_day)) from sch group by state, county
   union all select 'health.verified_recent', count(*) from con_l, params p
             where verified_day >= (p.range_end - p.verified_recent)::date and verified_day <= p.range_end
   union all select 'health.verified_older', count(*) from con_l, params p

@@ -1,387 +1,150 @@
-import { useMemo, Fragment } from 'react';
-import { Link } from 'react-router-dom';
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, PieChart, Pie, Cell,
-} from 'recharts';
-import { format, subMonths, isAfter } from 'date-fns';
-import {
-  Download, AlertTriangle, TrendingUp, School, Users, Calendar,
-  BarChart3, Activity, ArrowRight,
-} from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { format } from 'date-fns';
 import { Header } from '../components/layout/Header';
-import { Card, MetricCard } from '../components/common/Card';
-import { Button } from '../components/common/Button';
-import { Badge } from '../components/common/Badge';
-import { useEngagementMaps, useSchoolsNeedingAttention } from '../hooks/useEngagementMaps';
-import { EventTypeLabels } from '../types';
-import type { EventType } from '../types';
-import { CHART_COLORS, TOOLTIP_CLS } from '../constants/charts';
-import { downloadFile } from '../utils/helpers';
-import toast from 'react-hot-toast';
-import { outreachEvents } from '../utils/events';
+import { useAppContext } from '../context/useAppContext';
+import { useRegionScope } from '../context/RegionScopeContext';
+import { useRole } from '../context/useRole';
+import { useStateFilter } from '../hooks/useStateFilter';
+import { useUrlState, useUrlStateBatch } from '../hooks/useUrlState';
+import { MIN_MONTHS_FOR_TREND } from '../constants/reportSettings';
+import {
+  activitySummary, comparisonFor, contactCoverage, dataHealth, eventImpact, eventSummary, formatDay, formatRange,
+  gaps, loggingStatus, monthly, reach, resolveRange, type RangePreset,
+} from '../utils/reports';
+import { fmt, listBuilders, type ListSpec } from '../utils/reportLists';
+import { classNames } from '../utils/helpers';
+import { ListModal } from '../components/reports/ReportParts';
+import {
+  ActivitySection, CoverageSection, GapsSection, GettingStarted, HealthSection, ImpactSection, ReachSection,
+  UpcomingSection, type ReportModel,
+} from '../components/reports/ReportSections';
 
+const PRESETS: { value: RangePreset; label: string }[] = [
+  { value: 'month', label: 'This month' },
+  { value: 'semester', label: 'This semester' },
+  { value: 'year', label: 'This year' },
+  { value: 'custom', label: 'Custom' },
+];
 
-function formatActivityType(type: string): string {
-  return type.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-
-// Custom tooltip for the Top Engaged Schools chart
-function EngagementTooltip({ active, payload }: { active?: boolean; payload?: Array<{ payload: { fullName: string; score: number; acts: number; contacts: number; events: number } }> }) {
-  if (!active || !payload?.[0]) return null;
-  const d = payload[0].payload;
-  return (
-    <div className={TOOLTIP_CLS}>
-      <p className="font-semibold text-neutral-800 mb-2 max-w-[200px]">{d.fullName}</p>
-      <div className="space-y-1 text-neutral-600">
-        <p>Activities: <span className="font-medium text-neutral-800">{d.acts}</span></p>
-        <p>Active Contacts: <span className="font-medium text-neutral-800">{d.contacts}</span></p>
-        <p>Event appearances: <span className="font-medium text-neutral-800">{d.events}</span></p>
-      </div>
-      <p className="mt-2 font-semibold text-siue-red">Score: {d.score}</p>
-    </div>
-  );
-}
-
-// Tooltip for Events by Type pie chart
-function PieEventTooltip({ active, payload }: {
-  active?: boolean;
-  payload?: Array<{ name: string; value: number; payload: { name: string; value: number; attendees: number } }>;
-}) {
-  if (!active || !payload?.[0]) return null;
-  const item = payload[0];
-  return (
-    <div className={TOOLTIP_CLS}>
-      <p className="font-semibold text-neutral-800 mb-1.5 max-w-[160px]">{item.payload.name}</p>
-      <p className="text-neutral-600">Events: <span className="font-medium text-neutral-800">{item.value}</span></p>
-      {item.payload.attendees > 0 && (
-        <p className="text-neutral-600 mt-0.5">Attendees: <span className="font-medium text-neutral-800">{item.payload.attendees.toLocaleString()}</span></p>
-      )}
-    </div>
-  );
-}
+const DAY = /^\d{4}-\d{2}-\d{2}$/;
 
 export function ReportsPage() {
-  const { state, schoolContactsMap, schoolActivitiesMap, schoolEventCountMap } = useEngagementMaps();
-  // Testing dates are busy dates, not outreach: never counted (db/007).
-  const countedEvents = useMemo(() => outreachEvents(state.events), [state.events]);
-  const schoolsNeedingAttention = useSchoolsNeedingAttention();
+  const { state } = useAppContext();
+  const full = useRegionScope()?.fullState ?? state;
+  const { isAdmin } = useRole();
+  const [region] = useStateFilter();
+  const [presetParam, setPreset] = useUrlState('range', 'semester');
+  const [from] = useUrlState('from');
+  const [to] = useUrlState('to');
+  const setMany = useUrlStateBatch();
+  const [list, setList] = useState<ListSpec | null>(null);
 
-  // ── Summary metrics ──────────────────────────────────────────────────────────
-  const summaryMetrics = useMemo(() => {
-    const sixMonthsAgo = subMonths(new Date(), 6);
-    let schoolsEngaged = 0;
-    let schoolsNeedingCount = 0;
-    for (const s of state.schools) {
-      const acts = schoolActivitiesMap.get(s.id);
-      if (acts && acts.count > 0) {
-        schoolsEngaged++;
-        if (acts.latestDate && !isAfter(acts.latestDate, sixMonthsAgo)) schoolsNeedingCount++;
-      } else {
-        schoolsNeedingCount++;
-      }
-    }
-    return {
-      totalSchools: state.schools.length,
-      totalContacts: [...schoolContactsMap.values()].reduce((sum, v) => sum + v.active, 0),
-      totalEvents: countedEvents.length,
-      schoolsEngaged,
-      schoolsNeedingAttention: schoolsNeedingCount,
-      totalAttendees: countedEvents.reduce((acc, e) => acc + (e.attendeeCount ?? 0), 0),
+  const today = format(new Date(), 'yyyy-MM-dd');
+  const preset: RangePreset = PRESETS.some((p) => p.value === presetParam) ? (presetParam as RangePreset) : 'semester';
+  const custom = DAY.test(from) && DAY.test(to) ? { start: from, end: to } : undefined;
+
+  const model: Omit<ReportModel, 'open'> = useMemo(() => {
+    const data = { schools: state.schools, contacts: state.contacts, events: state.events, activities: state.activities };
+    const range = resolveRange(preset, today, DAY.test(from) && DAY.test(to) ? { start: from, end: to } : undefined);
+    // Logging is the same for every state: it says when the team started logging at all.
+    const started = loggingStatus(full.activities);
+    const logging = {
+      ...started,
+      monthsWithData: started.start ? monthly(full.activities, full.schools, { start: started.start, end: today }).monthsWithData : 0,
     };
-  }, [state.schools, countedEvents, schoolActivitiesMap, schoolContactsMap]);
+    const comparison = comparisonFor(range, started.start);
+    return {
+      data, region, range, today, comparison, logging,
+      reach: reach(data.schools, data.activities, range),
+      reachBefore: comparison.range ? reach(data.schools, data.activities, comparison.range) : null,
+      activity: activitySummary(data.activities, data.schools, range),
+      activityBefore: comparison.range ? activitySummary(data.activities, data.schools, comparison.range) : null,
+      monthly: monthly(data.activities, data.schools, range),
+      coverage: contactCoverage(data.schools, data.contacts),
+      events: eventSummary(data.events, range, today),
+      impact: eventImpact(data.events, data.activities, data.schools, range, today),
+      gaps: gaps(data.schools, data.activities, range.end),
+      health: dataHealth(data.schools, data.contacts, range.end),
+      lists: listBuilders(data, range.end),
+    };
+  }, [state, full, region, preset, today, from, to]);
 
-  // ── Engagement pipeline (funnel) ─────────────────────────────────────────────
-  const engagementPipeline = useMemo(() => {
-    const total = state.schools.length;
-    const sixMonthsAgo = subMonths(new Date(), 6);
-    let withContacts = 0, withRecentActivity = 0, atEvents = 0;
-    for (const s of state.schools) {
-      if ((schoolContactsMap.get(s.id)?.total ?? 0) > 0) withContacts++;
-      const acts = schoolActivitiesMap.get(s.id);
-      if (acts?.latestDate && isAfter(acts.latestDate, sixMonthsAgo)) withRecentActivity++;
-      if ((schoolEventCountMap.get(s.id) ?? 0) > 0) atEvents++;
-    }
-    return [
-      { label: 'Total Schools', count: total, color: '#54585A', icon: <School size={16} /> },
-      { label: 'With Contacts', count: withContacts, color: '#004B87', icon: <Users size={16} /> },
-      { label: 'Active (6 mo)', count: withRecentActivity, color: '#0F7837', icon: <Activity size={16} /> },
-      { label: 'At Events', count: atEvents, color: '#CE1126', icon: <Calendar size={16} /> },
-    ];
-  }, [state.schools, schoolContactsMap, schoolActivitiesMap, schoolEventCountMap]);
+  const m: ReportModel = { ...model, open: setList };
+  const { range, comparison, logging } = model;
 
-  // ── Top engaged schools (composite score) ────────────────────────────────────
-  const topEngagedSchools = useMemo(() => {
-    return state.schools
-      .map((s) => {
-        const acts = schoolActivitiesMap.get(s.id)?.count ?? 0;
-        const contacts = schoolContactsMap.get(s.id)?.active ?? 0;
-        const events = schoolEventCountMap.get(s.id) ?? 0;
-        const score = acts * 3 + contacts * 2 + events * 4;
-        return {
-          name: s.name.length > 22 ? s.name.slice(0, 20) + '…' : s.name,
-          fullName: s.name,
-          score, acts, contacts, events,
-        };
-      })
-      .filter((s) => s.score > 0)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 10);
-  }, [state.schools, schoolActivitiesMap, schoolContactsMap, schoolEventCountMap]);
+  const steps = [
+    {
+      title: 'Log contacts as they happen',
+      status: logging.start ? `${fmt(logging.total)} logged so far, since ${formatDay(logging.start)}.` : 'Nothing logged yet.',
+      link: { to: '/schools', label: 'Open a school to log a contact' },
+      done: logging.monthsWithData >= MIN_MONTHS_FOR_TREND,
+    },
+    {
+      title: 'Import past attendance lists',
+      status: full.activities.some((a) => a.importBatchId)
+        ? `${fmt(full.activities.filter((a) => a.importBatchId).length)} imported rows so far.`
+        : 'None imported yet. Lists from past events, like Book10, go in once their event and date are known.',
+      link: { to: '/import', label: 'Import data' },
+      done: full.activities.some((a) => a.importBatchId),
+    },
+    {
+      title: "The scraper's first run",
+      status: 'Not run yet: no contact verified and no school website checked. It marks who is still listed on each school\'s site.',
+      done: full.contacts.some((c) => c.lastScrapedAt) || full.schools.some((s) => s.lastScrapedAt || s.sourceStatus),
+    },
+  ];
 
-  // ── Event type distribution (enhanced with attendance) ───────────────────────
-  const eventTypeData = useMemo(() => {
-    const counts: Record<string, { count: number; attendees: number }> = {};
-    for (const event of countedEvents) {
-      if (!counts[event.type]) counts[event.type] = { count: 0, attendees: 0 };
-      counts[event.type].count++;
-      counts[event.type].attendees += event.attendeeCount ?? 0;
-    }
-    return Object.entries(counts).map(([type, { count, attendees }]) => ({
-      name: EventTypeLabels[type as EventType],
-      value: count, attendees,
-    }));
-  }, [countedEvents]);
-
-  // ── Recent activity feed ─────────────────────────────────────────────────────
-  const recentActivityFeed = useMemo(() => {
-    const schoolMap = new Map(state.schools.map((s) => [s.id, s]));
-    return [...state.activities]
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, 12)
-      .map((a) => ({
-        id: a.id,
-        school: schoolMap.get(a.schoolId),
-        schoolId: a.schoolId,
-        date: a.date,
-        description: a.description,
-        activityType: a.activityType,
-      }));
-  }, [state.activities, state.schools]);
-
-  // ── Export ───────────────────────────────────────────────────────────────────
-  const handleExportReport = () => {
-    const lines = [
-      'SIUE School of Engineering — K-12 Outreach CRM Report',
-      `Generated: ${format(new Date(), 'MMMM d, yyyy')}`,
-      '',
-      '=== SUMMARY ===',
-      `Total Schools: ${summaryMetrics.totalSchools}`,
-      `Active Contacts: ${summaryMetrics.totalContacts}`,
-      `Total Events: ${summaryMetrics.totalEvents}`,
-      `Schools Engaged (with activity): ${summaryMetrics.schoolsEngaged}`,
-      `Total Event Attendees: ${summaryMetrics.totalAttendees}`,
-      '',
-      '=== TOP ENGAGED SCHOOLS ===',
-      'School,Score,Activities,Active Contacts,Events Appeared',
-      ...topEngagedSchools.map((s) => `"${s.fullName}",${s.score},${s.acts},${s.contacts},${s.events}`),
-      '',
-      '=== SCHOOLS NEEDING ATTENTION ===',
-      'School,County,Contacts,Last Activity,Priority,Issues',
-      ...schoolsNeedingAttention.map(
-        (s) => `"${s.name}",${s.county},${s.contactCount},${s.lastActivity},${s.severity},"${s.issues.join('; ')}"`
-      ),
-    ];
-    downloadFile(lines.join('\n'), `siue-crm-report-${format(new Date(), 'yyyy-MM-dd')}.csv`);
-    toast.success('Report exported');
+  const choose = (value: RangePreset) => {
+    if (value === 'custom') setMany({ range: 'custom', from: from || range.start, to: to || range.end });
+    else setPreset(value);
   };
-
-  const total = engagementPipeline[0]?.count ?? 1;
-  const missingCountyCount = state.schools.filter((s) => !s.county || !s.county.trim()).length;
 
   return (
     <div>
-<Header
-        title="Reports"
-        subtitle="How your K-12 engagement program is tracking"
-        actions={
-          <Button size="sm" onClick={handleExportReport}>
-            <Download size={16} />
-            Export Report
-          </Button>
-        }
-      />
-      <div className="p-8 space-y-8">
-
-        {/* ── Summary metrics ──────────────────────────────────────────────── */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-          <MetricCard title="Total Schools" value={summaryMetrics.totalSchools} icon={<School size={20} />} />
-          <MetricCard title="Active Contacts" value={summaryMetrics.totalContacts} icon={<Users size={20} />} />
-          <MetricCard title="Total Events" value={summaryMetrics.totalEvents} icon={<Calendar size={20} />} />
-          <MetricCard title="Schools Engaged" value={summaryMetrics.schoolsEngaged} icon={<TrendingUp size={20} />} />
-          <MetricCard title="Total Attendees" value={summaryMetrics.totalAttendees.toLocaleString()} icon={<Users size={20} />} />
-          <MetricCard title="Need Attention" value={summaryMetrics.schoolsNeedingAttention} icon={<AlertTriangle size={20} />} />
-        </div>
-
-        {/* ── Engagement Pipeline ───────────────────────────────────────────── */}
-        <Card>
-          <div className="mb-5">
-            <h3 className="text-base font-semibold text-neutral-800">Engagement Pipeline</h3>
-            <p className="text-xs text-neutral-500 mt-0.5">
-              Where schools stand in your outreach funnel — each stage as a % of all schools.
-            </p>
-          </div>
-          <div className="flex items-stretch gap-2">
-            {engagementPipeline.map((step, i) => (
-              <Fragment key={step.label}>
-                {i > 0 && (
-                  <div className="flex items-center shrink-0">
-                    <ArrowRight size={16} className="text-neutral-300" />
-                  </div>
-                )}
-                <div className="flex-1 min-w-0 p-4 rounded-xl bg-neutral-50 border border-neutral-100">
-                  <div className="flex items-center gap-2 mb-2" style={{ color: step.color }}>
-                    {step.icon}
-                    <p className="text-xs font-medium text-neutral-500">{step.label}</p>
-                  </div>
-                  <p className="text-2xl font-bold text-neutral-800">{step.count.toLocaleString()}</p>
-                  <p className="text-xs text-neutral-500 mt-0.5 mb-3">
-                    {i === 0 ? 'baseline' : `${Math.round((step.count / total) * 100)}% of total`}
-                  </p>
-                  <div className="h-1.5 bg-neutral-200 rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all duration-700"
-                      style={{
-                        width: `${total > 0 ? Math.round((step.count / total) * 100) : 0}%`,
-                        backgroundColor: step.color,
-                      }}
-                    />
-                  </div>
-                </div>
-              </Fragment>
-            ))}
-          </div>
-        </Card>
-
-        {/* ── Data quality notice ───────────────────────────────────────────── */}
-        {missingCountyCount > 0 && (
-          <div className="flex items-center gap-2.5 px-4 py-2.5 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-700">
-            <AlertTriangle size={14} className="shrink-0 text-amber-500" />
-            <span>
-              <span className="font-semibold">{missingCountyCount} school{missingCountyCount !== 1 ? 's' : ''}</span>{' '}
-              {missingCountyCount !== 1 ? 'have' : 'has'} no county assigned and {missingCountyCount !== 1 ? 'are' : 'is'} excluded from county-level analytics below.
-              Visit the Schools page to update their county data.
-            </span>
-          </div>
-        )}
-
-        {/* ── Top Engaged Schools ──────────────────────────────────────────── */}
-        <div>
-          <Card>
-            <h3 className="text-base font-semibold text-neutral-800 mb-1">Top Engaged Schools</h3>
-            <p className="text-xs text-neutral-500 mb-4">Composite score: activities ×3 + active contacts ×2 + event appearances ×4</p>
-            {topEngagedSchools.length > 0 ? (
-              <ResponsiveContainer width="100%" height={320}>
-                <BarChart data={topEngagedSchools} layout="vertical" margin={{ left: 0, right: 24, top: 4, bottom: 4 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E8E9EA" horizontal={false} />
-                  <XAxis type="number" tick={{ fontSize: 11, fill: '#8A8D8F' }} allowDecimals={false} />
-                  <YAxis dataKey="name" type="category" tick={{ fontSize: 11, fill: '#8A8D8F' }} width={160} />
-                  <Tooltip content={<EngagementTooltip />} />
-                  <Bar dataKey="score" fill="#CE1126" radius={[0, 4, 4, 0]} name="Engagement Score" />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-16 text-center">
-                <BarChart3 size={28} className="text-neutral-300 mb-3" />
-                <p className="text-sm font-medium text-neutral-500">No engagement data yet</p>
-                <p className="text-xs text-neutral-500 mt-1">Add contacts, log activities, and link schools to events.</p>
+      <Header title="Reports" subtitle="Who we can reach, what's coming up, and how outreach is going" />
+      <div className="p-4 sm:p-8 space-y-6">
+        <div className="space-y-2">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="inline-flex rounded-lg border border-neutral-200 bg-white overflow-hidden" role="group" aria-label="Date range">
+              {PRESETS.map((p, i) => (
+                <button key={p.value} type="button" onClick={() => choose(p.value)} aria-pressed={preset === p.value}
+                  className={classNames('px-3 py-1.5 text-sm', i > 0 && 'border-l border-neutral-200',
+                    preset === p.value ? 'bg-siue-red/10 text-siue-maroon font-semibold' : 'text-neutral-600 hover:bg-neutral-50')}>
+                  {p.label}
+                </button>
+              ))}
+            </div>
+            {preset === 'custom' && (
+              <div className="flex flex-wrap items-center gap-2 text-sm">
+                <label htmlFor="report-from" className="text-neutral-500">From</label>
+                <input id="report-from" type="date" value={custom?.start ?? range.start} max={custom?.end}
+                  onChange={(e) => setMany({ from: e.target.value })}
+                  className="rounded-lg border border-neutral-200 px-2 py-1" />
+                <label htmlFor="report-to" className="text-neutral-500">to</label>
+                <input id="report-to" type="date" value={custom?.end ?? range.end} min={custom?.start}
+                  onChange={(e) => setMany({ to: e.target.value })}
+                  className="rounded-lg border border-neutral-200 px-2 py-1" />
               </div>
             )}
-          </Card>
-
+          </div>
+          <p className="text-sm text-neutral-600">
+            <span className="font-medium text-neutral-800">{range.label}</span>: {formatRange(range)}
+            {' · '}{region === 'IL' ? 'Illinois only' : region === 'MO' ? 'Missouri only' : 'Illinois and Missouri'}
+            {' · '}{comparison.kind === 'none' ? comparison.label : `compared with ${comparison.label}`}
+          </p>
         </div>
 
-        {/* ── Events by Type ───────────────────────────────────────────────── */}
-        <div>
-          <Card>
-            <h3 className="text-base font-semibold text-neutral-800 mb-4">Events by Type</h3>
-            {eventTypeData.length > 0 ? (
-              <>
-                <ResponsiveContainer width="100%" height={200}>
-                  <PieChart>
-                    <Pie
-                      data={eventTypeData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={50}
-                      outerRadius={85}
-                      dataKey="value"
-                      paddingAngle={3}
-                    >
-                      {eventTypeData.map((_, i) => (
-                        <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip content={<PieEventTooltip />} />
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="mt-3 space-y-2">
-                  {eventTypeData.map((item, i) => (
-                    <div key={item.name} className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2">
-                        <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }} />
-                        <span className="text-neutral-600 text-xs">{item.name}</span>
-                      </div>
-                      <div className="text-right">
-                        <span className="font-medium text-neutral-800">{item.value} event{item.value !== 1 ? 's' : ''}</span>
-                        {item.attendees > 0 && (
-                          <span className="text-xs text-neutral-500 ml-1">· {item.attendees.toLocaleString()} attendees</span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <p className="text-neutral-400 text-sm py-12 text-center">No events yet.</p>
-            )}
-          </Card>
+        {isAdmin && <GettingStarted steps={steps} />}
 
-        </div>
-
-        {/* ── Recent Activity Feed ─────────────────────────────────────────── */}
-        <div>
-          <Card>
-            <h3 className="text-base font-semibold text-neutral-800 flex items-center gap-2 mb-4">
-              <Activity size={15} className="text-neutral-400" />
-              Recent Activity Feed
-            </h3>
-            {recentActivityFeed.length > 0 ? (
-              <div className="space-y-0 divide-y divide-neutral-50">
-                {recentActivityFeed.map((a) => (
-                  <div key={a.id} className="flex items-start gap-3 py-2.5">
-                    <div className="w-1.5 h-1.5 rounded-full bg-siue-red mt-2 shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                        <Link
-                          to={`/schools/${encodeURIComponent(a.schoolId)}`}
-                          className="text-sm font-medium text-neutral-800 hover:text-siue-red transition-colors truncate"
-                        >
-                          {a.school?.name ?? 'Unknown School'}
-                        </Link>
-                        <Badge variant="default">{formatActivityType(a.activityType)}</Badge>
-                      </div>
-                      <p className="text-xs text-neutral-500 line-clamp-1">{a.description}</p>
-                      <p className="text-xs text-neutral-500 mt-0.5">{format(new Date(a.date), 'MMM d, yyyy')}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="py-12 text-center">
-                <Activity size={28} className="mx-auto mb-3 text-neutral-300" />
-                <p className="text-sm font-medium text-neutral-500">No activities logged yet</p>
-                <p className="text-xs text-neutral-500 mt-1">Activities appear here once logged from a school's detail page.</p>
-              </div>
-            )}
-          </Card>
-
-        </div>
-
-
-
+        <CoverageSection m={m} />
+        <UpcomingSection m={m} />
+        <HealthSection m={m} />
+        <ReachSection m={m} />
+        <ActivitySection m={m} />
+        <GapsSection m={m} />
+        <ImpactSection m={m} />
       </div>
+      <ListModal list={list} onClose={() => setList(null)} />
     </div>
   );
 }

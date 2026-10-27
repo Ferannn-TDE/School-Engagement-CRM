@@ -16,9 +16,10 @@ export interface SchoolActivitySummary {
 /**
  * Per-school rollups of contacts, activities and event appearances.
  *
- * Both the Reports page and the Priorities page need these, and each is O(n)
+ * The Priorities page and the county analytics need these, and each is O(n)
  * over its source collection, so they are computed once here rather than
- * duplicated per page.
+ * duplicated per page. (The Reports page has its own tested calculations,
+ * utils/reports.ts.)
  */
 export function useEngagementMaps() {
   const { state } = useAppContext();
@@ -75,9 +76,7 @@ export interface SchoolNeedingAttention {
 /**
  * Schools with no contacts, no logged activity, or nothing in six months.
  *
- * Shared because the Priorities page renders this list and the Reports page
- * still includes it in the exported CSV — one definition keeps the two from
- * drifting apart.
+ * The Priorities page renders this list.
  */
 export function useSchoolsNeedingAttention(): SchoolNeedingAttention[] {
   const { state, schoolContactsMap, schoolActivitiesMap } = useEngagementMaps();

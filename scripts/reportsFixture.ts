@@ -15,7 +15,7 @@ import type { ReportInput } from '../src/utils/reports';
 
 export interface FixtureRows {
   schools: { facility_key: string; name: string; state_code: string | null; county_name: string | null; archived: boolean; source_status: School['sourceStatus'] | null }[];
-  activities: { activity_id: string; school_id: string; activity_type: string; date: string; archived: boolean; import_batch_id: string | null; attendee_count: number | null }[];
+  activities: { activity_id: string; event_id: number | null; school_id: string; activity_type: string; date: string; archived: boolean; import_batch_id: string | null; attendee_count: number | null }[];
   events: { event_id: number; fair_name: string | null; date: string | null; time: string | null; schools_involved: string | null; location: string | null; category: string | null; archived: boolean }[];
   staff: { staff_id: number; school_worked_at: string | null; is_active: boolean | null; archived: boolean; last_verified_at: string | null; last_scraped_at: string | null }[];
   contacts: { school_id: string; staff_id: number; archived: boolean }[];
@@ -38,6 +38,7 @@ export function toAppData(rows: FixtureRows, today: string): ReportInput & { pro
   const activities: ActivityRecord[] = rows.activities.filter((a) => !a.archived).map((a) => ({
     id: a.activity_id, schoolId: a.school_id, activityType: a.activity_type,
     date: `${a.date.slice(0, 10)}T12:00:00`, description: '',
+    eventId: a.event_id != null ? `e_${a.event_id}` : undefined,
     importBatchId: a.import_batch_id ?? undefined, attendeeCount: a.attendee_count ?? undefined,
   }));
 

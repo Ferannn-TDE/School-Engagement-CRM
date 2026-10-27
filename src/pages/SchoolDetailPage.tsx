@@ -30,6 +30,7 @@ import { contactRoleLabel } from '../utils/contactRoles';
 import { countyLabel } from '../utils/counties';
 import { formatPhone, websiteHref, websiteLabel } from '../utils/helpers';
 import toast from 'react-hot-toast';
+import { useRole } from '../context/useRole';
 
 export function SchoolDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -40,6 +41,7 @@ export function SchoolDetailPage() {
     addProgram, archiveProgram, getProgramsBySchool,
     loading,
   } = useAppContext();
+  const { canEdit } = useRole();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showArchiveConfirm, setShowArchiveConfirm] = useState(false);
   const [showAddProgramModal, setShowAddProgramModal] = useState(false);
@@ -128,6 +130,7 @@ export function SchoolDetailPage() {
         title={school.name}
         subtitle={school.district || school.county + ' County'}
         actions={
+          canEdit &&
           <div className="flex gap-2">
             {!school.isVerified && (
               <Button size="sm" variant="secondary" onClick={() => verifySchool(school.id)}>
@@ -344,10 +347,12 @@ export function SchoolDetailPage() {
                 </p>
               </div>
             </div>
-            <Button size="sm" variant="secondary" onClick={() => setShowAddProgramModal(true)}>
-              <Plus size={14} />
-              Add Program
-            </Button>
+            {canEdit && (
+              <Button size="sm" variant="secondary" onClick={() => setShowAddProgramModal(true)}>
+                <Plus size={14} />
+                Add Program
+              </Button>
+            )}
           </div>
           {programs.length > 0 ? (
             <div className="space-y-5">
@@ -371,13 +376,15 @@ export function SchoolDetailPage() {
                               <p className="text-xs text-neutral-500 mt-0.5">{program.description}</p>
                             )}
                           </div>
-                          <button
-                            onClick={() => setProgramToArchive(program)}
-                            className="text-neutral-300 hover:text-error transition-colors shrink-0 ml-4 mt-0.5"
-                            aria-label="Archive program"
-                          >
-                            <Archive size={14} />
-                          </button>
+                          {canEdit && (
+                            <button
+                              onClick={() => setProgramToArchive(program)}
+                              className="text-neutral-300 hover:text-error transition-colors shrink-0 ml-4 mt-0.5"
+                              aria-label="Archive program"
+                            >
+                              <Archive size={14} />
+                            </button>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -396,10 +403,12 @@ export function SchoolDetailPage() {
         <Card>
           <div className="flex items-center justify-between gap-4 mb-4">
             <h3 className="text-base font-semibold text-neutral-800">Activity History</h3>
-            <Button size="sm" onClick={() => setShowLogContact(true)}>
-              <Plus size={14} />
-              Log contact
-            </Button>
+            {canEdit && (
+              <Button size="sm" onClick={() => setShowLogContact(true)}>
+                <Plus size={14} />
+                Log contact
+              </Button>
+            )}
           </div>
           {activities.length > 0 ? (
             <div className="space-y-3">
@@ -429,13 +438,15 @@ export function SchoolDetailPage() {
                         {format(new Date(activity.date), 'MMM d, yyyy')}
                       </p>
                     </div>
-                    <button
-                      onClick={() => setActivityToArchive(activity.id)}
-                      className="text-neutral-300 hover:text-error transition-colors shrink-0 mt-0.5"
-                      aria-label="Archive logged contact"
-                    >
-                      <Archive size={14} />
-                    </button>
+                    {canEdit && (
+                      <button
+                        onClick={() => setActivityToArchive(activity.id)}
+                        className="text-neutral-300 hover:text-error transition-colors shrink-0 mt-0.5"
+                        aria-label="Archive logged contact"
+                      >
+                        <Archive size={14} />
+                      </button>
+                    )}
                   </div>
                   );
                 })}

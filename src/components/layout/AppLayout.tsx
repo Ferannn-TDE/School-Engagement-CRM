@@ -9,6 +9,8 @@ import { LayoutProvider } from '../../context/LayoutContext';
 import { usePlaceMemory } from '../../hooks/usePlaceMemory';
 import { navGroups } from './navigation';
 import { tablesForPath } from './pageTables';
+import { ReportProblemButton } from './ReportProblemButton';
+import { RoleProvider } from '../../context/RoleContext';
 
 const SIDEBAR_PATHS = navGroups.flatMap((g) => g.items.map((i) => i.to));
 
@@ -34,13 +36,14 @@ export function AppLayout() {
   const missingHere = tablesForPath(pathname).filter((t) => loadErrors[t] !== undefined);
 
   return (
+    <RoleProvider>
     <LayoutProvider>
       <div className="min-h-screen bg-neutral-50">
         <a href="#main-content" className="skip-nav">
           Skip to main content
         </a>
         <Sidebar />
-        <main id="main-content" className="lg:ml-64 min-h-screen">
+        <main id="main-content" className="lg:ml-64 min-h-screen pb-16">
           {loading ? (
             <LoadingSpinner />
           ) : missingHere.length > 0 ? (
@@ -66,7 +69,9 @@ export function AppLayout() {
             </>
           )}
         </main>
+        <ReportProblemButton />
       </div>
     </LayoutProvider>
+    </RoleProvider>
   );
 }

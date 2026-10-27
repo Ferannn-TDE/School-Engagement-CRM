@@ -10,6 +10,8 @@ import { resolveContactPending } from '../../services/contactsService';
 import { displayValue, fieldLabel, openPending } from '../../utils/pending';
 import type { OpenPending } from '../../utils/pending';
 import type { Contact, School } from '../../types';
+import { useRole } from '../../context/useRole';
+import { writeErrorMessage } from '../../utils/writeErrors';
 
 /** The value the client has now, for "(you have …)". */
 function schoolValue(s: School, column: string): unknown {
@@ -46,6 +48,7 @@ interface Item {
 export function WebsiteUpdates({ school, contacts }: { school: School; contacts: Contact[] }) {
   const { dispatch } = useAppContext();
   const { user } = useAuth();
+  const { canEdit } = useRole();
   const [busy, setBusy] = useState<string | null>(null);
   const me = user?.email ?? 'unknown';
 
@@ -83,7 +86,7 @@ export function WebsiteUpdates({ school, contacts }: { school: School; contacts:
       toast.success(choice === 'use' ? 'Updated from the website' : 'Kept your value');
     } catch (err) {
       console.error('resolve pending failed:', err);
-      toast.error('Could not save your answer');
+      toast.error(writeErrorMessage(err, 'Could not save your answer'));
     } finally {
       setBusy(null);
     }
@@ -114,14 +117,18 @@ export function WebsiteUpdates({ school, contacts }: { school: School; contacts:
                 You have {displayValue(item.current)} · found {format(new Date(item.pending.seenAt), 'MMM d, yyyy')}
               </p>
             </div>
-            <div className="flex gap-2 shrink-0">
-              <Button size="sm" variant="ghost" disabled={busy !== null} onClick={() => void answer(item, 'keep')}>
-                Keep yours
-              </Button>
-              <Button size="sm" variant="secondary" disabled={busy !== null} onClick={() => void answer(item, 'use')}>
-                Use this
-              </Button>
-            </div>
+            {canEdit ? (
+              <div className="flex gap-2 shrink-0">
+                <Button size="sm" variant="ghost" disabled={busy !== null} onClick={() => void answer(item, 'keep')}>
+                  Keep yours
+                </Button>
+                <Button size="sm" variant="secondary" disabled={busy !== null} onClick={() => void answer(item, 'use')}>
+                  Use this
+                </Button>
+              </div>
+            ) : (
+              <p className="text-xs text-neutral-500 shrink-0">An editor can choose.</p>
+            )}
           </li>
         ))}
       </ul>

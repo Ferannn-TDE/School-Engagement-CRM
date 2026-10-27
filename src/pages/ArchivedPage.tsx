@@ -11,6 +11,8 @@ import { useAppContext } from '../context/useAppContext';
 import { fetchArchivedItems, restoreItem } from '../services/archiveService';
 import type { ArchivedItem, ArchivedKind } from '../services/archiveService';
 import toast from 'react-hot-toast';
+import { useRole } from '../context/useRole';
+import { writeErrorMessage } from '../utils/writeErrors';
 
 const SECTIONS: { kind: ArchivedKind; title: string; note?: string }[] = [
   { kind: 'school', title: 'Schools', note: 'Restoring a school also brings back the contacts archived with it.' },
@@ -26,6 +28,7 @@ const SECTIONS: { kind: ArchivedKind; title: string; note?: string }[] = [
  */
 export function ArchivedPage() {
   const { reload } = useAppContext();
+  const { canEdit } = useRole();
   const [items, setItems] = useState<ArchivedItem[] | null>(null);
   const [restoring, setRestoring] = useState<string | null>(null);
 
@@ -58,7 +61,7 @@ export function ArchivedPage() {
       await Promise.all([load(), reload()]);
     } catch (err) {
       console.error('restoreItem failed:', err);
-      toast.error(`Failed to restore "${item.label}"`);
+      toast.error(writeErrorMessage(err, `Failed to restore "${item.label}"`));
     } finally {
       setRestoring(null);
     }
@@ -103,15 +106,17 @@ export function ArchivedPage() {
                         {item.archivedBy ? ` by ${item.archivedBy}` : ''}
                       </p>
                     </div>
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      onClick={() => void restore(item)}
-                      disabled={restoring !== null}
-                    >
-                      <RotateCcw size={14} />
-                      {restoring === `${item.kind}:${item.id}` ? 'Restoring…' : 'Restore'}
-                    </Button>
+                    {canEdit && (
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => void restore(item)}
+                        disabled={restoring !== null}
+                      >
+                        <RotateCcw size={14} />
+                        {restoring === `${item.kind}:${item.id}` ? 'Restoring…' : 'Restore'}
+                      </Button>
+                    )}
                   </li>
                 ))}
               </ul>

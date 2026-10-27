@@ -15,6 +15,8 @@ export interface NavItem {
   to: string;
   icon: React.ElementType;
   label: string;
+  /** Shown only to editors and admins (db/023). */
+  editsOnly?: boolean;
 }
 
 export interface NavGroup {
@@ -40,7 +42,7 @@ export const navGroups: NavGroup[] = [
   {
     label: 'Tools',
     items: [
-      { to: '/import', icon: Download, label: 'Import Data' },
+      { to: '/import', icon: Download, label: 'Import Data', editsOnly: true },
       { to: '/generate', icon: Upload, label: 'Generate Lists' },
     ],
   },

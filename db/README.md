@@ -67,6 +67,45 @@ cleared on restore.
   stay archived, and hidden) and can add staff to an archived school (hidden, as
   above). Making it skip archived schools is on seandsw's list.
 
+## Roles: admin, editor, viewer (023)
+
+- **admin**: everything, including Settings → Team (changing roles) and reading every
+  problem report (024). **editor**: read and change data. **viewer**: read only.
+- New accounts start as **viewer** (a trigger on `auth.users` adds the row). An admin
+  grants edit access in Settings → Team.
+- The database enforces it: every data table has restrictive "Editors add" and
+  "Editors change" policies next to the aal2 rule. A viewer's write fails with
+  `new row violates row-level security policy` (42501). The app hiding buttons is only
+  a convenience.
+- Roles are keyed by account id (`user_roles.user_id`); the email column is only for
+  showing who it is.
+- Rules (`guard_role_change`): only admins change roles; nobody raises their own role;
+  the last active admin can't be demoted or archived, from the app or the SQL Editor.
+  Only admins whose account still exists and isn't banned count, so a deleted admin's
+  leftover row never lets the last real admin step down.
+  Archived = taken off the team: the account counts as a viewer. To stop an account
+  signing in at all, delete or ban it in Supabase → Authentication.
+- Every change is in `role_changes` (who, whom, old and new role, when). It is
+  append-only: updates, deletes and TRUNCATE are refused, even for the owner.
+- The scraper and the SQL Editor connect as the owner, which RLS doesn't apply to, so
+  roles never stop them.
+
+**Handing over admin (e.g. to a new SIUE maintainer):**
+
+1. The new person signs up with their `@siue.edu` address and sets up 2FA. They start
+   as a viewer.
+2. An existing admin opens Settings → Team and makes them **admin**.
+3. The new admin signs in, opens Settings → Team, and confirms they can see every
+   account and change a role (try a viewer → editor → viewer and check the log).
+4. Only then does the old admin step down: they set their own role to editor or
+   viewer, or the new admin archives them. The database refuses this while they're the
+   last admin, so the order can't go wrong.
+5. Check the log on Settings → Team shows each step.
+
+If every admin is ever locked out, the owner can set a role in the SQL Editor (no
+claims needed):
+`update public.user_roles set role = 'admin' where email = '...';`
+
 ## How the app and the scraper are told apart
 
 Requests from the app carry sign-in claims (`request.jwt.claims`). The scraper connects

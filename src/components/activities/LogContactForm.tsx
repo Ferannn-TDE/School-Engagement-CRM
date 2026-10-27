@@ -7,6 +7,7 @@ import { Button } from '../common/Button';
 import { useAppContext } from '../../context/useAppContext';
 import { ContactMethodLabels } from '../../types';
 import toast from 'react-hot-toast';
+import { writeErrorMessage } from '../../utils/writeErrors';
 
 interface LogContactFormProps {
   schoolId: string;
@@ -44,9 +45,9 @@ export function LogContactForm({ schoolId, onClose }: LogContactFormProps) {
       });
       toast.success('Contact logged');
       onClose();
-    } catch {
+    } catch (err) {
       // Keep the form open with everything the user typed, so nothing is lost.
-      setError('Couldn’t save this contact. Check your connection and try again — your notes are still here.');
+      setError(writeErrorMessage(err, 'Couldn’t save this contact. Check your connection and try again — your notes are still here.'));
       setSaving(false);
     }
   };

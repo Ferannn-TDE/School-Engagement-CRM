@@ -5,6 +5,7 @@ import { rememberedUrl } from '../../hooks/usePlaceMemory';
 import { navGroups, REGION_PATHS } from './navigation';
 import { rememberedRegion } from '../../hooks/useStateFilter';
 import { parseRegion, type Region } from '../../utils/region';
+import { useRole } from '../../context/useRole';
 
 /** A tab's last address, carrying the current All / IL / MO choice to pages it affects. */
 function linkFor(path: string, region: Region): string {
@@ -20,6 +21,7 @@ function linkFor(path: string, region: Region): string {
 
 export function Sidebar() {
   const { sidebarOpen, closeSidebar } = useLayout();
+  const { canEdit } = useRole();
   // Re-render on every navigation so each link points at that page's last address.
   const location = useLocation();
   // On a filtered page the current address holds the live choice; elsewhere use the
@@ -68,7 +70,7 @@ export function Sidebar() {
                 {group.label}
               </p>
               <div className="space-y-0.5">
-                {group.items.map((item) => (
+                {group.items.filter((item) => canEdit || !item.editsOnly).map((item) => (
                   <NavLink
                     key={item.to}
                     to={linkFor(item.to, region)}

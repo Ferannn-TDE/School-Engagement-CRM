@@ -13,6 +13,7 @@ import { useAppContext } from '../context/useAppContext';
 import { EventTypeLabels } from '../types';
 import type { EventType } from '../types';
 import { outreachEvents } from '../utils/events';
+import { useRole } from '../context/useRole';
 
 const EVENT_TYPE_VARIANT: Record<string, 'info' | 'success' | 'warning' | 'default'> = {
   outreach_fair: 'info',
@@ -24,14 +25,15 @@ const EVENT_TYPE_VARIANT: Record<string, 'info' | 'success' | 'warning' | 'defau
 };
 
 const QUICK_ACTIONS = [
-  { label: 'Import Contacts', description: 'Bulk import from CSV or Excel', icon: Upload, path: '/import' },
-  { label: 'Create Event', description: 'Log a new outreach event', icon: Calendar, path: '/events' },
-  { label: 'Log Activity', description: 'Browse schools to record activity', icon: Activity, path: '/schools' },
-  { label: 'Generate List', description: 'Build mailing or email lists', icon: List, path: '/generate' },
+  { label: 'Import Contacts', description: 'Bulk import from CSV or Excel', icon: Upload, path: '/import', edits: true },
+  { label: 'Create Event', description: 'Log a new outreach event', icon: Calendar, path: '/events', edits: true },
+  { label: 'Log Activity', description: 'Browse schools to record activity', icon: Activity, path: '/schools', edits: true },
+  { label: 'Generate List', description: 'Build mailing or email lists', icon: List, path: '/generate', edits: false },
 ] as const;
 
 export function DashboardPage() {
   const { state } = useAppContext();
+  const { canEdit } = useRole();
   // Testing dates are busy dates, not outreach: never counted (db/007).
   const countedEvents = useMemo(() => outreachEvents(state.events), [state.events]);
   const navigate = useNavigate();
@@ -107,10 +109,12 @@ export function DashboardPage() {
         title="Dashboard"
         subtitle="Overview of your engagement program"
         actions={
-          <Button size="sm" variant="secondary" onClick={() => navigate('/import')}>
-            <Upload size={16} />
-            Import
-          </Button>
+          canEdit && (
+            <Button size="sm" variant="secondary" onClick={() => navigate('/import')}>
+              <Upload size={16} />
+              Import
+            </Button>
+          )
         }
       />
       <div className="p-8 space-y-8">
@@ -222,7 +226,7 @@ export function DashboardPage() {
           <Card>
             <h3 className="text-base font-semibold text-neutral-800 mb-4">Quick Actions</h3>
             <div className="space-y-2">
-              {QUICK_ACTIONS.map(({ label, description, icon: Icon, path }) => (
+              {QUICK_ACTIONS.filter((a) => canEdit || !a.edits).map(({ label, description, icon: Icon, path }) => (
                 <button
                   key={path}
                   onClick={() => navigate(path)}

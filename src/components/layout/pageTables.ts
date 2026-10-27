@@ -26,6 +26,8 @@ const PAGE_TABLES: [pattern: string, tables: DataTable[]][] = [
   ['/settings', ['schools', 'contacts', 'events', 'activities']],
   // Reads the database itself, so it works whatever failed at startup.
   ['/settings/archived', []],
+  ['/settings/problem-reports', []],
+  ['/settings/team', []],
   ['/analytics', []],
 ];
 

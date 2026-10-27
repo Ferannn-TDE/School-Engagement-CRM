@@ -7,6 +7,7 @@ import {
   type ReactNode,
 } from 'react';
 import toast from 'react-hot-toast';
+import { writeErrorMessage } from '../utils/writeErrors';
 import { AppContext, useAppContext } from './useAppContext';
 import type { School, Contact, Event, ActivityRecord, Program } from '../types';
 import { nowISO } from '../utils/helpers';
@@ -305,7 +306,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       .then((created) => dispatch({ type: 'ADD_SCHOOL', payload: created }))
       .catch((err) => {
         console.error('addSchool failed:', err);
-        toast.error('Failed to save school');
+        toast.error(writeErrorMessage(err, 'Failed to save school'));
       });
   };
 
@@ -327,7 +328,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       )
       .catch((err) => {
         console.error('updateSchool failed:', err);
-        toast.error('Failed to update school');
+        toast.error(writeErrorMessage(err, 'Failed to update school'));
       });
   };
 
@@ -339,7 +340,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       })
       .catch((err) => {
         console.error('archiveSchool failed:', err);
-        toast.error('Failed to archive school');
+        toast.error(writeErrorMessage(err, 'Failed to archive school'));
       });
   };
 
@@ -349,7 +350,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       .then((created) => dispatch({ type: 'ADD_CONTACT', payload: created }))
       .catch((err) => {
         console.error('addContact failed:', err);
-        toast.error('Failed to save contact');
+        toast.error(writeErrorMessage(err, 'Failed to save contact'));
       });
   };
 
@@ -360,7 +361,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       .then((created) => dispatch({ type: 'ADD_CONTACTS_BULK', payload: created }))
       .catch((err) => {
         console.error('addContactsBulk failed:', err);
-        toast.error('Failed to import contacts');
+        toast.error(writeErrorMessage(err, 'Failed to import contacts'));
       });
   };
 
@@ -374,7 +375,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       )
       .catch((err) => {
         console.error('updateContact failed:', err);
-        toast.error('Failed to update contact');
+        toast.error(writeErrorMessage(err, 'Failed to update contact'));
       });
   };
 
@@ -383,7 +384,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       .then(() => dispatch({ type: 'ARCHIVE_CONTACT', payload: id }))
       .catch((err) => {
         console.error('archiveContact failed:', err);
-        toast.error('Failed to archive contact');
+        toast.error(writeErrorMessage(err, 'Failed to archive contact'));
       });
   };
 
@@ -393,7 +394,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       .then((created) => dispatch({ type: 'ADD_EVENT', payload: created }))
       .catch((err) => {
         console.error('addEvent failed:', err);
-        toast.error('Failed to save event');
+        toast.error(writeErrorMessage(err, 'Failed to save event'));
       });
   };
 
@@ -407,7 +408,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       )
       .catch((err) => {
         console.error('updateEvent failed:', err);
-        toast.error('Failed to update event');
+        toast.error(writeErrorMessage(err, 'Failed to update event'));
       });
   };
 
@@ -416,7 +417,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       .then(() => dispatch({ type: 'ARCHIVE_EVENT', payload: id }))
       .catch((err) => {
         console.error('archiveEvent failed:', err);
-        toast.error('Failed to archive event');
+        toast.error(writeErrorMessage(err, 'Failed to archive event'));
       });
   };
 
@@ -436,7 +437,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       .then(() => dispatch({ type: 'ARCHIVE_ACTIVITY', payload: id }))
       .catch((err) => {
         console.error('archiveActivity failed:', err);
-        toast.error('Failed to archive activity');
+        toast.error(writeErrorMessage(err, 'Failed to archive activity'));
       });
   };
 
@@ -446,7 +447,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       .then((created) => dispatch({ type: 'ADD_PROGRAM', payload: created }))
       .catch((err) => {
         console.error('addProgram failed:', err);
-        toast.error('Failed to save program');
+        toast.error(writeErrorMessage(err, 'Failed to save program'));
       });
   };
 
@@ -455,7 +456,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       .then(() => dispatch({ type: 'UPDATE_PROGRAM', payload: { ...program, updatedAt: nowISO() } }))
       .catch((err) => {
         console.error('updateProgram failed:', err);
-        toast.error('Failed to update program');
+        toast.error(writeErrorMessage(err, 'Failed to update program'));
       });
   };
 
@@ -464,7 +465,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       .then(() => dispatch({ type: 'ARCHIVE_PROGRAM', payload: id }))
       .catch((err) => {
         console.error('archiveProgram failed:', err);
-        toast.error('Failed to archive program');
+        toast.error(writeErrorMessage(err, 'Failed to archive program'));
       });
   };
 
@@ -477,7 +478,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       })
       .catch((err) => {
         console.error('verifySchool failed:', err);
-        toast.error('Failed to verify school');
+        toast.error(writeErrorMessage(err, 'Failed to verify school'));
       });
   };
 
@@ -491,7 +492,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       })
       .catch((err) => {
         console.error('verifySchoolsBulk failed:', err);
-        toast.error('Failed to bulk verify schools');
+        toast.error(writeErrorMessage(err, 'Failed to bulk verify schools'));
       });
   };
 
@@ -504,7 +505,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       })
       .catch((err) => {
         console.error('verifyContact failed:', err);
-        toast.error('Failed to verify contact');
+        toast.error(writeErrorMessage(err, 'Failed to verify contact'));
       });
   };
 

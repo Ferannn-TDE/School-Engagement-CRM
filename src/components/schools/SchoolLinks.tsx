@@ -11,6 +11,8 @@ import { normalizeLink, staffPageInUse, websiteInUse } from '../../utils/links';
 import type { LinkInUse } from '../../utils/links';
 import { websiteHref, websiteLabel } from '../../utils/helpers';
 import type { School } from '../../types';
+import { useRole } from '../../context/useRole';
+import { writeErrorMessage } from '../../utils/writeErrors';
 
 function Source({ link }: { link: LinkInUse }) {
   if (link.source === 'yours') return <Badge variant="info">Your link</Badge>;
@@ -43,6 +45,7 @@ function LinkRow({ label, link, empty, note }: { label: string; link: LinkInUse;
  */
 export function SchoolLinks({ school }: { school: School }) {
   const { dispatch } = useAppContext();
+  const { canEdit } = useRole();
   const [editing, setEditing] = useState(false);
   const [website, setWebsite] = useState('');
   const [staffPage, setStaffPage] = useState('');
@@ -74,7 +77,7 @@ export function SchoolLinks({ school }: { school: School }) {
       setEditing(false);
     } catch (err) {
       console.error('setSchoolLinks failed:', err);
-      toast.error('Could not save the links');
+      toast.error(writeErrorMessage(err, 'Could not save the links'));
     } finally {
       setSaving(false);
     }
@@ -87,7 +90,7 @@ export function SchoolLinks({ school }: { school: School }) {
           <Link2 size={18} className="text-neutral-500" />
           <h3 className="text-base font-semibold text-neutral-800">Links</h3>
         </div>
-        {!editing && (
+        {!editing && canEdit && (
           <Button size="sm" variant="ghost" onClick={start}>
             <Pencil size={14} />
             Edit links

@@ -35,6 +35,7 @@ import {
   restoreImportBatch,
   type ImportBatch,
 } from '../../services/importBatchesService';
+import { writeErrorMessage } from '../../utils/writeErrors';
 
 // Import → Import Activities: a list of schools (the client's template, e.g. the
 // attendees of an event) becomes one activity per school, all with the details chosen
@@ -133,7 +134,7 @@ function RecentImports({ refreshKey, onChanged }: { refreshKey: number; onChange
       load();
       onChanged();
     } catch (err) {
-      toast.error(`Couldn't restore: ${(err as { message?: string })?.message ?? err}`);
+      toast.error(writeErrorMessage(err, `Couldn't restore: ${(err as { message?: string })?.message ?? err}`));
     }
   };
 
@@ -190,7 +191,7 @@ function RecentImports({ refreshKey, onChanged }: { refreshKey: number; onChange
           try {
             await archiveImportBatch(confirm.id);
           } catch (err) {
-            toast.error(`Couldn't archive: ${(err as { message?: string })?.message ?? err}`);
+            toast.error(writeErrorMessage(err, `Couldn't archive: ${(err as { message?: string })?.message ?? err}`));
             throw err;
           }
           toast.success(`Archived ${confirm.fileName}`);
@@ -397,7 +398,7 @@ export function ActivityImport() {
       await reload();
     } catch (err) {
       console.error('Activity import save failed:', err);
-      toast.error(`Nothing was saved: ${(err as { message?: string })?.message ?? err}`);
+      toast.error(writeErrorMessage(err, `Nothing was saved: ${(err as { message?: string })?.message ?? err}`));
     } finally {
       setSaving(false);
     }

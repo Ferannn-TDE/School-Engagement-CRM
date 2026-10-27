@@ -20,9 +20,11 @@ import { EventType, EventTypeLabels } from '../types';
 import { classNames } from '../utils/helpers';
 import { isTestingDate } from '../utils/events';
 import toast from 'react-hot-toast';
+import { useRole } from '../context/useRole';
 
 export function EventsPage() {
   const { state, archiveEvent } = useAppContext();
+  const { canEdit } = useRole();
   // Kept in the address so the view survives leaving the tab, a refresh and Back.
   const [viewRaw, setView] = useUrlState('view', 'list');
   const view: 'calendar' | 'list' = viewRaw === 'calendar' ? 'calendar' : 'list';
@@ -162,6 +164,12 @@ export function EventsPage() {
     [visibleEvents, calendarMonth]
   );
 
+
+  // Viewers (db/023) get no edit, verify or archive buttons; the database refuses those writes anyway.
+  const shownColumns = useMemo(
+    () => (canEdit ? columns : columns.filter((c) => c.id !== 'actions')),
+    [columns, canEdit]
+  );
   return (
     <div>
 <Header
@@ -208,10 +216,12 @@ export function EventsPage() {
                 <CalendarDays size={16} />
               </button>
             </div>
-            <Button size="sm" onClick={() => setShowAddModal(true)}>
-              <Plus size={16} />
-              Create Event
-            </Button>
+            {canEdit && (
+              <Button size="sm" onClick={() => setShowAddModal(true)}>
+                <Plus size={16} />
+                Create Event
+              </Button>
+            )}
           </div>
         }
       />
@@ -229,7 +239,7 @@ export function EventsPage() {
                 icon={<Calendar size={32} />}
                 title="No events yet"
                 description="Create your first event to start tracking engagement activities."
-                action={
+                action={canEdit &&
                   <Button onClick={() => setShowAddModal(true)}>
                     <Plus size={16} />
                     Create Event
@@ -240,7 +250,7 @@ export function EventsPage() {
               <Card padding={false}>
                 <DataTable
                   data={filteredEvents}
-                  columns={columns}
+                  columns={shownColumns}
                   columnWidths={['32%', '15%', '18%', '10%', '10%', '15%']}
                   urlState
                   resetKey={`${typeFilter}|${showTesting}`}
@@ -328,10 +338,10 @@ export function EventsPage() {
         {viewingEvent && (
           <EventDetails
             event={viewingEvent}
-            onEdit={() => {
+            onEdit={canEdit ? () => {
               setEditingEvent(viewingEvent);
               setViewingEvent(null);
-            }}
+            } : undefined}
           />
         )}
       </Modal>

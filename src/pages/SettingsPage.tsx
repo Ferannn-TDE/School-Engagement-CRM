@@ -9,6 +9,8 @@ import {
   CheckCircle,
   Shield,
   LogOut,
+  Bug,
+  Users,
 } from 'lucide-react';
 import { Header } from '../components/layout/Header';
 import { Card } from '../components/common/Card';
@@ -20,10 +22,12 @@ import { seedSchools, seedContacts, seedEvents, seedActivities } from '../consta
 import { downloadFile } from '../utils/helpers';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
+import { useRole } from '../context/useRole';
 
 export function SettingsPage() {
   const { dispatch, state } = useAppContext();
   const { user, signOut } = useAuth();
+  const { role, isAdmin, rolesEnabled } = useRole();
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
 
@@ -103,6 +107,40 @@ export function SettingsPage() {
               </Link>
             </div>
 
+            <div className="flex items-start justify-between p-4 rounded-lg border border-neutral-100 bg-neutral-50">
+              <div>
+                <p className="text-sm font-medium text-neutral-700">Problem reports</p>
+                <p className="text-xs text-neutral-500 mt-0.5">
+                  Reports sent with the Report a problem button, with the page and browser. Admins mark them resolved and archive them.
+                </p>
+              </div>
+              <Link
+                to="/settings/problem-reports"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg bg-white text-siue-red border border-siue-red hover:bg-red-50 shrink-0"
+              >
+                <Bug size={15} />
+                View reports
+              </Link>
+            </div>
+
+            {isAdmin && (
+              <div className="flex items-start justify-between p-4 rounded-lg border border-neutral-100 bg-neutral-50">
+                <div>
+                  <p className="text-sm font-medium text-neutral-700">Team</p>
+                  <p className="text-xs text-neutral-500 mt-0.5">
+                    Every account and its role (admin, editor, viewer), and the log of every change. Admins only.
+                  </p>
+                </div>
+                <Link
+                  to="/settings/team"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg bg-white text-siue-red border border-siue-red hover:bg-red-50 shrink-0"
+                >
+                  <Users size={15} />
+                  Manage team
+                </Link>
+              </div>
+            )}
+
             <div className="flex items-start justify-between p-4 rounded-lg border border-red-100 bg-red-50">
               <div>
                 <p className="text-sm font-medium text-neutral-700">Reset to Demo Data</p>
@@ -157,7 +195,10 @@ export function SettingsPage() {
             </div>
             <div>
               <h2 className="text-base font-semibold text-neutral-800">Account</h2>
-              <p className="text-xs text-neutral-500">Signed in as {user?.email}</p>
+              <p className="text-xs text-neutral-500">
+                Signed in as {user?.email}
+                {rolesEnabled && ` · ${role === 'admin' ? 'Admin' : role === 'editor' ? 'Editor' : 'Viewer (read only)'}`}
+              </p>
             </div>
           </div>
           <Button variant="secondary" size="sm" onClick={() => setShowSignOutConfirm(true)}>

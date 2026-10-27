@@ -20,11 +20,13 @@ import type { School as SchoolType } from '../types';
 import { formatSchoolType } from '../utils/helpers';
 import { FreshnessBadges } from '../components/common/FreshnessBadges';
 import { schoolFreshness } from '../utils/freshness';
+import { useRole } from '../context/useRole';
 
 type VerifiedTab = 'all' | 'verified' | 'unverified';
 
 export function SchoolsPage() {
   const { state, getContactsBySchool, getActivitiesBySchool, verifySchool, verifySchoolsBulk } = useAppContext();
+  const { canEdit } = useRole();
   const navigate = useNavigate();
   // Kept in the address so the view survives leaving the tab, a refresh and Back.
   const [search, setSearch] = useUrlState('q');
@@ -177,8 +179,8 @@ export function SchoolsPage() {
   );
 
   const columns = useMemo(
-    () => verifiedTab === 'unverified' ? [...baseColumns, verifyColumn] : baseColumns,
-    [verifiedTab, baseColumns, verifyColumn]
+    () => verifiedTab === 'unverified' && canEdit ? [...baseColumns, verifyColumn] : baseColumns,
+    [verifiedTab, baseColumns, verifyColumn, canEdit]
   );
 
   return (
@@ -187,10 +189,12 @@ export function SchoolsPage() {
         title="Schools"
         subtitle={`${state.schools.length} schools in directory`}
         actions={
-          <Button size="sm" onClick={() => setShowAddModal(true)}>
-            <Plus size={16} />
-            Add School
-          </Button>
+          canEdit && (
+            <Button size="sm" onClick={() => setShowAddModal(true)}>
+              <Plus size={16} />
+              Add School
+            </Button>
+          )
         }
       />
       <div className="p-8 space-y-6">
@@ -223,7 +227,7 @@ export function SchoolsPage() {
               </button>
             ))}
           </div>
-          {verifiedTab === 'unverified' && filteredSchools.length > 0 && (
+          {canEdit && verifiedTab === 'unverified' && filteredSchools.length > 0 && (
             <Button
               size="sm"
               variant="secondary"
@@ -254,7 +258,7 @@ export function SchoolsPage() {
             icon={<School size={32} />}
             title="No schools yet"
             description="Add your first school to start tracking engagement."
-            action={
+            action={canEdit &&
               <Button onClick={() => setShowAddModal(true)}>
                 <Plus size={16} />
                 Add School

@@ -21,11 +21,13 @@ import { contactRoleLabel } from '../utils/contactRoles';
 import toast from 'react-hot-toast';
 import { FreshnessBadges } from '../components/common/FreshnessBadges';
 import { contactFreshness } from '../utils/freshness';
+import { useRole } from '../context/useRole';
 
 type VerifiedTab = 'all' | 'verified' | 'unverified';
 
 export function ContactsPage() {
   const { state, getSchoolById, updateContact, archiveContact, verifyContact } = useAppContext();
+  const { canEdit } = useRole();
   // Kept in the address so the view survives leaving the tab, a refresh and Back.
   const [search, setSearch] = useUrlState('q');
   const [roleFilter, setRoleFilter] = useUrlState('role');
@@ -183,12 +185,19 @@ export function ContactsPage() {
     .sort((a, b) => a.name.localeCompare(b.name))
     .map((s) => ({ value: s.id, label: s.name }));
 
+
+  // Viewers (db/023) get no edit, verify or archive buttons; the database refuses those writes anyway.
+  const shownColumns = useMemo(
+    () => (canEdit ? columns : columns.filter((c) => c.id !== 'actions')),
+    [columns, canEdit]
+  );
   return (
     <div>
 <Header
         title="Contacts"
         subtitle={`${state.contacts.length} contacts in database`}
         actions={
+          canEdit &&
           <Button size="sm" onClick={() => setShowAddModal(true)}>
             <Plus size={16} />
             Add Contact
@@ -256,7 +265,7 @@ export function ContactsPage() {
             icon={<Users size={32} />}
             title="No contacts yet"
             description="Add your first contact or import from a spreadsheet."
-            action={
+            action={canEdit &&
               <Button onClick={() => setShowAddModal(true)}>
                 <Plus size={16} />
                 Add Contact
@@ -279,7 +288,7 @@ export function ContactsPage() {
           <Card padding={false}>
             <DataTable
               data={filteredContacts}
-              columns={columns}
+              columns={shownColumns}
               searchValue={search}
               urlState
               resetKey={[verifiedTab, roleFilter, schoolFilter, activeFilter].join('|')}

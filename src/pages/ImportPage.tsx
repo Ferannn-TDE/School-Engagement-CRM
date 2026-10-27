@@ -35,6 +35,8 @@ import {
 } from '../utils/archivedMatches';
 import type { ArchivedDecision, ArchivedLookup, ArchivedMatch, ImportRowRef } from '../utils/archivedMatches';
 import toast from 'react-hot-toast';
+import { useRole } from '../context/useRole';
+import { NO_EDIT_ACCESS, writeErrorMessage } from '../utils/writeErrors';
 
 type ImportTab = 'contacts' | 'schools' | 'combined' | 'activities';
 
@@ -115,6 +117,7 @@ interface CombinedPreview {
 
 export function ImportPage() {
   const { state, dispatch, addSchoolsBulk, reload } = useAppContext();
+  const { canEdit } = useRole();
 
   // Archived schools and contacts (db/009). Rows that match one are listed in the
   // preview; the person restores the record or skips those rows (the default).
@@ -339,7 +342,7 @@ export function ImportPage() {
         'The import could not be completed and nothing was saved. Check your internet connection and try again.'
       );
       setCombinedStep('upload');
-      toast.error('Import failed — nothing was saved');
+      toast.error(writeErrorMessage(err, 'Import failed — nothing was saved'));
     } finally {
       setIsImporting(false);
     }
@@ -654,7 +657,7 @@ export function ImportPage() {
       setParseError(
         'The import could not be completed and nothing was saved. Check your internet connection and try again.'
       );
-      toast.error('Import failed — nothing was saved');
+      toast.error(writeErrorMessage(err, 'Import failed — nothing was saved'));
     } finally {
       setIsImporting(false);
     }
@@ -723,6 +726,19 @@ export function ImportPage() {
     },
   });
 
+
+  if (!canEdit) {
+    return (
+      <div>
+        <Header title="Import Data" subtitle="Import contacts, schools and activities from spreadsheets" />
+        <div className="p-8">
+          <Card>
+            <p className="text-sm text-neutral-700">{NO_EDIT_ACCESS}</p>
+          </Card>
+        </div>
+      </div>
+    );
+  }
   return (
     <div>
       <Header

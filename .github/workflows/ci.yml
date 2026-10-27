@@ -42,5 +42,7 @@ jobs:
         run: npm run verify:import
       - name: Verify activity import matching
         run: npm run verify:activity-import
+      - name: Verify report figures
+        run: npm run verify:reports
       - name: Verify no database deletes
         run: npm run verify:no-deletes

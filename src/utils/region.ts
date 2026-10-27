@@ -1,4 +1,4 @@
-import type { Event } from '../types';
+import type { ActivityRecord, Contact, Event, Program, School } from '../types';
 
 /** The states the CRM covers. '' means both (the "All" choice). */
 export type Region = '' | 'IL' | 'MO';
@@ -42,4 +42,32 @@ export function eventStates(event: Pick<Event, 'participatingSchools' | 'locatio
     if (fromLocation) states.add(fromLocation);
   }
   return states;
+}
+
+/** The five tables every page reads (the shape of AppState). */
+export interface RegionData {
+  schools: School[];
+  contacts: Contact[];
+  events: Event[];
+  activities: ActivityRecord[];
+  programs: Program[];
+}
+
+/**
+ * One state's slice of the data: its schools and everything attached to them.
+ * Contacts, logged contacts and programs follow their school. Events follow their
+ * participating schools, or the state named in their location when they have none;
+ * events with neither are Unknown and appear only under All.
+ */
+export function scopeToRegion(data: RegionData, region: Region): RegionData {
+  if (!region) return data;
+  const schoolState = new Map(data.schools.map((s) => [s.id, s.state]));
+  const inRegion = (schoolId: string) => schoolState.get(schoolId) === region;
+  return {
+    schools: data.schools.filter((s) => s.state === region),
+    contacts: data.contacts.filter((c) => inRegion(c.schoolId)),
+    events: data.events.filter((e) => eventStates(e, schoolState).has(region)),
+    activities: data.activities.filter((a) => inRegion(a.schoolId)),
+    programs: data.programs.filter((p) => inRegion(p.schoolId)),
+  };
 }

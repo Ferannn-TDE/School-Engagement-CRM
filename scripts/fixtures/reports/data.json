@@ -1,0 +1,58 @@
+{
+  "_about": "Made-up rows in the live tables' shape for the Reports checks. Each row's note says which case it covers. Used by verify-reports.ts (TypeScript, expected values by hand) and verify-reports-sql.ts (the same rows in a throwaway Postgres, run through db/checks/reports_checks.sql).",
+  "schools": [
+    { "facility_key": "s1", "name": "Alpha High School", "state_code": "IL", "county_name": "Madison", "archived": false, "source_status": null, "note": "two active contacts, three activities" },
+    { "facility_key": "s2", "name": "Bravo High School", "state_code": "IL", "county_name": "Madison", "archived": false, "source_status": null, "note": "contact found through staff.school_worked_at; a future-dated activity" },
+    { "facility_key": "s3", "name": "Charlie High School", "state_code": "IL", "county_name": "Cook", "archived": false, "source_status": null, "note": "only an inactive contact; bulk-imported attendance" },
+    { "facility_key": "s4", "name": "Delta High School", "state_code": "IL", "county_name": "  ", "archived": false, "source_status": null, "note": "blank county; its only activity is archived" },
+    { "facility_key": "s5", "name": "Echo High School", "state_code": "MO", "county_name": "St Louis", "archived": false, "source_status": "broken", "note": "went quiet: last activity Mar 1" },
+    { "facility_key": "s6", "name": "Foxtrot High School", "state_code": "MO", "county_name": "St Louis", "archived": false, "source_status": "working", "note": "activity the day before the range" },
+    { "facility_key": "s7", "name": "Golf High School", "state_code": "MO", "county_name": "Greene", "archived": false, "source_status": null, "note": "attendance row with no count" },
+    { "facility_key": "sx", "name": "Xray High School", "state_code": "IL", "county_name": "Madison", "archived": true, "source_status": null, "note": "archived: never counted" }
+  ],
+  "activities": [
+    { "activity_id": "a1", "school_id": "s1", "activity_type": "call", "date": "2026-09-28", "archived": false, "import_batch_id": null, "attendee_count": null },
+    { "activity_id": "a2", "school_id": "s2", "activity_type": "visit", "date": "2026-10-16", "archived": false, "import_batch_id": null, "attendee_count": null },
+    { "activity_id": "a3", "school_id": "s1", "activity_type": "email", "date": "2026-10-20", "archived": false, "import_batch_id": null, "attendee_count": null },
+    { "activity_id": "a4", "school_id": "s3", "activity_type": "event_participation", "date": "2026-10-03", "archived": false, "import_batch_id": "b1", "attendee_count": 12 },
+    { "activity_id": "a5", "school_id": "s5", "activity_type": "email", "date": "2026-03-01", "archived": false, "import_batch_id": null, "attendee_count": null },
+    { "activity_id": "a6", "school_id": "s6", "activity_type": "call", "date": "2026-04-27", "archived": false, "import_batch_id": null, "attendee_count": null },
+    { "activity_id": "a7", "school_id": "s5", "activity_type": "call", "date": "2025-09-10", "archived": false, "import_batch_id": null, "attendee_count": null },
+    { "activity_id": "a8", "school_id": "s2", "activity_type": "call", "date": "2026-10-28", "archived": false, "import_batch_id": null, "attendee_count": null },
+    { "activity_id": "a9", "school_id": "sx", "activity_type": "call", "date": "2026-10-01", "archived": false, "import_batch_id": null, "attendee_count": null },
+    { "activity_id": "a10", "school_id": "s4", "activity_type": "email", "date": "2026-10-05", "archived": true, "import_batch_id": null, "attendee_count": null },
+    { "activity_id": "a11", "school_id": "s7", "activity_type": "event_participation", "date": "2026-09-15", "archived": false, "import_batch_id": "b1", "attendee_count": null },
+    { "activity_id": "a12", "school_id": "s6", "activity_type": "visit", "date": "2026-08-23", "archived": false, "import_batch_id": null, "attendee_count": null },
+    { "activity_id": "a13", "school_id": "s3", "activity_type": "visit", "date": "2026-10-25", "archived": false, "import_batch_id": null, "attendee_count": null, "note": "day 61 after Career Night (no follow-up there), day 22 after Robotics Day (follow-up)" }
+  ],
+  "events": [
+    { "event_id": 1, "fair_name": "Open House", "date": "2026-09-01", "time": null, "schools_involved": "s1, s2", "location": "Edwardsville, IL", "category": null, "archived": false, "note": "both schools followed up; window still open" },
+    { "event_id": 2, "fair_name": "Career Night", "date": "2026-08-25", "time": "18:30:00", "schools_involved": "s3,s4,,unknown", "location": "", "category": null, "archived": false, "note": "window closed, no follow-up; an unknown school id and an empty entry" },
+    { "event_id": 3, "fair_name": "Robotics Day", "date": "2026-10-03", "time": null, "schools_involved": "s3", "location": "", "category": null, "archived": false, "note": "attendance only, which isn't follow-up" },
+    { "event_id": 4, "fair_name": "STEM Fair", "date": "2026-11-14", "time": null, "schools_involved": "s1", "location": "", "category": null, "archived": false, "note": "upcoming" },
+    { "event_id": 5, "fair_name": "College Fair", "date": "2027-03-10", "time": null, "schools_involved": null, "location": "Kirkwood, MO 63122", "category": null, "archived": false, "note": "no school: Missouri by its location" },
+    { "event_id": 6, "fair_name": "SAT", "date": "2026-11-02", "time": null, "schools_involved": "s1", "location": "", "category": "school_testing_date", "archived": false, "note": "testing date: never counted" },
+    { "event_id": 7, "fair_name": "Today's fair", "date": "2026-10-27", "time": "09:00:00", "schools_involved": "", "location": "Somewhere", "category": null, "archived": false, "note": "today: upcoming, not past; no state (All only)" },
+    { "event_id": 8, "fair_name": "Archived fair", "date": "2026-11-20", "time": null, "schools_involved": "s1", "location": "", "category": null, "archived": true, "note": "archived: never counted" },
+    { "event_id": 9, "fair_name": "Summer visit", "date": "2026-06-01", "time": null, "schools_involved": "s5", "location": "", "category": null, "archived": false, "note": "before the range" }
+  ],
+  "staff": [
+    { "staff_id": 1, "school_worked_at": "s1", "is_active": true, "archived": false, "last_verified_at": "2026-07-01T15:00:00+00:00", "last_scraped_at": null, "note": "verified recently" },
+    { "staff_id": 2, "school_worked_at": "s1", "is_active": true, "archived": false, "last_verified_at": "2026-04-26T23:30:00+00:00", "last_scraped_at": null, "note": "verified the day before the 6-month line" },
+    { "staff_id": 3, "school_worked_at": "s2", "is_active": true, "archived": false, "last_verified_at": null, "last_scraped_at": "2026-10-01T00:00:00+00:00", "note": "no junction row: school from school_worked_at; scraped" },
+    { "staff_id": 4, "school_worked_at": "s3", "is_active": false, "archived": false, "last_verified_at": null, "last_scraped_at": null, "note": "inactive" },
+    { "staff_id": 5, "school_worked_at": "s5", "is_active": null, "archived": false, "last_verified_at": null, "last_scraped_at": null, "note": "is_active null counts as active" },
+    { "staff_id": 6, "school_worked_at": "sx", "is_active": true, "archived": false, "last_verified_at": null, "last_scraped_at": null, "note": "on an archived school: never counted" },
+    { "staff_id": 7, "school_worked_at": "s6", "is_active": true, "archived": true, "last_verified_at": null, "last_scraped_at": null, "note": "archived: never counted" },
+    { "staff_id": 8, "school_worked_at": "s6", "is_active": true, "archived": false, "last_verified_at": null, "last_scraped_at": null, "note": "its junction row is archived, so school_worked_at (s6) is used" }
+  ],
+  "contacts": [
+    { "school_id": "s1", "staff_id": 1, "archived": false },
+    { "school_id": "s1", "staff_id": 2, "archived": false },
+    { "school_id": "s3", "staff_id": 4, "archived": false },
+    { "school_id": "s5", "staff_id": 5, "archived": false },
+    { "school_id": "sx", "staff_id": 6, "archived": false },
+    { "school_id": "s6", "staff_id": 7, "archived": false },
+    { "school_id": "s7", "staff_id": 8, "archived": true }
+  ]
+}

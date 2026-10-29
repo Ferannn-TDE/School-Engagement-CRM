@@ -11,7 +11,6 @@ import { Header } from '../components/layout/Header';
 import { Card } from '../components/common/Card';
 import { Badge } from '../components/common/Badge';
 import { EmptyState } from '../components/common/EmptyState';
-import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { ChartTooltipContent } from '../components/common/ChartTooltip';
 import { CHART_COLORS } from '../constants/charts';
 import { useCountyAnalytics } from '../hooks/useCountyAnalytics';
@@ -19,11 +18,14 @@ import { countyDisplayName, countyKey, countyPath, isIndependentCity, isStateRun
 import { useStateFilter } from '../hooks/useStateFilter';
 import { ProgramCategory, ProgramCategoryLabels } from '../types';
 import {
-  fetchCountySchoolSummary,
-  fetchCountyEngagementRate,
+  engagementRateFromData,
+  getCountySchoolSummary,
+  peekCountySchoolSummary,
   type CountySchoolSummaryRow,
   type CountyEngagementRow,
 } from '../services/analyticsService';
+import { useAppContext } from '../context/useAppContext';
+import { useRegionScope } from '../context/RegionScopeContext';
 
 /** Collapsible wrapper for the county-level charts below the directory. */
 function AnalysisSection({
@@ -89,29 +91,36 @@ function engagementBadgeVariant(pct: number): 'success' | 'warning' | 'error' {
 }
 
 export function CountiesPage() {
-  const [summaryData, setSummaryData] = useState<CountySchoolSummaryRow[]>([]);
-  const [engagementData, setEngagementData] = useState<CountyEngagementRow[]>([]);
-  const [loading, setLoading] = useState(true);
+  // The summary comes from the cache when there is one (prefetched after sign-in), so
+  // the page usually opens at once; a stale cache is refreshed in the background.
+  const [summaryData, setSummaryData] = useState<CountySchoolSummaryRow[] | null>(() => peekCountySchoolSummary());
   const [error, setError] = useState<string | null>(null);
+  const loading = summaryData === null && !error;
 
-  // Runs once, and `loading` starts true, so it isn't set here.
   useEffect(() => {
-    Promise.all([fetchCountySchoolSummary(), fetchCountyEngagementRate()])
-      .then(([summary, engagement]) => {
-        setSummaryData(summary);
-        setEngagementData(engagement);
-      })
+    let current = true;
+    getCountySchoolSummary()
+      .then((rows) => { if (current) setSummaryData(rows); })
       .catch((err: unknown) => {
-        setError(err instanceof Error ? err.message : 'Failed to load county data');
-      })
-      .finally(() => setLoading(false));
+        if (current) setError(err instanceof Error ? err.message : 'Failed to load county data');
+      });
+    return () => { current = false; };
   }, []);
+
+  // Engagement is worked out from the schools and events already loaded (the view
+  // took several seconds). Every state's data, then limited below like the summary.
+  const { state } = useAppContext();
+  const full = useRegionScope()?.fullState ?? state;
+  const engagementData = useMemo<CountyEngagementRow[]>(
+    () => engagementRateFromData(full.schools, full.events),
+    [full.schools, full.events]
+  );
 
   // The county views cover both states; apply the shared All / IL / MO choice.
   const [region] = useStateFilter();
   // The state-run labels arrive as two rows; they are merged into one group.
   const regionSummary = useMemo(
-    () => mergeCountyRows(region ? summaryData.filter((r) => r.state_code === region) : summaryData),
+    () => mergeCountyRows(region ? (summaryData ?? []).filter((r) => r.state_code === region) : (summaryData ?? [])),
     [summaryData, region]
   );
   const regionEngagement = useMemo(
@@ -171,8 +180,18 @@ export function CountiesPage() {
       />
       <div className="p-8">
         {loading ? (
-          <div className="flex justify-center py-16">
-            <LoadingSpinner />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" aria-busy="true" aria-label="Loading counties">
+            {Array.from({ length: 9 }).map((_, i) => (
+              <Card key={i} padding={false}>
+                <div className="p-5 space-y-4 animate-pulse">
+                  <div className="h-4 w-1/2 rounded bg-neutral-100" />
+                  <div className="grid grid-cols-2 gap-3">
+                    {Array.from({ length: 4 }).map((__, j) => <div key={j} className="h-10 rounded bg-neutral-100" />)}
+                  </div>
+                  <div className="h-2 rounded bg-neutral-100" />
+                </div>
+              </Card>
+            ))}
           </div>
         ) : error ? (
           <EmptyState

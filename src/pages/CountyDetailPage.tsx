@@ -9,17 +9,13 @@ import { Badge } from '../components/common/Badge';
 import { EmptyState } from '../components/common/EmptyState';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { useAppContext } from '../context/useAppContext';
-import { EventTypeLabels, ProgramCategory, ProgramCategoryLabels } from '../types';
-import type { ActivityRecord, Contact, EventType, Program } from '../types';
+import { ProgramCategory, ProgramCategoryLabels } from '../types';
+import type { ActivityRecord, Contact, Program } from '../types';
 import { computeEngagementScore } from '../utils/engagementScore';
-import {
-  fetchCountySchoolSummary,
-  fetchCountyEngagementRate,
-  type CountySchoolSummaryRow,
-} from '../services/analyticsService';
+import { engagementRateFromData, getCountySchoolSummary, type CountySchoolSummaryRow } from '../services/analyticsService';
 import { formatSchoolType } from '../utils/helpers';
 import { countyLabel, countyPath, mergeCountyRows, sameCounty } from '../utils/counties';
-import { outreachEvents } from '../utils/events';
+import { eventSourceLabel, outreachEvents } from '../utils/events';
 
 type SortField = 'name' | 'contacts' | 'score';
 type SortDir = 'asc' | 'desc';
@@ -57,8 +53,11 @@ export function CountyDetailPage() {
 
   useEffect(() => {
     let current = true;
-    Promise.all([fetchCountySchoolSummary(), fetchCountyEngagementRate()])
-      .then(([summary, engagement]) => {
+    // The summary comes from the shared cache; engagement from the loaded data (the
+    // engagement view took several seconds).
+    getCountySchoolSummary()
+      .then((summary) => {
+        const engagement = engagementRateFromData(state.schools, state.events);
         const isThis = (r: { county_name: string | null; state_code: string | null }) =>
           !!r.county_name && sameCounty(r.county_name, countyName) && (!countyState || r.state_code === countyState);
         if (current) {
@@ -76,7 +75,7 @@ export function CountyDetailPage() {
     return () => {
       current = false;
     };
-  }, [countyName, countyState, viewKey]);
+  }, [countyName, countyState, viewKey, state.schools, state.events]);
 
   // ── Per-county derived data ──────────────────────────────────────────────────
   const countySchools = useMemo(
@@ -257,7 +256,7 @@ export function CountyDetailPage() {
       />
       <Header
         title={title}
-        subtitle={`${countySchools.length} schools · ${engagementPct}% engagement rate`}
+        subtitle={`${countySchools.length.toLocaleString()} schools · ${engagementPct}% engagement rate`}
       />
 
       <div className="p-8 space-y-6">
@@ -418,7 +417,7 @@ export function CountyDetailPage() {
                         {schoolsInCounty} school{schoolsInCounty !== 1 ? 's' : ''} from this county
                       </p>
                     </div>
-                    <Badge variant="info">{EventTypeLabels[event.type as EventType]}</Badge>
+                    <span className="shrink-0 text-xs text-neutral-500">{eventSourceLabel(event)}</span>
                   </div>
                 );
               })}

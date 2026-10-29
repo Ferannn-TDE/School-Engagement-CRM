@@ -4,6 +4,7 @@ import { type ColumnDef } from '@tanstack/react-table';
 import { Plus, School, MapPin, ShieldCheck, ShieldOff, CheckCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { Header } from '../components/layout/Header';
+import { RowAction, RowActions } from '../components/common/RowActions';
 import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { FilterBar } from '../components/common/FilterBar';
@@ -163,16 +164,11 @@ export function SchoolsPage() {
   const verifyColumn: ColumnDef<SchoolType, unknown> = useMemo(
     () => ({
       id: 'verify',
-      header: '',
+      header: () => <span className="sr-only">Actions</span>,
       cell: ({ row }) => (
-        <button
-          className="flex items-center gap-1.5 text-xs font-medium text-success hover:text-success/80 transition-colors px-2 py-1 rounded-lg hover:bg-success/10"
-          onClick={(e) => { e.stopPropagation(); verifySchool(row.original.id); }}
-          title="Mark as verified"
-        >
-          <CheckCircle size={14} />
-          Verify
-        </button>
+        <RowActions>
+          <RowAction icon={<CheckCircle size={13} />} label="Verify" alwaysLabel title="Mark as verified" onClick={() => verifySchool(row.original.id)} />
+        </RowActions>
       ),
     }),
     [verifySchool]
@@ -187,7 +183,7 @@ export function SchoolsPage() {
     <div>
 <Header
         title="Schools"
-        subtitle={`${state.schools.length} schools in directory`}
+        subtitle={`${state.schools.length.toLocaleString()} schools in directory`}
         actions={
           canEdit && (
             <Button size="sm" onClick={() => setShowAddModal(true)}>

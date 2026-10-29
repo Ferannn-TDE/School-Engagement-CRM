@@ -2,8 +2,7 @@ import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { Calendar, Clock, MapPin, School } from 'lucide-react';
 import type { Event } from '../../types';
-import { EventTypeLabels } from '../../types';
-import { Badge } from '../common/Badge';
+import { eventSourceLabel } from '../../utils/events';
 import { Button } from '../common/Button';
 import { useAppContext } from '../../context/useAppContext';
 
@@ -17,9 +16,7 @@ export function EventDetails({ event, onEdit }: { event: Event; onEdit?: () => v
     <div className="space-y-4">
       <div>
         <p className="text-lg font-semibold text-neutral-800">{event.name}</p>
-        <div className="mt-1">
-          <Badge variant="info">{EventTypeLabels[event.type]}</Badge>
-        </div>
+        <p className="mt-0.5 text-sm text-neutral-500">{eventSourceLabel(event)}</p>
       </div>
 
       <dl className="space-y-3 text-sm">

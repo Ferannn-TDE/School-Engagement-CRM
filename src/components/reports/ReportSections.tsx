@@ -9,6 +9,7 @@ import {
 import { activityCount, activityTypeLabel, fmt, pctText, type ListSpec, listBuilders } from '../../utils/reportLists';
 import type { Region } from '../../utils/region';
 import { Columns, Figure, Meter, Note, ReportSection, Tile, Tiles } from './ReportParts';
+import { Pagination } from '../common/Pagination';
 
 export interface ReportModel {
   data: ReportInput;
@@ -51,44 +52,45 @@ function compare(now: number, before: number | null, comparison: Comparison) {
   );
 }
 
+const COUNTY_PAGE = 10;
+
 function CountyTable({ rows, cols }: {
   rows: { key: string; name: string; cells: ReactNode[] }[];
   cols: string[];
 }) {
-  const [all, setAll] = useState(false);
-  const shown = all ? rows : rows.slice(0, 10);
+  const [page, setPage] = useState(0);
+  // A narrower state filter can leave fewer pages than the one open.
+  const current = Math.min(page, Math.max(0, Math.ceil(rows.length / COUNTY_PAGE) - 1));
+  const shown = rows.slice(current * COUNTY_PAGE, (current + 1) * COUNTY_PAGE);
   return (
-    <div className="space-y-2">
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-neutral-100">
-              <th className="text-left px-2 py-1.5 text-xs font-medium text-neutral-500">County</th>
-              {cols.map((c) => <th key={c} className="text-right px-2 py-1.5 text-xs font-medium text-neutral-500 whitespace-nowrap">{c}</th>)}
+    <div>
+      <div className="overflow-x-auto rounded-lg border border-neutral-100">
+        <table className="w-full table-fixed text-sm">
+          <colgroup><col style={{ width: `${100 - cols.length * 20}%` }} />{cols.map((c) => <col key={c} style={{ width: '20%' }} />)}</colgroup>
+          <thead className="bg-neutral-50">
+            <tr>
+              <th className="text-left px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-neutral-500">County</th>
+              {cols.map((c) => <th key={c} className="text-right px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-neutral-500 whitespace-nowrap">{c}</th>)}
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-neutral-50">
             {shown.map((r) => (
-              <tr key={r.key} className="border-b border-neutral-50 last:border-0">
-                <td className="px-2 py-1.5 text-neutral-700">{r.name}</td>
-                {r.cells.map((c, i) => <td key={i} className="px-2 py-1.5 text-right tabular-nums">{c}</td>)}
+              <tr key={r.key}>
+                <td className="px-4 py-2.5 text-neutral-700 truncate">{r.name}</td>
+                {r.cells.map((c, i) => <td key={i} className="px-4 py-2.5 text-right tabular-nums">{c}</td>)}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      {rows.length > 10 && (
-        <button type="button" onClick={() => setAll(!all)} className="text-sm font-medium text-siue-red hover:text-siue-maroon">
-          {all ? 'Show the first 10' : `Show all ${fmt(rows.length)} counties`}
-        </button>
-      )}
+      <Pagination pageIndex={current} pageSize={COUNTY_PAGE} total={rows.length} onPageChange={setPage} noun="counties" />
     </div>
   );
 }
 
 // ── Getting started (admins) ────────────────────────────────────────────────────
 
-export function GettingStarted({ steps }: { steps: { title: string; status: string; link?: { to: string; label: string }; done: boolean }[] }) {
+export function GettingStarted({ steps }: { steps: { title: string; status: string; note?: string; link?: { to: string; label: string }; done: boolean }[] }) {
   const open = steps.filter((s) => !s.done);
   if (!open.length) return null;
   return (
@@ -98,11 +100,19 @@ export function GettingStarted({ steps }: { steps: { title: string; status: stri
         <p className="text-xs text-neutral-500">Shown to admins; each step disappears once it's done</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        {open.map((s) => (
-          <div key={s.title} className="bg-white rounded-lg border border-neutral-100 p-3.5 space-y-1.5">
-            <p className="font-semibold text-neutral-800 text-sm">{s.title}</p>
-            <p className="text-xs text-neutral-600">{s.status}</p>
-            {s.link && <Link to={s.link.to} className="inline-block text-sm font-semibold text-siue-red hover:text-siue-maroon">{s.link.label} →</Link>}
+        {open.map((s, i) => (
+          <div key={s.title} className="flex flex-col gap-2 bg-white rounded-lg border border-neutral-100 p-4 min-h-[9.5rem]">
+            <p className="flex items-center gap-2 text-sm font-semibold text-neutral-800">
+              <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-100 text-xs text-amber-800">{i + 1}</span>
+              {s.title}
+            </p>
+            <p className="text-sm text-neutral-600">{s.status}</p>
+            {s.note && <p className="text-xs text-neutral-500">{s.note}</p>}
+            {s.link && (
+              <Link to={s.link.to} className="mt-auto inline-flex items-center gap-1 text-sm font-semibold text-siue-red hover:text-siue-maroon">
+                {s.link.label} <span aria-hidden>→</span>
+              </Link>
+            )}
           </div>
         ))}
       </div>

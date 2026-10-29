@@ -15,3 +15,21 @@ export function isTestingDate(event: Event): boolean {
 export function outreachEvents(events: Event[]): Event[] {
   return events.filter((e) => !isTestingDate(e));
 }
+
+/**
+ * Where an event came from, as people say it. Events have no stored type: the old
+ * "Outreach Fair" label only meant "found by the scraper", so it was on every
+ * scraped event, information nights included. The source is what we really know.
+ */
+export function eventSourceLabel(event: Event): string {
+  if (isTestingDate(event)) return 'Testing date';
+  if (event.source === 'iacac') return 'IACAC college fair';
+  if (event.source === 'school_calendar') return 'School calendar';
+  return 'Added in the app';
+}
+
+export const EVENT_SOURCE_OPTIONS = [
+  { value: 'iacac', label: 'IACAC college fairs' },
+  { value: 'school_calendar', label: 'School calendars' },
+  { value: 'manual', label: 'Added in the app' },
+];

@@ -4,12 +4,12 @@ import { Bug, CheckCircle } from 'lucide-react';
 import { Modal } from '../common/Modal';
 import { Textarea } from '../common/Textarea';
 import { Button } from '../common/Button';
-import { reportContext, submitBugReport } from '../../services/bugReportsService';
+import { submitBugReport } from '../../services/bugReportsService';
 
 /**
  * "Report a problem", on every page: a short form that files a report (db/024) with
- * the page, browser, screen size and app version. The person sees exactly what is sent
- * and gets a reference once it's saved.
+ * the page, browser, screen size and app version (submitBugReport adds them), and gives
+ * the person a reference once it's saved.
  */
 export function ReportProblemButton() {
   const { pathname, search } = useLocation();
@@ -19,7 +19,6 @@ export function ReportProblemButton() {
   const [error, setError] = useState('');
   const [sentId, setSentId] = useState<string | null>(null);
   const page = `${pathname}${search}`;
-  const ctx = reportContext(page);
 
   // Stable while typing: Modal refocuses itself whenever onClose changes.
   const close = useCallback(() => {
@@ -90,10 +89,6 @@ export function ReportProblemButton() {
               onChange={(e) => setDescription(e.target.value)}
               placeholder="What you were doing, what you expected, and what happened instead."
             />
-            <p className="text-xs text-neutral-500">
-              Sent with it: this page (<span className="font-mono">{ctx.page}</span>), your sign-in email, your
-              browser, screen size {ctx.screen.replace('x', '×')} and app version <span className="font-mono">{ctx.appVersion}</span>.
-            </p>
             {error && (
               <p role="alert" className="text-sm text-error">{error}</p>
             )}

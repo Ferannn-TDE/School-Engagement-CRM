@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Copy, Download, Mail, MapPin } from 'lucide-react';
+import { Copy, Download, MapPin } from 'lucide-react';
 import { Header } from '../components/layout/Header';
 import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
@@ -12,9 +12,51 @@ import { ContactRole, ContactRoleLabels } from '../types';
 import { contactRoleLabel } from '../utils/contactRoles';
 import { contactsToCsv, downloadFile } from '../utils/helpers';
 import toast from 'react-hot-toast';
+import { type ColumnDef } from '@tanstack/react-table';
+import { DataTable } from '../components/common/DataTable';
+import type { Contact, School } from '../types';
+
+function previewColumnsFor(getSchoolById: (id: string) => School | undefined): ColumnDef<Contact, unknown>[] {
+  return [
+    {
+      id: 'name',
+      header: 'Name',
+      accessorFn: (c) => `${c.firstName} ${c.lastName}`.trim(),
+      cell: ({ getValue }) => <span className="block truncate font-medium text-neutral-800">{getValue() as string}</span>,
+    },
+    {
+      accessorKey: 'email',
+      header: 'Email',
+      cell: ({ row }) => row.original.email
+        ? <span className="block truncate text-neutral-700" title={row.original.email}>{row.original.email}</span>
+        : <span className="text-neutral-400">No email</span>,
+    },
+    {
+      id: 'role',
+      header: 'Role',
+      accessorFn: (c) => contactRoleLabel(c),
+      cell: ({ getValue }) => <Badge variant="info">{getValue() as string}</Badge>,
+    },
+    {
+      id: 'school',
+      header: 'School',
+      accessorFn: (c) => getSchoolById(c.schoolId)?.name ?? '',
+      cell: ({ getValue }) => (getValue() as string)
+        ? <span className="block truncate text-neutral-700" title={getValue() as string}>{getValue() as string}</span>
+        : <span className="text-neutral-400">—</span>,
+    },
+    {
+      id: 'county',
+      header: 'County',
+      accessorFn: (c) => getSchoolById(c.schoolId)?.county ?? '',
+      cell: ({ getValue }) => <span className="block truncate text-neutral-600">{(getValue() as string) || '—'}</span>,
+    },
+  ];
+}
 
 export function GenerateListsPage() {
   const { state, getSchoolById } = useAppContext();
+  const previewColumns = useMemo(() => previewColumnsFor(getSchoolById), [getSchoolById]);
   // Kept in the address so a list's settings survive leaving the tab, a refresh and
   // Back, and a link to a list can be shared.
   const [countyFilter, setCountyFilter] = useUrlState('county');
@@ -237,7 +279,7 @@ export function GenerateListsPage() {
             <div className="px-6 py-4 border-b border-neutral-100">
               <div className="flex items-center justify-between">
                 <h3 className="text-base font-semibold text-neutral-800">
-                  Preview ({filteredContacts.length} contacts)
+                  Preview ({filteredContacts.length.toLocaleString()} contacts)
                 </h3>
                 <div className="flex gap-2">
                   {countyFilter && <Badge><MapPin size={12} className="mr-1" />{countyChoiceLabel(countyFilter)}</Badge>}
@@ -245,64 +287,12 @@ export function GenerateListsPage() {
                 </div>
               </div>
             </div>
-            {filteredContacts.length > 0 && (
-              <div className="px-4 py-2 border-b border-neutral-100 text-xs text-neutral-500">
-                Showing {Math.min(50, filteredContacts.length)} of {filteredContacts.length} contacts
-              </div>
-            )}
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-neutral-100 text-sm table-fixed">
-                <colgroup>
-                  <col style={{ width: '20%' }} />
-                  <col style={{ width: '28%' }} />
-                  <col style={{ width: '16%' }} />
-                  <col style={{ width: '24%' }} />
-                  <col style={{ width: '12%' }} />
-                </colgroup>
-                <thead className="bg-neutral-50">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider">Name</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider">Email</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider">Role</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider">School</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider">County</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-neutral-50">
-                  {filteredContacts.length === 0 ? (
-                    <tr>
-                      <td colSpan={5} className="px-4 py-12 text-center text-neutral-400">
-                        <Mail size={32} className="mx-auto mb-2 opacity-50" />
-                        <p>No contacts match your filters.</p>
-                        <p className="text-xs mt-1">Adjust your filters to find contacts.</p>
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredContacts.slice(0, 50).map((contact) => {
-                      const school = getSchoolById(contact.schoolId);
-                      return (
-                        <tr key={contact.id} className="hover:bg-neutral-50">
-                          <td className="px-4 py-3 text-neutral-700 font-medium">
-                            {contact.firstName} {contact.lastName}
-                          </td>
-                          <td className="px-4 py-3 text-neutral-500">{contact.email}</td>
-                          <td className="px-4 py-3">
-                            <Badge variant="info">{contactRoleLabel(contact)}</Badge>
-                          </td>
-                          <td className="px-4 py-3 text-neutral-600">{school?.name || '-'}</td>
-                          <td className="px-4 py-3 text-neutral-500">{school?.county || '-'}</td>
-                        </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
-              {filteredContacts.length > 50 && (
-                <p className="text-xs text-neutral-500 p-3 text-center bg-neutral-50">
-                  Showing first 50 of {filteredContacts.length} contacts
-                </p>
-              )}
-            </div>
+            <DataTable
+              data={filteredContacts}
+              columns={previewColumns}
+              columnWidths={['20%', '26%', '15%', '25%', '14%']}
+              emptyMessage="No contacts match your filters. Adjust them to find contacts."
+            />
           </Card>
         </div>
       </div>

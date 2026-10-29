@@ -321,7 +321,7 @@ export function SchoolDetailPage() {
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     <Badge>{contactRoleLabel(contact)}</Badge>
-                    <Badge variant={contact.isActive ? 'success' : 'error'}>
+                    <Badge variant={contact.isActive ? 'success' : 'default'}>
                       {contact.isActive ? 'Active' : 'Inactive'}
                     </Badge>
                   </div>

@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
-import { Plus, Calendar, CalendarDays, CalendarX, List, MapPin, Users } from 'lucide-react';
+import { Plus, Calendar, CalendarDays, CalendarX, List, MapPin, Users, Pencil, Archive } from 'lucide-react';
+import { RowAction, RowActions } from '../components/common/RowActions';
 import { format, isAfter, isSameMonth, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, isToday } from 'date-fns';
 import { Header } from '../components/layout/Header';
 import { Card } from '../components/common/Card';
@@ -16,9 +17,8 @@ import { EventDetails } from '../components/events/EventDetails';
 import { useAppContext } from '../context/useAppContext';
 import { useUrlState } from '../hooks/useUrlState';
 import type { Event } from '../types';
-import { EventType, EventTypeLabels } from '../types';
 import { classNames } from '../utils/helpers';
-import { isTestingDate } from '../utils/events';
+import { EVENT_SOURCE_OPTIONS, eventSourceLabel, isTestingDate } from '../utils/events';
 import toast from 'react-hot-toast';
 import { useRole } from '../context/useRole';
 
@@ -28,7 +28,7 @@ export function EventsPage() {
   // Kept in the address so the view survives leaving the tab, a refresh and Back.
   const [viewRaw, setView] = useUrlState('view', 'list');
   const view: 'calendar' | 'list' = viewRaw === 'calendar' ? 'calendar' : 'list';
-  const [typeFilter, setTypeFilter] = useUrlState('type');
+  const [sourceFilter, setSourceFilter] = useUrlState('source');
   // SAT/ACT/PSAT/AP exam days (db/007) are busy dates, not outreach: hidden unless asked for.
   const [testingRaw, setTestingRaw] = useUrlState('testing');
   const showTesting = testingRaw === '1';
@@ -52,14 +52,10 @@ export function EventsPage() {
 
   const filteredEvents = useMemo(() => {
     let events = visibleEvents;
-    if (typeFilter) events = events.filter((e) => e.type === typeFilter);
+    if (sourceFilter) events = events.filter((e) => (e.source ?? 'manual') === sourceFilter);
     return [...events].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  }, [visibleEvents, typeFilter]);
+  }, [visibleEvents, sourceFilter]);
 
-  const typeOptions = Object.values(EventType).map((type) => ({
-    value: type,
-    label: EventTypeLabels[type],
-  }));
 
   const columns: ColumnDef<Event, unknown>[] = useMemo(
     () => [
@@ -81,16 +77,17 @@ export function EventsPage() {
         ),
       },
       {
-        accessorKey: 'type',
-        header: 'Type',
-        cell: ({ row, getValue }) =>
+        id: 'source',
+        accessorFn: (row) => eventSourceLabel(row),
+        header: 'Source',
+        cell: ({ row }) =>
           isTestingDate(row.original) ? (
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium border border-dashed border-neutral-400 text-neutral-600">
               <CalendarX size={12} />
               Testing date
             </span>
           ) : (
-            <Badge variant="info">{EventTypeLabels[getValue() as EventType]}</Badge>
+            <span className="block truncate text-sm text-neutral-600" title={eventSourceLabel(row.original)}>{eventSourceLabel(row.original)}</span>
           ),
       },
       {
@@ -128,24 +125,13 @@ export function EventsPage() {
       },
       {
         id: 'actions',
-        header: '',
+        header: () => <span className="sr-only">Actions</span>,
         enableSorting: false,
         cell: ({ row }) => (
-          <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
-            <button
-              onClick={() => setEditingEvent(row.original)}
-              className="text-xs text-info hover:underline"
-            >
-              Edit
-            </button>
-            <span className="text-neutral-200">|</span>
-            <button
-              onClick={() => setArchivingEvent(row.original)}
-              className="text-xs text-error hover:underline"
-            >
-              Archive
-            </button>
-          </div>
+          <RowActions>
+            <RowAction icon={<Pencil size={13} />} label="Edit" onClick={() => setEditingEvent(row.original)} />
+            <RowAction icon={<Archive size={13} />} label="Archive" tone="danger" onClick={() => setArchivingEvent(row.original)} />
+          </RowActions>
         ),
       },
     ],
@@ -230,9 +216,9 @@ export function EventsPage() {
           <>
             <FilterBar
               filters={[
-                { value: typeFilter, onChange: setTypeFilter, options: typeOptions, placeholder: 'All Types', className: 'w-48' },
+                { value: sourceFilter, onChange: setSourceFilter, options: EVENT_SOURCE_OPTIONS, placeholder: 'All sources', className: 'w-48' },
               ]}
-              onClear={() => setTypeFilter('')}
+              onClear={() => setSourceFilter('')}
             />
             {state.events.length === 0 ? (
               <EmptyState
@@ -253,7 +239,7 @@ export function EventsPage() {
                   columns={shownColumns}
                   columnWidths={['32%', '15%', '18%', '10%', '10%', '15%']}
                   urlState
-                  resetKey={`${typeFilter}|${showTesting}`}
+                  resetKey={`${sourceFilter}|${showTesting}`}
                   onRowClick={(event) => setViewingEvent(event)}
                   emptyMessage="No events match your filter."
                 />

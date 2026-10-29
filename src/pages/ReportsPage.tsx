@@ -72,6 +72,14 @@ export function ReportsPage() {
   const m: ReportModel = { ...model, open: setList };
   const { range, comparison, logging } = model;
 
+  // The newest record the scraper added (created, not updated: a person's edit also
+  // updates a record), as the date of the last data refresh.
+  const lastRefresh = [
+    ...full.contacts.filter((c) => c.dataSource !== 'manual').map((c) => c.createdAt),
+    ...full.events.filter((e) => e.source && e.source !== 'manual').map((e) => e.createdAt),
+  ].reduce<string | null>((max, d) => (d && (!max || d > max) ? d : max), null);
+  const lastRefreshDay = lastRefresh ? format(new Date(lastRefresh), 'yyyy-MM-dd') : null;
+
   const steps = [
     {
       title: 'Log contacts as they happen',
@@ -88,8 +96,11 @@ export function ReportsPage() {
       done: full.activities.some((a) => a.importBatchId),
     },
     {
-      title: "The scraper's first run",
-      status: 'Not run yet: no contact verified and no school website checked. It marks who is still listed on each school\'s site.',
+      title: 'Freshness tracking',
+      status: lastRefreshDay
+        ? `The scraper has run by hand: the newest school-website data is from ${formatDay(lastRefreshDay)}.`
+        : 'No school-website data has been loaded yet.',
+      note: "Tracking when each contact was last seen on its school's site starts with the next run of the updated scraper.",
       done: full.contacts.some((c) => c.lastScrapedAt) || full.schools.some((s) => s.lastScrapedAt || s.sourceStatus),
     },
   ];

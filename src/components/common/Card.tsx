@@ -46,7 +46,7 @@ export function MetricCard({ title, value, subtitle, icon }: MetricCardProps) {
         <div className="flex items-start justify-between">
           <div>
             <p className="text-sm font-medium text-neutral-500">{title}</p>
-            <p className="mt-1 text-3xl font-bold text-neutral-800">{value}</p>
+            <p className="mt-1 text-3xl font-bold text-neutral-800">{typeof value === 'number' ? value.toLocaleString('en-US') : value}</p>
             {subtitle && <p className="mt-1 text-sm text-neutral-500">{subtitle}</p>}
           </div>
           {icon && (

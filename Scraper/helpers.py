@@ -28,6 +28,7 @@ OUTPUT_FOLDER = "output"
 UPLOAD_DATABASE = True
 USE_BROWSER = False
 WORKERS = 6
+RESUME_CHECKPOINT = False
 SKIP = 0
 RESOLVE_WINDOW = 48
 DATABASE_MODE = "upsert"
@@ -604,7 +605,7 @@ SCHOOL_SQL = """
     )
     ON CONFLICT (facility_key) DO UPDATE SET
         name = EXCLUDED.name,
-        district_id = EXCLUDED.district_id,
+        district_id = schools.district_id,
         phone = COALESCE(EXCLUDED.phone, schools.phone),
         address = COALESCE(EXCLUDED.address, schools.address),
         type_of_school = COALESCE(EXCLUDED.type_of_school, schools.type_of_school),
@@ -641,7 +642,7 @@ SCHOOL_SQL = """
         -- The lookup result goes to source_status now, not priority_tier (db/011):
         -- the scraper sends NULL here, so a client's priority is kept.
         priority_tier = COALESCE(EXCLUDED.priority_tier, schools.priority_tier),
-        state_code = EXCLUDED.state_code,
+        state_code = schools.state_code,
         -- Freshness (db/011): found in this run.
         last_scraped_at = EXCLUDED.last_scraped_at,
         source_status = EXCLUDED.source_status,
@@ -652,7 +653,8 @@ SCHOOL_SQL = """
     -- (bulk-marked verified on 2026-09-02) from ever being refreshed. Client edits
     -- are protected per column by db/006 instead. MUST MERGE WITH Phase 5 step 3
     -- (the verified reset); see the commit message.
-    WHERE schools.is_scraped IS TRUE
+    WHERE schools.state_code = EXCLUDED.state_code
+      AND schools.is_scraped IS TRUE
       -- Archived schools are left as they are (db/009, Part 3).
       AND schools.archived IS NOT TRUE
 """
@@ -678,7 +680,6 @@ STAFF_FIND_EMAIL_SQL = """
         archived,
         CASE WHEN school_worked_at = %s THEN 0 ELSE 1 END,
         staff_id
-    LIMIT 1
 """
 
 # Phone matching also requires the name: a school's main number is shared by many of
@@ -689,7 +690,6 @@ STAFF_FIND_PHONE_SQL = """
       AND LOWER(name) = LOWER(%s)
       AND phone = %s
     ORDER BY archived, staff_id
-    LIMIT 1
 """
 
 # Match by name + school, never by job_name: a client can correct a title in the app
@@ -707,7 +707,6 @@ STAFF_FIND_NAME_SQL = """
           OR LOWER(email) = LOWER(%s)
       )
     ORDER BY archived, staff_id
-    LIMIT 1
 """
 
 STAFF_UPDATE_SQL = """
@@ -716,7 +715,6 @@ STAFF_UPDATE_SQL = """
         phone = COALESCE(%s, phone),
         email = COALESCE(%s, email),
         job_name = COALESCE(%s, job_name),
-        school_worked_at = %s,
         -- Never switch an inactive contact back to active: someone deactivated them
         -- on purpose, and the scraper always sends TRUE (plan item C10).
         is_active = CASE WHEN is_active IS FALSE THEN FALSE ELSE %s END,
@@ -733,6 +731,7 @@ STAFF_UPDATE_SQL = """
     -- No longer skips verified contacts: client edits are protected per column by
     -- db/006. MUST MERGE WITH Phase 5 step 3 (the verified reset).
     WHERE staff_id = %s
+      AND school_worked_at = %s
       AND is_scraped IS TRUE
       AND archived IS NOT TRUE
 """
@@ -771,23 +770,14 @@ SCHOOL_SETTINGS_SQL = """
 
 # category: school_testing_date for testing dates (TESTING_DATE_TERMS above, db/007),
 # NULL for everything else (outreach). An update can set it, never clear it.
+# Integrity patch: existing events now remain unchanged; proposed changes go to
+# database_integrity_review.json because events have no per-field edit locks.
 EVENT_SQL = """
     INSERT INTO events (
         schools_involved, location, time, date, attendance,
         is_scraped, external_id, fair_name, created_at, updated_at, category
     ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-    ON CONFLICT (external_id) DO UPDATE SET
-        schools_involved = COALESCE(EXCLUDED.schools_involved, events.schools_involved),
-        location = COALESCE(EXCLUDED.location, events.location),
-        time = EXCLUDED.time,
-        date = EXCLUDED.date,
-        attendance = COALESCE(EXCLUDED.attendance, events.attendance),
-        is_scraped = EXCLUDED.is_scraped,
-        fair_name = EXCLUDED.fair_name,
-        updated_at = EXCLUDED.updated_at,
-        category = COALESCE(EXCLUDED.category, events.category)
-    WHERE events.is_scraped IS TRUE
-      AND events.archived IS NOT TRUE
+    ON CONFLICT DO NOTHING
 """
 
 
@@ -1113,7 +1103,7 @@ def json_value(value):
         return {str(key): json_value(item) for key, item in value.items()}
     if isinstance(value, (list, tuple)):
         return [json_value(item) for item in value]
-    if isinstance(value, (date, datetime)):
+    if isinstance(value, (date, datetime, day_time)):
         return value.isoformat()
     return value
 

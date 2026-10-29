@@ -22,6 +22,7 @@ from helpers import (
     IACAC_START_FIELDS,
     IACAC_TITLE_FIELDS,
     clean,
+    CENTRAL_TIME,
     iter_json,
     json_documents,
     normalize,
@@ -260,7 +261,7 @@ class IacacEventSource:
         return ""
 
     @classmethod
-    def event_datetime(cls, value):
+    def event_datetime(cls, value, *, for_identity=False):
         value = clean(value)
         if not value:
             return None
@@ -271,6 +272,8 @@ class IacacEventSource:
             candidate = re.sub(r"(?<=\d)(am|pm)\b", r" \1", candidate, flags=re.I)
             try:
                 result = datetime.fromisoformat(candidate.replace("Z", "+00:00"))
+                if result.tzinfo is not None and not for_identity:
+                    result = result.astimezone(CENTRAL_TIME)
                 return result.replace(tzinfo=None)
             except ValueError:
                 pass
@@ -285,7 +288,9 @@ class IacacEventSource:
     def event(cls, record, labels, source_url):
         fields = cls.fields(record, labels)
         title = cls.pick(fields, IACAC_TITLE_FIELDS)
-        start = cls.event_datetime(cls.pick(fields, IACAC_START_FIELDS))
+        raw_start = cls.pick(fields, IACAC_START_FIELDS)
+        start = cls.event_datetime(raw_start)
+        identity_start = cls.event_datetime(raw_start, for_identity=True)
         if not title or start is None:
             return None
         if not date.today() <= start.date() <= date.today() + timedelta(days=365):
@@ -312,6 +317,7 @@ class IacacEventSource:
             source_url=detail_url,
             method="iacac_knack_api",
             score=8.0,
+            identity_start=identity_start.isoformat(),
         )
 
     @classmethod

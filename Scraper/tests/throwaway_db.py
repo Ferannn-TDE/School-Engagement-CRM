@@ -30,13 +30,17 @@ DROP SCHEMA IF EXISTS {TEST_SCHEMA} CASCADE;
 CREATE SCHEMA {TEST_SCHEMA};
 SET search_path TO {TEST_SCHEMA};
 
+CREATE TABLE state (state_code text PRIMARY KEY, state_name text NOT NULL);
+CREATE TABLE county (county_name text NOT NULL, state_code text REFERENCES state,
+                     PRIMARY KEY (county_name, state_code));
 CREATE TABLE district (
     district_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    district_name text, county_name text, state_code text
+    district_name text, county_name text, state_code text REFERENCES state,
+    FOREIGN KEY (county_name, state_code) REFERENCES county
 );
 
 CREATE TABLE schools (
-    facility_key text PRIMARY KEY, name text, district_id integer, phone text,
+    facility_key text PRIMARY KEY, name text, district_id integer REFERENCES district, phone text,
     address text, class_size integer, rating numeric, type_of_school text, admin text,
     city text, zipcode text, grades_served text, website text, county_name text,
     is_scraped boolean, is_active boolean, notes text,
@@ -51,12 +55,14 @@ CREATE TABLE schools (
     source_checked_at timestamptz,
     missed_runs integer NOT NULL DEFAULT 0 CHECK (missed_runs >= 0),
     missing_since timestamptz CHECK (missing_since IS NULL OR missed_runs >= 3),
-    website_override text, staff_page_override text
+    website_override text, staff_page_override text,
+    FOREIGN KEY (state_code) REFERENCES state,
+    FOREIGN KEY (county_name, state_code) REFERENCES county
 );
 
 CREATE TABLE staff (
     staff_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name text, phone text, email text, job_name text, school_worked_at text,
+    name text, phone text, email text, job_name text, school_worked_at text REFERENCES schools,
     is_scraped boolean, is_active boolean, notes text,
     created_at timestamptz, updated_at timestamptz, data_source text,
     is_verified boolean, last_verified_at timestamptz,
@@ -71,13 +77,14 @@ CREATE TABLE staff (
 );
 
 CREATE TABLE contacts (
-    school_id text, staff_id integer,
+    school_id text REFERENCES schools, staff_id integer REFERENCES staff,
+    PRIMARY KEY (school_id, staff_id),
     archived boolean NOT NULL DEFAULT false, archived_at timestamptz, archived_by text
 );
 
 CREATE TABLE events (
     event_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    schools_involved text, location text, time time, date date, attendance integer,
+    schools_involved text REFERENCES schools, location text, time time, date date, attendance integer,
     is_scraped boolean, external_id text UNIQUE, fair_name text,
     created_at timestamptz, updated_at timestamptz, category text,
     archived boolean NOT NULL DEFAULT false, archived_at timestamptz, archived_by text

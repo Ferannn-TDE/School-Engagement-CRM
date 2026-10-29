@@ -1,4 +1,5 @@
 from collections import Counter
+from dataclasses import replace
 from datetime import date, datetime, timedelta
 import json
 import re
@@ -394,7 +395,8 @@ class ContactParser:
     def deduplicate(contacts):
         best = {}
         for contact in contacts:
-            key = contact.email or f"{normalize(contact.name)}|{contact.role}|{digits(contact.phone)}"
+            key = (f"{contact.email.casefold()}|{normalize(contact.name)}" if contact.email else
+                   f"{normalize(contact.name)}|{contact.role}|{digits(contact.phone)}")
             if key not in best or contact.score > best[key].score:
                 best[key] = contact
         rank = {role: index for index, role in enumerate(ROLE_ORDER)}
@@ -405,6 +407,7 @@ class EventParser:
     def __init__(self):
         # Every testing-date match in this run, so the list in helpers.py can be tuned.
         self.testing_date_matches = []
+        self.review = []
 
     def category(self, text):
         text = clean(text)
@@ -526,67 +529,50 @@ class EventParser:
         return ""
 
     def ics(self, school, page, inherited_school):
-        components = []
-        current = None
-
-        for line in self.unfold_ics(page.text):
-            if line.upper() == "BEGIN:VEVENT":
-                current = {}
-            elif line.upper() == "END:VEVENT":
-                if current is not None:
-                    components.append(current)
-                current = None
-            elif current is not None and ":" in line:
-                key, value = line.split(":", 1)
-                current[key] = value
-
+        from icalendar import Calendar
+        try:
+            calendar = Calendar.from_ical(page.text)
+            components = calendar.walk("VEVENT")
+        except (ValueError, TypeError, KeyError) as error:
+            self.review.append({"school": school.facility_key, "url": page.url,
+                                "reason": "invalid_calendar", "detail": str(error)})
+            return []
+        recurrence_fields = {"RRULE", "RDATE", "EXDATE", "EXRULE", "RECURRENCE-ID"}
+        recurring_uids = {str(item.get("UID")) for item in components
+                          if item.get("UID") and any(key in item for key in recurrence_fields)}
         output = []
-        for fields in components[:5_000]:
-            start = parse_datetime(self.ics_value(fields, "DTSTART"))
-            if start is None:
+        for item in components[:5_000]:
+            reason = None
+            if any(key in item for key in recurrence_fields) or str(item.get("UID")) in recurring_uids:
+                reason = "recurring_event_held"
+            elif str(item.get("STATUS", "")).upper() == "CANCELLED":
+                reason = "cancelled_event_skipped"
+            if reason:
+                self.review.append({"school": school.facility_key, "url": page.url,
+                                    "uid": str(item.get("UID", "")), "reason": reason})
                 continue
-
-            dates = [start]
-            rule = self.ics_value(fields, "RRULE")
-            if rule:
-                values = dict(part.split("=", 1) for part in rule.split(";") if "=" in part)
-                frequency = values.get("FREQ", "").upper()
-                try:
-                    interval = max(1, int(values.get("INTERVAL", "1") or 1))
-                except ValueError:
-                    interval = 1
-
-                if frequency in {"DAILY", "WEEKLY", "MONTHLY"}:
-                    days = interval if frequency == "DAILY" else 7 * interval if frequency == "WEEKLY" else 28 * interval
-                    step = timedelta(days=days)
-                    dates = []
-                    current_date = start
-                    try:
-                        count = min(400, int(values.get("COUNT", "400") or 400))
-                    except ValueError:
-                        count = 400
-                    for index in range(count):
-                        if current_date.date() > date.today() + timedelta(days=365):
-                            break
-                        if self.in_window(current_date):
-                            dates.append(current_date)
-                        current_date += step
-
-            for event_date in dates:
+            try:
+                start = item.decoded("DTSTART")
+                end = item.decoded("DTEND") if "DTEND" in item else ""
+                for key, value in (("DTSTART", start), ("DTEND", end)):
+                    if key in item and item[key].params.get("TZID") and (
+                            not isinstance(value, datetime) or value.tzinfo is None):
+                        raise ValueError("Unrecognized event timezone")
                 event = self.make(
-                    school,
-                    page,
-                    title=self.ics_value(fields, "SUMMARY"),
-                    start=event_date,
-                    end=self.ics_value(fields, "DTEND"),
-                    location=self.ics_value(fields, "LOCATION"),
-                    description=self.ics_value(fields, "DESCRIPTION"),
-                    method="ics_feed",
-                    inherited_school=inherited_school,
+                    school, page, title=str(item.get("SUMMARY", "")), start=start, end=end,
+                    location=str(item.get("LOCATION", "")),
+                    description=str(item.get("DESCRIPTION", "")),
+                    method="ics_feed", inherited_school=inherited_school,
                 )
-                if event:
-                    output.append(event)
-
+            except (ValueError, TypeError, KeyError, AttributeError) as error:
+                self.review.append({"school": school.facility_key, "url": page.url,
+                                    "reason": "invalid_calendar_event", "detail": str(error)})
+                continue
+            if event:
+                # The old ICS reader ignored TZID but retained a literal trailing Z.
+                legacy_start = parse_datetime(item["DTSTART"].to_ical().decode("utf-8"))
+                event.identity_start = legacy_start.isoformat() if legacy_start else event.start
+                output.append(event)
         return output
 
     def html(self, school, page, inherited_school):
@@ -639,13 +625,27 @@ class EventParser:
     @staticmethod
     def deduplicate(events):
         priority = {"ics_feed": 3, "embedded_json": 2, "html_time": 1}
-        best = {}
+        groups = {}
         for event in events:
-            key = f"{normalize(event.title)}|{event.start[:10]}"
-            old = best.get(key)
-            if old is None or (priority.get(event.method, 0), event.score) > (priority.get(old.method, 0), old.score):
-                best[key] = event
-        return sorted(best.values(), key=lambda item: (item.start, item.title))
+            local_start = parse_datetime(event.start_local or event.start, zone=CENTRAL_TIME)
+            start_key = local_start.isoformat() if local_start else event.start_local or event.start
+            key = (normalize(event.title), start_key)
+            groups.setdefault(key, []).append(event)
+        output = []
+        for group in groups.values():
+            known = {normalize(event.location): event.location for event in group if normalize(event.location)}
+            best = {}
+            for event in group:
+                location = normalize(event.location)
+                # A blank venue can match one known venue, but cannot choose between two.
+                if not location and len(known) == 1:
+                    location = next(iter(known))
+                    event = replace(event, location=known[location])
+                old = best.get(location)
+                if old is None or (priority.get(event.method, 0), event.score) > (priority.get(old.method, 0), old.score):
+                    best[location] = event
+            output.extend(best.values())
+        return sorted(output, key=lambda item: (item.start, item.title))
 
 
 class SchoolScraper:

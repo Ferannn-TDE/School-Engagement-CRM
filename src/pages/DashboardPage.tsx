@@ -10,19 +10,8 @@ import { MetricCard, Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { Badge } from '../components/common/Badge';
 import { useAppContext } from '../context/useAppContext';
-import { EventTypeLabels } from '../types';
-import type { EventType } from '../types';
-import { outreachEvents } from '../utils/events';
+import { eventSourceLabel, outreachEvents } from '../utils/events';
 import { useRole } from '../context/useRole';
-
-const EVENT_TYPE_VARIANT: Record<string, 'info' | 'success' | 'warning' | 'default'> = {
-  outreach_fair: 'info',
-  campus_visit: 'success',
-  recruitment_event: 'warning',
-  summer_camp: 'info',
-  workshop: 'default',
-  other: 'default',
-};
 
 const QUICK_ACTIONS = [
   { label: 'Import Contacts', description: 'Bulk import from CSV or Excel', icon: Upload, path: '/import', edits: true },
@@ -124,19 +113,19 @@ export function DashboardPage() {
           <MetricCard
             title="Active Schools"
             value={metrics.activeSchools}
-            subtitle={`${state.schools.length} total`}
+            subtitle={`${state.schools.length.toLocaleString()} total`}
             icon={<School size={20} />}
           />
           <MetricCard
             title="Active Contacts"
             value={metrics.activeContacts}
-            subtitle={`${state.contacts.length} total`}
+            subtitle={`${state.contacts.length.toLocaleString()} total`}
             icon={<Users size={20} />}
           />
           <MetricCard
             title="Upcoming Events"
             value={metrics.upcomingEvents}
-            subtitle={`${countedEvents.length} total`}
+            subtitle={`${countedEvents.length.toLocaleString()} total`}
             icon={<Calendar size={20} />}
           />
           {/* Activities — CTA when empty */}
@@ -162,7 +151,7 @@ export function DashboardPage() {
             <MetricCard
               title="Activities (12 mo)"
               value={metrics.recentActivities}
-              subtitle={`${state.activities.length} all time`}
+              subtitle={`${state.activities.length.toLocaleString()} all time`}
               icon={<TrendingUp size={20} />}
             />
           )}
@@ -265,16 +254,13 @@ export function DashboardPage() {
                   >
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium text-neutral-800 truncate">{event.name}</p>
-                      <p className="text-xs text-neutral-500 truncate mt-0.5">{event.location}</p>
+                      <p className="text-xs text-neutral-500 truncate mt-0.5">
+                        {[event.location, eventSourceLabel(event)].filter(Boolean).join(' · ')}
+                      </p>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <Badge variant={EVENT_TYPE_VARIANT[event.type] ?? 'default'}>
-                        {EventTypeLabels[event.type as EventType]}
-                      </Badge>
-                      <span className="text-xs font-medium text-neutral-600 whitespace-nowrap">
-                        {format(new Date(event.date), 'MMM d, yyyy')}
-                      </span>
-                    </div>
+                    <span className="w-24 shrink-0 text-right text-xs font-medium text-neutral-600 whitespace-nowrap tabular-nums">
+                      {format(new Date(event.date), 'MMM d, yyyy')}
+                    </span>
                   </div>
                 ))}
               </div>

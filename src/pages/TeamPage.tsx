@@ -21,8 +21,10 @@ import {
   type TeamMember,
 } from '../services/rolesService';
 import { databaseMessage } from '../utils/writeErrors';
+import { useConfirm } from '../hooks/useConfirm';
 
 const ROLE_LABELS: Record<Role, string> = { admin: 'Admin', editor: 'Editor', viewer: 'Viewer' };
+const ROLE_RANK: Record<Role, number> = { admin: 3, editor: 2, viewer: 1 };
 const ROLE_HELP: Record<Role, string> = {
   admin: 'everything, including this page',
   editor: 'view and change data',
@@ -49,6 +51,7 @@ export function TeamPage() {
   const [log, setLog] = useState<RoleChange[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const { confirm, dialog } = useConfirm();
 
   const load = useCallback(async () => {
     try {
@@ -116,7 +119,13 @@ export function TeamPage() {
                   disabled={busy !== null}
                   onChange={(e) => {
                     const role = e.target.value as Role;
-                    void change(m, () => setMemberRole(m.userId, role), `${m.email ?? 'Account'} is now ${ROLE_LABELS[role].toLowerCase()}`);
+                    const who = m.email ?? 'this account';
+                    confirm({
+                      title: `Make ${who} ${role === 'admin' ? 'an admin' : `a${role === 'editor' ? 'n' : ''} ${role}`}?`,
+                      message: `${who} goes from ${ROLE_LABELS[m.role]} (${ROLE_HELP[m.role]}) to ${ROLE_LABELS[role]} (${ROLE_HELP[role]}). The change is logged below.`,
+                      confirmLabel: `Make ${ROLE_LABELS[role].toLowerCase()}`,
+                      variant: role === 'admin' || ROLE_RANK[role] > ROLE_RANK[m.role] ? 'primary' : 'destructive',
+                    }, () => change(m, () => setMemberRole(m.userId, role), `${m.email ?? 'Account'} is now ${ROLE_LABELS[role].toLowerCase()}`));
                   }}
                   className="border border-neutral-300 rounded-md px-2 py-1 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-siue-red"
                 >
@@ -133,7 +142,11 @@ export function TeamPage() {
               </Button>
             ) : (
               <Button size="sm" variant="ghost" disabled={busy !== null}
-                onClick={() => void change(m, () => setMemberArchived(m.userId, true), `${m.email ?? 'Account'} removed from the team`)}>
+                onClick={() => confirm({
+                  title: `Remove ${m.email ?? 'this account'} from the team?`,
+                  message: 'They keep their account but count as a viewer: they can read, not change anything. You can add them back from the list below.',
+                  confirmLabel: 'Remove from team',
+                }, () => change(m, () => setMemberArchived(m.userId, true), `${m.email ?? 'Account'} removed from the team`))}>
                 <UserMinus size={14} /> Remove from team
               </Button>
             )}
@@ -173,20 +186,20 @@ export function TeamPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-xs uppercase tracking-wide text-neutral-500 border-b border-neutral-200">
-                  <th className="px-6 py-2">When</th>
-                  <th className="px-3 py-2">Who</th>
-                  <th className="px-3 py-2">Account</th>
-                  <th className="px-3 py-2">Change</th>
+                <tr className="text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 bg-neutral-50 border-y border-neutral-100">
+                  <th className="px-6 py-2.5">When</th>
+                  <th className="px-4 py-2.5">Who</th>
+                  <th className="px-4 py-2.5">Account</th>
+                  <th className="px-4 py-2.5">Change</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-100">
                 {log.map((c) => (
                   <tr key={c.id}>
-                    <td className="px-6 py-2 whitespace-nowrap text-neutral-600">{format(new Date(c.changedAt), 'MMM d, yyyy h:mm a')}</td>
-                    <td className="px-3 py-2 text-neutral-600 break-all">{c.changedByEmail ?? '—'}</td>
-                    <td className="px-3 py-2 break-all">{c.email ?? c.userId}</td>
-                    <td className="px-3 py-2">{describeChange(c)}</td>
+                    <td className="px-6 py-3 whitespace-nowrap text-neutral-600">{format(new Date(c.changedAt), 'MMM d, yyyy h:mm a')}</td>
+                    <td className="px-4 py-3 text-neutral-600 break-all">{c.changedByEmail ?? '—'}</td>
+                    <td className="px-4 py-3 break-all">{c.email ?? c.userId}</td>
+                    <td className="px-4 py-3">{describeChange(c)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -202,6 +215,7 @@ export function TeamPage() {
       <Breadcrumb crumbs={[{ label: 'Settings', href: '/settings' }, { label: 'Team' }]} />
       <Header title="Team" subtitle="Who can do what: admins manage the team, editors change data, viewers read." />
       <div className="p-8 space-y-6 max-w-4xl">{body()}</div>
+      {dialog}
     </div>
   );
 }

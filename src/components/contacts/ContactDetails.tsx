@@ -15,7 +15,7 @@ export function ContactDetails({ contact, schoolName }: { contact: Contact; scho
         <p className="text-lg font-semibold text-neutral-800">{name}</p>
         <div className="flex flex-wrap items-center gap-2 mt-1">
           <Badge variant="info">{contactRoleLabel(contact)}</Badge>
-          <Badge variant={contact.isActive ? 'success' : 'error'}>
+          <Badge variant={contact.isActive ? 'success' : 'default'}>
             {contact.isActive ? 'Active' : 'Inactive'}
           </Badge>
           <FreshnessBadges flags={contactFreshness(contact)} />

@@ -16,16 +16,18 @@ const variantStyles: Record<BadgeVariant, string> = {
   info: 'bg-blue-100 text-info',
 };
 
+/** One line always: a long label is cut with an ellipsis and shown in full on hover. */
 export function Badge({ children, variant = 'default', className }: BadgeProps) {
   return (
     <span
       className={classNames(
-        'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+        'inline-flex max-w-full items-center px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap',
         variantStyles[variant],
         className
       )}
+      title={typeof children === 'string' ? children : undefined}
     >
-      {children}
+      <span className="min-w-0 truncate">{children}</span>
     </span>
   );
 }

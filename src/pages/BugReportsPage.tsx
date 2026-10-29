@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Archive, Bug, CheckCircle, RotateCcw } from 'lucide-react';
+import { Archive, Bug, CheckCircle, ChevronDown, ChevronRight, RotateCcw } from 'lucide-react';
 import { format } from 'date-fns';
 import { Header } from '../components/layout/Header';
 import { Breadcrumb } from '../components/common/Breadcrumb';
@@ -16,6 +16,8 @@ import {
   type BugReport,
 } from '../services/bugReportsService';
 import toast from 'react-hot-toast';
+import { browserName } from '../utils/browserName';
+import { useConfirm } from '../hooks/useConfirm';
 
 type View = 'open' | 'resolved' | 'archived';
 
@@ -28,6 +30,34 @@ const VIEWS: { key: View; label: string }[] = [
 const inView = (r: BugReport, view: View) =>
   view === 'archived' ? r.archived : !r.archived && r.status === view;
 
+/** Version, screen and browser, behind a toggle: what a maintainer needs, not a reader. */
+function ReportDetails({ report: r }: { report: BugReport }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="text-xs">
+      <button type="button" onClick={() => setOpen(!open)} aria-expanded={open}
+        className="inline-flex items-center gap-1 text-neutral-500 hover:text-neutral-800">
+        {open ? <ChevronDown size={14} /> : <ChevronRight size={14} />} Details
+      </button>
+      {open && (
+        <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 rounded-lg bg-neutral-50 px-3 py-2 text-neutral-700">
+          <dt className="text-neutral-500">Browser</dt><dd>{r.userAgent ? browserName(r.userAgent) : 'Not recorded'}</dd>
+          <dt className="text-neutral-500">Screen</dt><dd>{r.screen ? r.screen.replace('x', ' × ') : 'Not recorded'}</dd>
+          <dt className="text-neutral-500">App version</dt>
+          <dd>
+            {r.appVersion && /^[0-9a-f]{7,40}$/.test(r.appVersion) ? (
+              <a href={`https://github.com/Ferannn-TDE/School-Engagement-CRM/commit/${r.appVersion}`} target="_blank" rel="noreferrer"
+                className="font-mono underline decoration-dotted underline-offset-2 hover:text-siue-red">{r.appVersion}</a>
+            ) : r.appVersion ?? 'Not recorded'}
+            <span className="text-neutral-500"> (the commit that was live when it was sent)</span>
+          </dd>
+          <dt className="text-neutral-500">Reference</dt><dd className="font-mono">{r.id.slice(0, 8)}</dd>
+        </dl>
+      )}
+    </div>
+  );
+}
+
 /**
  * Settings → Problem reports (db/024). Admins see every report and can mark it
  * resolved or archive it; anyone else sees only the reports they filed.
@@ -38,6 +68,7 @@ export function BugReportsPage() {
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<View>('open');
   const [busy, setBusy] = useState<string | null>(null);
+  const { confirm, dialog } = useConfirm();
 
   const load = useCallback(async () => {
     try {
@@ -124,24 +155,17 @@ export function BugReportsPage() {
               <Card padding={false}>
                 <ul className="divide-y divide-neutral-100">
                   {shown.map((r) => (
-                    <li key={r.id} className="px-6 py-4 space-y-2">
+                    <li key={r.id} className="px-6 py-4 space-y-3">
                       <div className="flex flex-wrap items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="text-xs text-neutral-500">
-                            {format(new Date(r.createdAt), 'MMM d, yyyy h:mm a')}
-                            {r.reporterEmail ? ` · ${r.reporterEmail}` : ''}
-                            {' · '}<span className="font-mono">{r.page}</span>
-                            {' · '}ref <span className="font-mono">{r.id.slice(0, 8)}</span>
-                          </p>
-                          <p className="text-sm text-neutral-800 whitespace-pre-wrap break-words mt-1">{r.description}</p>
-                        </div>
+                        <dl className="flex flex-wrap gap-x-6 gap-y-1 text-sm">
+                          <div><dt className="text-xs text-neutral-500">When</dt><dd className="text-neutral-800">{format(new Date(r.createdAt), 'MMM d, yyyy h:mm a')}</dd></div>
+                          <div><dt className="text-xs text-neutral-500">Who</dt><dd className="text-neutral-800 break-all">{r.reporterEmail ?? 'Unknown'}</dd></div>
+                          <div className="min-w-0"><dt className="text-xs text-neutral-500">Page</dt><dd className="font-mono text-xs text-neutral-800 break-all pt-0.5">{r.page}</dd></div>
+                        </dl>
                         {r.status === 'resolved' && <Badge variant="success">Resolved</Badge>}
                       </div>
-                      <p className="text-xs text-neutral-400 break-words">
-                        {r.appVersion ? `Version ${r.appVersion}` : 'Version not recorded'}
-                        {r.screen ? ` · screen ${r.screen.replace('x', '×')}` : ''}
-                        {r.userAgent ? ` · ${r.userAgent}` : ''}
-                      </p>
+                      <p className="text-sm text-neutral-800 whitespace-pre-wrap break-words">{r.description}</p>
+                      <ReportDetails report={r} />
                       {(r.resolvedAt || r.archivedAt) && (
                         <p className="text-xs text-neutral-500">
                           {r.resolvedAt ? `Resolved ${format(new Date(r.resolvedAt), 'MMM d, yyyy')}${r.resolvedBy ? ` by ${r.resolvedBy}` : ''}` : ''}
@@ -150,7 +174,7 @@ export function BugReportsPage() {
                         </p>
                       )}
                       {admin && (
-                        <div className="flex flex-wrap gap-2 pt-1">
+                        <div className="flex flex-wrap gap-2">
                           {!r.archived && (
                             r.status === 'open' ? (
                               <Button size="sm" variant="secondary" disabled={busy !== null}
@@ -158,7 +182,7 @@ export function BugReportsPage() {
                                 <CheckCircle size={14} /> Mark resolved
                               </Button>
                             ) : (
-                              <Button size="sm" variant="ghost" disabled={busy !== null}
+                              <Button size="sm" variant="secondary" disabled={busy !== null}
                                 onClick={() => void act(r, () => setBugReportStatus(r.id, 'open'), 'Reopened')}>
                                 <RotateCcw size={14} /> Reopen
                               </Button>
@@ -171,7 +195,11 @@ export function BugReportsPage() {
                             </Button>
                           ) : (
                             <Button size="sm" variant="ghost" disabled={busy !== null}
-                              onClick={() => void act(r, () => setBugReportArchived(r.id, true), 'Archived')}>
+                              onClick={() => confirm({
+                                title: 'Archive this report?',
+                                message: 'It moves to the Archived tab. Nothing is deleted, and you can restore it from there.',
+                                confirmLabel: 'Archive report',
+                              }, () => act(r, () => setBugReportArchived(r.id, true), 'Archived'))}>
                               <Archive size={14} /> Archive
                             </Button>
                           )}
@@ -185,6 +213,7 @@ export function BugReportsPage() {
           </>
         )}
       </div>
+      {dialog}
     </div>
   );
 }

@@ -14,6 +14,9 @@ import { useEngagementMaps, useSchoolsNeedingAttention } from '../hooks/useEngag
 import { countyGroupName, countyKey, countyLabel, countyPath } from '../utils/counties';
 import { useUrlState, useUrlStateBatch } from '../hooks/useUrlState';
 import { outreachEvents } from '../utils/events';
+import { useRole } from '../context/useRole';
+import { Pagination } from '../components/common/Pagination';
+import { RowAction, RowActions } from '../components/common/RowActions';
 
 /** How overdue something is, used to colour the left edge of a row.
  *  Deliberately distinct from SIUE red, which means "brand", not "urgent". */
@@ -38,11 +41,6 @@ export interface WorkItem {
 }
 
 const ROWS_PER_PAGE = 25;
-
-/** Shared column widths. Kept in one place so the header and the rows cannot
- *  drift apart — a misaligned table is worse than no table. */
-const COLS =
-  'grid grid-cols-[minmax(0,1.8fr)_4rem_minmax(0,0.85fr)_4.5rem_6rem_minmax(0,3.2fr)] gap-4 items-center';
 
 function WorkSection({
   icon,
@@ -113,85 +111,8 @@ function WorkSection({
   );
 }
 
-/** Numbered pager. Chosen over infinite scroll because a fixed page count is
- *  easier to reason about — you can tell how much work is left, and come back
- *  to where you were. */
-function Pager({
-  page,
-  pageCount,
-  total,
-  from,
-  to,
-  onChange,
-}: {
-  page: number;
-  pageCount: number;
-  total: number;
-  from: number;
-  to: number;
-  onChange: (p: number) => void;
-}) {
-  if (pageCount <= 1) {
-    return (
-      <div className="px-6 py-3 text-xs text-neutral-500 border-t border-neutral-100">
-        Showing all {total.toLocaleString()}
-      </div>
-    );
-  }
-
-  // A window around the current page, always including first and last.
-  const nums: (number | 'gap')[] = [];
-  for (let i = 1; i <= pageCount; i++) {
-    if (i === 1 || i === pageCount || Math.abs(i - page) <= 1) nums.push(i);
-    else if (nums[nums.length - 1] !== 'gap') nums.push('gap');
-  }
-
-  return (
-    <div className="flex items-center justify-between gap-4 px-6 py-3 border-t border-neutral-100 flex-wrap">
-      <p className="text-xs text-neutral-500">
-        Showing {from.toLocaleString()}–{to.toLocaleString()} of {total.toLocaleString()}
-      </p>
-      <div className="flex items-center gap-1">
-        <button
-          className="px-2.5 py-1 text-xs rounded-md text-neutral-600 hover:bg-neutral-100 disabled:opacity-40 disabled:hover:bg-transparent"
-          onClick={() => onChange(page - 1)}
-          disabled={page === 1}
-        >
-          Previous
-        </button>
-        {nums.map((n, i) =>
-          n === 'gap' ? (
-            <span key={`gap-${i}`} className="px-1.5 text-xs text-neutral-400">
-              …
-            </span>
-          ) : (
-            <button
-              key={n}
-              onClick={() => onChange(n)}
-              aria-current={n === page ? 'page' : undefined}
-              className={
-                n === page
-                  ? 'px-2.5 py-1 text-xs rounded-md bg-siue-red text-white font-medium'
-                  : 'px-2.5 py-1 text-xs rounded-md text-neutral-600 hover:bg-neutral-100'
-              }
-            >
-              {n}
-            </button>
-          )
-        )}
-        <button
-          className="px-2.5 py-1 text-xs rounded-md text-neutral-600 hover:bg-neutral-100 disabled:opacity-40 disabled:hover:bg-transparent"
-          onClick={() => onChange(page + 1)}
-          disabled={page === pageCount}
-        >
-          Next
-        </button>
-      </div>
-    </div>
-  );
-}
-
-/** A worklist rendered as aligned columns, one page at a time. */
+/** A worklist as a table with fixed column widths, one page at a time. Log is the
+ *  last column on every row, and only for people who can edit. */
 function WorkTable({
   items,
   onLog,
@@ -199,7 +120,7 @@ function WorkTable({
   onPageChange,
 }: {
   items: WorkItem[];
-  onLog: (item: WorkItem) => void;
+  onLog?: (item: WorkItem) => void;
   /** Controlled by the page so each list's page number lives in the address. */
   page: number;
   onPageChange: (page: number) => void;
@@ -208,76 +129,66 @@ function WorkTable({
   const current = Math.min(page, pageCount);
   const start = (current - 1) * ROWS_PER_PAGE;
   const slice = items.slice(start, start + ROWS_PER_PAGE);
+  const th = 'px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-neutral-500';
 
   return (
-    <div>
+    <div className="pb-4">
       <div className="overflow-x-auto">
-        <div className="min-w-[53rem]">
-          <div
-            className={`${COLS} px-6 py-2.5 bg-neutral-50 border-b border-neutral-100 text-xs font-semibold text-neutral-500 uppercase tracking-wider`}
-          >
-            <span>School</span>
-            {/* Outer span holds the grid cell; sr-only alone is absolutely positioned and would not. */}
-            <span><span className="sr-only">Actions</span></span>
-            <span>County</span>
-            <span className="text-right">Contacts</span>
-            <span>Last contact</span>
-            <span>Why it&rsquo;s here</span>
-          </div>
-
-          <div className="divide-y divide-neutral-50">
+        <table className="w-full min-w-[52rem] table-fixed text-sm">
+          <colgroup>
+            <col style={{ width: onLog ? '27%' : '30%' }} />
+            <col style={{ width: '14%' }} />
+            <col style={{ width: '9%' }} />
+            <col style={{ width: '12%' }} />
+            <col style={{ width: onLog ? '28%' : '35%' }} />
+            {onLog && <col style={{ width: '10%' }} />}
+          </colgroup>
+          <thead className="bg-neutral-50 border-b border-neutral-100">
+            <tr>
+              <th className={`${th} text-left pl-6`}>School</th>
+              <th className={`${th} text-left`}>County</th>
+              <th className={`${th} text-right`}>Contacts</th>
+              <th className={`${th} text-left`}>Last contact</th>
+              <th className={`${th} text-left`}>Why it&rsquo;s here</th>
+              {onLog && <th className={th}><span className="sr-only">Actions</span></th>}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-neutral-50">
             {slice.map((item) => (
-              <div key={item.id} className="relative hover:bg-neutral-50 transition-colors">
-                <span
-                  className={`absolute left-0 top-0 bottom-0 w-1 ${urgencyBar[item.urgency]}`}
-                  aria-hidden="true"
-                />
-                <div className={`${COLS} px-6 py-3`}>
+              <tr key={item.id} className="hover:bg-neutral-50 transition-colors">
+                <td className="relative pl-6 pr-4 py-3">
+                  <span className={`absolute left-0 top-0 bottom-0 w-1 ${urgencyBar[item.urgency]}`} aria-hidden="true" />
                   <Link
                     to={`/schools/${encodeURIComponent(item.id)}`}
-                    className="text-sm font-medium text-neutral-800 hover:text-siue-red transition-colors truncate"
+                    className="block truncate font-medium text-neutral-800 hover:text-siue-red transition-colors"
                     title={item.name}
                   >
                     {item.name}
                   </Link>
-                  <button
-                    onClick={() => onLog(item)}
-                    className="justify-self-start inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md text-siue-red hover:bg-siue-red/10 transition-colors"
-                    aria-label={`Log contact with ${item.name}`}
-                  >
-                    <Plus size={12} />
-                    Log
-                  </button>
-                  <span className="text-sm text-neutral-500 truncate">
-                    {item.county || <span className="text-neutral-400">—</span>}
-                  </span>
-                  <span className="text-sm text-neutral-600 text-right tabular-nums">
-                    {item.contactCount}
-                  </span>
-                  <span className="text-sm text-neutral-600">{item.lastContact}</span>
-                  <span className="text-sm text-neutral-600 truncate" title={item.reason}>
-                    {item.reason}
-                  </span>
-                </div>
-              </div>
+                </td>
+                <td className="px-4 py-3 truncate text-neutral-600">{item.county || <span className="text-neutral-400">—</span>}</td>
+                <td className="px-4 py-3 text-right tabular-nums text-neutral-700">{item.contactCount}</td>
+                <td className="px-4 py-3 whitespace-nowrap text-neutral-600">{item.lastContact}</td>
+                <td className="px-4 py-3 text-neutral-600"><span className="line-clamp-2" title={item.reason}>{item.reason}</span></td>
+                {onLog && (
+                  <td className="px-4 py-3">
+                    <RowActions>
+                      <RowAction icon={<Plus size={13} />} label="Log" tone="primary" alwaysLabel title={`Log contact with ${item.name}`} onClick={() => onLog(item)} />
+                    </RowActions>
+                  </td>
+                )}
+              </tr>
             ))}
-          </div>
-        </div>
+          </tbody>
+        </table>
       </div>
-
-      <Pager
-        page={current}
-        pageCount={pageCount}
-        total={items.length}
-        from={start + 1}
-        to={start + slice.length}
-        onChange={onPageChange}
-      />
+      <Pagination pageIndex={current - 1} pageSize={ROWS_PER_PAGE} total={items.length} onPageChange={(i) => onPageChange(i + 1)} noun="schools" />
     </div>
   );
 }
 
 export function PrioritiesPage() {
+  const { canEdit } = useRole();
   const { state, schoolContactsMap, schoolActivitiesMap } = useEngagementMaps();
   // Testing dates are busy dates, not outreach: never counted (db/007).
   const countedEvents = useMemo(() => outreachEvents(state.events), [state.events]);
@@ -472,7 +383,7 @@ export function PrioritiesPage() {
           >
             <WorkTable
               items={upcomingFollowups}
-              onLog={setLogFor}
+              onLog={canEdit ? setLogFor : undefined}
               page={pageNum(followPage)}
               onPageChange={(n) => setFollowPage(String(n))}
             />
@@ -502,7 +413,7 @@ export function PrioritiesPage() {
             </div>
             <WorkTable
               items={attentionItems}
-              onLog={setLogFor}
+              onLog={canEdit ? setLogFor : undefined}
               page={pageNum(attentionPage)}
               onPageChange={(n) => setAttentionPage(String(n))}
             />
@@ -520,7 +431,7 @@ export function PrioritiesPage() {
           >
             <WorkTable
               items={noEventItems}
-              onLog={setLogFor}
+              onLog={canEdit ? setLogFor : undefined}
               page={pageNum(noEventPage)}
               onPageChange={(n) => setNoEventPage(String(n))}
             />

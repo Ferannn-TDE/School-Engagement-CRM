@@ -12,6 +12,7 @@ import type { OpenPending } from '../../utils/pending';
 import type { Contact, School } from '../../types';
 import { useRole } from '../../context/useRole';
 import { writeErrorMessage } from '../../utils/writeErrors';
+import { useConfirm } from '../../hooks/useConfirm';
 
 /** The value the client has now, for "(you have …)". */
 function schoolValue(s: School, column: string): unknown {
@@ -50,6 +51,7 @@ export function WebsiteUpdates({ school, contacts }: { school: School; contacts:
   const { user } = useAuth();
   const { canEdit } = useRole();
   const [busy, setBusy] = useState<string | null>(null);
+  const { confirm, dialog } = useConfirm();
   const me = user?.email ?? 'unknown';
 
   const items: Item[] = [
@@ -122,7 +124,11 @@ export function WebsiteUpdates({ school, contacts }: { school: School; contacts:
                 <Button size="sm" variant="ghost" disabled={busy !== null} onClick={() => void answer(item, 'keep')}>
                   Keep yours
                 </Button>
-                <Button size="sm" variant="secondary" disabled={busy !== null} onClick={() => void answer(item, 'use')}>
+                <Button size="sm" variant="secondary" disabled={busy !== null} onClick={() => confirm({
+                  title: `Use the website's ${fieldLabel(item.pending.column).toLowerCase()}?`,
+                  message: `${displayValue(item.current)} is replaced by ${displayValue(item.pending.value)}${item.who ? ` for ${item.who}` : ''}. The value you have now isn't kept.`,
+                  confirmLabel: 'Use this',
+                }, () => answer(item, 'use'))}>
                   Use this
                 </Button>
               </div>
@@ -132,6 +138,7 @@ export function WebsiteUpdates({ school, contacts }: { school: School; contacts:
           </li>
         ))}
       </ul>
+      {dialog}
     </section>
   );
 }

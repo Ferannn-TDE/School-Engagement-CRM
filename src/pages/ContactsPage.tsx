@@ -1,8 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { type ColumnDef } from '@tanstack/react-table';
-import { Plus, Users, Mail, Phone, ShieldCheck, ShieldOff, CheckCircle } from 'lucide-react';
-import { format } from 'date-fns';
+import { Plus, Users, ShieldCheck, ShieldOff, CheckCircle, Pencil, UserX, UserCheck, Archive } from 'lucide-react';
 import { Header } from '../components/layout/Header';
 import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
@@ -22,6 +21,8 @@ import toast from 'react-hot-toast';
 import { FreshnessBadges } from '../components/common/FreshnessBadges';
 import { contactFreshness } from '../utils/freshness';
 import { useRole } from '../context/useRole';
+import { RowAction, RowActions } from '../components/common/RowActions';
+import { useConfirm } from '../hooks/useConfirm';
 
 type VerifiedTab = 'all' | 'verified' | 'unverified';
 
@@ -38,6 +39,7 @@ export function ContactsPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingContact, setEditingContact] = useState<Contact | null>(null);
   const [archivingContact, setArchivingContact] = useState<Contact | null>(null);
+  const { confirm, dialog } = useConfirm();
 
   const unverifiedCount = useMemo(
     () => state.contacts.filter((c) => !c.isVerified).length,
@@ -62,25 +64,28 @@ export function ContactsPage() {
         id: 'name',
         header: 'Name',
         cell: ({ row }) => (
-          <div>
-            <p className="font-medium text-neutral-800">
+          <div className="min-w-0">
+            <p className="font-medium text-neutral-800 truncate">
               {row.original.firstName} {row.original.lastName}
             </p>
+            {row.original.title && <p className="text-xs text-neutral-500 truncate">{row.original.title}</p>}
             <FreshnessBadges flags={contactFreshness(row.original)} className="mt-1 flex flex-wrap gap-1" />
-            <div className="flex items-center gap-3 mt-0.5">
-              <span className="text-xs text-neutral-500 flex items-center gap-1">
-                <Mail size={12} />
-                {row.original.email}
-              </span>
-              {row.original.phone && (
-                <span className="text-xs text-neutral-500 flex items-center gap-1">
-                  <Phone size={12} />
-                  {row.original.phone}
-                </span>
-              )}
-            </div>
           </div>
         ),
+      },
+      {
+        accessorKey: 'email',
+        header: 'Email',
+        cell: ({ row }) => row.original.email
+          ? <span className="block truncate text-neutral-700" title={row.original.email}>{row.original.email}</span>
+          : <span className="text-neutral-400">No email</span>,
+      },
+      {
+        accessorKey: 'phone',
+        header: 'Phone',
+        cell: ({ row }) => row.original.phone
+          ? <span className="whitespace-nowrap text-neutral-700">{row.original.phone}</span>
+          : <span className="text-neutral-400">—</span>,
       },
       {
         accessorKey: 'role',
@@ -96,7 +101,8 @@ export function ContactsPage() {
           return school ? (
             <Link
               to={`/schools/${encodeURIComponent(school.id)}`}
-              className="text-neutral-600 hover:text-siue-red transition-colors"
+              className="block truncate text-neutral-700 hover:text-siue-red transition-colors"
+              title={school.name}
               onClick={(e) => e.stopPropagation()}
             >
               {school.name}
@@ -110,70 +116,59 @@ export function ContactsPage() {
         accessorKey: 'isActive',
         header: 'Status',
         cell: ({ getValue }) => (
-          <Badge variant={getValue() ? 'success' : 'error'}>
+          <Badge variant={getValue() ? 'success' : 'default'}>
             {getValue() ? 'Active' : 'Inactive'}
           </Badge>
         ),
       },
       {
-        accessorKey: 'lastContactDate',
-        header: 'Last Contact',
-        cell: ({ getValue }) => {
-          const date = getValue() as string | undefined;
-          return date ? (
-            <span className="text-neutral-500">{format(new Date(date), 'MMM d, yyyy')}</span>
-          ) : (
-            <span className="text-neutral-300">-</span>
+        id: 'actions',
+        header: () => <span className="sr-only">Actions</span>,
+        enableSorting: false,
+        cell: ({ row }) => {
+          const c = row.original;
+          const name = `${c.firstName} ${c.lastName}`.trim() || 'this contact';
+          return (
+            <RowActions>
+              <RowAction icon={<Pencil size={13} />} label="Edit" onClick={() => setEditingContact(c)} />
+              <RowAction
+                icon={<CheckCircle size={13} />}
+                label={c.isVerified ? 'Verified' : 'Verify'}
+                disabled={c.isVerified}
+                title={c.isVerified ? 'Already verified' : 'Mark as verified'}
+                onClick={() => verifyContact(c.id)}
+              />
+              {c.isActive ? (
+                <RowAction
+                  icon={<UserX size={13} />}
+                  label="Deactivate"
+                  tone="danger"
+                  onClick={() => confirm({
+                    title: `Deactivate ${name}?`,
+                    message: `${name} stays on file but is left out of email lists and active counts. You can activate them again at any time.`,
+                    confirmLabel: 'Deactivate',
+                  }, () => {
+                    updateContact({ ...c, isActive: false });
+                    toast.success('Contact deactivated');
+                  })}
+                />
+              ) : (
+                <RowAction
+                  icon={<UserCheck size={13} />}
+                  label="Activate"
+                  onClick={() => {
+                    updateContact({ ...c, isActive: true });
+                    toast.success('Contact activated');
+                  }}
+                />
+              )}
+              <RowAction icon={<Archive size={13} />} label="Archive" tone="danger" onClick={() => setArchivingContact(c)} />
+            </RowActions>
           );
         },
       },
-      {
-        id: 'actions',
-        header: '',
-        enableSorting: false,
-        cell: ({ row }) => (
-          <div className="flex gap-1 flex-wrap" onClick={(e) => e.stopPropagation()}>
-            {!row.original.isVerified && (
-              <>
-                <button
-                  onClick={() => verifyContact(row.original.id)}
-                  className="flex items-center gap-1 text-xs text-success hover:underline"
-                  title="Mark as verified"
-                >
-                  <CheckCircle size={12} />
-                  Verify
-                </button>
-                <span className="text-neutral-200">|</span>
-              </>
-            )}
-            <button
-              onClick={() => setEditingContact(row.original)}
-              className="text-xs text-info hover:underline"
-            >
-              Edit
-            </button>
-            <span className="text-neutral-200">|</span>
-            <button
-              onClick={() => {
-                updateContact({ ...row.original, isActive: !row.original.isActive });
-                toast.success(row.original.isActive ? 'Contact deactivated' : 'Contact activated');
-              }}
-              className="text-xs text-warning hover:underline"
-            >
-              {row.original.isActive ? 'Deactivate' : 'Activate'}
-            </button>
-            <span className="text-neutral-200">|</span>
-            <button
-              onClick={() => setArchivingContact(row.original)}
-              className="text-xs text-error hover:underline"
-            >
-              Archive
-            </button>
-          </div>
-        ),
-      },
     ],
-    [getSchoolById, updateContact, verifyContact]
+    [getSchoolById, updateContact, verifyContact, confirm]
   );
 
   const roleOptions = Object.values(ContactRole).map((role) => ({
@@ -195,7 +190,7 @@ export function ContactsPage() {
     <div>
 <Header
         title="Contacts"
-        subtitle={`${state.contacts.length} contacts in database`}
+        subtitle={`${state.contacts.length.toLocaleString()} contacts in database`}
         actions={
           canEdit &&
           <Button size="sm" onClick={() => setShowAddModal(true)}>
@@ -289,6 +284,7 @@ export function ContactsPage() {
             <DataTable
               data={filteredContacts}
               columns={shownColumns}
+              columnWidths={canEdit ? ['18%', '18%', '11%', '11%', '15%', '8%', '19%'] : ['22%', '22%', '13%', '13%', '20%', '10%']}
               searchValue={search}
               urlState
               resetKey={[verifiedTab, roleFilter, schoolFilter, activeFilter].join('|')}
@@ -335,6 +331,7 @@ export function ContactsPage() {
         }
         confirmLabel="Archive Contact"
       />
+      {dialog}
     </div>
   );
 }

@@ -113,7 +113,7 @@ export function BugReportsPage() {
         title="Problem reports"
         subtitle="Sent with the Report a problem button on every page. Nothing is deleted: archive what's done with."
       />
-      <div className="p-8 space-y-6 max-w-4xl">
+      <div className="p-8 space-y-6">
         {reports === null ? (
           <LoadingSpinner />
         ) : error ? (

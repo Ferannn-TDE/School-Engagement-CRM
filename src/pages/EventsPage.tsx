@@ -87,7 +87,7 @@ export function EventsPage() {
               Testing date
             </span>
           ) : (
-            <span className="block truncate text-sm text-neutral-600" title={eventSourceLabel(row.original)}>{eventSourceLabel(row.original)}</span>
+            <span className="break-words text-sm text-neutral-600">{eventSourceLabel(row.original)}</span>
           ),
       },
       {
@@ -125,7 +125,7 @@ export function EventsPage() {
       },
       {
         id: 'actions',
-        header: () => <span className="sr-only">Actions</span>,
+        header: () => <span className="block text-right">Actions</span>,
         enableSorting: false,
         cell: ({ row }) => (
           <RowActions>
@@ -237,7 +237,7 @@ export function EventsPage() {
                 <DataTable
                   data={filteredEvents}
                   columns={shownColumns}
-                  columnWidths={['32%', '15%', '18%', '10%', '10%', '15%']}
+                  columnWidths={['', '11rem', '9rem', '7rem', '7rem', '10rem']}
                   urlState
                   resetKey={`${sourceFilter}|${showTesting}`}
                   onRowClick={(event) => setViewingEvent(event)}

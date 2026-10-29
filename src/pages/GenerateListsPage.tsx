@@ -14,6 +14,7 @@ import { contactsToCsv, downloadFile } from '../utils/helpers';
 import toast from 'react-hot-toast';
 import { type ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '../components/common/DataTable';
+import { Missing } from '../components/common/Missing';
 import type { Contact, School } from '../types';
 
 function previewColumnsFor(getSchoolById: (id: string) => School | undefined): ColumnDef<Contact, unknown>[] {
@@ -22,34 +23,36 @@ function previewColumnsFor(getSchoolById: (id: string) => School | undefined): C
       id: 'name',
       header: 'Name',
       accessorFn: (c) => `${c.firstName} ${c.lastName}`.trim(),
-      cell: ({ getValue }) => <span className="block truncate font-medium text-neutral-800">{getValue() as string}</span>,
+      cell: ({ getValue }) => <span className="break-words font-medium text-neutral-800">{getValue() as string}</span>,
     },
     {
       accessorKey: 'email',
       header: 'Email',
       cell: ({ row }) => row.original.email
-        ? <span className="block truncate text-neutral-700" title={row.original.email}>{row.original.email}</span>
-        : <span className="text-neutral-400">No email</span>,
+        ? <span className="break-all text-neutral-700">{row.original.email}</span>
+        : <Missing label="No email" />,
     },
     {
       id: 'role',
       header: 'Role',
       accessorFn: (c) => contactRoleLabel(c),
-      cell: ({ getValue }) => <Badge variant="info">{getValue() as string}</Badge>,
+      cell: ({ getValue }) => <Badge variant="info" wrap>{getValue() as string}</Badge>,
     },
     {
       id: 'school',
       header: 'School',
       accessorFn: (c) => getSchoolById(c.schoolId)?.name ?? '',
       cell: ({ getValue }) => (getValue() as string)
-        ? <span className="block truncate text-neutral-700" title={getValue() as string}>{getValue() as string}</span>
-        : <span className="text-neutral-400">—</span>,
+        ? <span className="break-words text-neutral-700">{getValue() as string}</span>
+        : <Missing label="No school" />,
     },
     {
       id: 'county',
       header: 'County',
       accessorFn: (c) => getSchoolById(c.schoolId)?.county ?? '',
-      cell: ({ getValue }) => <span className="block truncate text-neutral-600">{(getValue() as string) || '—'}</span>,
+      cell: ({ getValue }) => (getValue() as string)
+        ? <span className="break-words text-neutral-600">{getValue() as string}</span>
+        : <Missing label="No county" />,
     },
   ];
 }
@@ -290,7 +293,8 @@ export function GenerateListsPage() {
             <DataTable
               data={filteredContacts}
               columns={previewColumns}
-              columnWidths={['20%', '26%', '15%', '25%', '14%']}
+              columnWidths={['', '', '9rem', '', '8rem']}
+              minWidth="0"
               emptyMessage="No contacts match your filters. Adjust them to find contacts."
             />
           </Card>

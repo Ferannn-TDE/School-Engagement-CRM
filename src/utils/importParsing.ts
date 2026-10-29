@@ -122,3 +122,62 @@ export function interpretCombinedWorkbook(
     },
   };
 }
+
+// ── Templates and header matching ──────────────────────────────────────────────
+
+type SingleTab = 'contacts' | 'schools';
+
+/**
+ * How a single-sheet upload's headers map to fields: a header is lower-cased and
+ * trimmed, then looked up here. The downloadable templates use these spellings, so a
+ * filled-in template always maps without any manual matching.
+ */
+export function headerField(header: string, tab: SingleTab): string | undefined {
+  const map: Record<string, string> = {
+    'first name': 'firstName', firstname: 'firstName', first_name: 'firstName',
+    'last name': 'lastName', lastname: 'lastName', last_name: 'lastName',
+    email: 'email', 'email address': 'email',
+    phone: 'phone', 'phone number': 'phone',
+    role: 'role', title: 'role',
+    school: 'schoolId',
+    'school name': 'name',
+    name: tab === 'schools' ? 'name' : 'firstName',
+    district: 'district', county: 'county', address: 'address', city: 'city', state: 'state',
+    zip: 'zipCode', zipcode: 'zipCode', 'zip code': 'zipCode',
+    type: 'schoolType', 'school type': 'schoolType',
+    notes: 'notes',
+  };
+  return map[header.toLowerCase().trim()];
+}
+
+/** Headers only, so nothing made-up can be imported by accident. */
+export const CONTACTS_TEMPLATE_HEADERS = ['First Name', 'Last Name', 'Email', 'Phone', 'Role', 'School', 'Notes'];
+export const SCHOOLS_TEMPLATE_HEADERS = ['Name', 'District', 'County', 'Address', 'City', 'State', 'Zip Code', 'School Type', 'Notes'];
+/** The combined importer reads these exact keys from its Schools and Contacts sheets. */
+export const COMBINED_SCHOOL_HEADERS = ['name', 'district', 'county', 'address', 'city', 'state', 'zipCode', 'schoolType'];
+export const COMBINED_CONTACT_HEADERS = ['firstName', 'lastName', 'email', 'phone', 'role', 'schoolName'];
+
+function headerSheet(headers: string[]): XLSX.WorkSheet {
+  const sheet = XLSX.utils.aoa_to_sheet([headers]);
+  sheet['!cols'] = headers.map((h) => ({ wch: Math.max(14, h.length + 4) }));
+  return sheet;
+}
+
+export function buildContactsTemplate(): WorkBook {
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, headerSheet(CONTACTS_TEMPLATE_HEADERS), 'Contacts');
+  return wb;
+}
+
+export function buildSchoolsTemplate(): WorkBook {
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, headerSheet(SCHOOLS_TEMPLATE_HEADERS), 'Schools');
+  return wb;
+}
+
+export function buildCombinedTemplate(): WorkBook {
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, headerSheet(COMBINED_SCHOOL_HEADERS), 'Schools');
+  XLSX.utils.book_append_sheet(wb, headerSheet(COMBINED_CONTACT_HEADERS), 'Contacts');
+  return wb;
+}

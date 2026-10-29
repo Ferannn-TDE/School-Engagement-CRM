@@ -13,7 +13,10 @@ import { mkdtempSync, writeFileSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { interpretCombinedWorkbook, looksLikeSpreadsheet } from '../src/utils/importParsing.ts';
+import {
+  buildCombinedTemplate, buildContactsTemplate, buildSchoolsTemplate, COMBINED_CONTACT_HEADERS, COMBINED_SCHOOL_HEADERS,
+  CONTACTS_TEMPLATE_HEADERS, headerField, interpretCombinedWorkbook, looksLikeSpreadsheet, SCHOOLS_TEMPLATE_HEADERS,
+} from '../src/utils/importParsing.ts';
 import { describeFileRejection, formatBytes, MAX_UPLOAD_BYTES } from '../src/utils/helpers.ts';
 import { collectPages } from '../src/utils/paging.ts';
 
@@ -277,6 +280,45 @@ void (async () => {
     const rows = await collectPages(src.fetch, 1000);
     assert.equal(rows.length, 0);
     assert.equal(src.calls, 1);
+  });
+
+  console.log('\nDownloadable templates');
+  // What the browser downloads: written to .xlsx bytes and read back, as an upload is.
+  const roundTrip = (wb: XLSX.WorkBook) => XLSX.read(new Uint8Array(XLSX.write(wb, { type: 'array', bookType: 'xlsx' }) as ArrayBuffer), { type: 'array' });
+  const headersOf = (wb: XLSX.WorkBook, sheet: string) => (XLSX.utils.sheet_to_json<string[]>(wb.Sheets[sheet], { header: 1 })[0] ?? []);
+  check('every template is headers only: no example rows anywhere', () => {
+    for (const wb of [buildCombinedTemplate(), buildContactsTemplate(), buildSchoolsTemplate()].map(roundTrip)) {
+      for (const name of wb.SheetNames) assert.equal(XLSX.utils.sheet_to_json(wb.Sheets[name], { header: 1 }).length, 1, name);
+    }
+  });
+  check('Schools + Contacts template: both sheets, with the exact keys the importer reads', () => {
+    const wb = roundTrip(buildCombinedTemplate());
+    assert.deepEqual(wb.SheetNames, ['Schools', 'Contacts']);
+    assert.deepEqual(headersOf(wb, 'Schools'), COMBINED_SCHOOL_HEADERS);
+    assert.deepEqual(headersOf(wb, 'Contacts'), COMBINED_CONTACT_HEADERS);
+  });
+  check('the blank combined template re-uploads to the "no data rows" message, not an error', () => {
+    assert.deepEqual(interpretCombinedWorkbook(roundTrip(buildCombinedTemplate()), []), { ok: false, reason: 'no-rows' });
+  });
+  check('a filled-in combined template reaches the preview with no warnings', () => {
+    const wb = buildCombinedTemplate();
+    XLSX.utils.sheet_add_aoa(wb.Sheets.Schools, [['Test High', '', 'Madison', '', 'Alton', 'IL', '62002', 'High School']], { origin: -1 });
+    XLSX.utils.sheet_add_aoa(wb.Sheets.Contacts, [['Ann', 'Lee', 'ann@test.example', '', 'Counselor', 'Test High']], { origin: -1 });
+    const r = interpretCombinedWorkbook(roundTrip(wb), []);
+    assert.ok(r.ok);
+    if (r.ok) {
+      assert.equal(r.data.schoolRows.length, 1);
+      assert.equal(r.data.contactRows.length, 1);
+      assert.deepEqual(r.data.warnings, []);
+    }
+  });
+  check('Contacts and Schools templates: every header maps to a field, with no manual matching', () => {
+    const contacts = headersOf(roundTrip(buildContactsTemplate()), 'Contacts');
+    const schools = headersOf(roundTrip(buildSchoolsTemplate()), 'Schools');
+    assert.deepEqual(contacts, CONTACTS_TEMPLATE_HEADERS);
+    assert.deepEqual(schools, SCHOOLS_TEMPLATE_HEADERS);
+    assert.deepEqual(contacts.map((h) => headerField(h, 'contacts')), ['firstName', 'lastName', 'email', 'phone', 'role', 'schoolId', 'notes']);
+    assert.deepEqual(schools.map((h) => headerField(h, 'schools')), ['name', 'district', 'county', 'address', 'city', 'state', 'zipCode', 'schoolType', 'notes']);
   });
 
   console.log(`\n${passed} passed, ${failures.length} failed\n`);

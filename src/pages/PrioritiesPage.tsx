@@ -17,6 +17,7 @@ import { outreachEvents } from '../utils/events';
 import { useRole } from '../context/useRole';
 import { Pagination } from '../components/common/Pagination';
 import { RowAction, RowActions } from '../components/common/RowActions';
+import { Missing } from '../components/common/Missing';
 
 /** How overdue something is, used to colour the left edge of a row.
  *  Deliberately distinct from SIUE red, which means "brand", not "urgent". */
@@ -136,12 +137,12 @@ function WorkTable({
       <div className="overflow-x-auto">
         <table className="w-full min-w-[52rem] table-fixed text-sm">
           <colgroup>
-            <col style={{ width: onLog ? '27%' : '30%' }} />
-            <col style={{ width: '14%' }} />
-            <col style={{ width: '9%' }} />
-            <col style={{ width: '12%' }} />
-            <col style={{ width: onLog ? '28%' : '35%' }} />
-            {onLog && <col style={{ width: '10%' }} />}
+            <col />
+            <col style={{ width: '10rem' }} />
+            <col style={{ width: '7rem' }} />
+            <col style={{ width: '8.5rem' }} />
+            <col />
+            {onLog && <col style={{ width: '7rem' }} />}
           </colgroup>
           <thead className="bg-neutral-50 border-b border-neutral-100">
             <tr>
@@ -150,7 +151,7 @@ function WorkTable({
               <th className={`${th} text-right`}>Contacts</th>
               <th className={`${th} text-left`}>Last contact</th>
               <th className={`${th} text-left`}>Why it&rsquo;s here</th>
-              {onLog && <th className={th}><span className="sr-only">Actions</span></th>}
+              {onLog && <th className={`${th} text-right`}>Actions</th>}
             </tr>
           </thead>
           <tbody className="divide-y divide-neutral-50">
@@ -160,20 +161,19 @@ function WorkTable({
                   <span className={`absolute left-0 top-0 bottom-0 w-1 ${urgencyBar[item.urgency]}`} aria-hidden="true" />
                   <Link
                     to={`/schools/${encodeURIComponent(item.id)}`}
-                    className="block truncate font-medium text-neutral-800 hover:text-siue-red transition-colors"
-                    title={item.name}
+                    className="block break-words font-medium text-neutral-800 hover:text-siue-red transition-colors"
                   >
                     {item.name}
                   </Link>
                 </td>
-                <td className="px-4 py-3 truncate text-neutral-600">{item.county || <span className="text-neutral-400">—</span>}</td>
+                <td className="px-4 py-3 break-words text-neutral-600">{item.county || <Missing label="No county" />}</td>
                 <td className="px-4 py-3 text-right tabular-nums text-neutral-700">{item.contactCount}</td>
                 <td className="px-4 py-3 whitespace-nowrap text-neutral-600">{item.lastContact}</td>
-                <td className="px-4 py-3 text-neutral-600"><span className="line-clamp-2" title={item.reason}>{item.reason}</span></td>
+                <td className="px-4 py-3 text-neutral-600 break-words">{item.reason}</td>
                 {onLog && (
                   <td className="px-4 py-3">
                     <RowActions>
-                      <RowAction icon={<Plus size={13} />} label="Log" tone="primary" alwaysLabel title={`Log contact with ${item.name}`} onClick={() => onLog(item)} />
+                      <RowAction icon={<Plus size={13} />} label="Log" tone="primary" title={`Log contact with ${item.name}`} onClick={() => onLog(item)} />
                     </RowActions>
                   </td>
                 )}

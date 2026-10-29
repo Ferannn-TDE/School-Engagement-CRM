@@ -63,7 +63,7 @@ export function planActivities(choices: { row: number; schoolId: string | null }
 
 export const TEMPLATE_HEADER = ['School name', 'City', 'State'];
 
-/** The downloadable template: an empty "Schools" sheet and an "Instructions" sheet. */
+/** The downloadable template: a "Schools" sheet with headers only, and an "Instructions" sheet (never imported). */
 export function buildActivityTemplate(): XLSX.WorkBook {
   const wb = XLSX.utils.book_new();
   const schools = XLSX.utils.aoa_to_sheet([TEMPLATE_HEADER]);
@@ -79,11 +79,7 @@ export function buildActivityTemplate(): XLSX.WorkBook {
     [''],
     ['The same school on several rows becomes one activity with an attendee count.'],
     ['The activity type, date, description and event are chosen once in the app.'],
-    [''],
-    ['Example (this sheet is never imported):'],
-    TEMPLATE_HEADER,
-    ['Edwardsville High School', 'Edwardsville', 'IL'],
-    ['Kirkwood High School', 'Kirkwood', 'MO'],
+    ['This sheet is never imported.'],
   ]);
   instructions['!cols'] = [{ wch: 40 }, { wch: 60 }];
   XLSX.utils.book_append_sheet(wb, instructions, 'Instructions');

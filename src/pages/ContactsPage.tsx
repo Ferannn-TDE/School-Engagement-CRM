@@ -21,7 +21,8 @@ import toast from 'react-hot-toast';
 import { FreshnessBadges } from '../components/common/FreshnessBadges';
 import { contactFreshness } from '../utils/freshness';
 import { useRole } from '../context/useRole';
-import { RowAction, RowActions } from '../components/common/RowActions';
+import { RowMenu } from '../components/common/RowActions';
+import { Missing } from '../components/common/Missing';
 import { useConfirm } from '../hooks/useConfirm';
 
 type VerifiedTab = 'all' | 'verified' | 'unverified';
@@ -64,11 +65,11 @@ export function ContactsPage() {
         id: 'name',
         header: 'Name',
         cell: ({ row }) => (
-          <div className="min-w-0">
-            <p className="font-medium text-neutral-800 truncate">
+          <div className="min-w-0 break-words">
+            <p className="font-medium text-neutral-800">
               {row.original.firstName} {row.original.lastName}
             </p>
-            {row.original.title && <p className="text-xs text-neutral-500 truncate">{row.original.title}</p>}
+            {row.original.title && <p className="text-xs text-neutral-500">{row.original.title}</p>}
             <FreshnessBadges flags={contactFreshness(row.original)} className="mt-1 flex flex-wrap gap-1" />
           </div>
         ),
@@ -77,38 +78,37 @@ export function ContactsPage() {
         accessorKey: 'email',
         header: 'Email',
         cell: ({ row }) => row.original.email
-          ? <span className="block truncate text-neutral-700" title={row.original.email}>{row.original.email}</span>
-          : <span className="text-neutral-400">No email</span>,
+          ? <span className="break-all text-neutral-700">{row.original.email}</span>
+          : <Missing label="No email" />,
       },
       {
         accessorKey: 'phone',
         header: 'Phone',
         cell: ({ row }) => row.original.phone
-          ? <span className="whitespace-nowrap text-neutral-700">{row.original.phone}</span>
-          : <span className="text-neutral-400">—</span>,
+          ? <span className="break-words text-neutral-700">{row.original.phone}</span>
+          : <Missing label="No phone" />,
       },
       {
         accessorKey: 'role',
         header: 'Role',
-        cell: ({ row }) => <Badge variant="info">{contactRoleLabel(row.original)}</Badge>,
+        cell: ({ row }) => <Badge variant="info" wrap>{contactRoleLabel(row.original)}</Badge>,
       },
       {
         id: 'school',
         header: 'School',
-        accessorFn: (row) => getSchoolById(row.schoolId)?.name || 'Unknown',
+        accessorFn: (row) => getSchoolById(row.schoolId)?.name || '',
         cell: ({ row }) => {
           const school = getSchoolById(row.original.schoolId);
           return school ? (
             <Link
               to={`/schools/${encodeURIComponent(school.id)}`}
-              className="block truncate text-neutral-700 hover:text-siue-red transition-colors"
-              title={school.name}
+              className="break-words text-neutral-700 hover:text-siue-red transition-colors"
               onClick={(e) => e.stopPropagation()}
             >
               {school.name}
             </Link>
           ) : (
-            <span className="text-neutral-400">Unknown</span>
+            <Missing label="No school" />
           );
         },
       },
@@ -123,47 +123,42 @@ export function ContactsPage() {
       },
       {
         id: 'actions',
-        header: () => <span className="sr-only">Actions</span>,
+        header: () => <span className="block text-right">Actions</span>,
         enableSorting: false,
         cell: ({ row }) => {
           const c = row.original;
           const name = `${c.firstName} ${c.lastName}`.trim() || 'this contact';
           return (
-            <RowActions>
-              <RowAction icon={<Pencil size={13} />} label="Edit" onClick={() => setEditingContact(c)} />
-              <RowAction
-                icon={<CheckCircle size={13} />}
-                label={c.isVerified ? 'Verified' : 'Verify'}
-                disabled={c.isVerified}
-                title={c.isVerified ? 'Already verified' : 'Mark as verified'}
-                onClick={() => verifyContact(c.id)}
-              />
-              {c.isActive ? (
-                <RowAction
-                  icon={<UserX size={13} />}
-                  label="Deactivate"
-                  tone="danger"
-                  onClick={() => confirm({
-                    title: `Deactivate ${name}?`,
-                    message: `${name} stays on file but is left out of email lists and active counts. You can activate them again at any time.`,
-                    confirmLabel: 'Deactivate',
-                  }, () => {
-                    updateContact({ ...c, isActive: false });
-                    toast.success('Contact deactivated');
-                  })}
-                />
-              ) : (
-                <RowAction
-                  icon={<UserCheck size={13} />}
-                  label="Activate"
-                  onClick={() => {
-                    updateContact({ ...c, isActive: true });
-                    toast.success('Contact activated');
-                  }}
-                />
-              )}
-              <RowAction icon={<Archive size={13} />} label="Archive" tone="danger" onClick={() => setArchivingContact(c)} />
-            </RowActions>
+            <RowMenu
+              name={name}
+              items={[
+                { icon: <Pencil size={14} />, label: 'Edit', onClick: () => setEditingContact(c) },
+                { icon: <CheckCircle size={14} />, label: 'Verify', disabledLabel: 'Verified', disabled: c.isVerified, onClick: () => verifyContact(c.id) },
+                c.isActive
+                  ? {
+                    icon: <UserX size={14} />,
+                    label: 'Deactivate',
+                    tone: 'danger',
+                    onClick: () => confirm({
+                      title: `Deactivate ${name}?`,
+                      message: `${name} stays on file but is left out of email lists and active counts. You can activate them again at any time.`,
+                      confirmLabel: 'Deactivate',
+                    }, () => {
+                      updateContact({ ...c, isActive: false });
+                      toast.success('Contact deactivated');
+                    }),
+                  }
+                  : {
+                    icon: <UserCheck size={14} />,
+                    label: 'Activate',
+                    onClick: () => {
+                      updateContact({ ...c, isActive: true });
+                      toast.success('Contact activated');
+                    },
+                  },
+                { icon: <Archive size={14} />, label: 'Archive', tone: 'danger', onClick: () => setArchivingContact(c) },
+              ]}
+            />
           );
         },
       },
@@ -284,7 +279,7 @@ export function ContactsPage() {
             <DataTable
               data={filteredContacts}
               columns={shownColumns}
-              columnWidths={canEdit ? ['18%', '18%', '11%', '11%', '15%', '8%', '19%'] : ['22%', '22%', '13%', '13%', '20%', '10%']}
+              columnWidths={canEdit ? ['', '', '9.5rem', '10rem', '', '7rem', '8rem'] : ['', '', '9.5rem', '10rem', '', '7rem']}
               searchValue={search}
               urlState
               resetKey={[verifiedTab, roleFilter, schoolFilter, activeFilter].join('|')}

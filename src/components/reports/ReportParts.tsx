@@ -5,6 +5,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, LabelList,
 } from 'recharts';
 import { Modal } from '../common/Modal';
+import { Missing } from '../common/Missing';
 import { Button } from '../common/Button';
 import { TOOLTIP_CLS } from '../../constants/charts';
 import { downloadFile, classNames } from '../../utils/helpers';
@@ -189,7 +190,7 @@ export function ListModal({ list, onClose }: { list: ListSpec | null; onClose: (
                       <td key={c.key} className={classNames('px-3 py-2 tabular-nums', c.numeric ? 'text-right' : 'text-left')}>
                         {ci === 0 && row.link
                           ? <Link to={row.link} className="text-neutral-800 hover:text-siue-red underline-offset-2 hover:underline">{row.cells[c.key]}</Link>
-                          : row.cells[c.key]}
+                          : row.cells[c.key] === '' ? <Missing label={`No ${c.label.toLowerCase()}`} /> : row.cells[c.key]}
                       </td>
                     ))}
                   </tr>

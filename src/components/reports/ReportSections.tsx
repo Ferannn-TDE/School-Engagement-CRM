@@ -10,6 +10,7 @@ import { activityCount, activityTypeLabel, fmt, pctText, type ListSpec, listBuil
 import type { Region } from '../../utils/region';
 import { Columns, Figure, Meter, Note, ReportSection, Tile, Tiles } from './ReportParts';
 import { Pagination } from '../common/Pagination';
+import { Missing } from '../common/Missing';
 
 export interface ReportModel {
   data: ReportInput;
@@ -473,7 +474,7 @@ export function ImpactSection({ m }: { m: ReportModel }) {
                   <td className="px-2 py-1.5 text-right tabular-nums">
                     <Figure value={x.schoolIds.length} onOpen={open} list={() => lists.schools(x.schoolIds, `${names.get(x.eventId)}: schools`, formatDay(x.day), `event-${slug(names.get(x.eventId) ?? x.eventId)}-schools`)} />
                   </td>
-                  <td className="px-2 py-1.5 text-right tabular-nums">{x.students ? fmt(x.students) : '—'}</td>
+                  <td className="px-2 py-1.5 text-right tabular-nums">{x.students ? fmt(x.students) : <Missing label="No student count" />}</td>
                   <td className="px-2 py-1.5 text-right tabular-nums">
                     <Figure value={`${fmt(x.followedIds.length)} of ${fmt(x.schoolIds.length)}`} onOpen={open}
                       list={() => lists.schools(x.schoolIds.filter((id) => !x.followedIds.includes(id)), `${names.get(x.eventId)}: not followed up yet`, `No call, email or visit within ${FOLLOW_UP_DAYS} days`, `event-${slug(names.get(x.eventId) ?? x.eventId)}-not-followed`)} />

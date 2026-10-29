@@ -6,6 +6,8 @@ interface BadgeProps {
   children: React.ReactNode;
   variant?: BadgeVariant;
   className?: string;
+  /** Let a long label (a job title) wrap onto more lines instead of being cut. */
+  wrap?: boolean;
 }
 
 const variantStyles: Record<BadgeVariant, string> = {
@@ -16,18 +18,22 @@ const variantStyles: Record<BadgeVariant, string> = {
   info: 'bg-blue-100 text-info',
 };
 
-/** One line always: a long label is cut with an ellipsis and shown in full on hover. */
-export function Badge({ children, variant = 'default', className }: BadgeProps) {
+/**
+ * One line by default: a long label is cut with an ellipsis and shown in full on
+ * hover. With `wrap`, it wraps instead, as a rounded box rather than a pill.
+ */
+export function Badge({ children, variant = 'default', className, wrap }: BadgeProps) {
   return (
     <span
       className={classNames(
-        'inline-flex max-w-full items-center px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap',
+        'inline-flex max-w-full items-center px-2.5 py-0.5 text-xs font-medium',
+        wrap ? 'rounded-md leading-snug whitespace-normal break-words' : 'rounded-full whitespace-nowrap',
         variantStyles[variant],
         className
       )}
-      title={typeof children === 'string' ? children : undefined}
+      title={!wrap && typeof children === 'string' ? children : undefined}
     >
-      <span className="min-w-0 truncate">{children}</span>
+      <span className={wrap ? 'min-w-0' : 'min-w-0 truncate'}>{children}</span>
     </span>
   );
 }

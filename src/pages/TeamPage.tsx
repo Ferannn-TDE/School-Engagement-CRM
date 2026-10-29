@@ -5,7 +5,6 @@ import toast from 'react-hot-toast';
 import { Header } from '../components/layout/Header';
 import { Breadcrumb } from '../components/common/Breadcrumb';
 import { Card } from '../components/common/Card';
-import { Button } from '../components/common/Button';
 import { Badge } from '../components/common/Badge';
 import { EmptyState } from '../components/common/EmptyState';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
@@ -22,6 +21,8 @@ import {
 } from '../services/rolesService';
 import { databaseMessage } from '../utils/writeErrors';
 import { useConfirm } from '../hooks/useConfirm';
+import { RowAction, RowActions } from '../components/common/RowActions';
+import { Missing } from '../components/common/Missing';
 
 const ROLE_LABELS: Record<Role, string> = { admin: 'Admin', editor: 'Editor', viewer: 'Viewer' };
 const ROLE_RANK: Record<Role, number> = { admin: 3, editor: 2, viewer: 1 };
@@ -99,20 +100,16 @@ export function TeamPage() {
     const row = (m: TeamMember) => {
       const me = m.userId === user?.id;
       return (
-        <li key={m.userId} className="flex flex-wrap items-center justify-between gap-3 px-6 py-3">
-          <div className="min-w-0">
-            <p className="text-sm font-medium text-neutral-800 break-all">
-              {m.email ?? m.userId}
-              {me && <Badge variant="info" className="ml-2">You</Badge>}
-              {m.archived && <Badge variant="default" className="ml-2">Removed</Badge>}
-            </p>
-            <p className="text-xs text-neutral-500">
-              {m.updatedAt ? `Changed ${format(new Date(m.updatedAt), 'MMM d, yyyy')}${m.updatedBy ? ` by ${m.updatedBy}` : ''}` : `Since ${format(new Date(m.createdAt), 'MMM d, yyyy')}`}
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            {!m.archived && (
-              <label className="flex items-center gap-2 text-sm">
+        <tr key={m.userId}>
+          <td className="px-6 py-3 break-all">
+            <span className="font-medium text-neutral-800">{m.email ?? m.userId}</span>
+            {me && <Badge variant="info" className="ml-2">You</Badge>}
+          </td>
+          <td className="px-4 py-3">
+            {m.archived ? (
+              <span className="text-neutral-500">Viewer (removed)</span>
+            ) : (
+              <label className="block">
                 <span className="sr-only">Role for {m.email}</span>
                 <select
                   value={m.role}
@@ -127,7 +124,7 @@ export function TeamPage() {
                       variant: role === 'admin' || ROLE_RANK[role] > ROLE_RANK[m.role] ? 'primary' : 'destructive',
                     }, () => change(m, () => setMemberRole(m.userId, role), `${m.email ?? 'Account'} is now ${ROLE_LABELS[role].toLowerCase()}`));
                   }}
-                  className="border border-neutral-300 rounded-md px-2 py-1 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-siue-red"
+                  className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-siue-red/30 focus:border-siue-red"
                 >
                   {(Object.keys(ROLE_LABELS) as Role[]).map((r) => (
                     <option key={r} value={r}>{ROLE_LABELS[r]} ({ROLE_HELP[r]})</option>
@@ -135,25 +132,49 @@ export function TeamPage() {
                 </select>
               </label>
             )}
-            {m.archived ? (
-              <Button size="sm" variant="secondary" disabled={busy !== null}
-                onClick={() => void change(m, () => setMemberArchived(m.userId, false), `${m.email ?? 'Account'} added back`)}>
-                <UserPlus size={14} /> Add back
-              </Button>
-            ) : (
-              <Button size="sm" variant="ghost" disabled={busy !== null}
-                onClick={() => confirm({
-                  title: `Remove ${m.email ?? 'this account'} from the team?`,
-                  message: 'They keep their account but count as a viewer: they can read, not change anything. You can add them back from the list below.',
-                  confirmLabel: 'Remove from team',
-                }, () => change(m, () => setMemberArchived(m.userId, true), `${m.email ?? 'Account'} removed from the team`))}>
-                <UserMinus size={14} /> Remove from team
-              </Button>
-            )}
-          </div>
-        </li>
+          </td>
+          <td className="px-4 py-3 text-neutral-600">
+            {m.updatedAt ? `${format(new Date(m.updatedAt), 'MMM d, yyyy')}${m.updatedBy ? ` by ${m.updatedBy}` : ''}` : `Joined ${format(new Date(m.createdAt), 'MMM d, yyyy')}`}
+          </td>
+          <td className="px-6 py-3">
+            <RowActions>
+              {m.archived ? (
+                <RowAction icon={<UserPlus size={13} />} label="Add back" disabled={busy !== null}
+                  onClick={() => void change(m, () => setMemberArchived(m.userId, false), `${m.email ?? 'Account'} added back`)} />
+              ) : (
+                <RowAction icon={<UserMinus size={13} />} label="Remove from team" tone="danger" disabled={busy !== null}
+                  onClick={() => confirm({
+                    title: `Remove ${m.email ?? 'this account'} from the team?`,
+                    message: 'They keep their account but count as a viewer: they can read, not change anything. You can add them back from the list below.',
+                    confirmLabel: 'Remove from team',
+                  }, () => change(m, () => setMemberArchived(m.userId, true), `${m.email ?? 'Account'} removed from the team`))} />
+              )}
+            </RowActions>
+          </td>
+        </tr>
       );
     };
+    const accountsTable = (members: TeamMember[]) => (
+      <div className="overflow-x-auto pb-2">
+        <table className="w-full min-w-[48rem] table-fixed text-sm">
+          <colgroup>
+            <col />
+            <col style={{ width: '24rem' }} />
+            <col style={{ width: '15rem' }} />
+            <col style={{ width: '11rem' }} />
+          </colgroup>
+          <thead className="bg-neutral-50 border-y border-neutral-100">
+            <tr className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
+              <th className="px-6 py-2.5 text-left">Account</th>
+              <th className="px-4 py-2.5 text-left">Role</th>
+              <th className="px-4 py-2.5 text-left">Last change</th>
+              <th className="px-6 py-2.5 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-neutral-50">{members.map(row)}</tbody>
+        </table>
+      </div>
+    );
     return (
       <>
         <p className="text-sm text-neutral-600 max-w-2xl">
@@ -165,7 +186,7 @@ export function TeamPage() {
           <div className="px-6 pt-5 pb-2">
             <h2 className="text-base font-semibold text-neutral-800">Accounts <span className="text-neutral-400 font-normal">({active.length})</span></h2>
           </div>
-          {active.length ? <ul className="divide-y divide-neutral-100">{active.map(row)}</ul> : (
+          {active.length ? accountsTable(active) : (
             <EmptyState icon={<Users size={32} />} title="No accounts" description="Accounts appear here when they sign up." />
           )}
         </Card>
@@ -175,7 +196,7 @@ export function TeamPage() {
               <h2 className="text-base font-semibold text-neutral-800">Removed from the team <span className="text-neutral-400 font-normal">({removed.length})</span></h2>
               <p className="text-xs text-neutral-500">They count as viewers.</p>
             </div>
-            <ul className="divide-y divide-neutral-100">{removed.map(row)}</ul>
+            {accountsTable(removed)}
           </Card>
         )}
         <Card padding={false}>
@@ -197,7 +218,7 @@ export function TeamPage() {
                 {log.map((c) => (
                   <tr key={c.id}>
                     <td className="px-6 py-3 whitespace-nowrap text-neutral-600">{format(new Date(c.changedAt), 'MMM d, yyyy h:mm a')}</td>
-                    <td className="px-4 py-3 text-neutral-600 break-all">{c.changedByEmail ?? '—'}</td>
+                    <td className="px-4 py-3 text-neutral-600 break-all">{c.changedByEmail ?? <Missing label="Not recorded" />}</td>
                     <td className="px-4 py-3 break-all">{c.email ?? c.userId}</td>
                     <td className="px-4 py-3">{describeChange(c)}</td>
                   </tr>
@@ -214,7 +235,7 @@ export function TeamPage() {
     <div>
       <Breadcrumb crumbs={[{ label: 'Settings', href: '/settings' }, { label: 'Team' }]} />
       <Header title="Team" subtitle="Who can do what: admins manage the team, editors change data, viewers read." />
-      <div className="p-8 space-y-6 max-w-4xl">{body()}</div>
+      <div className="p-8 space-y-6">{body()}</div>
       {dialog}
     </div>
   );

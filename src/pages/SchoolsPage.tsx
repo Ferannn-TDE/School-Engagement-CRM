@@ -5,6 +5,7 @@ import { Plus, School, MapPin, ShieldCheck, ShieldOff, CheckCircle } from 'lucid
 import { format } from 'date-fns';
 import { Header } from '../components/layout/Header';
 import { RowAction, RowActions } from '../components/common/RowActions';
+import { Missing } from '../components/common/Missing';
 import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { FilterBar } from '../components/common/FilterBar';
@@ -115,12 +116,12 @@ export function SchoolsPage() {
       {
         accessorKey: 'county',
         header: 'County',
-        cell: ({ getValue }) => (
-          <div className="flex items-center gap-1 text-neutral-600">
-            <MapPin size={14} />
+        cell: ({ getValue }) => (getValue() as string)?.trim() ? (
+          <div className="flex items-center gap-1 text-neutral-600 break-words">
+            <MapPin size={14} className="shrink-0" />
             {getValue() as string}
           </div>
-        ),
+        ) : <Missing label="No county" />,
       },
       {
         accessorKey: 'schoolType',
@@ -143,7 +144,7 @@ export function SchoolsPage() {
         accessorKey: 'isActive',
         header: 'Status',
         cell: ({ getValue }) => (
-          <Badge variant={getValue() ? 'success' : 'error'}>
+          <Badge variant={getValue() ? 'success' : 'default'}>
             {getValue() ? 'Active' : 'Inactive'}
           </Badge>
         ),
@@ -164,10 +165,10 @@ export function SchoolsPage() {
   const verifyColumn: ColumnDef<SchoolType, unknown> = useMemo(
     () => ({
       id: 'verify',
-      header: () => <span className="sr-only">Actions</span>,
+      header: () => <span className="block text-right">Actions</span>,
       cell: ({ row }) => (
         <RowActions>
-          <RowAction icon={<CheckCircle size={13} />} label="Verify" alwaysLabel title="Mark as verified" onClick={() => verifySchool(row.original.id)} />
+          <RowAction icon={<CheckCircle size={13} />} label="Verify" title="Mark as verified" onClick={() => verifySchool(row.original.id)} />
         </RowActions>
       ),
     }),
@@ -278,6 +279,7 @@ export function SchoolsPage() {
             <DataTable
               data={filteredSchools}
               columns={columns}
+              columnWidths={columns.length > 7 ? ['', '9rem', '8rem', '7rem', '6.5rem', '6.5rem', '8rem', '7rem'] : ['', '9rem', '8rem', '7rem', '6.5rem', '6.5rem', '8rem']}
               searchValue={search}
               urlState
               resetKey={[verifiedTab, countyFilter, typeFilter, contactsFilter].join('|')}

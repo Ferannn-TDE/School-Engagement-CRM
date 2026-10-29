@@ -24,8 +24,10 @@ interface DataTableProps<T> {
   onRowClick?: (row: T) => void;
   emptyMessage?: string;
   emptyAction?: React.ReactNode;
-  /** Optional column width percentages, e.g. ['30%', '20%', '15%', '15%', '20%']. Must sum to 100%. */
+  /** Optional column widths: percentages, fixed sizes ('120px'), or '' to share what's left. */
   columnWidths?: string[];
+  /** With columnWidths: the narrowest the table gets before it scrolls sideways. */
+  minWidth?: string;
   /** Keep sort, page and page size in the address (?sort=-name&page=3&size=50), so
    *  they survive leaving the tab, a refresh and the back button. */
   urlState?: boolean;
@@ -51,6 +53,7 @@ export function DataTable<T>({
   columns,
   searchValue,
   pageSize = 25,
+  minWidth = '48rem',
   onRowClick,
   emptyMessage = 'No data found.',
   emptyAction,
@@ -130,7 +133,7 @@ export function DataTable<T>({
   return (
     <div className="pb-4">
       <div className="overflow-x-auto rounded-lg border border-neutral-100">
-        <table className={classNames('divide-y divide-neutral-100 table-fixed', columnWidths ? 'w-full min-w-[60rem]' : 'min-w-full')}>
+        <table className={classNames('divide-y divide-neutral-100 table-fixed', columnWidths ? 'w-full' : 'min-w-full')} style={columnWidths ? { minWidth } : undefined}>
           {columnWidths && (
             <colgroup>
               {columnWidths.map((w, i) => (

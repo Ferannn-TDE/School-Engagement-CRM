@@ -205,7 +205,7 @@ async function main() {
     );
     assert.equal(await fileHash(csvBytes), await fileHash(new Uint8Array(csvBytes)));
   });
-  check('the template reads as empty: its example sits on the Instructions sheet', () => {
+  check('the template has headers only, and reads as empty', () => {
     const bytes = XLSX.write(buildActivityTemplate(), { type: 'array', bookType: 'xlsx' }) as ArrayBuffer;
     const wb = XLSX.read(new Uint8Array(bytes), { type: 'array' });
     assert.deepEqual(wb.SheetNames, ['Schools', 'Instructions']);

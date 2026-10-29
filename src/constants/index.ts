@@ -37,4 +37,5 @@ export const SCHOOL_FIELD_OPTIONS = [
   { value: 'state', label: 'State' },
   { value: 'zipCode', label: 'Zip Code' },
   { value: 'schoolType', label: 'School Type' },
+  { value: 'notes', label: 'Notes' },
 ] as const;

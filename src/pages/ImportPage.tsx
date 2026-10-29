@@ -12,13 +12,16 @@ import { useAppContext } from '../context/useAppContext';
 import { roleFromTitle } from '../utils/contactRoles';
 import {
   isValidEmail,
-  downloadFile,
   describeFileRejection,
   formatBytes,
   MAX_UPLOAD_BYTES,
 } from '../utils/helpers';
 import { CONTACT_FIELD_OPTIONS, SCHOOL_FIELD_OPTIONS } from '../constants';
 import {
+  buildCombinedTemplate,
+  buildContactsTemplate,
+  buildSchoolsTemplate,
+  headerField,
   interpretCombinedWorkbook,
   looksLikeSpreadsheet,
   type ParsedRow,
@@ -455,40 +458,9 @@ export function ImportPage() {
 
   const autoMapColumns = (hdrs: string[]) => {
     const mapping: Record<string, string> = {};
-    const normalizeMap: Record<string, string> = {
-      'first name': 'firstName',
-      'firstname': 'firstName',
-      'first_name': 'firstName',
-      'last name': 'lastName',
-      'lastname': 'lastName',
-      'last_name': 'lastName',
-      'email': 'email',
-      'email address': 'email',
-      'phone': 'phone',
-      'phone number': 'phone',
-      'role': 'role',
-      'title': 'role',
-      'school': 'schoolId',
-      'school name': 'name',
-      'name': activeTab === 'schools' ? 'name' : 'firstName',
-      'district': 'district',
-      'county': 'county',
-      'address': 'address',
-      'city': 'city',
-      'state': 'state',
-      'zip': 'zipCode',
-      'zipcode': 'zipCode',
-      'zip code': 'zipCode',
-      'type': 'schoolType',
-      'school type': 'schoolType',
-      'notes': 'notes',
-    };
-
     for (const h of hdrs) {
-      const normalized = h.toLowerCase().trim();
-      if (normalizeMap[normalized]) {
-        mapping[h] = normalizeMap[normalized];
-      }
+      const field = headerField(h, activeTab === 'schools' ? 'schools' : 'contacts');
+      if (field) mapping[h] = field;
     }
     setColumnMapping(mapping);
   };
@@ -675,21 +647,13 @@ export function ImportPage() {
     setParseError(null);
   };
 
+  // Headers only (.xlsx), so nothing made-up can be imported by accident.
   const downloadTemplate = () => {
-    if (activeTab === 'contacts') {
-      const csv = [
-        'firstName,lastName,email,phone,role,schoolName,notes',
-        'Jane,Smith,jane.smith@example.com,6185550100,counselor,Edwardsville High School,',
-      ].join('\n');
-      downloadFile(csv, 'contacts-template.csv', 'text/csv');
-    } else if (activeTab === 'schools') {
-      const csv = [
-        'name,district,county,address,city,state,zipCode,schoolType,notes',
-        'Edwardsville High School,Edwardsville CUSD 7,Madison,1200 Tigers Trail,Edwardsville,IL,62025,high_school,',
-      ].join('\n');
-      downloadFile(csv, 'schools-template.csv', 'text/csv');
-    }
+    if (activeTab === 'combined') XLSX.writeFile(buildCombinedTemplate(), 'schools-and-contacts-template.xlsx');
+    else if (activeTab === 'contacts') XLSX.writeFile(buildContactsTemplate(), 'contacts-template.xlsx');
+    else if (activeTab === 'schools') XLSX.writeFile(buildSchoolsTemplate(), 'schools-template.xlsx');
   };
+
 
   const { getRootProps: getCombinedRootProps, getInputProps: getCombinedInputProps, isDragActive: isCombinedDragActive } = useDropzone({
     accept: {
@@ -781,12 +745,18 @@ export function ImportPage() {
           <>
             {combinedStep === 'upload' && (
               <Card>
-                <div className="mb-4">
-                  <h2 className="text-lg font-semibold text-neutral-800">Upload Schools + Contacts File</h2>
-                  <p className="text-sm text-neutral-500 mt-1">
-                    Upload an Excel file with a <strong>Schools</strong> sheet and a <strong>Contacts</strong> sheet.
-                    All records will enter as <Badge variant="warning" className="inline-flex">Unverified</Badge> for staff review.
-                  </p>
+                <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <h2 className="text-lg font-semibold text-neutral-800">Upload Schools + Contacts File</h2>
+                    <p className="text-sm text-neutral-500 mt-1">
+                      Upload an Excel file with a <strong>Schools</strong> sheet and a <strong>Contacts</strong> sheet.
+                      All records will enter as <Badge variant="warning" className="inline-flex">Unverified</Badge> for staff review.
+                    </p>
+                  </div>
+                  <Button variant="secondary" size="sm" onClick={downloadTemplate}>
+                    <Download size={14} />
+                    Download template
+                  </Button>
                 </div>
                 <div
                   {...getCombinedRootProps()}
@@ -1049,9 +1019,9 @@ export function ImportPage() {
                   <h2 className="text-lg font-semibold text-neutral-800">
                     Upload {activeTab === 'contacts' ? 'Contact' : 'School'} File
                   </h2>
-                  <Button variant="ghost" size="sm" onClick={downloadTemplate}>
-                    <Download size={16} />
-                    Download Template
+                  <Button variant="secondary" size="sm" onClick={downloadTemplate}>
+                    <Download size={14} />
+                    Download template
                   </Button>
                 </div>
                 <div

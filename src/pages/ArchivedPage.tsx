@@ -4,7 +4,8 @@ import { format } from 'date-fns';
 import { Header } from '../components/layout/Header';
 import { Breadcrumb } from '../components/common/Breadcrumb';
 import { Card } from '../components/common/Card';
-import { Button } from '../components/common/Button';
+import { RowAction, RowActions } from '../components/common/RowActions';
+import { Missing } from '../components/common/Missing';
 import { EmptyState } from '../components/common/EmptyState';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { useAppContext } from '../context/useAppContext';
@@ -74,7 +75,7 @@ export function ArchivedPage() {
         title="Archived"
         subtitle="Nothing is deleted. Archived items are hidden everywhere else and can be restored here."
       />
-      <div className="p-8 space-y-6 max-w-4xl">
+      <div className="p-8 space-y-6">
         {items === null ? (
           <LoadingSpinner />
         ) : items.length === 0 ? (
@@ -94,32 +95,50 @@ export function ArchivedPage() {
                 </h2>
                 {section.note && <p className="text-xs text-neutral-500 mt-0.5">{section.note}</p>}
               </div>
-              <ul className="divide-y divide-neutral-100">
-                {byKind.get(section.kind)!.map((item) => (
-                  <li key={item.id} className="flex items-center justify-between gap-4 px-6 py-3">
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-neutral-800 truncate">{item.label}</p>
-                      {item.detail && <p className="text-xs text-neutral-500 truncate">{item.detail}</p>}
-                      <p className="text-xs text-neutral-400 mt-0.5">
-                        Archived
-                        {item.archivedAt ? ` ${format(new Date(item.archivedAt), 'MMM d, yyyy h:mm a')}` : ''}
-                        {item.archivedBy ? ` by ${item.archivedBy}` : ''}
-                      </p>
-                    </div>
-                    {canEdit && (
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        onClick={() => void restore(item)}
-                        disabled={restoring !== null}
-                      >
-                        <RotateCcw size={14} />
-                        {restoring === `${item.kind}:${item.id}` ? 'Restoring…' : 'Restore'}
-                      </Button>
-                    )}
-                  </li>
-                ))}
-              </ul>
+              <div className="overflow-x-auto pb-2">
+                <table className="w-full table-fixed text-sm">
+                  <colgroup>
+                    <col />
+                    <col style={{ width: '13rem' }} />
+                    <col style={{ width: '16rem' }} />
+                    {canEdit && <col style={{ width: '9rem' }} />}
+                  </colgroup>
+                  <thead className="bg-neutral-50 border-y border-neutral-100">
+                    <tr className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                      <th className="px-6 py-2.5 text-left">Name</th>
+                      <th className="px-4 py-2.5 text-left">Archived</th>
+                      <th className="px-4 py-2.5 text-left">By</th>
+                      {canEdit && <th className="px-6 py-2.5 text-right">Actions</th>}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-neutral-50">
+                    {byKind.get(section.kind)!.map((item) => (
+                      <tr key={item.id}>
+                        <td className="px-6 py-3 break-words">
+                          <p className="font-medium text-neutral-800">{item.label}</p>
+                          {item.detail && <p className="text-xs text-neutral-500">{item.detail}</p>}
+                        </td>
+                        <td className="px-4 py-3 text-neutral-600">
+                          {item.archivedAt ? format(new Date(item.archivedAt), 'MMM d, yyyy h:mm a') : <Missing label="Not recorded" />}
+                        </td>
+                        <td className="px-4 py-3 text-neutral-600 break-all">{item.archivedBy ?? <Missing label="Not recorded" />}</td>
+                        {canEdit && (
+                          <td className="px-6 py-3">
+                            <RowActions>
+                              <RowAction
+                                icon={<RotateCcw size={13} />}
+                                label={restoring === `${item.kind}:${item.id}` ? 'Restoring…' : 'Restore'}
+                                disabled={restoring !== null}
+                                onClick={() => void restore(item)}
+                              />
+                            </RowActions>
+                          </td>
+                        )}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </Card>
           ))
         )}

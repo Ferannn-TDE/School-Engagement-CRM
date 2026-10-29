@@ -159,8 +159,8 @@ export function TeamPage() {
         <table className="w-full min-w-[48rem] table-fixed text-sm">
           <colgroup>
             <col />
-            <col style={{ width: '20rem' }} />
-            <col style={{ width: '17rem' }} />
+            <col style={{ width: '24rem' }} />
+            <col style={{ width: '15rem' }} />
             <col style={{ width: '11rem' }} />
           </colgroup>
           <thead className="bg-neutral-50 border-y border-neutral-100">

@@ -249,11 +249,16 @@ class IllinoisSource(OfficialSchoolSource):
 class MissouriSource(OfficialSchoolSource):
     state = "MO"
 
+    def __init__(self, session=None, include_institutional=False, strict_high_schools=False):
+        super().__init__(session=session)
+        self.include_institutional = include_institutional
+        self.strict_high_schools = strict_high_schools
+
     def download(self, raw_folder):
         districts = self.arcgis_rows(
             MISSOURI_DISTRICTS_URL,
             "ESRI_OID,CTYDIST,DNAME,DCOUNTY,URL,DIEMAIL,DPHONE",
-            order_by="ESRI_OID",
+            order_by="CTYDIST",
         )
         schools = self.arcgis_rows(MISSOURI_SCHOOLS_URL, "*")
 
@@ -261,43 +266,88 @@ class MissouriSource(OfficialSchoolSource):
         raw_folder.mkdir(parents=True, exist_ok=True)
         write_json(raw_folder / "missouri_districts.json", districts)
         write_json(raw_folder / "missouri_schools.json", schools)
-        return self.from_rows(schools, districts)
+        excluded = [{"state_id": first_value(row, "SchID", "School ID"),
+                     "name": first_value(row, "Facility", "School Name", "Name"),
+                     "school_number": self.school_number(row),
+                     "reason": self.scope_reason(row)}
+                    for row in schools if self.scope_reason(row)]
+        result = self.from_rows(schools, districts)
+        write_json(raw_folder / "missouri_scope_audit.json", {
+            "raw_buildings": len(schools), "included_secondary_roster": len(result),
+            "included_high_school_buildings": sum(s.school_type == "Public high school" for s in result),
+            "included_other_secondary_programs": sum(s.school_type == "Public secondary program" for s in result),
+            "excluded": excluded,
+            "policy": {"include_institutional": self.include_institutional,
+                       "strict_high_schools": self.strict_high_schools},
+        })
+        return result
 
     def arcgis_rows(self, layer_url, fields, order_by="OBJECTID"):
+        url = layer_url.rstrip("/") + "/query"
+        response = self.session.get(url, params={"where": "1=1", "returnCountOnly": "true", "f": "json"}, timeout=90)
+        response.raise_for_status()
+        count_payload = response.json()
+        expected = count_payload.get("count")
+        if count_payload.get("error") or type(expected) is not int or expected <= 0:
+            raise RuntimeError("Missouri ArcGIS did not return a valid positive record count.")
         rows = []
-        offset = 0
-
-        while True:
+        seen = set()
+        while len(rows) < expected:
             response = self.session.get(
-                layer_url.rstrip("/") + "/query",
-                params={
-                    "where": "1=1",
-                    "outFields": fields,
-                    "returnGeometry": "false",
-                    "orderByFields": order_by,
-                    "resultOffset": offset,
-                    "resultRecordCount": 1_000,
-                    "f": "json",
-                },
+                url,
+                params={"where": "1=1", "outFields": fields, "returnGeometry": "false",
+                        "orderByFields": order_by, "resultOffset": len(rows),
+                        "resultRecordCount": 1_000, "f": "json"},
                 timeout=90,
             )
             response.raise_for_status()
             payload = response.json()
-
             if payload.get("error"):
                 message = clean(payload["error"].get("message", payload["error"]))
                 raise RuntimeError(f"Missouri ArcGIS query failed: {message}")
+            features = payload.get("features")
+            if not isinstance(features, list) or not features:
+                raise RuntimeError(f"Missouri ArcGIS stopped at {len(rows)} of {expected} records.")
+            for feature in features:
+                row = feature.get("attributes") if isinstance(feature, dict) else None
+                identity = row.get(order_by) if isinstance(row, dict) else None
+                if identity is None or identity in seen:
+                    raise RuntimeError("Missouri ArcGIS returned a missing or repeated record ID.")
+                seen.add(identity)
+                rows.append(row)
+            if len(rows) > expected or (len(rows) == expected and payload.get("exceededTransferLimit")):
+                raise RuntimeError("Missouri ArcGIS record count changed during pagination; retry the roster.")
+        return rows
 
-            page = [
-                feature.get("attributes", {})
-                for feature in payload.get("features", [])
-                if isinstance(feature, dict)
-            ]
-            rows.extend(page)
+    @staticmethod
+    def school_number(row):
+        number = clean(first_value(row, "SchNum", "School Number"))
+        if not number:
+            supplied = first_value(row, "SchID", "School ID")
+            match = re.fullmatch(r"\d{6}-(\d{4})", supplied)
+            number = match.group(1) if match else ""
+        return int(number) if re.fullmatch(r"\d{4}", number) else None
 
-            if len(page) < 1_000:
-                return rows
-            offset += len(page)
+    def scope_reason(self, row):
+        # DESE's school/building number is SchNum, not the unrelated GIS Loc_Code field.
+        number = self.school_number(row)
+        if number is None:
+            return "missing_or_invalid_school_number"
+        if not self.include_institutional and (number in {1015, 1030} or 6010 <= number <= 6015):
+            return "institutional_detention_treatment_or_hospital"
+        regular = 1050 <= number <= 1099 or 1200 <= number <= 1999
+        if self.strict_high_schools and not regular:
+            return "not_a_dese_high_school_building"
+        name = first_value(row, "Facility", "School Name", "Name")
+        if not name:
+            return "missing_school_name"
+        low = clean(first_value(row, "BGrade", "Beginning Grade", "Low Grade"))
+        high = clean(first_value(row, "EGrade", "Ending Grade", "High Grade"))
+        if high and (not high.isdigit() or not 9 <= int(high) <= 12):
+            return "not_high_school_grades"
+        if not regular and not serves_high_school(name, "-".join([low, high]), low, high):
+            return "not_high_school_grades"
+        return ""
 
     def from_rows(self, school_rows, district_rows):
         districts = {
@@ -315,7 +365,7 @@ class MissouriSource(OfficialSchoolSource):
             high = first_value(row, "EGrade", "Ending Grade", "High Grade")
             grades = "-".join(value for value in (low, high) if value)
 
-            if not name or not serves_high_school(name, grades, low, high):
+            if self.scope_reason(row):
                 continue
 
             district_code = digits(first_value(row, "CtyDist", "District Number", "DIST_CODE"))
@@ -348,6 +398,8 @@ class MissouriSource(OfficialSchoolSource):
                 state_id=supplied_id,
                 enrollment=integer(first_value(row, "Enrollment", "Total Enrollment")),
                 data_source=MISSOURI_SCHOOLS_URL,
+                school_type=("Public high school" if 1050 <= self.school_number(row) <= 1099
+                             or 1200 <= self.school_number(row) <= 1999 else "Public secondary program"),
             ))
 
         schools.sort(key=lambda school: (normalize(school.name), normalize(school.city)))

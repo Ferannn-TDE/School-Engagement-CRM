@@ -78,11 +78,26 @@ jobs:
         run: |
           set -Eeuo pipefail
           python run_audit.py snapshot --label "$RUN_LABEL"
-
+          
       - name: Start a fresh monthly collection
         run: |
           set -Eeuo pipefail
           python -c "from pathlib import Path; p = Path('output'); p.mkdir(parents=True, exist_ok=True); (p / 'checkpoint.json').write_text('{}\n', encoding='utf-8')"
+
+      - name: Diagnose MSHSAA connectivity
+        run: |
+          echo "DNS addresses"
+          getent ahosts www.mshsaa.org || true
+
+          echo "IPv4 HTTPS connection"
+          curl -4 -v --connect-timeout 15 --max-time 30 \
+            -o /dev/null \
+            https://www.mshsaa.org/Schools/SchoolListing.aspx || true
+
+          echo "IPv6 HTTPS connection"
+          curl -6 -v --connect-timeout 15 --max-time 30 \
+            -o /dev/null \
+            https://www.mshsaa.org/Schools/SchoolListing.aspx || true
 
       - name: Run scraper and database upsert
         run: |

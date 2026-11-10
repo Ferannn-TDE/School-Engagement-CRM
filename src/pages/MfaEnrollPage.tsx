@@ -91,7 +91,7 @@ export function MfaEnrollPage() {
 
         <h2 className="text-xl font-bold text-neutral-800 mb-1">Set up two-factor login</h2>
         <p className="text-sm text-neutral-400 mb-6">
-          This is required for all accounts. Scan the code below with an authenticator app (Google
+          This is required for accounts that can edit data. Scan the code below with an authenticator app (Google
           Authenticator, Microsoft Authenticator, Authy, etc.).
         </p>
 

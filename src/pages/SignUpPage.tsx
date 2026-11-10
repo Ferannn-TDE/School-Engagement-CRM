@@ -16,11 +16,6 @@ export function SignUpPage() {
     e.preventDefault();
     setError('');
 
-    if (!email.toLowerCase().endsWith('@siue.edu')) {
-      setError('Only @siue.edu email addresses are allowed to sign up.');
-      return;
-    }
-
     if (password !== confirmPassword) {
       setError('Passwords do not match.');
       return;
@@ -46,7 +41,7 @@ export function SignUpPage() {
       return;
     }
 
-    navigate('/mfa/enroll');
+    navigate('/');
   }
 
   if (confirmationSent) {
@@ -57,9 +52,12 @@ export function SignUpPage() {
             <span className="text-white font-bold text-sm">SoE</span>
           </div>
           <h2 className="text-xl font-bold text-neutral-800 mb-2">Check your email</h2>
-          <p className="text-sm text-neutral-400 mb-6">
+          <p className="text-sm text-neutral-400 mb-3">
             We sent a confirmation link to <span className="font-medium text-neutral-700">{email}</span>. Click it
             to activate your account, then sign in.
+          </p>
+          <p className="text-sm text-neutral-400 mb-6">
+            Nothing after a few minutes? This address may already have an account, so try signing in instead.
           </p>
           <Link to="/login" className="text-sm font-medium text-siue-red hover:underline">
             Back to sign in
@@ -83,8 +81,7 @@ export function SignUpPage() {
           </div>
         </div>
 
-        <h2 className="text-xl font-bold text-neutral-800 mb-1">Create an account</h2>
-        <p className="text-sm text-neutral-400 mb-6">Restricted to @siue.edu email addresses</p>
+        <h2 className="text-xl font-bold text-neutral-800 mb-6">Create an account</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -95,7 +92,6 @@ export function SignUpPage() {
               id="email"
               type="email"
               autoComplete="email"
-              placeholder="you@siue.edu"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}

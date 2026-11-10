@@ -37,15 +37,18 @@ function MfaGuard() {
 
 
 function AuthGuard() {
-  const { user, loading, mfaLevel, mfaLoading } = useAuth();
+  const { user, loading, mfaLevel, mfaLoading, mfaRequired } = useAuth();
 
   if (loading || mfaLoading) return <LoadingSpinner />;
   if (!user) return <Navigate to="/login" replace />;
 
-  if (mfaLevel?.nextLevel === 'aal1') return <Navigate to="/mfa/enroll" replace />;
+  // Viewers go straight in (db/025). Editors and admins must finish the authenticator step.
+  if (mfaRequired) {
+    if (mfaLevel?.nextLevel === 'aal1') return <Navigate to="/mfa/enroll" replace />;
 
-  if (mfaLevel && mfaLevel.currentLevel !== mfaLevel.nextLevel) {
-    return <Navigate to="/mfa/verify" replace />;
+    if (mfaLevel && mfaLevel.currentLevel !== mfaLevel.nextLevel) {
+      return <Navigate to="/mfa/verify" replace />;
+    }
   }
 
   return (

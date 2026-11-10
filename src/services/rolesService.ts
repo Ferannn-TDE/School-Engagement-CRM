@@ -36,6 +36,17 @@ export async function fetchMyRole(): Promise<Role> {
   return (data as Role) ?? 'viewer';
 }
 
+/**
+ * The role the account was given, whatever the session's sign-in level (db/025). fetchMyRole
+ * is the effective role: editors and admins read as 'viewer' until they finish the
+ * authenticator step. The app uses this one to decide who must go through that step.
+ */
+export async function fetchAssignedRole(): Promise<Role> {
+  const { data, error } = await supabase.rpc('assigned_role');
+  if (error) throw error;
+  return (data as Role) ?? 'viewer';
+}
+
 /** Before 023 is applied, app_role doesn't exist yet. */
 export function isRolesMissing(err: unknown): boolean {
   const e = err as { code?: string; message?: string } | null;

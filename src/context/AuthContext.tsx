@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { AuthContext } from './useAuth';
 import type { User } from '@supabase/supabase-js';
 import { supabase } from '../services/supabase';
+import { fetchAssignedRole } from '../services/rolesService';
 
 type AalLevel = 'aal1' | 'aal2' | null;
 
@@ -15,6 +16,11 @@ export interface AuthContextValue {
   loading: boolean;
   mfaLevel: MfaLevel | null;
   mfaLoading: boolean;
+  /**
+   * Editors and admins must finish the authenticator step; viewers don't (db/025). True when
+   * the role can't be read, so a failure never lets someone past the step.
+   */
+  mfaRequired: boolean;
   refreshMfaLevel: () => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -24,10 +30,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [mfaLevel, setMfaLevel] = useState<MfaLevel | null>(null);
   const [mfaLoading, setMfaLoading] = useState(true);
+  const [mfaRequired, setMfaRequired] = useState(true);
 
   const refreshMfaLevel = useCallback(async () => {
     setMfaLoading(true);
-    const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    const [{ data, error }, assigned] = await Promise.all([
+      supabase.auth.mfa.getAuthenticatorAssuranceLevel(),
+      // Before db/025 is applied this function doesn't exist: keep requiring MFA for everyone.
+      fetchAssignedRole().catch(() => null),
+    ]);
+    setMfaRequired(assigned !== 'viewer');
     if (!error && data) {
       setMfaLevel({ currentLevel: data.currentLevel, nextLevel: data.nextLevel });
     } else {
@@ -68,7 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, mfaLevel, mfaLoading, refreshMfaLevel, signOut }}>
+    <AuthContext.Provider value={{ user, loading, mfaLevel, mfaLoading, mfaRequired, refreshMfaLevel, signOut }}>
       {children}
     </AuthContext.Provider>
   );

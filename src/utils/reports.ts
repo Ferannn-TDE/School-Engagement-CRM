@@ -197,6 +197,15 @@ export function loggingStatus(activities: ActivityRecord[]): LoggingStatus {
 
 // ── Reach ───────────────────────────────────────────────────────────────────────
 
+/**
+ * Activities dated on or before today. A future-dated activity (up to a year ahead) is
+ * planned, not done: it counts in no figure until its day. The page applies this to
+ * everything it passes in; the SQL check does the same (act: day <= today).
+ */
+export function activitiesUpTo(activities: ActivityRecord[], today: Day): ActivityRecord[] {
+  return activities.filter((a) => dayOf(a.date) <= today);
+}
+
 /** Activities whose school is on the list (an archived school's activities aren't). */
 function onListedSchools(activities: ActivityRecord[], schools: School[]): ActivityRecord[] {
   const ids = new Set(schools.map((s) => s.id));
@@ -259,22 +268,22 @@ export interface ActivitySummary {
   ids: string[];
   /** Activity ids by activity_type. */
   byType: Record<string, string[]>;
-  /** Students at events: the sum of bulk-imported attendee counts. */
-  students: number;
-  /** The bulk-imported attendance rows those students come from. */
-  studentRowIds: string[];
+  /** Visitors: the sum of every visitor count, from logged visits and imported attendance. */
+  visitors: number;
+  /** The activities those visitors come from (the ones with a count). */
+  visitorRowIds: string[];
 }
 
 export function activitySummary(activities: ActivityRecord[], schools: School[], range: DayRange): ActivitySummary {
   const rows = onListedSchools(activities, schools).filter((a) => inRange(dayOf(a.date), range));
   const byType: Record<string, string[]> = {};
   for (const a of rows) (byType[a.activityType] ??= []).push(a.id);
-  const studentRows = rows.filter((a) => a.importBatchId && a.attendeeCount);
+  const visitorRows = rows.filter((a) => a.attendeeCount);
   return {
     ids: rows.map((a) => a.id),
     byType,
-    students: studentRows.reduce((sum, a) => sum + (a.attendeeCount ?? 0), 0),
-    studentRowIds: studentRows.map((a) => a.id),
+    visitors: visitorRows.reduce((sum, a) => sum + (a.attendeeCount ?? 0), 0),
+    visitorRowIds: visitorRows.map((a) => a.id),
   };
 }
 
@@ -285,7 +294,7 @@ export interface MonthRow {
   /** Schools with activity that month, and those whose first-ever activity it was. */
   schoolIds: string[];
   newSchoolIds: string[];
-  students: number;
+  visitors: number;
 }
 
 export interface Monthly {
@@ -300,7 +309,7 @@ export function monthly(activities: ActivityRecord[], schools: School[], range: 
   const first = firstActivityDays(listed);
   const months: MonthRow[] = [];
   for (let m = monthOf(range.start); m <= monthOf(range.end); m = monthOf(addMonths(`${m}-01`, 1))) {
-    months.push({ month: m, activityIds: [], byType: {}, schoolIds: [], newSchoolIds: [], students: 0 });
+    months.push({ month: m, activityIds: [], byType: {}, schoolIds: [], newSchoolIds: [], visitors: 0 });
   }
   const index = new Map(months.map((row) => [row.month, row]));
   for (const a of listed) {
@@ -313,7 +322,7 @@ export function monthly(activities: ActivityRecord[], schools: School[], range: 
       row.schoolIds.push(a.schoolId);
       if (monthOf(first.get(a.schoolId)!) === row.month) row.newSchoolIds.push(a.schoolId);
     }
-    if (a.importBatchId && a.attendeeCount) row.students += a.attendeeCount;
+    if (a.attendeeCount) row.visitors += a.attendeeCount;
   }
   return { months, monthsWithData: months.filter((row) => row.activityIds.length > 0).length };
 }
@@ -422,8 +431,8 @@ export interface EventImpact {
   day: Day;
   /** Schools with imported attendance for the event (listed schools only). */
   schoolIds: string[];
-  /** Students: the imported attendee counts for the event. */
-  students: number;
+  /** Visitors: the imported attendee counts for the event. */
+  visitors: number;
   /** Of those schools, the ones with a call, email or visit within FOLLOW_UP_DAYS after. */
   followedIds: string[];
   /** The follow-up window hasn't closed yet: the rate isn't final. */
@@ -450,10 +459,10 @@ export function eventImpact(events: Event[], activities: ActivityRecord[], schoo
       const followedIds = schoolIds.filter((id) => listed.some((a) => a.schoolId === id
         && a.activityType !== EVENT_ATTENDANCE_TYPE && a.eventId !== e.id
         && dayOf(a.date) > day && dayOf(a.date) <= until));
-      return { eventId: e.id, day, schoolIds, students: rows.reduce((n, a) => n + (a.attendeeCount ?? 0), 0), followedIds, windowOpen: until >= today };
+      return { eventId: e.id, day, schoolIds, visitors: rows.reduce((n, a) => n + (a.attendeeCount ?? 0), 0), followedIds, windowOpen: until >= today };
     })
     .filter((x) => x.schoolIds.length > 0)
-    .sort((a, b) => b.schoolIds.length - a.schoolIds.length || b.students - a.students
+    .sort((a, b) => b.schoolIds.length - a.schoolIds.length || b.visitors - a.visitors
       || (a.day < b.day ? 1 : a.day > b.day ? -1 : a.eventId.localeCompare(b.eventId)));
 }
 
@@ -549,7 +558,8 @@ export interface ReportInput {
  * db/checks/reports_checks.sql, so the two can be compared key by key.
  */
 export function reportSnapshot(data: ReportInput, range: DayRange, today: Day): Record<string, number> {
-  const { schools, contacts, events, activities } = data;
+  const { schools, contacts, events } = data;
+  const activities = activitiesUpTo(data.activities, today);
   const r = reach(schools, activities, range);
   const act = activitySummary(activities, schools, range);
   const mon = monthly(activities, schools, range);
@@ -563,8 +573,8 @@ export function reportSnapshot(data: ReportInput, range: DayRange, today: Day): 
     'reach.engaged': r.engagedIds.length,
     'reach.first_time': r.firstTimeIds.length,
     'activity.total': act.ids.length,
-    'activity.students': act.students,
-    'activity.student_rows': act.studentRowIds.length,
+    'activity.visitors': act.visitors,
+    'activity.visitor_rows': act.visitorRowIds.length,
     'activity.months_with_data': mon.monthsWithData,
     'contacts.total': cov.contactIds.length,
     'contacts.active': cov.activeContactIds.length,
@@ -575,7 +585,7 @@ export function reportSnapshot(data: ReportInput, range: DayRange, today: Day): 
     'events.upcoming_with_schools': ev.upcomingWithSchoolsIds.length,
     'impact.events': fu.length,
     'impact.schools': fu.reduce((n, e) => n + e.schoolIds.length, 0),
-    'impact.students': fu.reduce((n, e) => n + e.students, 0),
+    'impact.visitors': fu.reduce((n, e) => n + e.visitors, 0),
     'impact.followed': fu.reduce((n, e) => n + e.followedIds.length, 0),
     'impact.closed_schools': fu.filter((e) => !e.windowOpen).reduce((n, e) => n + e.schoolIds.length, 0),
     'impact.closed_followed': fu.filter((e) => !e.windowOpen).reduce((n, e) => n + e.followedIds.length, 0),
@@ -604,7 +614,7 @@ export function reportSnapshot(data: ReportInput, range: DayRange, today: Day): 
     out[`month.${row.month}.activities`] = row.activityIds.length;
     out[`month.${row.month}.schools`] = row.schoolIds.length;
     out[`month.${row.month}.new_schools`] = row.newSchoolIds.length;
-    out[`month.${row.month}.students`] = row.students;
+    out[`month.${row.month}.visitors`] = row.visitors;
   }
   for (const [m, n] of Object.entries(ev.upcomingByMonth)) out[`events.upcoming.${m}`] = n;
   for (const [status, list] of Object.entries(h.siteStatus)) out[`health.site.${status}`] = list.length;

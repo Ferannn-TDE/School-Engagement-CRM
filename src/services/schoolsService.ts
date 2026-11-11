@@ -52,11 +52,15 @@ function isPriorityTier(value: string | null): value is NonNullable<School['prio
   return value === 'high' || value === 'standard' || value === 'low';
 }
 
+// Filled by fetchSchools; every row read afterwards (after an edit, an import) uses it.
+let districtNames = new Map<number, string>();
+
 function rowToSchool(row: SchoolRow): School {
   return {
     id: row.facility_key,
     name: row.name,
     district: row.district_id != null ? row.district_id.toString() : undefined,
+    districtName: row.district_id != null ? districtNames.get(row.district_id) : undefined,
     county: row.county_name ?? '',
     address: row.address ?? '',
     city: row.city ?? '',
@@ -93,10 +97,37 @@ function rowToSchool(row: SchoolRow): School {
   };
 }
 
+/**
+ * district_id → district_name. schools.district_id is the scraper's internal id (482),
+ * which means nothing to a user; the name is shown instead. The scraper's placeholder
+ * "Unknown district" is left out. A failure here only hides the names: it never stops
+ * the schools loading.
+ */
+async function fetchDistrictNames(): Promise<Map<number, string>> {
+  try {
+    const rows = await fetchAllRows<{ district_id: number; district_name: string | null }>(
+      'district', 'district_id', 'district_id, district_name'
+    );
+    const names = new Map<number, string>();
+    for (const r of rows) {
+      const name = r.district_name?.trim();
+      if (name && name.toLowerCase() !== 'unknown district') names.set(r.district_id, name);
+    }
+    return names;
+  } catch (err) {
+    console.error('fetchDistrictNames failed:', err);
+    return new Map();
+  }
+}
+
 export async function fetchSchools(): Promise<School[]> {
   // Paged: there are more schools than PostgREST returns in one response.
   // Archived schools (db/009) are left out; Settings → Archived lists them.
-  const rows = await fetchAllRows<SchoolRow>('schools', 'facility_key', '*', { archived: false });
+  const [rows, names] = await Promise.all([
+    fetchAllRows<SchoolRow>('schools', 'facility_key', '*', { archived: false }),
+    fetchDistrictNames(),
+  ]);
+  districtNames = names;
   return rows
     .map(rowToSchool)
     .sort((a, b) => a.name.localeCompare(b.name));

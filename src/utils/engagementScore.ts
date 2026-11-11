@@ -1,4 +1,5 @@
 import { isAfter, subMonths, differenceInDays } from 'date-fns';
+import { happenedActivities, todayDay } from './activityDates';
 import type { Contact, ActivityRecord, Event, Program } from '../types';
 
 export interface EngagementResult {
@@ -15,6 +16,8 @@ export function computeEngagementScore(
 ): EngagementResult {
   const now = new Date();
   const sixMonthsAgo = subMonths(now, 6);
+  // Upcoming (future-dated) activities don't count until their day.
+  activities = happenedActivities(activities, todayDay(now));
 
   const activeContacts = contacts.filter((c) => c.isActive);
   const recentActivities = activities.filter((a) => isAfter(new Date(a.date), sixMonthsAgo));

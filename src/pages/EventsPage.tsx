@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
-import { Plus, Calendar, CalendarDays, CalendarX, List, MapPin, Users, Pencil, Archive } from 'lucide-react';
-import { RowAction, RowActions } from '../components/common/RowActions';
+import { Plus, Calendar, CalendarDays, CalendarX, List, MapPin, Users, Pencil, Archive, Eye } from 'lucide-react';
+import { RowMenu } from '../components/common/RowActions';
 import { format, isAfter, isSameMonth, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, isToday } from 'date-fns';
 import { Header } from '../components/layout/Header';
 import { Card } from '../components/common/Card';
@@ -127,11 +127,16 @@ export function EventsPage() {
         id: 'actions',
         header: () => <span className="block text-right">Actions</span>,
         enableSorting: false,
+        // The same Actions menu as Contacts: one fixed-width button, choices in a list.
         cell: ({ row }) => (
-          <RowActions>
-            <RowAction icon={<Pencil size={13} />} label="Edit" onClick={() => setEditingEvent(row.original)} />
-            <RowAction icon={<Archive size={13} />} label="Archive" tone="danger" onClick={() => setArchivingEvent(row.original)} />
-          </RowActions>
+          <RowMenu
+            name={row.original.name || 'this event'}
+            items={[
+              { icon: <Pencil size={14} />, label: 'Edit', onClick: () => setEditingEvent(row.original) },
+              { icon: <Eye size={14} />, label: 'View details', onClick: () => setViewingEvent(row.original) },
+              { icon: <Archive size={14} />, label: 'Archive', tone: 'danger', onClick: () => setArchivingEvent(row.original) },
+            ]}
+          />
         ),
       },
     ],
@@ -237,7 +242,7 @@ export function EventsPage() {
                 <DataTable
                   data={filteredEvents}
                   columns={shownColumns}
-                  columnWidths={['', '11rem', '9rem', '7rem', '7rem', '10rem']}
+                  columnWidths={canEdit ? ['', '11rem', '9rem', '7rem', '7rem', '8rem'] : ['', '11rem', '9rem', '7rem', '7rem']}
                   urlState
                   resetKey={`${sourceFilter}|${showTesting}`}
                   onRowClick={(event) => setViewingEvent(event)}

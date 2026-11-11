@@ -8,7 +8,8 @@
 --
 -- It follows the app's loading rules, not just the tables: archived rows left out;
 -- a contact belongs to its junction row's school, else staff.school_worked_at, and is
--- dropped when that school is archived; activities count only on listed schools;
+-- dropped when that school is archived; activities count only on listed schools and
+-- only once their day has come (a future-dated activity is upcoming);
 -- testing dates are never outreach; Event impact ranks only events with imported
 -- attendance (activities with an import batch and this event); an event with no known school is placed in a
 -- state by its location (as utils/region.ts does). The thresholds are the ones in
@@ -29,8 +30,9 @@ sch as (select s.* from all_sch s, params p where p.region = '' or s.state = p.r
 act as (
   select a.activity_id as id, a.event_id, a.school_id, a.activity_type as type, a.date::date as day,
          a.import_batch_id, a.attendee_count
-  from activities a join sch on sch.id = a.school_id
+  from activities a join sch on sch.id = a.school_id, params p
   where not a.archived
+    and a.date::date <= p.today  -- future-dated (upcoming) activities count nowhere until their day
 ),
 act_in as (select act.* from act, params p where act.day between p.range_start and p.range_end),
 junction as (select staff_id, max(school_id) as school_id from contacts where not archived group by staff_id),
@@ -94,10 +96,10 @@ figures(k, v) as (
   union all select 'reach.state.' || coalesce(nullif(sch.state, ''), '(none)') || '.engaged',
                    count(*) filter (where sch.id in (select school_id from act_in)) from sch group by sch.state
   union all select 'activity.total', count(*) from act_in
-  union all select 'activity.students', coalesce(sum(attendee_count), 0) from act_in
-            where import_batch_id is not null and attendee_count is not null
-  union all select 'activity.student_rows', count(*) from act_in
-            where import_batch_id is not null and attendee_count is not null
+  union all select 'activity.visitors', coalesce(sum(attendee_count), 0) from act_in
+            where attendee_count is not null
+  union all select 'activity.visitor_rows', count(*) from act_in
+            where attendee_count is not null
   union all select 'activity.months_with_data', count(distinct to_char(day, 'YYYY-MM')) from act_in
   union all select 'activity.type.' || type, count(*) from act_in group by type
   union all select 'month.' || to_char(day, 'YYYY-MM') || '.activities', count(*) from act_in group by 1
@@ -105,8 +107,8 @@ figures(k, v) as (
   union all select 'month.' || to_char(a.day, 'YYYY-MM') || '.new_schools',
                    count(distinct a.school_id) filter (where to_char(f.day, 'YYYY-MM') = to_char(a.day, 'YYYY-MM'))
             from act_in a join first_day f on f.school_id = a.school_id group by 1
-  union all select 'month.' || to_char(day, 'YYYY-MM') || '.students',
-                   coalesce(sum(attendee_count) filter (where import_batch_id is not null), 0) from act_in group by 1
+  union all select 'month.' || to_char(day, 'YYYY-MM') || '.visitors',
+                   coalesce(sum(attendee_count), 0) from act_in group by 1
   union all select 'contacts.total', count(*) from con_l
   union all select 'contacts.active', count(*) from con_l where active
   union all select 'coverage.with', count(*) from per_school where active_contacts > 0
@@ -125,7 +127,7 @@ figures(k, v) as (
   union all select 'events.upcoming.' || to_char(ev.day, 'YYYY-MM'), count(*) from ev, params p where ev.day >= p.today group by 1
   union all select 'impact.events', count(distinct event_id) from att
   union all select 'impact.schools', count(*) from fu
-  union all select 'impact.students', coalesce(sum(attendee_count), 0) from att
+  union all select 'impact.visitors', coalesce(sum(attendee_count), 0) from att
   union all select 'impact.followed', count(*) from fu where followed
   union all select 'impact.closed_schools', count(*) from fu where not window_open
   union all select 'impact.closed_followed', count(*) from fu where followed and not window_open

@@ -1,4 +1,6 @@
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { Search, X } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Input } from '../common/Input';
@@ -13,7 +15,8 @@ import toast from 'react-hot-toast';
 // Keep attendeeCount as a string in the form; convert to number on submit
 const eventSchema = z.object({
   name: z.string().min(1, 'Event name is required'),
-  type: z.nativeEnum(EventType),
+  // Starts blank and must be chosen, so no event is saved as "Outreach Fair" by default.
+  type: z.string().min(1, 'Choose an event type'),
   date: z.string().min(1, 'Date is required'),
   endDate: z.string().optional(),
   // Optional: 25 events from school calendars have no location, and requiring one
@@ -55,13 +58,29 @@ export function EventForm({ event, onClose }: EventFormProps) {
           participatingSchools: event.participatingSchools,
         }
       : {
-          type: EventType.OUTREACH_FAIR,
+          type: '',
           participatingSchools: [],
           attendeeCountStr: '',
         },
   });
 
   const selectedSchools = watch('participatingSchools');
+  const [schoolQuery, setSchoolQuery] = useState('');
+
+  const schoolById = useMemo(() => new Map(state.schools.map((s) => [s.id, s])), [state.schools]);
+  const pickableSchools = useMemo(
+    () => state.schools.filter((s) => s.isActive).sort((a, b) => a.name.localeCompare(b.name)),
+    [state.schools]
+  );
+  // Name, city or county; every word must match somewhere ("alton madison").
+  const shownSchools = useMemo(() => {
+    const words = schoolQuery.toLowerCase().split(/\s+/).filter(Boolean);
+    if (!words.length) return pickableSchools;
+    return pickableSchools.filter((s) => {
+      const text = `${s.name} ${s.city} ${s.county}`.toLowerCase();
+      return words.every((w) => text.includes(w));
+    });
+  }, [pickableSchools, schoolQuery]);
 
   const onSubmit = (data: EventFormData) => {
     const attendeeCount =
@@ -71,7 +90,7 @@ export function EventForm({ event, onClose }: EventFormProps) {
 
     const eventData = {
       name: data.name,
-      type: data.type,
+      type: data.type as EventType,
       date: new Date(data.date).toISOString(),
       endDate: data.endDate ? new Date(data.endDate).toISOString() : undefined,
       location: data.location ?? '',
@@ -117,6 +136,7 @@ export function EventForm({ event, onClose }: EventFormProps) {
         <Select
           label="Event Type"
           required
+          placeholder="Choose a type"
           options={typeOptions}
           error={errors.type?.message}
           {...register('type')}
@@ -152,14 +172,52 @@ export function EventForm({ event, onClose }: EventFormProps) {
 
       {/* School Selection */}
       <div>
-        <label className="block text-sm font-medium text-neutral-700 mb-2">
-          Participating Schools
-        </label>
+        <div className="flex items-baseline justify-between mb-2">
+          <label htmlFor="event-school-search" className="block text-sm font-medium text-neutral-700">
+            Participating Schools
+          </label>
+          <span className="text-xs text-neutral-500" aria-live="polite">
+            {selectedSchools?.length ?? 0} selected
+          </span>
+        </div>
+        {selectedSchools && selectedSchools.length > 0 && (
+          <ul className="flex flex-wrap gap-1.5 mb-2" aria-label="Selected schools">
+            {selectedSchools.map((id) => {
+              const s = schoolById.get(id);
+              const name = s?.name ?? 'Unknown school';
+              return (
+                <li key={id} className="inline-flex items-center gap-1 rounded-full border border-siue-red/30 bg-siue-red/5 pl-2.5 pr-1 py-0.5 text-xs text-neutral-800">
+                  <span className="max-w-[16rem] truncate" title={s ? `${s.name} (${[s.city, s.county].filter(Boolean).join(', ')})` : name}>{name}</span>
+                  <button
+                    type="button"
+                    onClick={() => toggleSchool(id)}
+                    className="rounded-full p-0.5 text-neutral-500 hover:bg-siue-red/10 hover:text-siue-red focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-siue-red"
+                    aria-label={`Remove ${name}`}
+                  >
+                    <X size={12} />
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+        <div className="relative mb-2">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+          <input
+            id="event-school-search"
+            type="search"
+            value={schoolQuery}
+            onChange={(e) => setSchoolQuery(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') e.preventDefault(); }}
+            placeholder="Search by name, city or county"
+            className="w-full rounded-lg border border-neutral-200 pl-8 pr-3 py-2 text-sm placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:border-siue-red focus:ring-siue-red/30"
+          />
+        </div>
         <div className="border border-neutral-200 rounded-lg max-h-48 overflow-y-auto p-2 space-y-1">
-          {[...state.schools]
-            .filter((s) => s.isActive)
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map((school) => (
+          {shownSchools.length === 0 && (
+            <p className="px-2 py-1.5 text-sm text-neutral-500">No schools match “{schoolQuery.trim()}”.</p>
+          )}
+          {shownSchools.map((school) => (
               <label
                 key={school.id}
                 className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-neutral-50 cursor-pointer"
@@ -171,15 +229,10 @@ export function EventForm({ event, onClose }: EventFormProps) {
                   className="rounded border-neutral-300 text-siue-red focus:ring-siue-red"
                 />
                 <span className="text-sm text-neutral-700">{school.name}</span>
-                <span className="text-xs text-neutral-500">({school.county})</span>
+                <span className="text-xs text-neutral-500">({[school.city, school.county].filter(Boolean).join(', ')})</span>
               </label>
             ))}
         </div>
-        {selectedSchools && selectedSchools.length > 0 && (
-          <p className="mt-1 text-xs text-neutral-500">
-            {selectedSchools.length} school{selectedSchools.length !== 1 ? 's' : ''} selected
-          </p>
-        )}
       </div>
 
       <Textarea

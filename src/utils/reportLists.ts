@@ -91,7 +91,7 @@ export function listBuilders(data: ReportInput, asOf: Day) {
         title, subtitle, filename,
         columns: [
           { key: 'date', label: 'Date' }, { key: 'school', label: 'School' }, { key: 'type', label: 'Type' },
-          { key: 'event', label: 'Event' }, { key: 'students', label: 'Students', numeric: true },
+          { key: 'event', label: 'Event' }, { key: 'visitors', label: 'Visitors', numeric: true },
         ],
         rows: ids.map((id) => activities.get(id)).filter((a): a is ActivityRecord => !!a)
           .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
@@ -99,7 +99,7 @@ export function listBuilders(data: ReportInput, asOf: Day) {
             link: schoolLink(a.schoolId),
             cells: {
               date: formatDay(dayOf(a.date)), school: schoolName(a.schoolId), type: activityTypeLabel(a.activityType),
-              event: a.eventId ? events.get(a.eventId)?.name ?? '' : '', students: a.importBatchId && a.attendeeCount ? a.attendeeCount : '',
+              event: a.eventId ? events.get(a.eventId)?.name ?? '' : '', visitors: a.attendeeCount ?? '',
             },
           })),
       };

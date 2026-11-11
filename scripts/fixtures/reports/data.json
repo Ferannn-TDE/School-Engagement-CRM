@@ -12,7 +12,7 @@
   ],
   "activities": [
     { "activity_id": "a1", "event_id": null, "school_id": "s1", "activity_type": "call", "date": "2026-09-28", "archived": false, "import_batch_id": null, "attendee_count": null },
-    { "activity_id": "a2", "event_id": null, "school_id": "s2", "activity_type": "visit", "date": "2026-10-16", "archived": false, "import_batch_id": null, "attendee_count": null },
+    { "activity_id": "a2", "event_id": null, "school_id": "s2", "activity_type": "visit", "date": "2026-10-16", "archived": false, "import_batch_id": null, "attendee_count": 6, "note": "a logged visit with a visitor count (no import)" },
     { "activity_id": "a3", "event_id": null, "school_id": "s1", "activity_type": "email", "date": "2026-10-20", "archived": false, "import_batch_id": null, "attendee_count": null },
     { "activity_id": "a4", "event_id": 3, "school_id": "s3", "activity_type": "event_participation", "date": "2026-10-03", "archived": false, "import_batch_id": "b1", "attendee_count": 12 },
     { "activity_id": "a5", "event_id": null, "school_id": "s5", "activity_type": "email", "date": "2026-03-01", "archived": false, "import_batch_id": null, "attendee_count": null },
@@ -26,7 +26,8 @@
     { "activity_id": "a13", "event_id": null, "school_id": "s3", "activity_type": "visit", "date": "2026-10-25", "archived": false, "import_batch_id": null, "attendee_count": null, "note": "day 61 after Career Night (no follow-up there), day 22 after Robotics Day (follow-up)" },
     { "activity_id": "a14", "event_id": 1, "school_id": "s1", "activity_type": "event_participation", "date": "2026-09-01", "archived": false, "import_batch_id": "b2", "attendee_count": 5, "note": "imported attendance at Open House" },
     { "activity_id": "a15", "event_id": 1, "school_id": "s2", "activity_type": "event_participation", "date": "2026-09-01", "archived": false, "import_batch_id": "b2", "attendee_count": 3, "note": "imported attendance at Open House" },
-    { "activity_id": "a16", "event_id": 2, "school_id": "s3", "activity_type": "event_participation", "date": "2026-08-25", "archived": false, "import_batch_id": "b3", "attendee_count": 4, "note": "imported attendance at Career Night: its window closed Oct 24" }
+    { "activity_id": "a16", "event_id": 2, "school_id": "s3", "activity_type": "event_participation", "date": "2026-08-25", "archived": false, "import_batch_id": "b3", "attendee_count": 4, "note": "imported attendance at Career Night: its window closed Oct 24" },
+    { "activity_id": "a17", "event_id": null, "school_id": "s5", "activity_type": "visit", "date": "2026-11-05", "archived": false, "import_batch_id": null, "attendee_count": 9, "note": "future-dated (upcoming) on 2026-10-27: counts only once its day has come" }
   ],
   "events": [
     { "event_id": 1, "fair_name": "Open House", "date": "2026-09-01", "time": null, "schools_involved": "s1, s2", "location": "Edwardsville, IL", "category": null, "archived": false, "note": "imported attendance from s1 and s2, both followed up; window still open" },

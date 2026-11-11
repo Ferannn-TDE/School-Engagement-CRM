@@ -107,7 +107,10 @@ export interface Contact {
 export interface School {
   id: string;
   name: string;
+  /** schools.district_id: the scraper's internal id for the district. Not shown to users. */
   district?: string;
+  /** The district's name, from the district table. Shown instead of the id. */
+  districtName?: string;
   county: string;
   address: string;
   city: string;
@@ -171,6 +174,13 @@ export const ContactMethodLabels: Record<string, string> = {
   visit: 'Visit',
 };
 
+/**
+ * Activity types where people are there in person, so a visitor count makes sense:
+ * a visit, and attendance at an event (imports, campus visits and fairs are saved as
+ * event_participation). Calls and emails have no visitors.
+ */
+export const IN_PERSON_ACTIVITY_TYPES: readonly string[] = ['visit', 'event_participation'];
+
 export interface ActivityRecord {
   id: string;
   schoolId: string;
@@ -182,9 +192,20 @@ export interface ActivityRecord {
   outcome?: string;
   /** Set on activities saved by Import → Import Activities (db/022). */
   importBatchId?: string;
-  /** How many people the activity stands for, when an import counted repeats. */
+  /** Number of visitors: entered on a logged visit, or counted by an import (db/022). */
   attendeeCount?: number;
+  /** Who logged it, and who last changed its content and when (db/026). Empty on rows saved before 026. */
+  createdBy?: string;
+  updatedAt?: string;
+  updatedBy?: string;
 }
+
+/** The fields an editor can change on a logged activity (visit details panel). */
+export type ActivityChanges = Pick<ActivityRecord, 'activityType' | 'date' | 'description'> & {
+  contactId: string | null;
+  eventId: string | null;
+  attendeeCount: number | null;
+};
 
 export interface FilterState {
   search: string;

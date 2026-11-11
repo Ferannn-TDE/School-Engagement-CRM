@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { happenedActivities } from '../utils/activityDates';
 import { useNavigate, Link } from 'react-router-dom';
 import {
   School, Users, Calendar, TrendingUp, Upload, ArrowRight,
@@ -34,7 +35,7 @@ export function DashboardPage() {
       activeSchools: state.schools.filter((s) => s.isActive).length,
       activeContacts: state.contacts.filter((c) => c.isActive).length,
       upcomingEvents: countedEvents.filter((e) => isAfter(new Date(e.date), now)).length,
-      recentActivities: state.activities.filter((a) => isAfter(new Date(a.date), yearAgo)).length,
+      recentActivities: happenedActivities(state.activities).filter((a) => isAfter(new Date(a.date), yearAgo)).length,
     };
   }, [state, countedEvents]);
 
@@ -50,7 +51,7 @@ export function DashboardPage() {
     }
 
     const activityMap = new Map<string, Date>();
-    for (const a of state.activities) {
+    for (const a of happenedActivities(state.activities)) {
       const d = new Date(a.date);
       const ex = activityMap.get(a.schoolId);
       if (!ex || d > ex) activityMap.set(a.schoolId, d);
@@ -151,7 +152,7 @@ export function DashboardPage() {
             <MetricCard
               title="Activities (12 mo)"
               value={metrics.recentActivities}
-              subtitle={`${state.activities.length.toLocaleString()} all time`}
+              subtitle={`${happenedActivities(state.activities).length.toLocaleString()} all time`}
               icon={<TrendingUp size={20} />}
             />
           )}

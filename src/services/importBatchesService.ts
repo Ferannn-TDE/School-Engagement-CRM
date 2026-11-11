@@ -86,6 +86,13 @@ export async function fetchRecentImportBatches(limit = 20): Promise<ImportBatch[
   return rows.map((r) => rowToBatch(r, counts.get(r.batch_id)));
 }
 
+/** One batch by id (the visit details panel), without activity counts. Null if not found. */
+export async function fetchImportBatch(batchId: string): Promise<ImportBatch | null> {
+  const { data, error } = await supabase.from('import_batches').select('*').eq('batch_id', batchId).maybeSingle();
+  if (error) throw error;
+  return data ? rowToBatch(data as ImportBatchRow) : null;
+}
+
 /** Earlier batches saved from a file with the same bytes, archived ones included. */
 export async function findImportBatchesByHash(fileHash: string): Promise<ImportBatch[]> {
   const { data, error } = await supabase

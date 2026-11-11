@@ -50,6 +50,8 @@ export interface FileRow {
   name: string;
   city: string;
   state: string;
+  /** The optional 4th column, as typed: blank means one visitor for the row. */
+  visitors?: string;
 }
 
 export interface RowMatch extends FileRow {

@@ -12,7 +12,6 @@ import toast from 'react-hot-toast';
 
 const schoolSchema = z.object({
   name: z.string().min(1, 'School name is required'),
-  district: z.string().optional(),
   county: z.string().min(1, 'County is required'),
   address: z.string().min(1, 'Address is required'),
   city: z.string().min(1, 'City is required'),
@@ -47,7 +46,6 @@ export function SchoolForm({ school, onClose }: SchoolFormProps) {
     defaultValues: school
       ? {
           name: school.name,
-          district: school.district || '',
           county: school.county,
           address: school.address,
           city: school.city,
@@ -87,7 +85,6 @@ export function SchoolForm({ school, onClose }: SchoolFormProps) {
     if (isEditing && school) {
       const edited: Partial<School> = {
         ...data,
-        district: data.district || undefined,
         notes: data.notes || undefined,
         // Blank clears the stored number (sent as null), like the other optional fields.
         phone: data.phone?.trim() || undefined,
@@ -112,7 +109,6 @@ export function SchoolForm({ school, onClose }: SchoolFormProps) {
     } else {
       addSchool({
         ...data,
-        district: data.district || undefined,
         notes: data.notes || undefined,
         phone: data.phone?.trim() || undefined,
         isActive: true,
@@ -133,11 +129,14 @@ export function SchoolForm({ school, onClose }: SchoolFormProps) {
         error={errors.name?.message}
         {...register('name')}
       />
-      <Input
-        label="District"
-        error={errors.district?.message}
-        {...register('district')}
-      />
+      {/* Read-only: the district comes from the school data (district table) and was
+          never saved from this form. */}
+      {school?.districtName && (
+        <div>
+          <p className="block text-sm font-medium text-neutral-700 mb-1">District</p>
+          <p className="text-sm text-neutral-700">{school.districtName}</p>
+        </div>
+      )}
       <div className="grid grid-cols-2 gap-4">
         <Select
           label="County"

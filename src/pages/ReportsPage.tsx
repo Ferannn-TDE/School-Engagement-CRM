@@ -8,7 +8,7 @@ import { useStateFilter } from '../hooks/useStateFilter';
 import { useUrlState, useUrlStateBatch } from '../hooks/useUrlState';
 import { MIN_MONTHS_FOR_TREND } from '../constants/reportSettings';
 import {
-  activitySummary, comparisonFor, contactCoverage, dataHealth, eventImpact, eventSummary, formatDay, formatRange,
+  activitiesUpTo, activitySummary, comparisonFor, contactCoverage, dataHealth, eventImpact, eventSummary, formatDay, formatRange,
   gaps, loggingStatus, monthly, reach, resolveRange, type RangePreset,
 } from '../utils/reports';
 import { fmt, listBuilders, type ListSpec } from '../utils/reportLists';
@@ -44,13 +44,15 @@ export function ReportsPage() {
   const custom = DAY.test(from) && DAY.test(to) ? { start: from, end: to } : undefined;
 
   const model: Omit<ReportModel, 'open'> = useMemo(() => {
-    const data = { schools: state.schools, contacts: state.contacts, events: state.events, activities: state.activities };
+    // Future-dated (upcoming) activities count nowhere until their day.
+    const data = { schools: state.schools, contacts: state.contacts, events: state.events, activities: activitiesUpTo(state.activities, today) };
+    const fullDone = activitiesUpTo(full.activities, today);
     const range = resolveRange(preset, today, DAY.test(from) && DAY.test(to) ? { start: from, end: to } : undefined);
     // Logging is the same for every state: it says when the team started logging at all.
-    const started = loggingStatus(full.activities);
+    const started = loggingStatus(fullDone);
     const logging = {
       ...started,
-      monthsWithData: started.start ? monthly(full.activities, full.schools, { start: started.start, end: today }).monthsWithData : 0,
+      monthsWithData: started.start ? monthly(fullDone, full.schools, { start: started.start, end: today }).monthsWithData : 0,
     };
     const comparison = comparisonFor(range, started.start);
     return {

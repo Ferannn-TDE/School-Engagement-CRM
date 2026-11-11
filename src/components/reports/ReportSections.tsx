@@ -353,13 +353,13 @@ export function ActivitySection({ m }: { m: ReportModel }) {
   return (
     <ReportSection
       label="Activity"
-      question="What outreach happened, and how many students did events bring?"
+      question="What outreach happened, and how many people did it reach?"
       takeaway={total
-        ? <>{range.label}: <b>{plural(total, 'activity', 'activities')}</b> ({mix}). {a.students
-          ? <>Imported attendance lists count <b>{plural(a.students, 'student')}</b>.</>
-          : 'No students recorded yet: counts come from imported attendance lists.'}</>
+        ? <>{range.label}: <b>{plural(total, 'activity', 'activities')}</b> ({mix}). {a.visitors
+          ? <>Visits and events counted <b>{plural(a.visitors, 'visitor')}</b>.</>
+          : 'No visitor counts recorded yet: they come from logged visits and imported attendance lists.'}</>
         : <>{range.label}: no activity logged.</>}
-      source="activities (not archived) on listed schools, by activity_type and date. Students = the attendee counts on imported rows only."
+      source="activities (not archived) on listed schools, by activity_type and date. Visitors = the sum of attendee_count on every activity that has one (logged visits and imported rows)."
     >
       <Tiles>
         {TYPES.map((t) => (
@@ -370,8 +370,8 @@ export function ActivitySection({ m }: { m: ReportModel }) {
           <Tile key={t} label={activityTypeLabel(t)}
             value={<Figure value={a.byType[t].length} onOpen={open} list={() => lists.activities(a.byType[t], activityTypeLabel(t), range.label, slug(t))} />} />
         ))}
-        <Tile label="Students at events" note={a.studentRowIds.length ? `From ${plural(a.studentRowIds.length, 'imported row')}` : 'From imported attendance lists only'}
-          value={<Figure value={a.students} onOpen={open} list={() => lists.activities(a.studentRowIds, 'Imported attendance with a student count', range.label, `students-${slug(range.label)}`)} />} />
+        <Tile label="Visitors" note={a.visitorRowIds.length ? `From ${plural(a.visitorRowIds.length, 'activity', 'activities')} with a count` : 'From logged visits and imported lists'}
+          value={<Figure value={a.visitors} onOpen={open} list={() => lists.activities(a.visitorRowIds, 'Activities with a visitor count', range.label, `visitors-${slug(range.label)}`)} />} />
         <Tile label="All activities" note={compare(total, m.activityBefore?.ids.length ?? null, m.comparison)}
           value={<Figure value={total} onOpen={open} list={() => lists.activities(a.ids, 'All activities', range.label, `activities-${slug(range.label)}`)} />} />
       </Tiles>
@@ -443,7 +443,7 @@ export function ImpactSection({ m }: { m: ReportModel }) {
       label="Event impact"
       question="Which events drew the most schools, and did we follow up?"
       takeaway={best
-        ? <><b>{names.get(best.eventId)}</b> drew the most schools ({fmt(best.schoolIds.length)}{best.students ? `, ${plural(best.students, 'student')}` : ''}).{' '}
+        ? <><b>{names.get(best.eventId)}</b> drew the most schools ({fmt(best.schoolIds.length)}{best.visitors ? `, ${plural(best.visitors, 'visitor')}` : ''}).{' '}
           {closedSchools ? <><b>{fmt(closedFollowed)} of {plural(closedSchools, 'school')}</b> got a follow-up within {FOLLOW_UP_DAYS} days.</> : `Follow-up rates are final ${FOLLOW_UP_DAYS} days after each event.`}</>
         : <>{range.label} has <b>{plural(e.pastIds.length, 'past outreach event')}</b>, but none has imported attendance yet, so there is nothing to rank.</>}
       source={`events (testing dates left out) dated in the range and before today. Ranked only with imported attendance (Import data → Import activities, with the event chosen). Follow-up = a call, email or visit within ${FOLLOW_UP_DAYS} days after, not part of the same event.`}
@@ -462,7 +462,7 @@ export function ImpactSection({ m }: { m: ReportModel }) {
             <thead>
               <tr className="border-b border-neutral-100 text-xs text-neutral-500">
                 <th className="text-left font-medium px-2 py-1.5">Event</th><th className="text-left font-medium px-2 py-1.5">Date</th>
-                <th className="text-right font-medium px-2 py-1.5">Schools</th><th className="text-right font-medium px-2 py-1.5">Students</th>
+                <th className="text-right font-medium px-2 py-1.5">Schools</th><th className="text-right font-medium px-2 py-1.5">Visitors</th>
                 <th className="text-right font-medium px-2 py-1.5">Followed up in {FOLLOW_UP_DAYS} days</th>
               </tr>
             </thead>
@@ -474,7 +474,7 @@ export function ImpactSection({ m }: { m: ReportModel }) {
                   <td className="px-2 py-1.5 text-right tabular-nums">
                     <Figure value={x.schoolIds.length} onOpen={open} list={() => lists.schools(x.schoolIds, `${names.get(x.eventId)}: schools`, formatDay(x.day), `event-${slug(names.get(x.eventId) ?? x.eventId)}-schools`)} />
                   </td>
-                  <td className="px-2 py-1.5 text-right tabular-nums">{x.students ? fmt(x.students) : <Missing label="No student count" />}</td>
+                  <td className="px-2 py-1.5 text-right tabular-nums">{x.visitors ? fmt(x.visitors) : <Missing label="No visitor count" />}</td>
                   <td className="px-2 py-1.5 text-right tabular-nums">
                     <Figure value={`${fmt(x.followedIds.length)} of ${fmt(x.schoolIds.length)}`} onOpen={open}
                       list={() => lists.schools(x.schoolIds.filter((id) => !x.followedIds.includes(id)), `${names.get(x.eventId)}: not followed up yet`, `No call, email or visit within ${FOLLOW_UP_DAYS} days`, `event-${slug(names.get(x.eventId) ?? x.eventId)}-not-followed`)} />
@@ -487,7 +487,7 @@ export function ImpactSection({ m }: { m: ReportModel }) {
         </div>
       ) : (
         <Note title="Results appear once attendance is imported.">
-          Import an attendance list with its event chosen (Import data → Import activities). The event then shows its schools and students here, and whether each school got a call, email or visit within {FOLLOW_UP_DAYS} days.
+          Import an attendance list with its event chosen (Import data → Import activities). The event then shows its schools and visitors here, and whether each school got a call, email or visit within {FOLLOW_UP_DAYS} days.
         </Note>
       )}
     </ReportSection>

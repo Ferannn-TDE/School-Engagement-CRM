@@ -23,11 +23,27 @@ import { formatSchoolType } from '../utils/helpers';
 import { FreshnessBadges } from '../components/common/FreshnessBadges';
 import { schoolFreshness } from '../utils/freshness';
 import { useRole } from '../context/useRole';
+import { happenedActivities } from '../utils/activityDates';
 
 type VerifiedTab = 'all' | 'verified' | 'unverified';
 
 export function SchoolsPage() {
-  const { state, getContactsBySchool, getActivitiesBySchool, verifySchool, verifySchoolsBulk } = useAppContext();
+  const { state, getContactsBySchool, verifySchool, verifySchoolsBulk } = useAppContext();
+  // Each school's non-archived activities that have happened (upcoming ones aren't
+  // counted), and the day of the latest. state.activities already leaves out archived.
+  const activityStats = useMemo(() => {
+    const m = new Map<string, { count: number; last: string }>();
+    for (const a of happenedActivities(state.activities)) {
+      const day = a.date.slice(0, 10);
+      const s = m.get(a.schoolId);
+      if (!s) m.set(a.schoolId, { count: 1, last: day });
+      else {
+        s.count++;
+        if (day > s.last) s.last = day;
+      }
+    }
+    return m;
+  }, [state.activities]);
   const { canEdit } = useRole();
   const navigate = useNavigate();
   // Kept in the address so the view survives leaving the tab, a refresh and Back.
@@ -138,7 +154,23 @@ export function SchoolsPage() {
       {
         id: 'activities',
         header: 'Activities',
-        cell: ({ row }) => getActivitiesBySchool(row.original.id).length,
+        accessorFn: (s) => activityStats.get(s.id)?.count ?? 0,
+        sortDescFirst: true,
+        cell: ({ getValue }) => <span className="tabular-nums">{getValue() as number}</span>,
+      },
+      {
+        id: 'lastActivity',
+        header: 'Last activity',
+        // No activity sorts after every date, in both directions.
+        accessorFn: (s) => activityStats.get(s.id)?.last,
+        sortUndefined: 'last',
+        sortDescFirst: true,
+        cell: ({ getValue }) => {
+          const day = getValue() as string | undefined;
+          return day
+            ? <span className="text-neutral-600">{format(new Date(`${day}T12:00:00`), 'MMM d, yyyy')}</span>
+            : <span className="text-neutral-400">Never</span>;
+        },
       },
       {
         accessorKey: 'isActive',
@@ -159,7 +191,7 @@ export function SchoolsPage() {
         ),
       },
     ],
-    [getContactsBySchool, getActivitiesBySchool]
+    [getContactsBySchool, activityStats]
   );
 
   const verifyColumn: ColumnDef<SchoolType, unknown> = useMemo(
@@ -279,7 +311,7 @@ export function SchoolsPage() {
             <DataTable
               data={filteredSchools}
               columns={columns}
-              columnWidths={columns.length > 7 ? ['', '9rem', '8rem', '7rem', '6.5rem', '6.5rem', '8rem', '7rem'] : ['', '9rem', '8rem', '7rem', '6.5rem', '6.5rem', '8rem']}
+              columnWidths={columns.length > 8 ? ['', '8.5rem', '8rem', '6.5rem', '6.5rem', '8rem', '6rem', '7.5rem', '6.5rem'] : ['', '8.5rem', '8rem', '6.5rem', '6.5rem', '8rem', '6rem', '7.5rem']}
               searchValue={search}
               urlState
               resetKey={[verifiedTab, countyFilter, typeFilter, contactsFilter].join('|')}

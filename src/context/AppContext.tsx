@@ -9,7 +9,7 @@ import {
 import toast from 'react-hot-toast';
 import { writeErrorMessage } from '../utils/writeErrors';
 import { AppContext, useAppContext } from './useAppContext';
-import type { School, Contact, Event, ActivityRecord, Program } from '../types';
+import type { School, Contact, Event, ActivityRecord, ActivityChanges, Program } from '../types';
 import { nowISO } from '../utils/helpers';
 import {
   fetchSchools,
@@ -38,6 +38,7 @@ import {
   fetchActivities,
   createActivity,
   archiveActivity as dbArchiveActivity,
+  updateActivity as dbUpdateActivity,
 } from '../services/activitiesService';
 import {
   fetchPrograms,
@@ -78,6 +79,7 @@ type Action =
   | { type: 'ARCHIVE_EVENT'; payload: string }
   | { type: 'SET_ACTIVITIES'; payload: ActivityRecord[] }
   | { type: 'ADD_ACTIVITY'; payload: ActivityRecord }
+  | { type: 'UPDATE_ACTIVITY'; payload: ActivityRecord }
   | { type: 'ARCHIVE_ACTIVITY'; payload: string }
   | { type: 'SET_PROGRAMS'; payload: Program[] }
   | { type: 'ADD_PROGRAM'; payload: Program }
@@ -155,6 +157,11 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, activities: action.payload };
     case 'ADD_ACTIVITY':
       return { ...state, activities: [...state.activities, action.payload] };
+    case 'UPDATE_ACTIVITY':
+      return {
+        ...state,
+        activities: state.activities.map((a) => (a.id === action.payload.id ? action.payload : a)),
+      };
     case 'ARCHIVE_ACTIVITY':
       return {
         ...state,
@@ -230,6 +237,8 @@ export interface AppContextValue {
   archiveEvent: (id: string) => void;
   /** Resolves once saved; rejects on failure so the caller can keep the form open. */
   addActivity: (activity: Omit<ActivityRecord, 'id'>) => Promise<void>;
+  /** Rejects on failure, so the panel keeps the edit open with what was typed. */
+  updateActivity: (id: string, changes: ActivityChanges) => Promise<ActivityRecord>;
   archiveActivity: (id: string) => void;
   addProgram: (program: Omit<Program, 'id' | 'createdAt' | 'updatedAt'>) => void;
   updateProgram: (program: Program) => void;
@@ -432,6 +441,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateActivity = async (id: string, changes: ActivityChanges): Promise<ActivityRecord> => {
+    const saved = await dbUpdateActivity(id, changes);
+    dispatch({ type: 'UPDATE_ACTIVITY', payload: saved });
+    return saved;
+  };
+
   const archiveActivity = (id: string): void => {
     dbArchiveActivity(id)
       .then(() => dispatch({ type: 'ARCHIVE_ACTIVITY', payload: id }))
@@ -550,6 +565,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         updateEvent,
         archiveEvent,
         addActivity,
+        updateActivity,
         archiveActivity,
         addProgram,
         updateProgram,

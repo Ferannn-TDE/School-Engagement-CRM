@@ -194,7 +194,18 @@ export interface ActivityRecord {
   importBatchId?: string;
   /** Number of visitors: entered on a logged visit, or counted by an import (db/022). */
   attendeeCount?: number;
+  /** Who logged it, and who last changed its content and when (db/026). Empty on rows saved before 026. */
+  createdBy?: string;
+  updatedAt?: string;
+  updatedBy?: string;
 }
+
+/** The fields an editor can change on a logged activity (visit details panel). */
+export type ActivityChanges = Pick<ActivityRecord, 'activityType' | 'date' | 'description'> & {
+  contactId: string | null;
+  eventId: string | null;
+  attendeeCount: number | null;
+};
 
 export interface FilterState {
   search: string;

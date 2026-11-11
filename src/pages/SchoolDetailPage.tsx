@@ -14,6 +14,7 @@ import { SchoolLinks } from '../components/schools/SchoolLinks';
 import { websiteInUse } from '../utils/links';
 import { ProgramForm } from '../components/programs/ProgramForm';
 import { LogContactForm } from '../components/activities/LogContactForm';
+import { ActivityDetails } from '../components/activities/ActivityDetails';
 import { ContactDetails } from '../components/contacts/ContactDetails';
 import { EmptyState } from '../components/common/EmptyState';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
@@ -50,6 +51,8 @@ export function SchoolDetailPage() {
   const [showAddProgramModal, setShowAddProgramModal] = useState(false);
   const [programToArchive, setProgramToArchive] = useState<Program | null>(null);
   const [activityToArchive, setActivityToArchive] = useState<string | null>(null);
+  // The activity open in the details panel, by id, so an edit shows straight away.
+  const [openActivityId, setOpenActivityId] = useState<string | null>(null);
   const [showLogContact, setShowLogContact] = useState(false);
   const [openContact, setOpenContact] = useState<Contact | null>(null);
 
@@ -60,6 +63,7 @@ export function SchoolDetailPage() {
   const today = todayDay();
   // Upcoming (future-dated) activities are listed but not counted.
   const doneActivities = useMemo(() => activities.filter((a) => hasHappened(a, today)), [activities, today]);
+  const openActivity = openActivityId ? activities.find((a) => a.id === openActivityId) ?? null : null;
   const schoolEvents = useMemo(() => (decodedId ? getEventsBySchool(decodedId) : []), [decodedId, getEventsBySchool]);
   // Testing dates are busy dates, not outreach: they never count as events here (db/007).
   const events = useMemo(() => schoolEvents.filter((e) => !isTestingDate(e)), [schoolEvents]);
@@ -427,7 +431,19 @@ export function SchoolDetailPage() {
                   const person = contacts.find((c) => c.id === activity.contactId);
                   const upcoming = !hasHappened(activity, today);
                   return (
-                  <div key={activity.id} className="flex items-start gap-3 py-2 border-b border-neutral-50 last:border-0">
+                  // The whole row opens the details panel (keyboard too); Archive stays its own button.
+                  <div
+                    key={activity.id}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Details of ${activityTypeLabel(activity.activityType)} on ${format(new Date(activity.date), 'MMM d, yyyy')}`}
+                    onClick={() => setOpenActivityId(activity.id)}
+                    onKeyDown={(e) => {
+                      if (e.target !== e.currentTarget) return;
+                      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenActivityId(activity.id); }
+                    }}
+                    className="flex items-start gap-3 py-2 px-2 -mx-2 rounded-lg border-b border-neutral-50 last:border-0 cursor-pointer hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-siue-red"
+                  >
                     <div className="w-2 h-2 rounded-full bg-siue-red mt-2 shrink-0" />
                     <div className="flex-1">
                       <p className="text-sm font-medium text-neutral-800">
@@ -461,7 +477,8 @@ export function SchoolDetailPage() {
                     </div>
                     {canEdit && (
                       <button
-                        onClick={() => setActivityToArchive(activity.id)}
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setActivityToArchive(activity.id); }}
                         className="text-neutral-300 hover:text-error transition-colors shrink-0 mt-0.5"
                         aria-label="Archive logged contact"
                       >
@@ -495,6 +512,21 @@ export function SchoolDetailPage() {
         {openContact && <ContactDetails contact={openContact} schoolName={school.name} />}
       </Modal>
 
+      <Modal
+        open={openActivity !== null}
+        onClose={() => setOpenActivityId(null)}
+        title={canEdit ? 'Activity details' : 'Activity details (read-only)'}
+        size="lg"
+      >
+        {openActivity && (
+          <ActivityDetails
+            key={openActivity.id}
+            activity={openActivity}
+            onClose={() => setOpenActivityId(null)}
+            onArchive={(id) => { setOpenActivityId(null); setActivityToArchive(id); }}
+          />
+        )}
+      </Modal>
       <Modal open={showLogContact} onClose={() => setShowLogContact(false)} title={`Log contact — ${school.name}`} size="md">
         <LogContactForm schoolId={school.id} onClose={() => setShowLogContact(false)} />
       </Modal>

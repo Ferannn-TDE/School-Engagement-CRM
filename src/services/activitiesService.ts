@@ -1,5 +1,5 @@
 import { supabase, fetchAllRows } from './supabase';
-import type { ActivityRecord } from '../types';
+import type { ActivityChanges, ActivityRecord } from '../types';
 
 interface ActivityRow {
   activity_id: string;
@@ -13,6 +13,10 @@ interface ActivityRow {
   /** db/022; absent until that migration is applied. */
   import_batch_id?: string | null;
   attendee_count?: number | null;
+  /** db/026: stamped by triggers from the signed-in email; null on older rows. */
+  created_by?: string | null;
+  updated_at?: string | null;
+  updated_by?: string | null;
 }
 
 // The column is a plain calendar date ("2026-09-28"). new Date() reads that form as
@@ -41,6 +45,9 @@ function rowToActivity(row: ActivityRow): ActivityRecord {
     outcome: row.outcome ?? undefined,
     importBatchId: row.import_batch_id ?? undefined,
     attendeeCount: row.attendee_count ?? undefined,
+    createdBy: row.created_by ?? undefined,
+    updatedAt: row.updated_at ?? undefined,
+    updatedBy: row.updated_by ?? undefined,
   };
 }
 
@@ -68,6 +75,28 @@ export async function createActivity(
       outcome: activity.outcome ?? null,
       attendee_count: activity.attendeeCount ?? null,
     })
+    .select()
+    .single();
+  if (error) throw error;
+  return rowToActivity(data as ActivityRow);
+}
+
+/**
+ * Saves an edit from the visit details panel. Who and when are stamped by the database
+ * (db/026), not sent from here, and the saved row comes back with them.
+ */
+export async function updateActivity(id: string, changes: ActivityChanges): Promise<ActivityRecord> {
+  const { data, error } = await supabase
+    .from('activities')
+    .update({
+      activity_type: changes.activityType,
+      date: changes.date.slice(0, 10),
+      description: changes.description,
+      contact_id: changes.contactId,
+      event_id: toEventRowId(changes.eventId ?? undefined),
+      attendee_count: changes.attendeeCount,
+    })
+    .eq('activity_id', id)
     .select()
     .single();
   if (error) throw error;

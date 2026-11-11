@@ -121,11 +121,11 @@ const EXPECTED_ALL: Record<string, number> = {
   'schools.total': 7,
   'reach.engaged': 4, 'reach.first_time': 4,
   'reach.state.IL.total': 4, 'reach.state.IL.engaged': 3, 'reach.state.MO.total': 3, 'reach.state.MO.engaged': 1,
-  'activity.total': 9, 'activity.students': 24, 'activity.student_rows': 4, 'activity.months_with_data': 3,
+  'activity.total': 9, 'activity.visitors': 30, 'activity.visitor_rows': 5, 'activity.months_with_data': 3,
   'activity.type.call': 1, 'activity.type.visit': 2, 'activity.type.email': 1, 'activity.type.event_participation': 5,
-  'month.2026-08.activities': 1, 'month.2026-08.schools': 1, 'month.2026-08.new_schools': 1, 'month.2026-08.students': 4,
-  'month.2026-09.activities': 4, 'month.2026-09.schools': 3, 'month.2026-09.new_schools': 3, 'month.2026-09.students': 8,
-  'month.2026-10.activities': 4, 'month.2026-10.schools': 3, 'month.2026-10.new_schools': 0, 'month.2026-10.students': 12,
+  'month.2026-08.activities': 1, 'month.2026-08.schools': 1, 'month.2026-08.new_schools': 1, 'month.2026-08.visitors': 4,
+  'month.2026-09.activities': 4, 'month.2026-09.schools': 3, 'month.2026-09.new_schools': 3, 'month.2026-09.visitors': 8,
+  'month.2026-10.activities': 4, 'month.2026-10.schools': 3, 'month.2026-10.new_schools': 0, 'month.2026-10.visitors': 18,
   'contacts.total': 6, 'contacts.active': 5,
   'coverage.with': 4, 'coverage.without': 3,
   'coverage.state.IL.without': 2, 'coverage.state.MO.without': 1,
@@ -137,7 +137,7 @@ const EXPECTED_ALL: Record<string, number> = {
   'coverage.county.MO|Greene.total': 1, 'coverage.county.MO|Greene.without': 1,
   'events.past': 3, 'events.upcoming': 3, 'events.upcoming_with_schools': 1,
   'events.upcoming.2026-10': 1, 'events.upcoming.2026-11': 1, 'events.upcoming.2027-03': 1,
-  'impact.events': 3, 'impact.schools': 4, 'impact.students': 24, 'impact.followed': 3, 'impact.closed_schools': 1, 'impact.closed_followed': 0,
+  'impact.events': 3, 'impact.schools': 4, 'impact.visitors': 24, 'impact.followed': 3, 'impact.closed_schools': 1, 'impact.closed_followed': 0,
   'gaps.never': 1, 'gaps.quiet': 1, 'gaps.untouched_counties': 1,
   'gaps.county.IL|Madison.contacted': 2, 'gaps.county.IL|Cook.contacted': 1, 'gaps.county.IL|(no county).contacted': 0,
   'gaps.county.MO|St Louis.contacted': 2, 'gaps.county.MO|Greene.contacted': 1,
@@ -163,9 +163,9 @@ check('one row per month the range touches, oldest first', () => {
   const m = monthly(data.activities, data.schools, FALL);
   assert.deepEqual(m.months.map((r) => [r.month, r.activityIds.length]), [['2026-08', 1], ['2026-09', 4], ['2026-10', 4]]);
 });
-check('event impact: only events with imported attendance, most schools then most students first', () => {
+check('event impact: only events with imported attendance, most schools then most visitors first', () => {
   const f = eventImpact(data.events, data.activities, data.schools, FALL, TODAY);
-  assert.deepEqual(f.map((e) => [e.eventId, e.schoolIds, e.students, e.followedIds, e.windowOpen]), [
+  assert.deepEqual(f.map((e) => [e.eventId, e.schoolIds, e.visitors, e.followedIds, e.windowOpen]), [
     ['e_1', ['s1', 's2'], 8, ['s1', 's2'], true],
     ['e_3', ['s3'], 12, ['s3'], true],
     ['e_2', ['s3'], 4, [], false],
@@ -232,9 +232,9 @@ check('a school row shows its active contacts and last activity, and links to th
   assert.deepEqual(row.cells, { school: 'Alpha High School', county: 'Madison', state: 'IL', contacts: 2, last: 'Oct 20, 2026' });
   assert.equal(row.link, '/schools/s1');
 });
-check('an activity row names its event and its imported student count', () => {
+check('an activity row names its event and its visitor count', () => {
   const row = listBuilders(data, FALL.end).activities(['a4'], 't', 's', 'f').rows[0];
-  assert.deepEqual(row.cells, { date: 'Oct 3, 2026', school: 'Charlie High School', type: 'Event attendance', event: 'Robotics Day', students: 12 });
+  assert.deepEqual(row.cells, { date: 'Oct 3, 2026', school: 'Charlie High School', type: 'Event attendance', event: 'Robotics Day', visitors: 12 });
 });
 check('CSV: header row, quotes around commas, quotes and line breaks, and a BOM for Excel', () => {
   const csv = listToCsv({ title: '', subtitle: '', filename: 'x', columns: [{ key: 'a', label: 'Name' }, { key: 'b', label: 'N' }],

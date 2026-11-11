@@ -20,7 +20,9 @@ import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { Breadcrumb } from '../components/common/Breadcrumb';
 import type { BreadcrumbTag } from '../components/common/Breadcrumb';
 import { useAppContext } from '../context/useAppContext';
-import { ContactMethodLabels, ProgramCategoryLabels, ProgramCategory } from '../types';
+import { ProgramCategoryLabels, ProgramCategory } from '../types';
+import { activityTypeLabel } from '../utils/reportLists';
+import { visitorsLabel } from '../utils/visitors';
 import type { Contact, Program } from '../types';
 import { formatSchoolType } from '../utils/helpers';
 import { computeEngagementScore } from '../utils/engagementScore';
@@ -421,7 +423,7 @@ export function SchoolDetailPage() {
                     <div className="w-2 h-2 rounded-full bg-siue-red mt-2 shrink-0" />
                     <div className="flex-1">
                       <p className="text-sm font-medium text-neutral-800">
-                        {ContactMethodLabels[activity.activityType] ?? activity.activityType}
+                        {activityTypeLabel(activity.activityType)}
                         {person && (
                           <span className="font-normal text-neutral-500">
                             {' '}with {`${person.firstName} ${person.lastName}`.trim()}
@@ -436,6 +438,12 @@ export function SchoolDetailPage() {
                       )}
                       <p className="text-xs text-neutral-500 mt-1">
                         {format(new Date(activity.date), 'MMM d, yyyy')}
+                        {activity.attendeeCount != null && (
+                          <span className="ml-2 inline-flex items-center gap-1 text-neutral-600">
+                            <Users size={12} />
+                            {visitorsLabel(activity.attendeeCount)}
+                          </span>
+                        )}
                       </p>
                     </div>
                     {canEdit && (

@@ -5,7 +5,8 @@ import { Select } from '../common/Select';
 import { Textarea } from '../common/Textarea';
 import { Button } from '../common/Button';
 import { useAppContext } from '../../context/useAppContext';
-import { ContactMethodLabels } from '../../types';
+import { ContactMethodLabels, IN_PERSON_ACTIVITY_TYPES } from '../../types';
+import { parseVisitors } from '../../utils/visitors';
 import toast from 'react-hot-toast';
 import { writeErrorMessage } from '../../utils/writeErrors';
 
@@ -15,7 +16,7 @@ interface LogContactFormProps {
 }
 
 /** Records a call, email or visit with a school. Plain controlled state rather than
- *  react-hook-form: four fields, and the only rule is "the date can't be in the future". */
+ *  react-hook-form: a few fields, and the rules are the date and the visitor count. */
 export function LogContactForm({ schoolId, onClose }: LogContactFormProps) {
   const { addActivity, getContactsBySchool } = useAppContext();
   const contacts = getContactsBySchool(schoolId);
@@ -25,14 +26,18 @@ export function LogContactForm({ schoolId, onClose }: LogContactFormProps) {
   const [date, setDate] = useState(today);
   const [contactId, setContactId] = useState('');
   const [notes, setNotes] = useState('');
+  const [visitorsText, setVisitorsText] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
   const dateError = !date ? 'Date is required' : date > today ? 'Date can’t be in the future' : '';
+  // Only in-person types have visitors; a count typed before switching to a call is dropped.
+  const inPerson = IN_PERSON_ACTIVITY_TYPES.includes(method);
+  const visitors = inPerson ? parseVisitors(visitorsText) : { value: null, error: '' };
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (dateError) return;
+    if (dateError || visitors.error) return;
     setSaving(true);
     setError('');
     try {
@@ -42,6 +47,7 @@ export function LogContactForm({ schoolId, onClose }: LogContactFormProps) {
         activityType: method,
         date,
         description: notes.trim(),
+        attendeeCount: visitors.value ?? undefined,
       });
       toast.success('Contact logged');
       onClose();
@@ -80,6 +86,19 @@ export function LogContactForm({ schoolId, onClose }: LogContactFormProps) {
           onChange={(e) => setDate(e.target.value)}
         />
       </div>
+      {inPerson && (
+        <Input
+          id="log-contact-visitors"
+          label="Number of visitors"
+          type="text"
+          inputMode="numeric"
+          placeholder="Leave blank if not counted"
+          helpText="How many people came to this visit. Counted in Reports."
+          value={visitorsText}
+          error={visitors.error || undefined}
+          onChange={(e) => setVisitorsText(e.target.value)}
+        />
+      )}
       <Select
         id="log-contact-person"
         label="Who you spoke to"
@@ -105,7 +124,7 @@ export function LogContactForm({ schoolId, onClose }: LogContactFormProps) {
         <Button variant="ghost" type="button" onClick={onClose} disabled={saving}>
           Cancel
         </Button>
-        <Button type="submit" loading={saving} disabled={!!dateError}>
+        <Button type="submit" loading={saving} disabled={!!dateError || !!visitors.error}>
           Log contact
         </Button>
       </div>

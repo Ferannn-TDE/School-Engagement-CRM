@@ -12,7 +12,7 @@
   ],
   "activities": [
     { "activity_id": "a1", "event_id": null, "school_id": "s1", "activity_type": "call", "date": "2026-09-28", "archived": false, "import_batch_id": null, "attendee_count": null },
-    { "activity_id": "a2", "event_id": null, "school_id": "s2", "activity_type": "visit", "date": "2026-10-16", "archived": false, "import_batch_id": null, "attendee_count": null },
+    { "activity_id": "a2", "event_id": null, "school_id": "s2", "activity_type": "visit", "date": "2026-10-16", "archived": false, "import_batch_id": null, "attendee_count": 6, "note": "a logged visit with a visitor count (no import)" },
     { "activity_id": "a3", "event_id": null, "school_id": "s1", "activity_type": "email", "date": "2026-10-20", "archived": false, "import_batch_id": null, "attendee_count": null },
     { "activity_id": "a4", "event_id": 3, "school_id": "s3", "activity_type": "event_participation", "date": "2026-10-03", "archived": false, "import_batch_id": "b1", "attendee_count": 12 },
     { "activity_id": "a5", "event_id": null, "school_id": "s5", "activity_type": "email", "date": "2026-03-01", "archived": false, "import_batch_id": null, "attendee_count": null },

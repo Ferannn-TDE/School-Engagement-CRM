@@ -32,6 +32,7 @@ import {
   planActivities,
   readActivityWorkbook,
 } from '../src/utils/activityImportFile.ts';
+import { parseVisitors } from '../src/utils/visitors.ts';
 
 const FIXTURES = join(process.cwd(), 'scripts', 'fixtures', 'activity-import');
 let passed = 0;
@@ -106,7 +107,7 @@ async function main() {
   const rows = readFixture();
   check('columns read by position, trailing blanks dropped, row numbers kept', () => {
     assert.equal(rows.length, 21);
-    assert.deepEqual(rows[0], { row: 1, name: 'Alton High School', city: 'Alton', state: 'IL' });
+    assert.deepEqual(rows[0], { row: 1, name: 'Alton High School', city: 'Alton', state: 'IL', visitors: '' });
     assert.equal(rows[3].name, 'Pana Unit 8 High school', 'repeated spaces collapse');
   });
   check('the same rows come out of an .xlsx copy of the file', () => {
@@ -191,6 +192,25 @@ async function main() {
     assert.deepEqual(taylorville.rows, [8, 9]);
     assert.equal(plan.length, new Set(choices.map((c) => c.schoolId)).size);
   });
+  check('a Visitors value overrides the row\'s count of one, and a school\'s rows add up', () => {
+    const plan = planActivities([
+      { row: 2, schoolId: 'a', visitors: 12 },
+      { row: 3, schoolId: 'a', visitors: null },
+      { row: 4, schoolId: 'b', visitors: 3 },
+      { row: 5, schoolId: 'c' },
+    ]);
+    assert.deepEqual(plan, [
+      { schoolId: 'a', attendeeCount: 13, rows: [2, 3] },
+      { schoolId: 'b', attendeeCount: 3, rows: [4] },
+      { schoolId: 'c', attendeeCount: 1, rows: [5] },
+    ]);
+  });
+  check('Visitors values: blank is one, whole numbers 1 to 10,000, anything else is an error', () => {
+    assert.deepEqual(parseVisitors(''), { value: null, error: '' });
+    assert.deepEqual(parseVisitors(' 25 '), { value: 25, error: '' });
+    assert.deepEqual(parseVisitors('1,200'), { value: 1200, error: '' });
+    for (const bad of ['0', '-3', '2.5', 'twelve', '10001']) assert.ok(parseVisitors(bad).error, bad);
+  });
   check('skipped rows (no school chosen) are left out', () => {
     assert.deepEqual(planActivities([{ row: 1, schoolId: null }, { row: 2, schoolId: 'a' }]), [
       { schoolId: 'a', attendeeCount: 1, rows: [2] },
@@ -222,6 +242,14 @@ async function main() {
     const result = readActivityWorkbook(wb);
     assert.ok(result.ok);
     assert.deepEqual(matchRows(result.rows, schools).map((r) => r.outcome), ['header', 'matched']);
+  });
+  check('the template has a Visitors column, and its value is read from column 4', () => {
+    const wb = buildActivityTemplate();
+    assert.deepEqual(XLSX.utils.sheet_to_json(wb.Sheets.Schools, { header: 1 })[0], ['School name', 'City', 'State', 'Visitors']);
+    XLSX.utils.sheet_add_aoa(wb.Sheets.Schools, [['Alton High School', 'Alton', 'IL', 40]], { origin: -1 });
+    const result = readActivityWorkbook(wb);
+    assert.ok(result.ok);
+    assert.equal(result.rows[1].visitors, '40');
   });
 
   console.log(`\n${passed} passed, ${failures.length} failed`);

@@ -171,6 +171,13 @@ export const ContactMethodLabels: Record<string, string> = {
   visit: 'Visit',
 };
 
+/**
+ * Activity types where people are there in person, so a visitor count makes sense:
+ * a visit, and attendance at an event (imports, campus visits and fairs are saved as
+ * event_participation). Calls and emails have no visitors.
+ */
+export const IN_PERSON_ACTIVITY_TYPES: readonly string[] = ['visit', 'event_participation'];
+
 export interface ActivityRecord {
   id: string;
   schoolId: string;
@@ -182,7 +189,7 @@ export interface ActivityRecord {
   outcome?: string;
   /** Set on activities saved by Import → Import Activities (db/022). */
   importBatchId?: string;
-  /** How many people the activity stands for, when an import counted repeats. */
+  /** Number of visitors: entered on a logged visit, or counted by an import (db/022). */
   attendeeCount?: number;
 }
 

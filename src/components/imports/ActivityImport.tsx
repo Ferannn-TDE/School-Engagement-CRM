@@ -23,6 +23,7 @@ import {
 } from '../../utils/activityImportMatch';
 import { buildActivityTemplate, fileHash, planActivities, readActivityWorkbook } from '../../utils/activityImportFile';
 import { looksLikeSpreadsheet } from '../../utils/importParsing';
+import { parseVisitors, visitorsLabel } from '../../utils/visitors';
 import { describeFileRejection, formatBytes, MAX_UPLOAD_BYTES } from '../../utils/helpers';
 import type { ArchivedDecision, ArchivedMatch } from '../../utils/archivedMatches';
 import { restoreItem } from '../../services/archiveService';
@@ -359,10 +360,23 @@ export function ActivityImport() {
     [choices, schoolById, archivedDecisions]
   );
 
+  // The optional Visitors column, read for the rows that will be saved. A bad value
+  // (0, negative, text) blocks saving until the file is fixed: guessing could miscount.
+  const visitorsByRow = useMemo(() => {
+    const m = new Map<number, ReturnType<typeof parseVisitors>>();
+    for (const r of preview?.results ?? []) m.set(r.row, parseVisitors(r.visitors ?? ''));
+    return m;
+  }, [preview]);
+  const visitorErrorRows = (preview?.results ?? []).filter((r) => isUsed(r.row) && visitorsByRow.get(r.row)?.error);
   const plan = useMemo(
-    () => planActivities((preview?.results ?? []).map((r) => ({ row: r.row, schoolId: isUsed(r.row) ? choices[r.row] : null }))),
-    [preview, choices, isUsed]
+    () => planActivities((preview?.results ?? []).map((r) => ({
+      row: r.row,
+      schoolId: isUsed(r.row) ? choices[r.row] : null,
+      visitors: visitorsByRow.get(r.row)?.value ?? null,
+    }))),
+    [preview, choices, isUsed, visitorsByRow]
   );
+  const totalVisitors = plan.reduce((n, p) => n + p.attendeeCount, 0);
   const usedRows = plan.reduce((n, p) => n + p.rows.length, 0);
   const repeatBlocked = !!preview?.priorBatches?.length && !repeatAcknowledged;
 
@@ -434,8 +448,9 @@ export function ActivityImport() {
             <div>
               <h2 className="text-lg font-semibold text-neutral-800">Import activities from a list of schools</h2>
               <p className="text-sm text-neutral-500 mt-1 max-w-2xl">
-                One row per attendee: school name, city, state. Each school becomes one activity with the details below;
-                a school listed several times gets one activity with an attendee count.
+                One row per attendee: school name, city, state, and optionally Visitors. Each school becomes one activity with
+                the details below; a school listed several times gets one activity, and its rows are added up as its visitor count.
+                A row counts as one visitor unless its Visitors column gives a number.
               </p>
             </div>
             <Button size="sm" variant="secondary" onClick={() => XLSX.writeFile(buildActivityTemplate(), 'activity-import-template.xlsx')}>
@@ -609,6 +624,13 @@ export function ActivityImport() {
                             <td className="py-2 pr-3 text-neutral-500">{r.row}</td>
                             <td className="py-2 pr-3">
                               {r.name} <span className="text-neutral-500">({placeLabel(r) || 'no city or state'})</span>
+                              {r.visitors && (
+                                visitorsByRow.get(r.row)?.error ? (
+                                  <p className="text-xs text-error mt-0.5">Visitors “{r.visitors}”: {visitorsByRow.get(r.row)!.error.toLowerCase()}</p>
+                                ) : (
+                                  <p className="text-xs text-neutral-500 mt-0.5">{visitorsLabel(visitorsByRow.get(r.row)!.value!)}</p>
+                                )
+                              )}
                             </td>
                             <td className="py-2 pr-3">
                               {outcome === 'matched' && (
@@ -691,11 +713,17 @@ export function ActivityImport() {
           <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-neutral-200">
             <p className="text-sm text-neutral-700">
               <strong>{plan.length}</strong> activit{plan.length === 1 ? 'y' : 'ies'} from {usedRows} row{usedRows === 1 ? '' : 's'}
-              {plan.some((p) => p.attendeeCount > 1) && `, ${plan.filter((p) => p.attendeeCount > 1).length} with an attendee count above 1`}.
+              , {visitorsLabel(totalVisitors)} in total.
             </p>
+            {visitorErrorRows.length > 0 && (
+              <p role="alert" className="w-full text-sm text-error">
+                Fix the Visitors column in {visitorErrorRows.length === 1 ? 'row' : 'rows'} {visitorErrorRows.map((r) => r.row).join(', ')} and upload the file again,
+                or untick {visitorErrorRows.length === 1 ? 'that row' : 'those rows'}. Visitors must be a whole number from 1, or blank for one.
+              </p>
+            )}
             <div className="flex gap-2">
               <Button variant="ghost" onClick={reset} disabled={saving}>Cancel</Button>
-              <Button onClick={() => void save()} loading={saving} disabled={saving || plan.length === 0 || repeatBlocked}>
+              <Button onClick={() => void save()} loading={saving} disabled={saving || plan.length === 0 || repeatBlocked || visitorErrorRows.length > 0}>
                 Save {plan.length} activit{plan.length === 1 ? 'y' : 'ies'}
               </Button>
             </div>

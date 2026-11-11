@@ -66,6 +66,7 @@ export async function createActivity(
       date: activity.date.slice(0, 10),
       description: activity.description,
       outcome: activity.outcome ?? null,
+      attendee_count: activity.attendeeCount ?? null,
     })
     .select()
     .single();

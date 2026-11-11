@@ -272,8 +272,15 @@ commit;
 -- ============================================================================
 -- Checked before applying (paste the BEFORE APPLYING and TEST outputs here)
 -- ============================================================================
---   Applied before 2026-11-11 21:23 UTC (the columns exist in the live table).
---   The SQL Editor outputs (BEFORE APPLYING 1–3, TEST 1–3) haven't been pasted here yet.
+--   Applied 2026-11-11 in the SQL Editor, before 21:23 UTC. Results as reported:
+--   * Migration: success, no rows returned.
+--   * TEST 1: 3 columns: created_by text, updated_at timestamp with time zone,
+--     updated_by text.
+--   * TEST 2: activities 70, archived 0, stamped 0 (nothing backfilled).
+--   * TEST 3: all 10 checks PASS (1, 2, 3, 4a, 4, 5, 6, 7, 7b, 8). Check 7: the
+--     viewer's update was refused by the "Editors change" policy (023). Check 8: no
+--     test rows left behind. (Run while the labels still read test025/TEST 025; they
+--     were renamed to test026/TEST 026 afterwards, with no other change.)
 --   Seen from the app on 2026-11-11 (read-only queries, signed in as an admin at aal2):
 --     * created_by, updated_at and updated_by exist on public.activities.
 --     * Two activities logged from the app at 21:23 UTC (later archived) have

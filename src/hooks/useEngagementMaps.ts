@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { happenedActivities } from '../utils/activityDates';
 import { format, subMonths, isAfter } from 'date-fns';
 import { useAppContext } from '../context/useAppContext';
 import { outreachEvents } from '../utils/events';
@@ -39,7 +40,8 @@ export function useEngagementMaps() {
 
   const schoolActivitiesMap = useMemo(() => {
     const map = new Map<string, SchoolActivitySummary>();
-    for (const a of state.activities) {
+    // Upcoming (future-dated) activities aren't counted and are never the last contact.
+    for (const a of happenedActivities(state.activities)) {
       const entry = map.get(a.schoolId) ?? { count: 0, latestDate: null };
       entry.count++;
       const d = new Date(a.date);

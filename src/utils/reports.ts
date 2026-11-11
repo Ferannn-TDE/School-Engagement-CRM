@@ -197,6 +197,15 @@ export function loggingStatus(activities: ActivityRecord[]): LoggingStatus {
 
 // ── Reach ───────────────────────────────────────────────────────────────────────
 
+/**
+ * Activities dated on or before today. A future-dated activity (up to a year ahead) is
+ * planned, not done: it counts in no figure until its day. The page applies this to
+ * everything it passes in; the SQL check does the same (act: day <= today).
+ */
+export function activitiesUpTo(activities: ActivityRecord[], today: Day): ActivityRecord[] {
+  return activities.filter((a) => dayOf(a.date) <= today);
+}
+
 /** Activities whose school is on the list (an archived school's activities aren't). */
 function onListedSchools(activities: ActivityRecord[], schools: School[]): ActivityRecord[] {
   const ids = new Set(schools.map((s) => s.id));
@@ -549,7 +558,8 @@ export interface ReportInput {
  * db/checks/reports_checks.sql, so the two can be compared key by key.
  */
 export function reportSnapshot(data: ReportInput, range: DayRange, today: Day): Record<string, number> {
-  const { schools, contacts, events, activities } = data;
+  const { schools, contacts, events } = data;
+  const activities = activitiesUpTo(data.activities, today);
   const r = reach(schools, activities, range);
   const act = activitySummary(activities, schools, range);
   const mon = monthly(activities, schools, range);

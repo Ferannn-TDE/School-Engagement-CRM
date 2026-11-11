@@ -23,6 +23,7 @@ import { useAppContext } from '../context/useAppContext';
 import { ProgramCategoryLabels, ProgramCategory } from '../types';
 import { activityTypeLabel } from '../utils/reportLists';
 import { visitorsLabel } from '../utils/visitors';
+import { hasHappened, todayDay } from '../utils/activityDates';
 import type { Contact, Program } from '../types';
 import { formatSchoolType } from '../utils/helpers';
 import { computeEngagementScore } from '../utils/engagementScore';
@@ -56,6 +57,9 @@ export function SchoolDetailPage() {
   const school = decodedId ? getSchoolById(decodedId) : undefined;
   const contacts = useMemo(() => (decodedId ? getContactsBySchool(decodedId) : []), [decodedId, getContactsBySchool]);
   const activities = useMemo(() => (decodedId ? getActivitiesBySchool(decodedId) : []), [decodedId, getActivitiesBySchool]);
+  const today = todayDay();
+  // Upcoming (future-dated) activities are listed but not counted.
+  const doneActivities = useMemo(() => activities.filter((a) => hasHappened(a, today)), [activities, today]);
   const schoolEvents = useMemo(() => (decodedId ? getEventsBySchool(decodedId) : []), [decodedId, getEventsBySchool]);
   // Testing dates are busy dates, not outreach: they never count as events here (db/007).
   const events = useMemo(() => schoolEvents.filter((e) => !isTestingDate(e)), [schoolEvents]);
@@ -222,7 +226,10 @@ export function SchoolDetailPage() {
               <span className="text-sm font-medium">Events</span>
             </div>
             <p className="text-2xl font-bold text-neutral-800">{events.length}</p>
-            <p className="text-sm text-neutral-500">{activities.length} total activities</p>
+            <p className="text-sm text-neutral-500">
+              {doneActivities.length} total activit{doneActivities.length === 1 ? 'y' : 'ies'}
+              {activities.length > doneActivities.length && ` · ${activities.length - doneActivities.length} upcoming`}
+            </p>
           </Card>
         </div>
 
@@ -418,12 +425,18 @@ export function SchoolDetailPage() {
                 .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                 .map((activity) => {
                   const person = contacts.find((c) => c.id === activity.contactId);
+                  const upcoming = !hasHappened(activity, today);
                   return (
                   <div key={activity.id} className="flex items-start gap-3 py-2 border-b border-neutral-50 last:border-0">
                     <div className="w-2 h-2 rounded-full bg-siue-red mt-2 shrink-0" />
                     <div className="flex-1">
                       <p className="text-sm font-medium text-neutral-800">
                         {activityTypeLabel(activity.activityType)}
+                        {upcoming && (
+                          <Badge variant="info" className="ml-2 align-middle">
+                            Upcoming
+                          </Badge>
+                        )}
                         {person && (
                           <span className="font-normal text-neutral-500">
                             {' '}with {`${person.firstName} ${person.lastName}`.trim()}

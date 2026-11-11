@@ -8,7 +8,8 @@
 --
 -- It follows the app's loading rules, not just the tables: archived rows left out;
 -- a contact belongs to its junction row's school, else staff.school_worked_at, and is
--- dropped when that school is archived; activities count only on listed schools;
+-- dropped when that school is archived; activities count only on listed schools and
+-- only once their day has come (a future-dated activity is upcoming);
 -- testing dates are never outreach; Event impact ranks only events with imported
 -- attendance (activities with an import batch and this event); an event with no known school is placed in a
 -- state by its location (as utils/region.ts does). The thresholds are the ones in
@@ -29,8 +30,9 @@ sch as (select s.* from all_sch s, params p where p.region = '' or s.state = p.r
 act as (
   select a.activity_id as id, a.event_id, a.school_id, a.activity_type as type, a.date::date as day,
          a.import_batch_id, a.attendee_count
-  from activities a join sch on sch.id = a.school_id
+  from activities a join sch on sch.id = a.school_id, params p
   where not a.archived
+    and a.date::date <= p.today  -- future-dated (upcoming) activities count nowhere until their day
 ),
 act_in as (select act.* from act, params p where act.day between p.range_start and p.range_end),
 junction as (select staff_id, max(school_id) as school_id from contacts where not archived group by staff_id),

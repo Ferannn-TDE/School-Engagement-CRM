@@ -24,6 +24,7 @@ import {
 import { buildActivityTemplate, fileHash, planActivities, readActivityWorkbook } from '../../utils/activityImportFile';
 import { looksLikeSpreadsheet } from '../../utils/importParsing';
 import { parseVisitors, visitorsLabel } from '../../utils/visitors';
+import { activityDateError, futureDateNote, latestActivityDay } from '../../utils/activityDates';
 import { describeFileRejection, formatBytes, MAX_UPLOAD_BYTES } from '../../utils/helpers';
 import type { ArchivedDecision, ArchivedMatch } from '../../utils/archivedMatches';
 import { restoreItem } from '../../services/archiveService';
@@ -219,7 +220,11 @@ export function ActivityImport() {
   const [saved, setSaved] = useState<{ activities: number; rows: number; fileName: string } | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const dateError = !details.date ? 'Choose the date' : details.date > today ? 'The date can’t be in the future' : '';
+  // Past dates and up to a year ahead: a list of people coming to tomorrow's event can be
+  // imported now, and counts once the day comes (utils/activityDates).
+  const latestDay = latestActivityDay();
+  const dateError = activityDateError(details.date);
+  const isFuture = !!details.date && !dateError && details.date > today;
   const detailsReady = !!details.activityType && !dateError;
 
   const eventOptions = useMemo(
@@ -476,9 +481,10 @@ export function ActivityImport() {
               label="Date"
               type="date"
               required
-              max={today}
+              max={latestDay}
               value={details.date}
               error={details.date ? dateError || undefined : undefined}
+              helpText={isFuture ? futureDateNote(details.date) : undefined}
               onChange={(e) => setDetails((d) => ({ ...d, date: e.target.value }))}
             />
             <Select
@@ -488,7 +494,7 @@ export function ActivityImport() {
                 const eventId = e.target.value;
                 const ev = state.events.find((x) => x.id === eventId);
                 const evDay = ev?.date.slice(0, 10);
-                setDetails((d) => ({ ...d, eventId, date: !d.date && evDay && evDay <= today ? evDay : d.date }));
+                setDetails((d) => ({ ...d, eventId, date: !d.date && evDay && evDay <= latestDay ? evDay : d.date }));
               }}
               options={[{ value: '', label: 'No event' }, ...eventOptions]}
             />

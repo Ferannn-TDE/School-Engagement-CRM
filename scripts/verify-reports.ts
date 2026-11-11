@@ -11,7 +11,10 @@
 import { strict as assert } from 'node:assert';
 
 import type { ActivityRecord, School } from '../src/types';
+import { activityDateError, futureDateNote, hasHappened, latestActivityDay } from '../src/utils/activityDates';
 import {
+  activitiesUpTo,
+  activitySummary,
   addMonths,
   comparisonFor,
   contactCoverage,
@@ -113,7 +116,35 @@ check('nothing logged at all', () => {
   assert.equal(comparisonFor(FALL, null).label, 'No comparison yet: no outreach has been logged');
 });
 check('logging start is the first non-archived activity, from every state', () => {
-  assert.deepEqual(loggingStatus(data.activities), { start: '2025-09-10', total: 15 });
+  // 14 of the 17 rows: a10 is archived, a8 (Oct 28) and a17 (Nov 5) haven't happened yet.
+  assert.deepEqual(loggingStatus(activitiesUpTo(data.activities, TODAY)), { start: '2025-09-10', total: 14 });
+});
+check('activity dates: past and up to one year ahead are allowed', () => {
+  const now = new Date('2026-11-11T09:00:00');
+  assert.equal(latestActivityDay(now), '2027-11-11');
+  assert.equal(activityDateError('2020-01-01', now), '');
+  assert.equal(activityDateError('2026-11-12', now), '');
+  assert.equal(activityDateError('2027-11-11', now), '');
+  assert.equal(activityDateError('2027-11-12', now), 'The date can’t be more than a year ahead');
+  assert.equal(activityDateError('', now), 'Choose the date');
+  assert.equal(hasHappened({ date: '2026-11-11T12:00:00' }, '2026-11-11'), true, 'today counts');
+  assert.equal(hasHappened({ date: '2026-11-12T12:00:00' }, '2026-11-11'), false);
+  assert.match(futureDateNote('2026-11-12'), /until Nov 12, 2026\. Update the number of visitors after the event if it changed\.$/);
+});
+check('a future-dated activity counts nowhere until its day, then counts', () => {
+  const ahead = { start: '2026-10-01', end: '2026-11-30' };
+  // Seen on Oct 27: the Nov 5 visit (a17, 9 visitors) is upcoming.
+  const before = reportSnapshot(data, ahead, TODAY);
+  const direct = activitySummary(activitiesUpTo(data.activities, TODAY), data.schools, ahead);
+  assert.equal(direct.ids.includes('a17'), false);
+  assert.equal(before['activity.total'], direct.ids.length);
+  assert.equal(before['activity.visitors'], direct.visitors);
+  // The day before and the day itself: only a17 changes.
+  const eve = reportSnapshot(data, ahead, '2026-11-04');
+  const after = reportSnapshot(data, ahead, '2026-11-05');
+  assert.equal(eve['activity.total'], before['activity.total'] + 1, 'a8 (Oct 28) counts from its own day');
+  assert.equal(after['activity.total'], eve['activity.total'] + 1);
+  assert.equal(after['activity.visitors'], eve['activity.visitors'] + 9);
 });
 
 console.log('Fixture figures, every state, Fall 2026 to Oct 27');

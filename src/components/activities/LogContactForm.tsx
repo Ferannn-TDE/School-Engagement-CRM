@@ -7,6 +7,7 @@ import { Button } from '../common/Button';
 import { useAppContext } from '../../context/useAppContext';
 import { ContactMethodLabels, IN_PERSON_ACTIVITY_TYPES } from '../../types';
 import { parseVisitors } from '../../utils/visitors';
+import { activityDateError, futureDateNote, latestActivityDay } from '../../utils/activityDates';
 import toast from 'react-hot-toast';
 import { writeErrorMessage } from '../../utils/writeErrors';
 
@@ -30,7 +31,9 @@ export function LogContactForm({ schoolId, onClose }: LogContactFormProps) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
-  const dateError = !date ? 'Date is required' : date > today ? 'Date can’t be in the future' : '';
+  // Past dates and up to a year ahead; a future one is saved as upcoming (utils/activityDates).
+  const dateError = activityDateError(date);
+  const isFuture = !dateError && date > today;
   // Only in-person types have visitors; a count typed before switching to a call is dropped.
   const inPerson = IN_PERSON_ACTIVITY_TYPES.includes(method);
   const visitors = inPerson ? parseVisitors(visitorsText) : { value: null, error: '' };
@@ -80,9 +83,10 @@ export function LogContactForm({ schoolId, onClose }: LogContactFormProps) {
           label="Date"
           type="date"
           required
-          max={today}
+          max={latestActivityDay()}
           value={date}
           error={dateError || undefined}
+          helpText={isFuture ? futureDateNote(date) : undefined}
           onChange={(e) => setDate(e.target.value)}
         />
       </div>

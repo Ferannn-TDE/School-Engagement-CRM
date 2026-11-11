@@ -107,7 +107,10 @@ export interface Contact {
 export interface School {
   id: string;
   name: string;
+  /** schools.district_id: the scraper's internal id for the district. Not shown to users. */
   district?: string;
+  /** The district's name, from the district table. Shown instead of the id. */
+  districtName?: string;
   county: string;
   address: string;
   city: string;

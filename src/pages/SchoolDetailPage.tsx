@@ -134,7 +134,7 @@ export function SchoolDetailPage() {
       />
       <Header
         title={school.name}
-        subtitle={school.district || school.county + ' County'}
+        subtitle={school.districtName || countyLabel(school.county, undefined)}
         actions={
           canEdit &&
           <div className="flex gap-2">

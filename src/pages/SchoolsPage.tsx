@@ -122,8 +122,8 @@ export function SchoolsPage() {
             >
               {row.original.name}
             </Link>
-            {row.original.district && (
-              <p className="text-xs text-neutral-500">{row.original.district}</p>
+            {row.original.districtName && (
+              <p className="text-xs text-neutral-500">{row.original.districtName}</p>
             )}
             <FreshnessBadges flags={schoolFreshness(row.original)} className="mt-1 flex flex-wrap gap-1" />
           </div>

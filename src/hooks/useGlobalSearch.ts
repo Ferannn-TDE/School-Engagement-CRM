@@ -24,7 +24,7 @@ export function useGlobalSearch(query: string, data: SearchData): SearchResults 
           s.name.toLowerCase().includes(q) ||
           s.county.toLowerCase().includes(q) ||
           s.city.toLowerCase().includes(q) ||
-          (s.district ?? '').toLowerCase().includes(q)
+          (s.districtName ?? '').toLowerCase().includes(q)
       )
       .slice(0, 5);
 

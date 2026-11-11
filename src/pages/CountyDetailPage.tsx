@@ -367,8 +367,8 @@ export function CountyDetailPage() {
                       >
                         {school.name}
                       </Link>
-                      {school.district && (
-                        <p className="text-xs text-neutral-500 mt-0.5">{school.district}</p>
+                      {school.districtName && (
+                        <p className="text-xs text-neutral-500 mt-0.5">{school.districtName}</p>
                       )}
                     </td>
                     <td className="px-4 py-3 text-center">

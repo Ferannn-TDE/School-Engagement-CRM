@@ -15,7 +15,8 @@ import { computeEngagementScore } from '../utils/engagementScore';
 import { engagementRateFromData, getCountySchoolSummary, type CountySchoolSummaryRow } from '../services/analyticsService';
 import { formatSchoolType } from '../utils/helpers';
 import { countyLabel, countyPath, mergeCountyRows, sameCounty } from '../utils/counties';
-import { eventSourceLabel, outreachEvents } from '../utils/events';
+import { attendanceByEvent, eventSourceLabel, outreachEvents, schoolsAtEvent, schoolsWithAttendance } from '../utils/events';
+import { todayDay } from '../utils/activityDates';
 
 type SortField = 'name' | 'contacts' | 'score';
 type SortDir = 'asc' | 'desc';
@@ -57,7 +58,7 @@ export function CountyDetailPage() {
     // engagement view took several seconds).
     getCountySchoolSummary()
       .then((summary) => {
-        const engagement = engagementRateFromData(state.schools, state.events);
+        const engagement = engagementRateFromData(state.schools, state.events, schoolsWithAttendance(state.activities, todayDay()));
         const isThis = (r: { county_name: string | null; state_code: string | null }) =>
           !!r.county_name && sameCounty(r.county_name, countyName) && (!countyState || r.state_code === countyState);
         if (current) {
@@ -75,7 +76,7 @@ export function CountyDetailPage() {
     return () => {
       current = false;
     };
-  }, [countyName, countyState, viewKey, state.schools, state.events]);
+  }, [countyName, countyState, viewKey, state.schools, state.events, state.activities]);
 
   // ── Per-county derived data ──────────────────────────────────────────────────
   const countySchools = useMemo(
@@ -112,17 +113,20 @@ export function CountyDetailPage() {
     return map;
   }, [state.activities]);
 
+  // Who was at each event: listed on it, or imported attendance for it.
+  const attendance = useMemo(() => attendanceByEvent(state.activities, todayDay()), [state.activities]);
+
   const eventsBySchool = useMemo(() => {
     const map = new Map<string, typeof countedEvents>();
     for (const e of countedEvents) {
-      for (const sid of e.participatingSchools) {
+      for (const sid of schoolsAtEvent(e, attendance)) {
         const list = map.get(sid) ?? [];
         list.push(e);
         map.set(sid, list);
       }
     }
     return map;
-  }, [countedEvents]);
+  }, [countedEvents, attendance]);
 
   const programsBySchool = useMemo(() => {
     const map = new Map<string, Program[]>();
@@ -161,13 +165,13 @@ export function CountyDetailPage() {
     });
   }, [scoredSchools, sortField, sortDir]);
 
-  // County events: any event where at least one participating school is in this county
+  // County events: any event where at least one school in this county was listed or attended
   const countyEvents = useMemo(
     () =>
       countedEvents
-        .filter((e) => e.participatingSchools.some((sid) => countySchoolIds.has(sid)))
+        .filter((e) => schoolsAtEvent(e, attendance).some((sid) => countySchoolIds.has(sid)))
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
-    [countedEvents, countySchoolIds]
+    [countedEvents, countySchoolIds, attendance]
   );
 
   // Program coverage: count per category across all county schools
@@ -404,7 +408,7 @@ export function CountyDetailPage() {
           {countyEvents.length > 0 ? (
             <div className="divide-y divide-neutral-50">
               {countyEvents.slice(0, 20).map((event) => {
-                const schoolsInCounty = event.participatingSchools.filter((sid) =>
+                const schoolsInCounty = schoolsAtEvent(event, attendance).filter((sid) =>
                   countySchoolIds.has(sid)
                 ).length;
                 return (

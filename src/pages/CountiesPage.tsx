@@ -26,6 +26,8 @@ import {
 } from '../services/analyticsService';
 import { useAppContext } from '../context/useAppContext';
 import { useRegionScope } from '../context/RegionScopeContext';
+import { schoolsWithAttendance } from '../utils/events';
+import { todayDay } from '../utils/activityDates';
 
 /** Collapsible wrapper for the county-level charts below the directory. */
 function AnalysisSection({
@@ -112,8 +114,8 @@ export function CountiesPage() {
   const { state } = useAppContext();
   const full = useRegionScope()?.fullState ?? state;
   const engagementData = useMemo<CountyEngagementRow[]>(
-    () => engagementRateFromData(full.schools, full.events),
-    [full.schools, full.events]
+    () => engagementRateFromData(full.schools, full.events, schoolsWithAttendance(full.activities, todayDay())),
+    [full.schools, full.events, full.activities]
   );
 
   // The county views cover both states; apply the shared All / IL / MO choice.

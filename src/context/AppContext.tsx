@@ -10,6 +10,8 @@ import toast from 'react-hot-toast';
 import { writeErrorMessage } from '../utils/writeErrors';
 import { AppContext, useAppContext } from './useAppContext';
 import type { School, Contact, Event, ActivityRecord, ActivityChanges, Program } from '../types';
+import { attendanceByEvent, schoolsAtEvent } from '../utils/events';
+import { todayDay } from '../utils/activityDates';
 import { nowISO } from '../utils/helpers';
 import {
   fetchSchools,
@@ -537,9 +539,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     (schoolId: string) => state.activities.filter((a) => a.schoolId === schoolId),
     [state.activities]
   );
+  // Listed on the event, or imported attendance for it (utils/events attendanceByEvent).
+  const attendance = useMemo(() => attendanceByEvent(state.activities, todayDay()), [state.activities]);
   const getEventsBySchool = useCallback(
-    (schoolId: string) => state.events.filter((e) => e.participatingSchools.includes(schoolId)),
-    [state.events]
+    (schoolId: string) => state.events.filter((e) => schoolsAtEvent(e, attendance).includes(schoolId)),
+    [state.events, attendance]
   );
   const getProgramsBySchool = useCallback(
     (schoolId: string) => state.programs.filter((p) => p.schoolId === schoolId),

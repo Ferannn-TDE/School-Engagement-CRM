@@ -11,6 +11,9 @@
 import { strict as assert } from 'node:assert';
 
 import type { ActivityRecord, School } from '../src/types';
+import { priorityLists, countyGaps } from '../src/utils/priorities';
+import { attendanceByEvent, schoolsAtEvent, schoolsWithAttendance, unlinkedAttendance } from '../src/utils/events';
+import type { Contact, Event as AppEvent } from '../src/types';
 import { activityDateError, futureDateNote, hasHappened, latestActivityDay } from '../src/utils/activityDates';
 import {
   activitiesUpTo,
@@ -276,6 +279,67 @@ check('shares and counts read naturally', () => {
   assert.deepEqual([pctText(2, 1688), pctText(0, 1688), pctText(1559, 1688)], ['under 1%', '0%', '92%']);
   assert.deepEqual([activityCount('call', 1), activityCount('visit', 3), activityCount('event_participation', 2)], ['1 phone call', '3 visits', '2 attendance rows']);
 });
+
+
+console.log('Priorities: four lists that never overlap');
+{
+  const T = '2026-10-27';
+  const sch = (id: string, county = 'Madison', extra: Partial<School> = {}): School => ({
+    id, name: `School ${id}`, county, address: '', city: '', state: 'IL', zipCode: '', schoolType: 'high_school',
+    isActive: true, priorityTier: 'standard', createdAt: '', updatedAt: '', ...extra,
+  } as School);
+  const con = (schoolId: string, isActive = true): Contact => ({ id: `c-${schoolId}`, schoolId, isActive } as Contact);
+  const a = (id: string, schoolId: string, day: string, activityType: string, eventId?: string): ActivityRecord =>
+    ({ id, schoolId, date: `${day}T12:00:00`, activityType, description: '', eventId });
+  const ev = (id: string, day: string, schools: string[]): AppEvent =>
+    ({ id, name: id, type: 'other', date: `${day}T18:00:00`, location: '', participatingSchools: schools, createdAt: '', updatedAt: '' } as unknown as AppEvent);
+  const schools = ['s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8'].map((id) => sch(id, id === 's6' ? 'Cook' : 'Madison', id === 's6' ? { sourceStatus: 'working' } : {}));
+  const contacts = [con('s1'), con('s2'), con('s3'), con('s5'), con('s7'), con('s8'), con('s4', false)];
+  const acts = [
+    a('a1', 's1', '2026-10-20', 'event_participation', 'e_1'),   // attended a week ago, nothing since
+    a('a2', 's2', '2026-09-01', 'event_participation', 'e_1'),
+    a('a3', 's2', '2026-09-10', 'call'),                          // followed up: on no list
+    a('a4', 's3', '2026-03-01', 'call'),                          // nothing since March: quiet
+    a('a5', 's4', '2026-10-01', 'visit'),                         // contacted, but no active contact
+    a('a6', 's7', '2026-11-01', 'visit'),                         // future-dated: doesn't count
+    a('a7', 's8', '2026-08-01', 'event_participation', 'e_1'),   // window closed (87 days), recent enough: no list
+  ];
+  const events = [ev('e_1', '2026-10-20', []), ev('e_2', '2026-11-05', ['s5'])];
+  const L = priorityLists(schools, contacts, acts, events, T);
+  check('follow up after an event: attended in the last 60 days, nothing since, fewest days left first', () => {
+    assert.deepEqual(L.followUp.map((x) => [x.schoolId, x.daysLeft, x.eventId]), [['s1', 53, 'e_1']]);
+  });
+  check('gone quiet: had activity, none in 6 months', () => {
+    assert.deepEqual(L.quiet.map((x) => [x.schoolId, x.lastDay]), [['s3', '2026-03-01']]);
+    assert.equal(L.quietBefore, '2026-04-27');
+  });
+  check('never reached out: contacts, nothing logged (future-dated ignored), upcoming event first', () => {
+    assert.deepEqual(L.neverReached.map((x) => [x.schoolId, x.upcoming?.eventId ?? null]), [['s5', 'e_2'], ['s7', null]]);
+  });
+  check('no contact person: an inactive contact counts as none; contacted first, then working website', () => {
+    assert.deepEqual(L.noContact.map((x) => x.schoolId), ['s4', 's6']);
+  });
+  check('the lists never overlap, and recently contacted schools are on none', () => {
+    const all = [...L.followUp, ...L.quiet, ...L.neverReached, ...L.noContact].map((x) => x.schoolId);
+    assert.equal(new Set(all).size, all.length);
+    assert.deepEqual(schools.map((s) => s.id).filter((id) => !all.includes(id)), ['s2', 's8']);
+  });
+  check('county gaps: no contact person and never contacted, counted separately', () => {
+    const g = countyGaps(schools, contacts, acts, T, (s) => s.county, (s) => s.county);
+    assert.deepEqual(g.map((x) => [x.county, x.total, x.withContact, x.neverContacted]), [['Madison', 7, 6, 2]]);
+  });
+  check('attendance: imported attendance counts as being at the event, listed or not', () => {
+    const att = attendanceByEvent(acts, T);
+    assert.deepEqual([...att.get('e_1')!].sort(), ['s1', 's2', 's8']);
+    assert.deepEqual(schoolsAtEvent(events[1], att), ['s5']);
+    assert.deepEqual(schoolsAtEvent(events[0], att).sort(), ['s1', 's2', 's8']);
+  });
+  check('attendance with no event linked still counts as attending; future-dated does not', () => {
+    const more = [...acts, a('u1', 's6', '2026-10-01', 'event_participation'), a('u2', 's5', '2026-12-01', 'event_participation')];
+    assert.deepEqual([...unlinkedAttendance(more, T)], [['s6', 1]]);
+    assert.deepEqual([...schoolsWithAttendance(more, T)].sort(), ['s1', 's2', 's6', 's8']);
+  });
+}
 
 console.log(`\n${passed} passed, ${failures.length} failed`);
 if (failures.length) process.exit(1);

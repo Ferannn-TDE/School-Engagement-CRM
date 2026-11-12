@@ -68,14 +68,16 @@ export function peekCountySchoolSummary(): CountySchoolSummaryRow[] | null {
 
 /**
  * The county_engagement_rate view's rows, from loaded data: per county, its schools
- * and those listed on an outreach event (testing dates left out). Schools are matched
+ * and those at an outreach event (testing dates left out): listed on it, or with any
+ * imported attendance (pass `attended`, from utils/events schoolsWithAttendance). Schools are matched
  * by exact id, where the view's LIKE could also match a key inside a longer one.
  */
 export function engagementRateFromData(
   schools: { id: string; county: string; state: string }[],
   events: { participatingSchools: string[]; category?: string }[],
+  attended: Set<string> = new Set(),
 ): CountyEngagementRow[] {
-  const listed = new Set<string>();
+  const listed = new Set<string>(attended);
   for (const e of events) {
     if (e.category === 'school_testing_date') continue;
     for (const id of e.participatingSchools) listed.add(id);

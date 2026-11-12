@@ -1,5 +1,6 @@
 import { isAfter, subMonths, differenceInDays } from 'date-fns';
 import { happenedActivities, todayDay } from './activityDates';
+import { EVENT_ATTENDANCE_TYPE } from '../constants/reportSettings';
 import type { Contact, ActivityRecord, Event, Program } from '../types';
 
 export interface EngagementResult {
@@ -18,6 +19,10 @@ export function computeEngagementScore(
   const sixMonthsAgo = subMonths(now, 6);
   // Upcoming (future-dated) activities don't count until their day.
   activities = happenedActivities(activities, todayDay(now));
+  // Events: the ones passed in (listed, or attended and linked), plus imported
+  // attendance with no event linked, one each.
+  const eventCount = events.length
+    + activities.filter((a) => a.activityType === EVENT_ATTENDANCE_TYPE && !a.eventId).length;
 
   const activeContacts = contacts.filter((c) => c.isActive);
   const recentActivities = activities.filter((a) => isAfter(new Date(a.date), sixMonthsAgo));
@@ -26,7 +31,7 @@ export function computeEngagementScore(
   // Scoring: each category capped so total is 0–100
   const contactPts = Math.min(activeContacts.length, 3) * 10;   // 0–30
   const activityPts = Math.min(recentActivities.length, 3) * 10; // 0–30
-  const eventPts = Math.min(events.length, 2) * 10;              // 0–20
+  const eventPts = Math.min(eventCount, 2) * 10;              // 0–20
   const programPts = Math.min(activePrograms.length, 2) * 10;    // 0–20
   const score = contactPts + activityPts + eventPts + programPts;
 
@@ -55,7 +60,7 @@ export function computeEngagementScore(
     }
   }
 
-  if (events.length === 0) {
+  if (eventCount === 0) {
     recommendations.push(
       'This school has never appeared at an event — invite them to an upcoming fair or campus visit.'
     );

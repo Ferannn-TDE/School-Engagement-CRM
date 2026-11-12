@@ -16,6 +16,8 @@ import { type ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '../components/common/DataTable';
 import { Missing } from '../components/common/Missing';
 import type { Contact, School } from '../types';
+import { attendanceByEvent, schoolsAtEvent } from '../utils/events';
+import { todayDay } from '../utils/activityDates';
 
 function previewColumnsFor(getSchoolById: (id: string) => School | undefined): ColumnDef<Contact, unknown>[] {
   return [
@@ -106,7 +108,8 @@ export function GenerateListsPage() {
     if (eventFilter) {
       const event = state.events.find((e) => e.id === eventFilter);
       if (event) {
-        const schoolIds = new Set(event.participatingSchools);
+        // Listed on the event, or imported attendance for it.
+        const schoolIds = new Set(schoolsAtEvent(event, attendanceByEvent(state.activities, todayDay())));
         contacts = contacts.filter((c) => schoolIds.has(c.schoolId));
       }
     }

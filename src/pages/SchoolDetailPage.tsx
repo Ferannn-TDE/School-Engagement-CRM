@@ -25,6 +25,7 @@ import { ProgramCategoryLabels, ProgramCategory } from '../types';
 import { activityTypeLabel } from '../utils/reportLists';
 import { visitorsLabel } from '../utils/visitors';
 import { hasHappened, todayDay } from '../utils/activityDates';
+import { EVENT_ATTENDANCE_TYPE } from '../constants/reportSettings';
 import type { Contact, Program } from '../types';
 import { formatSchoolType } from '../utils/helpers';
 import { computeEngagementScore } from '../utils/engagementScore';
@@ -63,6 +64,8 @@ export function SchoolDetailPage() {
   const today = todayDay();
   // Upcoming (future-dated) activities are listed but not counted.
   const doneActivities = useMemo(() => activities.filter((a) => hasHappened(a, today)), [activities, today]);
+  // Imported attendance with no event linked still means the school attended an event.
+  const unlinkedAttended = doneActivities.filter((a) => a.activityType === EVENT_ATTENDANCE_TYPE && !a.eventId).length;
   const openActivity = openActivityId ? activities.find((a) => a.id === openActivityId) ?? null : null;
   const schoolEvents = useMemo(() => (decodedId ? getEventsBySchool(decodedId) : []), [decodedId, getEventsBySchool]);
   // Testing dates are busy dates, not outreach: they never count as events here (db/007).
@@ -229,7 +232,12 @@ export function SchoolDetailPage() {
               <Calendar size={16} />
               <span className="text-sm font-medium">Events</span>
             </div>
-            <p className="text-2xl font-bold text-neutral-800">{events.length}</p>
+            <p className="text-2xl font-bold text-neutral-800">{events.length + unlinkedAttended}</p>
+            {unlinkedAttended > 0 && (
+              <p className="text-xs text-neutral-500">
+                Includes {unlinkedAttended} imported attendance {unlinkedAttended === 1 ? 'list' : 'lists'} with no event linked
+              </p>
+            )}
             <p className="text-sm text-neutral-500">
               {doneActivities.length} total activit{doneActivities.length === 1 ? 'y' : 'ies'}
               {activities.length > doneActivities.length && ` · ${activities.length - doneActivities.length} upcoming`}

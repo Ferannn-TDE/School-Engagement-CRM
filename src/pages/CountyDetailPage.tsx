@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { MapPin, School, Users, Calendar, BookOpen, ChevronUp, ChevronDown, ChevronsUpDown, ArrowLeft } from 'lucide-react';
 import { format } from 'date-fns';
@@ -8,9 +8,12 @@ import { Card, MetricCard } from '../components/common/Card';
 import { Badge } from '../components/common/Badge';
 import { EmptyState } from '../components/common/EmptyState';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
+import { Modal } from '../components/common/Modal';
+import { EventDetails } from '../components/events/EventDetails';
+import { fetchImportBatch } from '../services/importBatchesService';
 import { useAppContext } from '../context/useAppContext';
 import { ProgramCategory, ProgramCategoryLabels } from '../types';
-import type { ActivityRecord, Contact, Program } from '../types';
+import type { ActivityRecord, Contact, Event, Program } from '../types';
 import { computeEngagementScore } from '../utils/engagementScore';
 import { countySummaryFromData, engagementRateFromData } from '../services/analyticsService';
 import { formatSchoolType } from '../utils/helpers';
@@ -152,6 +155,42 @@ export function CountyDetailPage() {
     [countedEvents, countySchoolIds, attendance]
   );
 
+  // Imported attendance with no event linked (an import saved without choosing one), one
+  // item per import, so the list counts the same things as the Events card
+  // (countySummaryFromData: events listed or attended, plus these).
+  const countyImports = useMemo(() => {
+    const today = todayDay();
+    const byKey = new Map<string, { key: string; batchId?: string; day: string; description: string; schoolIds: Set<string> }>();
+    for (const a of state.activities) {
+      if (a.activityType !== 'event_participation' || a.eventId || !countySchoolIds.has(a.schoolId)) continue;
+      const day = a.date.slice(0, 10);
+      if (day > today) continue;
+      const key = a.importBatchId ?? a.id;
+      const item = byKey.get(key) ?? { key, batchId: a.importBatchId, day, description: a.description, schoolIds: new Set<string>() };
+      item.schoolIds.add(a.schoolId);
+      byKey.set(key, item);
+    }
+    return [...byKey.values()];
+  }, [state.activities, countySchoolIds]);
+  // File names for those imports (one small read each).
+  const [batchNames, setBatchNames] = useState<Record<string, string>>({});
+  useEffect(() => {
+    const missing = countyImports.map((i) => i.batchId).filter((id): id is string => !!id && !(id in batchNames));
+    if (!missing.length) return;
+    let live = true;
+    Promise.all(missing.map((id) => fetchImportBatch(id).then((b) => [id, b?.fileName ?? ''] as const).catch(() => [id, ''] as const)))
+      .then((pairs) => { if (live) setBatchNames((m) => ({ ...m, ...Object.fromEntries(pairs) })); });
+    return () => { live = false; };
+  }, [countyImports, batchNames]);
+  const [viewingEvent, setViewingEvent] = useState<Event | null>(null);
+  const eventItems = useMemo(
+    () => [
+      ...countyEvents.map((e) => ({ kind: 'event' as const, day: e.date.slice(0, 10), event: e })),
+      ...countyImports.map((i) => ({ kind: 'import' as const, day: i.day, imp: i })),
+    ].sort((x, y) => (x.day < y.day ? 1 : x.day > y.day ? -1 : 0)),
+    [countyEvents, countyImports]
+  );
+
   // Program coverage: count per category across all county schools
   const programCoverage = useMemo(() => {
     const counts: Partial<Record<ProgramCategory, number>> = {};
@@ -266,8 +305,10 @@ export function CountyDetailPage() {
           />
           <MetricCard
             title="Events"
-            value={summaryRow?.total_events ?? countyEvents.length}
+            value={eventItems.length}
             subtitle="attended or listed"
+            onClick={() => document.getElementById('county-events')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+            actionLabel="Show the events list"
             icon={<Calendar size={20} />}
           />
           <MetricCard
@@ -368,40 +409,65 @@ export function CountyDetailPage() {
 
         {/* ── Section 3: Events ────────────────────────────────────────────────── */}
         <Card>
-          <div className="flex items-center gap-3 mb-4">
+          <div id="county-events" className="flex items-center gap-3 mb-4 scroll-mt-6">
             <div className="p-2 rounded-lg bg-siue-red/10">
               <Calendar size={18} className="text-siue-red" />
             </div>
             <div>
               <h2 className="text-base font-semibold text-neutral-800">Events</h2>
               <p className="text-xs text-neutral-500">
-                Events where a {title} school participated
+                Events a {title} school was listed on or attended, and attendance imports with no event linked
               </p>
             </div>
           </div>
-          {countyEvents.length > 0 ? (
+          {eventItems.length > 0 ? (
             <div className="divide-y divide-neutral-50">
-              {countyEvents.slice(0, 20).map((event) => {
-                const schoolsInCounty = schoolsAtEvent(event, attendance).filter((sid) =>
-                  countySchoolIds.has(sid)
-                ).length;
-                return (
-                  <div key={event.id} className="flex items-center justify-between py-3">
-                    <div>
-                      <p className="text-sm font-medium text-neutral-700">{event.name}</p>
+              {eventItems.slice(0, 20).map((item) => {
+                if (item.kind === 'event') {
+                  const event = item.event;
+                  const n = schoolsAtEvent(event, attendance).filter((sid) => countySchoolIds.has(sid)).length;
+                  return (
+                    <button key={event.id} type="button" onClick={() => setViewingEvent(event)}
+                      className="w-full flex items-center justify-between gap-4 py-3 text-left hover:bg-neutral-50 rounded-lg px-2 -mx-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-siue-red">
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-neutral-700 truncate">{event.name}</p>
+                        <p className="text-xs text-neutral-500 mt-0.5">
+                          {format(new Date(event.date), 'MMM d, yyyy')} · {n} school{n !== 1 ? 's' : ''} from this county
+                        </p>
+                      </div>
+                      <span className="shrink-0 text-xs text-neutral-500">{eventSourceLabel(event)}</span>
+                    </button>
+                  );
+                }
+                const imp = item.imp;
+                const n = imp.schoolIds.size;
+                const name = imp.batchId ? batchNames[imp.batchId] : '';
+                const label = imp.description || name || 'Attendance import';
+                const body = (
+                  <>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-neutral-700 truncate">{label}</p>
                       <p className="text-xs text-neutral-500 mt-0.5">
-                        {format(new Date(event.date), 'MMM d, yyyy')}
-                        {' · '}
-                        {schoolsInCounty} school{schoolsInCounty !== 1 ? 's' : ''} from this county
+                        {format(new Date(`${imp.day}T12:00:00`), 'MMM d, yyyy')} · {n} school{n !== 1 ? 's' : ''} from this county
+                        {name && name !== label ? ` · ${name}` : ''}
                       </p>
                     </div>
-                    <span className="shrink-0 text-xs text-neutral-500">{eventSourceLabel(event)}</span>
-                  </div>
+                    <span className="shrink-0 text-xs text-neutral-500">Imported attendance, no event linked</span>
+                  </>
+                );
+                const cls = 'w-full flex items-center justify-between gap-4 py-3 text-left rounded-lg px-2 -mx-2';
+                return imp.batchId ? (
+                  <Link key={imp.key} to={`/import?tab=activities&batch=${encodeURIComponent(imp.batchId)}`}
+                    className={`${cls} hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-siue-red`}>
+                    {body}
+                  </Link>
+                ) : (
+                  <div key={imp.key} className={cls}>{body}</div>
                 );
               })}
-              {countyEvents.length > 20 && (
+              {eventItems.length > 20 && (
                 <p className="text-xs text-neutral-500 pt-3 text-center">
-                  Showing 20 of {countyEvents.length} events
+                  Showing 20 of {eventItems.length}
                 </p>
               )}
             </div>
@@ -411,6 +477,9 @@ export function CountyDetailPage() {
             </p>
           )}
         </Card>
+        <Modal open={viewingEvent !== null} onClose={() => setViewingEvent(null)} title="Event" size="md">
+          {viewingEvent && <EventDetails event={viewingEvent} />}
+        </Modal>
 
         {/* ── Section 4: Program coverage ──────────────────────────────────────── */}
         <Card>

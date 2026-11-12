@@ -18,7 +18,7 @@ with
 params as (
   select date '2026-08-24' as range_start, date '2026-10-27' as range_end,  -- PARAMS
          date '2026-10-27' as today, ''::text as region,                     -- PARAMS
-         60 as follow_up_days, interval '6 months' as quiet, interval '6 months' as verified_recent,
+         60 as follow_up_days, interval '6 months' as quiet, interval '12 months' as updated_recent,
          'school_testing_date'::text as testing, 'event_participation'::text as attendance
 ),
 all_sch as (
@@ -39,7 +39,7 @@ junction as (select staff_id, max(school_id) as school_id from contacts where no
 con as (
   select s.staff_id as id, coalesce(j.school_id, s.school_worked_at, '') as school_id,
          coalesce(s.is_active, true) as active,
-         (s.last_verified_at at time zone 'UTC')::date as verified_day,
+         (s.updated_at at time zone 'UTC')::date as updated_day,
          s.last_scraped_at is not null as scraped
   from staff s left join junction j on j.staff_id = s.staff_id
   where not s.archived
@@ -138,11 +138,11 @@ figures(k, v) as (
               having count(*) filter (where id in (select school_id from last_day)) = 0) c
   union all select 'gaps.county.' || state || '|' || county || '.contacted',
                    count(*) filter (where id in (select school_id from last_day)) from sch group by state, county
-  union all select 'health.verified_recent', count(*) from con_l, params p
-            where verified_day >= (p.range_end - p.verified_recent)::date and verified_day <= p.range_end
-  union all select 'health.verified_older', count(*) from con_l, params p
-            where verified_day < (p.range_end - p.verified_recent)::date
-  union all select 'health.never_verified', count(*) from con_l where verified_day is null
+  union all select 'health.updated_recent', count(*) from con_l, params p
+            where updated_day >= (p.range_end - p.updated_recent)::date
+  union all select 'health.updated_older', count(*) from con_l, params p
+            where updated_day < (p.range_end - p.updated_recent)::date
+  union all select 'health.not_dated', count(*) from con_l where updated_day is null
   union all select 'health.scraped_contacts', count(*) from con_l where scraped
   union all select 'health.no_county', count(*) from sch where county = '(no county)'
   union all select 'health.site.' || st.status, count(sch.id)

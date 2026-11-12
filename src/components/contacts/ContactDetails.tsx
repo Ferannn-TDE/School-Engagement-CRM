@@ -4,7 +4,7 @@ import { Badge } from '../common/Badge';
 import { contactRoleLabel } from '../../utils/contactRoles';
 import { formatPhone } from '../../utils/helpers';
 import { FreshnessBadges } from '../common/FreshnessBadges';
-import { contactFreshness } from '../../utils/freshness';
+import { contactFreshness, lastUpdatedText, verificationText } from '../../utils/freshness';
 
 /** How to reach a contact: shown in a pop-up when a contact is clicked. */
 export function ContactDetails({ contact, schoolName }: { contact: Contact; schoolName?: string }) {
@@ -59,6 +59,16 @@ export function ContactDetails({ contact, schoolName }: { contact: Contact; scho
           </dd>
         </div>
       </dl>
+      {/* Who verified this contact, and who last changed it (db/027). */}
+      <div className="border-t border-neutral-100 pt-3 space-y-0.5 text-xs text-neutral-500">
+        <p>
+          {contact.isVerified ? 'Verified' : 'Unverified'}
+          {verificationText(contact.isVerified, contact.lastVerifiedAt, contact.verifiedBy)
+            ? ` · ${verificationText(contact.isVerified, contact.lastVerifiedAt, contact.verifiedBy)}`
+            : ''}
+        </p>
+        <p>{lastUpdatedText(contact.lastUpdatedAt, contact.updatedBy)}</p>
+      </div>
     </div>
   );
 }

@@ -22,7 +22,7 @@ import type { School as SchoolType } from '../types';
 import { formatSchoolType } from '../utils/helpers';
 import { FreshnessIcon } from '../components/common/FreshnessIcon';
 import { OneLine } from '../components/common/OneLine';
-import { schoolFreshness } from '../utils/freshness';
+import { lastUpdatedText, schoolFreshness } from '../utils/freshness';
 import { useRole } from '../context/useRole';
 import { happenedActivities } from '../utils/activityDates';
 
@@ -197,13 +197,16 @@ export function SchoolsPage() {
         ),
       },
       {
-        accessorKey: 'updatedAt',
+        // The last real change (db/027), with who made it on hover.
+        id: 'updatedAt',
+        accessorFn: (s) => s.lastUpdatedAt,
+        sortUndefined: 'last',
         header: 'Last Updated',
-        cell: ({ getValue }) => (
-          <span className="text-neutral-500">
-            {format(new Date(getValue() as string), 'MMM d, yyyy')}
+        cell: ({ row }) => row.original.lastUpdatedAt ? (
+          <span className="text-neutral-500" title={lastUpdatedText(row.original.lastUpdatedAt, row.original.updatedBy)}>
+            {format(new Date(row.original.lastUpdatedAt), 'MMM d, yyyy')}
           </span>
-        ),
+        ) : <Missing label="Not recorded" />,
       },
     ],
     [getContactsBySchool, activityStats]

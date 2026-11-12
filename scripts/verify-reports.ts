@@ -13,6 +13,7 @@ import { strict as assert } from 'node:assert';
 import type { ActivityRecord, School } from '../src/types';
 import { priorityLists, countyGaps } from '../src/utils/priorities';
 import { countySummaryFromData } from '../src/services/analyticsService';
+import { contactFreshness, lastUpdatedText, schoolFreshness, verificationText } from '../src/utils/freshness';
 import { attendanceByEvent, schoolsAtEvent, schoolsWithAttendance, unlinkedAttendance } from '../src/utils/events';
 import type { Contact, Event as AppEvent } from '../src/types';
 import { activityDateError, futureDateNote, hasHappened, latestActivityDay } from '../src/utils/activityDates';
@@ -176,7 +177,7 @@ const EXPECTED_ALL: Record<string, number> = {
   'gaps.never': 1, 'gaps.quiet': 1, 'gaps.untouched_counties': 1,
   'gaps.county.IL|Madison.contacted': 2, 'gaps.county.IL|Cook.contacted': 1, 'gaps.county.IL|(no county).contacted': 0,
   'gaps.county.MO|St Louis.contacted': 2, 'gaps.county.MO|Greene.contacted': 1,
-  'health.verified_recent': 1, 'health.verified_older': 1, 'health.never_verified': 4, 'health.scraped_contacts': 1, 'health.no_county': 1,
+  'health.updated_recent': 2, 'health.updated_older': 2, 'health.not_dated': 2, 'health.scraped_contacts': 1, 'health.no_county': 1,
   'health.site.working': 1, 'health.site.broken': 1, 'health.site.not_found': 0, 'health.site.unchecked': 5,
 };
 check('every figure matches the hand count', () => {
@@ -235,16 +236,16 @@ console.log('IL / MO');
 check('Missouri only: its schools, its contacts, and events placed by school or location', () => {
   const mo = reportSnapshot(scopeToRegion(data, 'MO'), FALL, TODAY);
   const pick = (keys: string[]) => Object.fromEntries(keys.map((k) => [k, mo[k]]));
-  assert.deepEqual(pick(['schools.total', 'reach.engaged', 'activity.total', 'contacts.total', 'coverage.without', 'events.upcoming', 'events.past', 'gaps.never', 'gaps.quiet', 'health.never_verified']), {
+  assert.deepEqual(pick(['schools.total', 'reach.engaged', 'activity.total', 'contacts.total', 'coverage.without', 'events.upcoming', 'events.past', 'gaps.never', 'gaps.quiet', 'health.not_dated']), {
     'schools.total': 3, 'reach.engaged': 1, 'activity.total': 1, 'contacts.total': 2, 'coverage.without': 1,
-    'events.upcoming': 1, 'events.past': 0, 'gaps.never': 0, 'gaps.quiet': 1, 'health.never_verified': 2,
+    'events.upcoming': 1, 'events.past': 0, 'gaps.never': 0, 'gaps.quiet': 1, 'health.not_dated': 1,
   });
 });
 check('Illinois plus Missouri add up to All for every per-school figure', () => {
   const all = reportSnapshot(data, FALL, TODAY);
   const il = reportSnapshot(scopeToRegion(data, 'IL'), FALL, TODAY);
   const mo = reportSnapshot(scopeToRegion(data, 'MO'), FALL, TODAY);
-  for (const k of ['schools.total', 'reach.engaged', 'activity.total', 'contacts.total', 'coverage.without', 'gaps.never', 'health.never_verified']) {
+  for (const k of ['schools.total', 'reach.engaged', 'activity.total', 'contacts.total', 'coverage.without', 'gaps.never', 'health.not_dated']) {
     assert.equal(il[k] + mo[k], all[k], k);
   }
 });
@@ -348,6 +349,30 @@ console.log('Priorities: four lists that never overlap');
     const more = [...acts, a('u1', 's6', '2026-10-01', 'event_participation'), a('u2', 's5', '2026-12-01', 'event_participation')];
     assert.deepEqual([...unlinkedAttendance(more, T)], [['s6', 1]]);
     assert.deepEqual([...schoolsWithAttendance(more, T)].sort(), ['s1', 's2', 's6', 's8']);
+  });
+}
+
+console.log('Last updated and Verified (db/027)');
+{
+  const now = new Date('2026-11-12T12:00:00');
+  const base = { id: 'x', name: 'X', county: '', address: '', city: '', state: 'IL', zipCode: '', schoolType: 'high_school', isActive: true, createdAt: '', updatedAt: '' } as School;
+  check('"Last updated <date> by <who>", the date only when nobody is recorded', () => {
+    assert.equal(lastUpdatedText('2026-11-01T05:00:00Z', 'a@siue.edu'), 'Last updated Nov 1, 2026 by a@siue.edu');
+    assert.equal(lastUpdatedText('2026-11-01T05:00:00Z', undefined), 'Last updated Nov 1, 2026');
+    assert.equal(lastUpdatedText('2026-11-01T05:00:00Z', 'database'), 'Last updated Nov 1, 2026 by the scraper or database');
+    assert.equal(lastUpdatedText(undefined, undefined), 'Last updated: not recorded');
+  });
+  check('the amber flag: not updated in over 12 months; verification age is never flagged', () => {
+    assert.deepEqual(schoolFreshness({ ...base, lastUpdatedAt: '2025-11-13T12:00:00Z' }, now), []);
+    assert.deepEqual(schoolFreshness({ ...base, lastUpdatedAt: '2025-11-11T12:00:00Z', updatedBy: 'b@siue.edu' }, now).map((f) => [f.label, f.detail]),
+      [['Not updated in over 12 months', 'Last updated Nov 11, 2025 by b@siue.edu']]);
+    // Verified two years ago, updated recently: nothing to flag.
+    assert.deepEqual(contactFreshness({ id: 'c', schoolId: 'x', isActive: true, isVerified: true, lastVerifiedAt: '2024-11-01T00:00:00Z', lastUpdatedAt: '2026-10-01T00:00:00Z' } as Contact, now), []);
+  });
+  check('Verify / Unverify wording shows who and when', () => {
+    assert.equal(verificationText(true, '2026-11-12T15:00:00Z', 'a@siue.edu'), 'Verified Nov 12, 2026 by a@siue.edu');
+    assert.equal(verificationText(false, '2026-11-12T15:00:00Z', 'a@siue.edu'), 'Marked unverified Nov 12, 2026 by a@siue.edu');
+    assert.equal(verificationText(false, undefined, undefined), undefined);
   });
 }
 

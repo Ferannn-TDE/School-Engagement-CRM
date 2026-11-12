@@ -8,7 +8,6 @@ import { Card } from '../common/Card';
 import { Button } from '../common/Button';
 import { Input } from '../common/Input';
 import { Select } from '../common/Select';
-import { Textarea } from '../common/Textarea';
 import { Badge } from '../common/Badge';
 import { ConfirmDialog } from '../common/ConfirmDialog';
 import { ArchivedMatchesPanel } from './ArchivedMatchesPanel';
@@ -461,7 +460,8 @@ export function ActivityImport() {
             </p>
           )}
 
-          <div className="grid gap-4 sm:grid-cols-2 mb-4">
+          {/* Type, date, event and description: the same size, an even 2×2 grid. */}
+          <div className="grid gap-4 sm:grid-cols-2 items-start mb-4">
             <Select
               label="Activity type"
               required
@@ -490,9 +490,8 @@ export function ActivityImport() {
                 setDetails((d) => ({ ...d, eventId, date: !d.date && evDay && evDay <= latestDay ? evDay : d.date }));
               }}
             />
-            <Textarea
+            <Input
               label="Description"
-              rows={2}
               value={details.description}
               onChange={(e) => setDetails((d) => ({ ...d, description: e.target.value }))}
               placeholder="e.g. Students attended Engineering Day"

@@ -122,7 +122,8 @@ export function SchoolsPage() {
               <Link
                 to={`/schools/${encodeURIComponent(row.original.id)}`}
                 className="block min-w-0 truncate font-medium text-neutral-800 hover:text-siue-red transition-colors"
-                title={row.original.name}
+                // Type and last update live on the school page; here they're on hover.
+                title={`${row.original.name}\n${formatSchoolType(row.original.schoolType)} · ${lastUpdatedText(row.original.lastUpdatedAt, row.original.updatedBy)}`}
                 onClick={(e) => e.stopPropagation()}
               >
                 {row.original.name}
@@ -146,36 +147,32 @@ export function SchoolsPage() {
         ) : <Missing label="No county" />,
       },
       {
-        accessorKey: 'schoolType',
-        header: 'Type',
-        cell: ({ getValue }) => (
-          <Badge>{formatSchoolType(getValue() as string)}</Badge>
-        ),
-      },
-      {
         id: 'contacts',
-        header: '# Contacts',
-        cell: ({ row }) => getContactsBySchool(row.original.id).length,
-      },
-      {
-        id: 'activities',
-        header: 'Activities',
-        accessorFn: (s) => activityStats.get(s.id)?.count ?? 0,
+        header: 'Contacts',
+        accessorFn: (s) => getContactsBySchool(s.id).length,
         sortDescFirst: true,
         cell: ({ getValue }) => <span className="tabular-nums">{getValue() as number}</span>,
       },
       {
-        id: 'lastActivity',
-        header: 'Last activity',
-        // No activity sorts after every date, in both directions.
-        accessorFn: (s) => activityStats.get(s.id)?.last,
+        // One cell for both: "3 activities · last Oct 24". Sorts by the last date, then the count;
+        // schools with none go last.
+        id: 'activity',
+        header: 'Activity',
+        accessorFn: (s) => {
+          const a = activityStats.get(s.id);
+          return a ? `${a.last}|${String(a.count).padStart(5, '0')}` : undefined;
+        },
         sortUndefined: 'last',
         sortDescFirst: true,
-        cell: ({ getValue }) => {
-          const day = getValue() as string | undefined;
-          return day
-            ? <span className="text-neutral-600">{format(new Date(`${day}T12:00:00`), 'MMM d, yyyy')}</span>
-            : <span className="text-neutral-400">Never</span>;
+        cell: ({ row }) => {
+          const a = activityStats.get(row.original.id);
+          if (!a) return <span className="text-neutral-400">None</span>;
+          return (
+            <OneLine className="text-neutral-700">
+              {a.count} {a.count === 1 ? 'activity' : 'activities'}
+              <span className="text-neutral-500"> · last {format(new Date(`${a.last}T12:00:00`), 'MMM d')}</span>
+            </OneLine>
+          );
         },
       },
       {
@@ -186,18 +183,6 @@ export function SchoolsPage() {
             {getValue() ? 'Active' : 'Inactive'}
           </Badge>
         ),
-      },
-      {
-        // The last real change (db/027), with who made it on hover.
-        id: 'updatedAt',
-        accessorFn: (s) => s.lastUpdatedAt,
-        sortUndefined: 'last',
-        header: 'Last Updated',
-        cell: ({ row }) => row.original.lastUpdatedAt ? (
-          <span className="text-neutral-500" title={lastUpdatedText(row.original.lastUpdatedAt, row.original.updatedBy)}>
-            {format(new Date(row.original.lastUpdatedAt), 'MMM d, yyyy')}
-          </span>
-        ) : <Missing label="Not recorded" />,
       },
     ],
     [getContactsBySchool, activityStats]
@@ -320,7 +305,7 @@ export function SchoolsPage() {
             <DataTable
               data={filteredSchools}
               columns={columns}
-              columnWidths={columns.length > 8 ? ['', '8.5rem', '8rem', '6.5rem', '6.5rem', '8rem', '6rem', '7.5rem', '6.5rem'] : ['', '8.5rem', '8rem', '6.5rem', '6.5rem', '8rem', '6rem', '7.5rem']}
+              columnWidths={columns.length > 5 ? ['34%', '18%', '11%', '22%', '11%', '7rem'] : ['38%', '20%', '12%', '20%', '10%']}
               searchValue={search}
               urlState
               resetKey={[verifiedTab, countyFilter, typeFilter, contactsFilter].join('|')}

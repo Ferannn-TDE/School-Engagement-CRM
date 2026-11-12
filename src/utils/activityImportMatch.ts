@@ -52,6 +52,8 @@ export interface FileRow {
   state: string;
   /** The optional 4th column, as typed: blank means one visitor for the row. */
   visitors?: string;
+  /** The optional 5th column: the visitor's name (student data, db/029; editors only). */
+  visitorName?: string;
 }
 
 export interface RowMatch extends FileRow {

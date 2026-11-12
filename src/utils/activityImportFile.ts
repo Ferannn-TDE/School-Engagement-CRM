@@ -2,7 +2,8 @@ import * as XLSX from 'xlsx';
 import type { FileRow } from './activityImportMatch';
 
 // Reading an activity-import file: columns 1–3 by position (school name, city, state),
-// plus an optional 4th, Visitors, that overrides the row's count of one,
+// plus an optional 4th, Visitors, that overrides the row's count of one, and an optional
+// 5th, Name (db/029),
 // with or without a header, wherever a header row ends up (Book10.xlsx has it sorted
 // into row 37). The "Schools" sheet is read if there is one, else the first sheet,
 // so the template's "Instructions" sheet and its example are never imported.
@@ -22,8 +23,8 @@ export function readActivityWorkbook(workbook: XLSX.WorkBook): ActivityFileResul
     raw: false,
   });
   const rows: FileRow[] = grid.map((cells, i) => {
-    const [name, city, state, visitors] = [0, 1, 2, 3].map((c) => String(cells[c] ?? '').replace(/\s+/g, ' ').trim());
-    return { row: i + 1, name, city, state, visitors };
+    const [name, city, state, visitors, visitorName] = [0, 1, 2, 3, 4].map((c) => String(cells[c] ?? '').replace(/\s+/g, ' ').trim());
+    return { row: i + 1, name, city, state, visitors, visitorName };
   });
   // Trailing empty rows are formatting, not data.
   while (rows.length && !rows[rows.length - 1].name && !rows[rows.length - 1].city && !rows[rows.length - 1].state) {
@@ -63,22 +64,23 @@ export function planActivities(choices: { row: number; schoolId: string | null; 
   return [...bySchool.values()];
 }
 
-export const TEMPLATE_HEADER = ['School name', 'City', 'State', 'Visitors'];
+export const TEMPLATE_HEADER = ['School name', 'City', 'State', 'Visitors', 'Name'];
 
 /** The downloadable template: a "Schools" sheet with headers only, and an "Instructions" sheet (never imported). */
 export function buildActivityTemplate(): XLSX.WorkBook {
   const wb = XLSX.utils.book_new();
   const schools = XLSX.utils.aoa_to_sheet([TEMPLATE_HEADER]);
-  schools['!cols'] = [{ wch: 40 }, { wch: 20 }, { wch: 8 }, { wch: 10 }];
+  schools['!cols'] = [{ wch: 40 }, { wch: 20 }, { wch: 8 }, { wch: 10 }, { wch: 28 }];
   XLSX.utils.book_append_sheet(wb, schools, 'Schools');
   const instructions = XLSX.utils.aoa_to_sheet([
     ['How to fill in the Schools sheet'],
     [''],
-    ['One row per student or attendee, on the Schools sheet. Four columns:'],
+    ['One row per student or attendee, on the Schools sheet. Five columns:'],
     ['School name', 'The school as you know it. It does not need to match exactly.'],
     ['City', 'Optional. Used only to tell apart schools with the same name.'],
     ['State', 'IL or MO.'],
     ['Visitors', 'Optional. A whole number: how many people this row stands for. Leave blank for one.'],
+    ['Name', 'Optional. The visitor\'s name. Only editors and admins can see it; it never appears in lists, exports or reports.'],
     [''],
     ['The same school on several rows becomes one activity; its visitor count is the rows added up.'],
     ['The activity type, date, description and event are chosen once in the app.'],

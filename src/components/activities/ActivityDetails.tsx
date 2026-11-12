@@ -16,7 +16,7 @@ import { specifyError } from '../../utils/labels';
 import { parseVisitors, visitorsLabel } from '../../utils/visitors';
 import { activityDateError, futureDateNote, hasHappened, latestActivityDay, todayDay } from '../../utils/activityDates';
 import { writeErrorMessage } from '../../utils/writeErrors';
-import { fetchImportBatch, type ImportBatch } from '../../services/importBatchesService';
+import { fetchImportBatch, fetchVisitorNames, type ImportBatch } from '../../services/importBatchesService';
 import { EventPicker } from '../events/EventPicker';
 
 /** Every type an activity can have: the three Log contact methods and imported attendance. */
@@ -42,6 +42,16 @@ export function ActivityDetails({ activity, onClose, onArchive }: ActivityDetail
   const [editing, setEditing] = useState(false);
   const [batch, setBatch] = useState<ImportBatch | null>(null);
   const [batchError, setBatchError] = useState(false);
+
+  // Visitors' names from the import's rows (db/029). Student data: only editors and admins
+  // can read them (RLS); for everyone else this stays empty and the count is shown.
+  const [names, setNames] = useState<string[]>([]);
+  useEffect(() => {
+    if (!activity.importBatchId || !canEdit) return;
+    let live = true;
+    fetchVisitorNames(activity.id).then((n) => { if (live) setNames(n); }).catch(() => undefined);
+    return () => { live = false; };
+  }, [activity.id, activity.importBatchId, canEdit]);
 
   useEffect(() => {
     if (!activity.importBatchId) return;
@@ -83,6 +93,11 @@ export function ActivityDetails({ activity, onClose, onArchive }: ActivityDetail
         {IN_PERSON_ACTIVITY_TYPES.includes(activity.activityType) && (
           <Field label="Number of visitors">
             {activity.attendeeCount != null ? visitorsLabel(activity.attendeeCount) : <Muted>Not recorded</Muted>}
+            {names.length > 0 && (
+              <ul className="mt-1 text-sm text-neutral-700 list-disc ml-4">
+                {names.map((n, i) => <li key={i}>{n}</li>)}
+              </ul>
+            )}
           </Field>
         )}
         <Field label="Who you spoke to">

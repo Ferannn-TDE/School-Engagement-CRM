@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
-import { AlertTriangle, Archive, CheckCircle, Download, RotateCcw, Search, Upload } from 'lucide-react';
+import { AlertTriangle, Archive, CheckCircle, Download, Eye, RotateCcw, Search, Upload } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Card } from '../common/Card';
 import { Button } from '../common/Button';
@@ -24,6 +24,8 @@ import { buildActivityTemplate, fileHash, planActivities, readActivityWorkbook }
 import { looksLikeSpreadsheet } from '../../utils/importParsing';
 import { parseVisitors, visitorsLabel } from '../../utils/visitors';
 import { EventPicker } from '../events/EventPicker';
+import { AttachRowsButton, BatchRowsModal } from './ImportRows';
+import { useUrlState } from '../../hooks/useUrlState';
 import { activityDateError, futureDateNote, latestActivityDay } from '../../utils/activityDates';
 import { describeFileRejection, formatBytes, MAX_UPLOAD_BYTES } from '../../utils/helpers';
 import type { ArchivedDecision, ArchivedMatch } from '../../utils/archivedMatches';
@@ -36,6 +38,7 @@ import {
   findImportBatchesByHash,
   restoreImportBatch,
   type ImportBatch,
+  fetchImportRowCounts,
 } from '../../services/importBatchesService';
 import { writeErrorMessage } from '../../utils/writeErrors';
 
@@ -121,10 +124,20 @@ function RecentImports({ refreshKey, onChanged }: { refreshKey: number; onChange
   const [batches, setBatches] = useState<ImportBatch[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [confirm, setConfirm] = useState<ImportBatch | null>(null);
+  // Saved rows per batch (db/029): "View rows" when there are some, "Add rows from the
+  // original file" for batches saved before rows were kept.
+  const [rowCounts, setRowCounts] = useState<Map<string, number>>(new Map());
+  // ?batch=<id> (the link from a county page) opens that batch's rows.
+  const [batchParam, setBatchParam] = useUrlState('batch');
+  const viewing = batches?.find((b) => b.id === batchParam) ?? null;
 
   const load = useCallback(() => {
     fetchRecentImportBatches()
-      .then((b) => { setBatches(b); setError(null); })
+      .then(async (b) => {
+        setBatches(b);
+        setError(null);
+        setRowCounts(await fetchImportRowCounts(b.map((x) => x.id)).catch(() => new Map()));
+      })
       .catch((err: unknown) => setError((err as { message?: string })?.message ?? String(err)));
   }, []);
   useEffect(() => { load(); }, [load, refreshKey]);
@@ -144,7 +157,7 @@ function RecentImports({ refreshKey, onChanged }: { refreshKey: number; onChange
     <Card>
       <h2 className="text-lg font-semibold text-neutral-800">Recent imports</h2>
       <p className="text-sm text-neutral-500 mt-1 mb-4">
-        Each saved upload is one batch. Archiving a batch archives its activities; Restore brings them back.
+        Each saved upload is one batch. Archiving a batch archives its activities and rows; Restore brings them back.
       </p>
       {error ? (
         <p className="text-sm text-neutral-600">Recent imports couldn't be loaded: {error}</p>
@@ -168,19 +181,29 @@ function RecentImports({ refreshKey, onChanged }: { refreshKey: number; onChange
                   {b.archived && b.archivedAt ? ` · archived ${format(new Date(b.archivedAt), 'MMM d, yyyy')}${b.archivedBy ? ` by ${b.archivedBy}` : ''}` : ''}
                 </p>
               </div>
-              {b.archived ? (
-                <Button size="sm" variant="secondary" onClick={() => void restore(b)}>
-                  <RotateCcw size={14} /> Restore
-                </Button>
-              ) : (
-                <Button size="sm" variant="ghost" onClick={() => setConfirm(b)}>
-                  <Archive size={14} /> Archive this batch
-                </Button>
-              )}
+              <div className="flex flex-wrap items-center gap-2">
+                {(rowCounts.get(b.id) ?? 0) > 0 ? (
+                  <Button size="sm" variant="ghost" onClick={() => setBatchParam(b.id)}>
+                    <Eye size={14} /> View rows
+                  </Button>
+                ) : !b.archived && (
+                  <AttachRowsButton batch={b} onDone={() => { load(); setBatchParam(b.id); }} />
+                )}
+                {b.archived ? (
+                  <Button size="sm" variant="secondary" onClick={() => void restore(b)}>
+                    <RotateCcw size={14} /> Restore
+                  </Button>
+                ) : (
+                  <Button size="sm" variant="ghost" onClick={() => setConfirm(b)}>
+                    <Archive size={14} /> Archive this batch
+                  </Button>
+                )}
+              </div>
             </li>
           ))}
         </ul>
       )}
+      {viewing && <BatchRowsModal batch={viewing} onClose={() => setBatchParam('')} />}
       <ConfirmDialog
         open={confirm !== null}
         onClose={() => setConfirm(null)}
@@ -400,6 +423,16 @@ export function ActivityImport() {
         description: details.description.trim(),
         eventId: details.eventId || undefined,
         activities: plan,
+        // The rows behind the activities (db/029), so the batch can be previewed later.
+        rows: (preview.results ?? []).filter((r) => isUsed(r.row)).map((r) => ({
+          rowNumber: r.row,
+          schoolAsTyped: r.name,
+          cityAsTyped: r.city,
+          stateAsTyped: r.state,
+          schoolId: choices[r.row] ?? null,
+          visitors: visitorsByRow.get(r.row)?.value ?? null,
+          visitorName: r.visitorName?.trim() || null,
+        })),
       });
       setSaved({ activities: plan.length, rows: usedRows, fileName: preview.fileName });
       toast.success(`Saved ${plan.length} activities`);

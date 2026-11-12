@@ -46,3 +46,5 @@ jobs:
         run: npm run verify:reports
       - name: Verify no database deletes
         run: npm run verify:no-deletes
+      - name: Visitors' names stay out of lists, exports and Reports
+        run: npm run verify:no-names

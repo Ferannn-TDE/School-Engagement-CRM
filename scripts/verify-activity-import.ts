@@ -107,7 +107,7 @@ async function main() {
   const rows = readFixture();
   check('columns read by position, trailing blanks dropped, row numbers kept', () => {
     assert.equal(rows.length, 21);
-    assert.deepEqual(rows[0], { row: 1, name: 'Alton High School', city: 'Alton', state: 'IL', visitors: '' });
+    assert.deepEqual(rows[0], { row: 1, name: 'Alton High School', city: 'Alton', state: 'IL', visitors: '', visitorName: '' });
     assert.equal(rows[3].name, 'Pana Unit 8 High school', 'repeated spaces collapse');
   });
   check('the same rows come out of an .xlsx copy of the file', () => {
@@ -243,13 +243,21 @@ async function main() {
     assert.ok(result.ok);
     assert.deepEqual(matchRows(result.rows, schools).map((r) => r.outcome), ['header', 'matched']);
   });
-  check('the template has a Visitors column, and its value is read from column 4', () => {
+  check('the template has Visitors and Name columns, read from columns 4 and 5', () => {
     const wb = buildActivityTemplate();
-    assert.deepEqual(XLSX.utils.sheet_to_json(wb.Sheets.Schools, { header: 1 })[0], ['School name', 'City', 'State', 'Visitors']);
-    XLSX.utils.sheet_add_aoa(wb.Sheets.Schools, [['Alton High School', 'Alton', 'IL', 40]], { origin: -1 });
+    assert.deepEqual(XLSX.utils.sheet_to_json(wb.Sheets.Schools, { header: 1 })[0], ['School name', 'City', 'State', 'Visitors', 'Name']);
+    XLSX.utils.sheet_add_aoa(wb.Sheets.Schools, [['Alton High School', 'Alton', 'IL', 40, '  Jordan   Lee ']], { origin: -1 });
     const result = readActivityWorkbook(wb);
     assert.ok(result.ok);
     assert.equal(result.rows[1].visitors, '40');
+    assert.equal(result.rows[1].visitorName, 'Jordan Lee');
+  });
+  check('a filled-in template with names: its header row (with Name) is still skipped', () => {
+    const wb = buildActivityTemplate();
+    XLSX.utils.sheet_add_aoa(wb.Sheets.Schools, [['Alton High School', 'Alton', 'IL', '', 'Sam Park']], { origin: -1 });
+    const result = readActivityWorkbook(wb);
+    assert.ok(result.ok);
+    assert.deepEqual(matchRows(result.rows, schools).map((r) => r.outcome), ['header', 'matched']);
   });
 
   console.log(`\n${passed} passed, ${failures.length} failed`);

@@ -19,7 +19,7 @@ import {
   QUIET_MONTHS,
   SCHOOL_YEAR_START,
   SIUE_TERMS,
-  VERIFIED_RECENT_MONTHS,
+  UPDATED_RECENT_MONTHS,
   type Term,
 } from '../constants/reportSettings';
 
@@ -513,30 +513,32 @@ export function gaps(schools: School[], activities: ActivityRecord[], asOf: Day)
 // ── Data health ─────────────────────────────────────────────────────────────────
 
 export interface DataHealth {
-  /** Contacts on listed schools by when they were last verified. */
-  verifiedRecentIds: string[];
-  verifiedOlderIds: string[];
-  neverVerifiedIds: string[];
+  /** Contacts on listed schools by when they were last updated (db/027: a real change),
+   *  the same 12-month rule as the amber flag. Not dated = updated_at is blank. */
+  updatedRecentIds: string[];
+  updatedOlderIds: string[];
+  notDatedIds: string[];
   /** Contacts the scraper has ever seen. */
   scrapedContactIds: string[];
   /** Schools by the scraper's last check of their website; "unchecked" when never checked. */
   siteStatus: Record<string, string[]>;
   noCountyIds: string[];
-  /** The day a verification must be on or after to count as recent. */
+  /** The day an update must be on or after to count as recent. */
   recentFrom: Day;
 }
 
 export function dataHealth(schools: School[], contacts: Contact[], asOf: Day): DataHealth {
   const ids = new Set(schools.map((s) => s.id));
   const listed = contacts.filter((c) => ids.has(c.schoolId));
-  const recentFrom = addMonths(asOf, -VERIFIED_RECENT_MONTHS);
-  const verified = (c: Contact) => (c.lastVerifiedAt ? dayOf(c.lastVerifiedAt) : null);
+  const recentFrom = addMonths(asOf, -UPDATED_RECENT_MONTHS);
+  const updated = (c: Contact) => (c.lastUpdatedAt ? dayOf(c.lastUpdatedAt) : null);
   const siteStatus: Record<string, string[]> = { working: [], broken: [], not_found: [], unchecked: [] };
   for (const s of schools) siteStatus[s.sourceStatus ?? 'unchecked'].push(s.id);
   return {
-    verifiedRecentIds: listed.filter((c) => { const v = verified(c); return v !== null && v >= recentFrom && v <= asOf; }).map((c) => c.id),
-    verifiedOlderIds: listed.filter((c) => { const v = verified(c); return v !== null && v < recentFrom; }).map((c) => c.id),
-    neverVerifiedIds: listed.filter((c) => verified(c) === null).map((c) => c.id),
+    // An update after asOf (a range in the past) counts as recent: it's known to be current.
+    updatedRecentIds: listed.filter((c) => { const v = updated(c); return v !== null && v >= recentFrom; }).map((c) => c.id),
+    updatedOlderIds: listed.filter((c) => { const v = updated(c); return v !== null && v < recentFrom; }).map((c) => c.id),
+    notDatedIds: listed.filter((c) => updated(c) === null).map((c) => c.id),
     scrapedContactIds: listed.filter((c) => c.lastScrapedAt).map((c) => c.id),
     siteStatus,
     noCountyIds: schools.filter((s) => !s.county.trim()).map((s) => s.id),
@@ -592,9 +594,9 @@ export function reportSnapshot(data: ReportInput, range: DayRange, today: Day): 
     'gaps.never': g.neverIds.length,
     'gaps.quiet': g.quietIds.length,
     'gaps.untouched_counties': g.untouchedCounties.length,
-    'health.verified_recent': h.verifiedRecentIds.length,
-    'health.verified_older': h.verifiedOlderIds.length,
-    'health.never_verified': h.neverVerifiedIds.length,
+    'health.updated_recent': h.updatedRecentIds.length,
+    'health.updated_older': h.updatedOlderIds.length,
+    'health.not_dated': h.notDatedIds.length,
     'health.scraped_contacts': h.scrapedContactIds.length,
     'health.no_county': h.noCountyIds.length,
   };

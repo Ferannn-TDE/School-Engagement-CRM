@@ -29,7 +29,7 @@ import { useConfirm } from '../hooks/useConfirm';
 type VerifiedTab = 'all' | 'verified' | 'unverified';
 
 export function ContactsPage() {
-  const { state, getSchoolById, updateContact, archiveContact, verifyContact } = useAppContext();
+  const { state, getSchoolById, updateContact, archiveContact, verifyContact, unverifyContact } = useAppContext();
   const { canEdit } = useRole();
   // Kept in the address so the view survives leaving the tab, a refresh and Back.
   const [search, setSearch] = useUrlState('q');
@@ -148,7 +148,18 @@ export function ContactsPage() {
               name={name}
               items={[
                 { icon: <Pencil size={14} />, label: 'Edit', onClick: () => setEditingContact(c) },
-                { icon: <CheckCircle size={14} />, label: 'Verify', disabledLabel: 'Verified', disabled: c.isVerified, onClick: () => verifyContact(c.id) },
+                // Verified is an on/off switch; turning it off asks first.
+                c.isVerified
+                  ? {
+                    icon: <ShieldOff size={14} />,
+                    label: 'Unverify',
+                    onClick: () => confirm({
+                      title: `Unverify ${name}?`,
+                      message: `${name} goes back to the Unverified list. Nothing else changes. Your name and the time are recorded.`,
+                      confirmLabel: 'Unverify',
+                    }, () => unverifyContact(c.id)),
+                  }
+                  : { icon: <CheckCircle size={14} />, label: 'Verify', onClick: () => verifyContact(c.id) },
                 c.isActive
                   ? {
                     icon: <UserX size={14} />,
@@ -178,7 +189,7 @@ export function ContactsPage() {
         },
       },
     ],
-    [getSchoolById, updateContact, verifyContact, confirm]
+    [getSchoolById, updateContact, verifyContact, unverifyContact, confirm]
   );
 
   const roleOptions = Object.values(ContactRole).map((role) => ({

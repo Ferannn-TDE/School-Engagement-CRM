@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { MIN_MONTHS_FOR_TREND, FOLLOW_UP_DAYS, QUIET_MONTHS, VERIFIED_RECENT_MONTHS, EVENT_ATTENDANCE_TYPE } from '../../constants/reportSettings';
+import { MIN_MONTHS_FOR_TREND, FOLLOW_UP_DAYS, QUIET_MONTHS, UPDATED_RECENT_MONTHS, EVENT_ATTENDANCE_TYPE } from '../../constants/reportSettings';
 import { REPORT_SERIES, REPORT_QUIET } from '../../constants/charts';
 import {
   formatDay, formatMonth, monthOf, addMonths, type ActivitySummary, type Comparison, type ContactCoverage, type DataHealth,
@@ -236,25 +236,25 @@ export function UpcomingSection({ m }: { m: ReportModel }) {
 export function HealthSection({ m }: { m: ReportModel }) {
   const { health: h, lists, open, coverage } = m;
   const total = coverage.contactIds.length;
-  const recent = h.verifiedRecentIds.length, older = h.verifiedOlderIds.length, never = h.neverVerifiedIds.length;
+  const recent = h.updatedRecentIds.length, older = h.updatedOlderIds.length, never = h.notDatedIds.length;
   const checked = h.siteStatus.working.length + h.siteStatus.broken.length + h.siteStatus.not_found.length;
   const schoolsTotal = m.reach.totalSchools;
   const parts = [
-    { label: `Verified in the last ${VERIFIED_RECENT_MONTHS} months`, n: recent, color: '#184f95', ids: h.verifiedRecentIds },
-    { label: `Verified over ${VERIFIED_RECENT_MONTHS} months ago`, n: older, color: '#3987e5', ids: h.verifiedOlderIds },
-    { label: 'Never verified', n: never, color: REPORT_QUIET, ids: h.neverVerifiedIds },
+    { label: `Updated in the last ${UPDATED_RECENT_MONTHS} months`, n: recent, color: '#184f95', ids: h.updatedRecentIds },
+    { label: `Not updated in over ${UPDATED_RECENT_MONTHS} months`, n: older, color: '#3987e5', ids: h.updatedOlderIds },
+    { label: 'No update date', n: never, color: REPORT_QUIET, ids: h.notDatedIds },
   ];
   return (
     <ReportSection
       label="Data health"
       question="How current is our contact data?"
       takeaway={recent + older === 0
-        ? <>None of the <b>{plural(total, 'contact')}</b> has been verified yet{checked ? '' : ', and no school website has been checked'}. Treat emails as unconfirmed until the scraper's first run marks who is still listed on each school's site.</>
-        : <><b>{pctText(recent, total)} of contacts</b> were verified in the last {VERIFIED_RECENT_MONTHS} months; <b>{fmt(never)}</b> never have been.</>}
-      source={`staff.last_verified_at and last_scraped_at for contacts on listed schools; schools.source_status and county_name. "Recent" means since ${formatDay(h.recentFrom)}.`}
+        ? <>None of the <b>{plural(total, 'contact')}</b> has an update date yet{checked ? '' : ', and no school website has been checked'}.</>
+        : <><b>{pctText(recent, total)} of contacts</b> were updated in the last {UPDATED_RECENT_MONTHS} months; <b>{fmt(older)}</b> {older === 1 ? 'has' : 'have'} not been updated in over {UPDATED_RECENT_MONTHS} months{never ? <>, and <b>{fmt(never)}</b> {never === 1 ? 'has' : 'have'} no update date</> : null}.</>}
+      source={`staff.updated_at (a real change, db/027) and last_scraped_at for contacts on listed schools; schools.source_status and county_name. "Recent" means since ${formatDay(h.recentFrom)}. Verified is an on/off switch with no time limit, so it isn't counted here.`}
     >
       <div className="space-y-2">
-        <div className="flex h-3.5 rounded overflow-hidden gap-0.5 bg-white" role="img" aria-label="Contacts by when they were last verified">
+        <div className="flex h-3.5 rounded overflow-hidden gap-0.5 bg-white" role="img" aria-label="Contacts by when they were last updated">
           {parts.filter((p) => p.n > 0).map((p) => <div key={p.label} style={{ width: `${(p.n / Math.max(total, 1)) * 100}%`, backgroundColor: p.color }} />)}
         </div>
         <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs text-neutral-600">

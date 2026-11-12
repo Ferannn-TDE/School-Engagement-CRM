@@ -28,6 +28,9 @@ interface SchoolRow {
   data_source: string | null;
   is_verified: boolean | null;
   last_verified_at: string | null;
+  /** db/027 */
+  verified_by?: string | null;
+  updated_by?: string | null;
   last_scraped_at?: string | null;
   source_status?: string | null;
   source_checked_at?: string | null;
@@ -78,6 +81,9 @@ function rowToSchool(row: SchoolRow): School {
     dataSource: (row.data_source as School['dataSource']) ?? 'manual',
     isVerified: row.is_verified ?? false,
     lastVerifiedAt: row.last_verified_at ?? undefined,
+    verifiedBy: row.verified_by ?? undefined,
+    lastUpdatedAt: row.updated_at ?? undefined,
+    updatedBy: row.updated_by ?? undefined,
     lastScrapedAt: row.last_scraped_at ?? undefined,
     sourceStatus:
       row.source_status === 'working' || row.source_status === 'broken' || row.source_status === 'not_found'
@@ -360,21 +366,25 @@ export async function archiveSchool(id: string): Promise<void> {
   if (error) throw error;
 }
 
-export async function markSchoolVerified(id: string): Promise<void> {
-  const { error } = await supabase
-    .from('schools')
-    .update({ is_verified: true, last_verified_at: new Date().toISOString() })
-    .eq('facility_key', id);
-  if (error) throw error;
+/** What the database stamped when Verified was switched (db/027 sets who and when). */
+export interface VerificationStamp {
+  id: string;
+  isVerified: boolean;
+  lastVerifiedAt?: string;
+  verifiedBy?: string;
 }
 
-export async function markSchoolsVerifiedBulk(ids: string[]): Promise<void> {
-  if (ids.length === 0) return;
-  const { error } = await supabase
+/** Turns Verified on or off for schools; returns the stamps the database recorded. */
+export async function setSchoolsVerified(ids: string[], verified: boolean): Promise<VerificationStamp[]> {
+  if (ids.length === 0) return [];
+  const { data, error } = await supabase
     .from('schools')
-    .update({ is_verified: true, last_verified_at: new Date().toISOString() })
-    .in('facility_key', ids);
+    .update({ is_verified: verified })
+    .in('facility_key', ids)
+    .select('facility_key, is_verified, last_verified_at, verified_by');
   if (error) throw error;
+  return ((data ?? []) as { facility_key: string; is_verified: boolean | null; last_verified_at: string | null; verified_by: string | null }[])
+    .map((r) => ({ id: r.facility_key, isVerified: !!r.is_verified, lastVerifiedAt: r.last_verified_at ?? undefined, verifiedBy: r.verified_by ?? undefined }));
 }
 
 /**
@@ -416,4 +426,12 @@ export async function setSchoolLinks(
     .single();
   if (error) throw error;
   return rowToSchool(data as SchoolRow);
+}
+
+/** The "last updated" stamp the database recorded for a school (db/027), read after an edit. */
+export async function fetchSchoolUpdateStamp(id: string): Promise<{ lastUpdatedAt?: string; updatedBy?: string }> {
+  const { data, error } = await supabase.from('schools').select('updated_at, updated_by').eq('facility_key', id).single();
+  if (error) throw error;
+  const r = data as { updated_at: string | null; updated_by: string | null };
+  return { lastUpdatedAt: r.updated_at ?? undefined, updatedBy: r.updated_by ?? undefined };
 }

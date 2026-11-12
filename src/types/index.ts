@@ -90,7 +90,14 @@ export interface Contact {
   notes?: string;
   dataSource?: 'manual' | 'imported' | 'scraped';
   isVerified?: boolean;
+  /** When Verified was last switched on or off, and by whom (db/027). */
   lastVerifiedAt?: string;
+  verifiedBy?: string;
+  /** updated_at as stored: the last real content change since db/027 (undefined when
+   *  blank). updatedAt is the same with a fallback, for code that needs a date. */
+  lastUpdatedAt?: string;
+  /** Who made that change: an email, or 'database' (scraper, SQL Editor). Blank on rows not changed since 027. */
+  updatedBy?: string;
   /** Freshness (db/011), written by the scraper. */
   lastScrapedAt?: string;
   missedRuns?: number;
@@ -130,7 +137,14 @@ export interface School {
   gradeRange?: string;
   dataSource?: 'manual' | 'imported' | 'scraped';
   isVerified?: boolean;
+  /** When Verified was last switched on or off, and by whom (db/027). */
   lastVerifiedAt?: string;
+  verifiedBy?: string;
+  /** updated_at as stored: the last real content change since db/027 (undefined when
+   *  blank). updatedAt is the same with a fallback, for code that needs a date. */
+  lastUpdatedAt?: string;
+  /** Who made that change: an email, or 'database' (scraper, SQL Editor). Blank on rows not changed since 027. */
+  updatedBy?: string;
   /** Freshness (db/011), written by the scraper. */
   lastScrapedAt?: string;
   sourceStatus?: 'working' | 'broken' | 'not_found';

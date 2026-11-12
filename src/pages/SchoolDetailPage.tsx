@@ -354,7 +354,7 @@ export function SchoolDetailPage() {
           )}
         </Card>
 
-        {/* Programs & Offerings */}
+        {/* STEM programs the school itself runs (not events) */}
         <Card>
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -362,16 +362,17 @@ export function SchoolDetailPage() {
                 <BookOpen size={20} className="text-siue-red" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-neutral-800">Programs & Offerings</h3>
+                <h3 className="text-base font-semibold text-neutral-800">STEM programs at this school</h3>
                 <p className="text-xs text-neutral-500">
-                  {programs.length} program{programs.length !== 1 ? 's' : ''} recorded
+                  Clubs, courses and teams the school runs, like robotics or computer science. Events are listed separately.
+                  {' '}{programs.length} recorded.
                 </p>
               </div>
             </div>
             {canEdit && (
               <Button size="sm" variant="secondary" onClick={() => setShowAddProgramModal(true)}>
                 <Plus size={14} />
-                Add Program
+                Add STEM program
               </Button>
             )}
           </div>
@@ -415,7 +416,7 @@ export function SchoolDetailPage() {
             </div>
           ) : (
             <p className="text-sm text-neutral-500 py-4 text-center">
-              No programs recorded — click "Add Program" to track STEM and engineering offerings.
+              No STEM programs recorded yet. Use “Add STEM program” for a club, course or team the school runs.
             </p>
           )}
         </Card>
@@ -542,13 +543,13 @@ export function SchoolDetailPage() {
       <Modal
         open={showAddProgramModal}
         onClose={() => setShowAddProgramModal(false)}
-        title="Add Program"
+        title="Add STEM program"
         size="md"
       >
         <ProgramForm
           onSubmit={(data) => {
             addProgram({ ...data, schoolId: school.id });
-            toast.success('Program added');
+            toast.success('STEM program added');
             setShowAddProgramModal(false);
           }}
           onCancel={() => setShowAddProgramModal(false)}
@@ -561,11 +562,11 @@ export function SchoolDetailPage() {
         onConfirm={() => {
           if (programToArchive) {
             archiveProgram(programToArchive.id);
-            toast.success('Program archived');
+            toast.success('STEM program archived');
           }
           setProgramToArchive(null);
         }}
-        title="Archive Program"
+        title="Archive STEM program"
         message={`Archive "${programToArchive?.name}"? It will be hidden from this school. You can restore it from Settings → Archived.`}
         confirmLabel="Archive"
         variant="destructive"

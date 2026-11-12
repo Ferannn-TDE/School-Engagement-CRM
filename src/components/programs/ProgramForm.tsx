@@ -84,7 +84,7 @@ export function ProgramForm({ program, onSubmit, onCancel }: ProgramFormProps) {
           Cancel
         </Button>
         <Button type="submit" loading={isSubmitting}>
-          {isEditing ? 'Update Program' : 'Add Program'}
+          {isEditing ? 'Update STEM program' : 'Add STEM program'}
         </Button>
       </div>
     </form>

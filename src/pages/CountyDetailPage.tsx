@@ -273,7 +273,7 @@ export function CountyDetailPage() {
           <MetricCard
             title="Programs"
             value={summaryRow?.total_programs ?? state.programs.filter((p) => countySchoolIds.has(p.schoolId)).length}
-            subtitle="active offerings"
+            subtitle="STEM programs at these schools"
             icon={<BookOpen size={20} />}
           />
         </div>

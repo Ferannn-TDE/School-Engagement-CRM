@@ -162,21 +162,23 @@ function WorkTable({
           </thead>
           <tbody className="divide-y divide-neutral-50">
             {slice.map((item) => (
-              <tr key={item.id} className="hover:bg-neutral-50 transition-colors">
-                <td className="relative pl-6 pr-4 py-3">
+              <tr key={item.id} className="hover:bg-neutral-50 transition-colors" style={{ height: '4rem' }}>
+                <td className="relative pl-6 pr-4 py-2">
                   <span className={`absolute left-0 top-0 bottom-0 w-1 ${urgencyBar[item.urgency]}`} aria-hidden="true" />
                   <Link
                     to={`/schools/${encodeURIComponent(item.id)}`}
-                    className="block break-words font-medium text-neutral-800 hover:text-siue-red transition-colors"
+                    className="block truncate font-medium text-neutral-800 hover:text-siue-red transition-colors"
+                    title={item.name}
                   >
                     {item.name}
                   </Link>
                 </td>
-                <td className="px-4 py-3 break-words text-neutral-600">{item.county || <Missing label="No county" />}</td>
-                <td className="px-4 py-3 text-right tabular-nums text-neutral-700">{item.contactCount}</td>
-                <td className="px-4 py-3 whitespace-nowrap text-neutral-600">{item.lastContact}</td>
-                <td className="px-4 py-3 text-neutral-600 break-words">{item.reason}</td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-2 truncate text-neutral-600" title={item.county}>{item.county || <Missing label="No county" />}</td>
+                <td className="px-4 py-2 text-right tabular-nums text-neutral-700">{item.contactCount}</td>
+                <td className="px-4 py-2 whitespace-nowrap text-neutral-600">{item.lastContact}</td>
+                {/* Up to two lines, the rest on hover: rows stay the same height. */}
+                <td className="px-4 py-2 text-neutral-600"><span className="line-clamp-2" title={item.reason}>{item.reason}</span></td>
+                <td className="px-4 py-2">
                   <RowActions>
                     {onLog && <RowAction icon={<Plus size={13} />} label="Log" tone="primary" title={`Log contact with ${item.name}`} onClick={() => onLog(item)} />}
                     <RowAction icon={<ExternalLink size={13} />} label="Open" title={`Open ${item.name}`} onClick={() => navigate(`/schools/${encodeURIComponent(item.id)}`)} />

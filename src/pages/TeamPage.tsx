@@ -100,8 +100,8 @@ export function TeamPage() {
     const row = (m: TeamMember) => {
       const me = m.userId === user?.id;
       return (
-        <tr key={m.userId}>
-          <td className="px-6 py-3 break-all">
+        <tr key={m.userId} style={{ height: '4rem' }}>
+          <td className="px-6 py-2 max-w-0 truncate" title={m.email ?? m.userId}>
             <span className="font-medium text-neutral-800">{m.email ?? m.userId}</span>
             {me && <Badge variant="info" className="ml-2">You</Badge>}
           </td>
@@ -216,10 +216,10 @@ export function TeamPage() {
               </thead>
               <tbody className="divide-y divide-neutral-100">
                 {log.map((c) => (
-                  <tr key={c.id}>
+                  <tr key={c.id} style={{ height: '4rem' }}>
                     <td className="px-6 py-3 whitespace-nowrap text-neutral-600">{format(new Date(c.changedAt), 'MMM d, yyyy h:mm a')}</td>
-                    <td className="px-4 py-3 text-neutral-600 break-all">{c.changedByEmail ?? <Missing label="Not recorded" />}</td>
-                    <td className="px-4 py-3 break-all">{c.email ?? c.userId}</td>
+                    <td className="px-4 py-2 max-w-0 truncate text-neutral-600" title={c.changedByEmail}>{c.changedByEmail ?? <Missing label="Not recorded" />}</td>
+                    <td className="px-4 py-2 max-w-0 truncate" title={c.email ?? c.userId}>{c.email ?? c.userId}</td>
                     <td className="px-4 py-3">{describeChange(c)}</td>
                   </tr>
                 ))}

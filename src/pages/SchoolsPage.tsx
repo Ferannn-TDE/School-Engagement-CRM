@@ -20,7 +20,8 @@ import { useUrlState } from '../hooks/useUrlState';
 import { countyOptions, inCounty } from '../utils/counties';
 import type { School as SchoolType } from '../types';
 import { formatSchoolType } from '../utils/helpers';
-import { FreshnessBadges } from '../components/common/FreshnessBadges';
+import { FreshnessIcon } from '../components/common/FreshnessIcon';
+import { OneLine } from '../components/common/OneLine';
 import { schoolFreshness } from '../utils/freshness';
 import { useRole } from '../context/useRole';
 import { happenedActivities } from '../utils/activityDates';
@@ -53,6 +54,7 @@ export function SchoolsPage() {
   const [contactsRaw, setContactsFilter] = useUrlState('contacts');
   const contactsFilter = (contactsRaw === 'has' || contactsRaw === 'none' ? contactsRaw : '') as '' | 'has' | 'none';
   const [tabRaw, setVerifiedTab] = useUrlState('tab', 'all');
+  const [attentionFilter, setAttentionFilter] = useUrlState('attention');
   const verifiedTab = (['all', 'verified', 'unverified'].includes(tabRaw) ? tabRaw : 'all') as VerifiedTab;
   const [showAddModal, setShowAddModal] = useState(false);
 
@@ -72,8 +74,9 @@ export function SchoolsPage() {
     } else if (contactsFilter === 'none') {
       schools = schools.filter((s) => getContactsBySchool(s.id).length === 0);
     }
+    if (attentionFilter === 'yes') schools = schools.filter((s) => schoolFreshness(s).length > 0);
     return schools;
-  }, [state.schools, verifiedTab, countyFilter, typeFilter, contactsFilter, getContactsBySchool]);
+  }, [state.schools, verifiedTab, countyFilter, typeFilter, contactsFilter, attentionFilter, getContactsBySchool]);
 
   // Each county tied to its state: 40 names exist in both Illinois and Missouri.
   const uniqueCounties = useMemo(() => countyOptions(state.schools), [state.schools]);
@@ -106,26 +109,38 @@ export function SchoolsPage() {
       placeholder: 'Any Contacts',
       className: 'w-44',
     },
-  ], [uniqueCounties, countyFilter, typeFilter, contactsFilter, setCountyFilter, setTypeFilter, setContactsFilter]);
+    {
+      value: attentionFilter,
+      onChange: setAttentionFilter,
+      options: [{ value: 'yes', label: 'Needs attention' }],
+      placeholder: 'Any condition',
+      className: 'w-44',
+    },
+  ], [uniqueCounties, countyFilter, typeFilter, contactsFilter, attentionFilter, setCountyFilter, setTypeFilter, setContactsFilter, setAttentionFilter]);
 
   const baseColumns: ColumnDef<SchoolType, unknown>[] = useMemo(
     () => [
       {
         accessorKey: 'name',
         header: 'School Name',
+        // Two lines at most: the name (with the amber icon when something needs
+        // attention) and the district, each cut to fit.
         cell: ({ row }) => (
-          <div>
-            <Link
-              to={`/schools/${encodeURIComponent(row.original.id)}`}
-              className="font-medium text-neutral-800 hover:text-siue-red transition-colors"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {row.original.name}
-            </Link>
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <Link
+                to={`/schools/${encodeURIComponent(row.original.id)}`}
+                className="block min-w-0 truncate font-medium text-neutral-800 hover:text-siue-red transition-colors"
+                title={row.original.name}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {row.original.name}
+              </Link>
+              <FreshnessIcon flags={schoolFreshness(row.original)} />
+            </div>
             {row.original.districtName && (
-              <p className="text-xs text-neutral-500">{row.original.districtName}</p>
+              <OneLine className="text-xs text-neutral-500">{row.original.districtName}</OneLine>
             )}
-            <FreshnessBadges flags={schoolFreshness(row.original)} className="mt-1 flex flex-wrap gap-1" />
           </div>
         ),
       },
@@ -278,6 +293,7 @@ export function SchoolsPage() {
             setCountyFilter('');
             setTypeFilter('');
             setContactsFilter('');
+            setAttentionFilter('');
           }}
         />
 
@@ -314,7 +330,7 @@ export function SchoolsPage() {
               columnWidths={columns.length > 8 ? ['', '8.5rem', '8rem', '6.5rem', '6.5rem', '8rem', '6rem', '7.5rem', '6.5rem'] : ['', '8.5rem', '8rem', '6.5rem', '6.5rem', '8rem', '6rem', '7.5rem']}
               searchValue={search}
               urlState
-              resetKey={[verifiedTab, countyFilter, typeFilter, contactsFilter].join('|')}
+              resetKey={[verifiedTab, countyFilter, typeFilter, contactsFilter, attentionFilter].join('|')}
               onRowClick={(school) => navigate(`/schools/${encodeURIComponent(school.id)}`)}
               emptyMessage="No schools match your filters."
             />

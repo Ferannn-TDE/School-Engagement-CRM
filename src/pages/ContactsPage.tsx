@@ -36,7 +36,6 @@ export function ContactsPage() {
   const [roleFilter, setRoleFilter] = useUrlState('role');
   const [schoolFilter, setSchoolFilter] = useUrlState('school');
   const [activeFilter, setActiveFilter] = useUrlState('status');
-  const [attentionFilter, setAttentionFilter] = useUrlState('attention');
   const [tabRaw, setVerifiedTab] = useUrlState('tab', 'all');
   const verifiedTab = (['all', 'verified', 'unverified'].includes(tabRaw) ? tabRaw : 'all') as VerifiedTab;
   const [showAddModal, setShowAddModal] = useState(false);
@@ -57,9 +56,8 @@ export function ContactsPage() {
     if (schoolFilter) contacts = contacts.filter((c) => c.schoolId === schoolFilter);
     if (activeFilter === 'active') contacts = contacts.filter((c) => c.isActive);
     if (activeFilter === 'inactive') contacts = contacts.filter((c) => !c.isActive);
-    if (attentionFilter === 'yes') contacts = contacts.filter((c) => contactFreshness(c).length > 0);
     return contacts;
-  }, [state.contacts, verifiedTab, roleFilter, schoolFilter, activeFilter, attentionFilter]);
+  }, [state.contacts, verifiedTab, roleFilter, schoolFilter, activeFilter]);
 
   const columns: ColumnDef<Contact, unknown>[] = useMemo(
     () => [
@@ -268,19 +266,11 @@ export function ContactsPage() {
               placeholder: 'All Status',
               className: 'w-36',
             },
-            {
-              value: attentionFilter,
-              onChange: setAttentionFilter,
-              options: [{ value: 'yes', label: 'Needs attention' }],
-              placeholder: 'Any condition',
-              className: 'w-44',
-            },
           ]}
           onClear={() => {
             setRoleFilter('');
             setSchoolFilter('');
             setActiveFilter('');
-            setAttentionFilter('');
           }}
         />
 
@@ -316,7 +306,7 @@ export function ContactsPage() {
               columnWidths={canEdit ? ['', '', '12rem', '10rem', '', '7rem', '8rem'] : ['', '', '12rem', '10rem', '', '7rem']}
               searchValue={search}
               urlState
-              resetKey={[verifiedTab, roleFilter, schoolFilter, activeFilter, attentionFilter].join('|')}
+              resetKey={[verifiedTab, roleFilter, schoolFilter, activeFilter].join('|')}
               emptyMessage="No contacts match your filters."
             />
           </Card>

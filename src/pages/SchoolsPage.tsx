@@ -54,7 +54,6 @@ export function SchoolsPage() {
   const [contactsRaw, setContactsFilter] = useUrlState('contacts');
   const contactsFilter = (contactsRaw === 'has' || contactsRaw === 'none' ? contactsRaw : '') as '' | 'has' | 'none';
   const [tabRaw, setVerifiedTab] = useUrlState('tab', 'all');
-  const [attentionFilter, setAttentionFilter] = useUrlState('attention');
   const verifiedTab = (['all', 'verified', 'unverified'].includes(tabRaw) ? tabRaw : 'all') as VerifiedTab;
   const [showAddModal, setShowAddModal] = useState(false);
 
@@ -74,9 +73,8 @@ export function SchoolsPage() {
     } else if (contactsFilter === 'none') {
       schools = schools.filter((s) => getContactsBySchool(s.id).length === 0);
     }
-    if (attentionFilter === 'yes') schools = schools.filter((s) => schoolFreshness(s).length > 0);
     return schools;
-  }, [state.schools, verifiedTab, countyFilter, typeFilter, contactsFilter, attentionFilter, getContactsBySchool]);
+  }, [state.schools, verifiedTab, countyFilter, typeFilter, contactsFilter, getContactsBySchool]);
 
   // Each county tied to its state: 40 names exist in both Illinois and Missouri.
   const uniqueCounties = useMemo(() => countyOptions(state.schools), [state.schools]);
@@ -109,14 +107,7 @@ export function SchoolsPage() {
       placeholder: 'Any Contacts',
       className: 'w-44',
     },
-    {
-      value: attentionFilter,
-      onChange: setAttentionFilter,
-      options: [{ value: 'yes', label: 'Needs attention' }],
-      placeholder: 'Any condition',
-      className: 'w-44',
-    },
-  ], [uniqueCounties, countyFilter, typeFilter, contactsFilter, attentionFilter, setCountyFilter, setTypeFilter, setContactsFilter, setAttentionFilter]);
+  ], [uniqueCounties, countyFilter, typeFilter, contactsFilter, setCountyFilter, setTypeFilter, setContactsFilter]);
 
   const baseColumns: ColumnDef<SchoolType, unknown>[] = useMemo(
     () => [
@@ -296,7 +287,6 @@ export function SchoolsPage() {
             setCountyFilter('');
             setTypeFilter('');
             setContactsFilter('');
-            setAttentionFilter('');
           }}
         />
 
@@ -333,7 +323,7 @@ export function SchoolsPage() {
               columnWidths={columns.length > 8 ? ['', '8.5rem', '8rem', '6.5rem', '6.5rem', '8rem', '6rem', '7.5rem', '6.5rem'] : ['', '8.5rem', '8rem', '6.5rem', '6.5rem', '8rem', '6rem', '7.5rem']}
               searchValue={search}
               urlState
-              resetKey={[verifiedTab, countyFilter, typeFilter, contactsFilter, attentionFilter].join('|')}
+              resetKey={[verifiedTab, countyFilter, typeFilter, contactsFilter].join('|')}
               onRowClick={(school) => navigate(`/schools/${encodeURIComponent(school.id)}`)}
               emptyMessage="No schools match your filters."
             />

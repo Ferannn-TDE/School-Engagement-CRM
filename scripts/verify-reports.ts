@@ -12,6 +12,7 @@ import { strict as assert } from 'node:assert';
 
 import type { ActivityRecord, School } from '../src/types';
 import { priorityLists, countyGaps } from '../src/utils/priorities';
+import { countySummaryFromData } from '../src/services/analyticsService';
 import { attendanceByEvent, schoolsAtEvent, schoolsWithAttendance, unlinkedAttendance } from '../src/utils/events';
 import type { Contact, Event as AppEvent } from '../src/types';
 import { activityDateError, futureDateNote, hasHappened, latestActivityDay } from '../src/utils/activityDates';
@@ -333,6 +334,15 @@ console.log('Priorities: four lists that never overlap');
     assert.deepEqual([...att.get('e_1')!].sort(), ['s1', 's2', 's8']);
     assert.deepEqual(schoolsAtEvent(events[1], att), ['s5']);
     assert.deepEqual(schoolsAtEvent(events[0], att).sort(), ['s1', 's2', 's8']);
+  });
+  check('county figures: every contact the app places, active vs on file, events listed or attended', () => {
+    // Like Adair, MO: people placed only by school_worked_at count too (the view missed them).
+    const people = [con('s1'), con('s1'), con('s1'), con('s2'), { ...con('s3'), isActive: false }];
+    const rows = countySummaryFromData(schools, people, events, [...acts, a('u3', 's3', '2026-10-02', 'event_participation')], [{ schoolId: 's1' }], T);
+    const mad = rows.find((r) => r.county_name === 'Madison')!;
+    assert.deepEqual([mad.total_schools, mad.total_contacts, mad.contacts_on_file, mad.total_programs], [7, 4, 5, 1]);
+    // e_1 (attended by s1, s2, s8) and one unlinked attendance import (s3); e_2 lists s5 but is upcoming and still counts as listed.
+    assert.equal(mad.total_events, 3);
   });
   check('attendance with no event linked still counts as attending; future-dated does not', () => {
     const more = [...acts, a('u1', 's6', '2026-10-01', 'event_participation'), a('u2', 's5', '2026-12-01', 'event_participation')];

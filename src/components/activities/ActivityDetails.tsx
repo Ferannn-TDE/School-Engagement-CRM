@@ -12,6 +12,7 @@ import { useRole } from '../../context/useRole';
 import { IN_PERSON_ACTIVITY_TYPES } from '../../types';
 import type { ActivityRecord } from '../../types';
 import { activityTypeLabel } from '../../utils/reportLists';
+import { specifyError } from '../../utils/labels';
 import { parseVisitors, visitorsLabel } from '../../utils/visitors';
 import { activityDateError, futureDateNote, hasHappened, latestActivityDay, todayDay } from '../../utils/activityDates';
 import { writeErrorMessage } from '../../utils/writeErrors';
@@ -19,7 +20,7 @@ import { fetchImportBatch, type ImportBatch } from '../../services/importBatches
 import { EventPicker } from '../events/EventPicker';
 
 /** Every type an activity can have: the three Log contact methods and imported attendance. */
-const ACTIVITY_TYPES = ['call', 'email', 'visit', 'event_participation'];
+const ACTIVITY_TYPES = ['call', 'email', 'visit', 'event_participation', 'other'];
 
 interface ActivityDetailsProps {
   activity: ActivityRecord;
@@ -74,7 +75,7 @@ export function ActivityDetails({ activity, onClose, onArchive }: ActivityDetail
     <div className="space-y-4">
       <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
         <Field label="Type">
-          {activityTypeLabel(activity.activityType)}
+          {activityTypeLabel(activity.activityType, activity.activityTypeOther)}
           {upcoming && <Badge variant="info" className="ml-2 align-middle">Upcoming</Badge>}
         </Field>
         <Field label="Date">{format(new Date(activity.date), 'EEEE, MMM d, yyyy')}</Field>
@@ -164,6 +165,7 @@ function ActivityEditForm({ activity, onCancel, onSaved, save }: {
   const { getContactsBySchool } = useAppContext();
   const today = todayDay();
   const [type, setType] = useState(activity.activityType);
+  const [typeOther, setTypeOther] = useState(activity.activityTypeOther ?? '');
   const [date, setDate] = useState(activity.date.slice(0, 10));
   const [contactId, setContactId] = useState(activity.contactId ?? '');
   const [eventId, setEventId] = useState(activity.eventId ?? '');
@@ -176,6 +178,7 @@ function ActivityEditForm({ activity, onCancel, onSaved, save }: {
   const isFuture = !dateError && date > today;
   const inPerson = IN_PERSON_ACTIVITY_TYPES.includes(type);
   const visitors = inPerson ? parseVisitors(visitorsText) : { value: null, error: '' };
+  const otherError = specifyError(type, typeOther);
 
   const typeOptions = [...new Set([...ACTIVITY_TYPES, activity.activityType])]
     .map((t) => ({ value: t, label: activityTypeLabel(t) }));
@@ -186,12 +189,13 @@ function ActivityEditForm({ activity, onCancel, onSaved, save }: {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (dateError || visitors.error) return;
+    if (dateError || visitors.error || otherError) return;
     setSaving(true);
     setError('');
     try {
       await save(activity.id, {
         activityType: type,
+        activityTypeOther: type === 'other' ? typeOther.trim() : null,
         date,
         description: notes.trim(),
         contactId: contactId || null,
@@ -223,6 +227,18 @@ function ActivityEditForm({ activity, onCancel, onSaved, save }: {
           onChange={(e) => setDate(e.target.value)}
         />
       </div>
+      {/* Other: "Please specify" is required, and shown instead of "Other" (db/028). */}
+      {type === 'other' && (
+        <Input
+          id="activity-edit-type-other"
+          label="Please specify"
+          required
+          placeholder="What kind of contact was it?"
+          value={typeOther}
+          error={otherError || undefined}
+          onChange={(e) => setTypeOther(e.target.value)}
+        />
+      )}
       {inPerson && (
         <Input
           id="activity-edit-visitors"
@@ -263,7 +279,7 @@ function ActivityEditForm({ activity, onCancel, onSaved, save }: {
       {error && <p role="alert" className="text-sm text-error">{error}</p>}
       <div className="flex justify-end gap-3 pt-4 border-t border-neutral-100">
         <Button variant="ghost" type="button" onClick={onCancel} disabled={saving}>Cancel</Button>
-        <Button type="submit" loading={saving} disabled={!!dateError || !!visitors.error}>Save changes</Button>
+        <Button type="submit" loading={saving} disabled={!!dateError || !!visitors.error || !!otherError}>Save changes</Button>
       </div>
     </form>
   );

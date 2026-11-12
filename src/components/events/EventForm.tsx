@@ -25,7 +25,9 @@ const eventSchema = z.object({
   attendeeCountStr: z.string().optional(),
   notes: z.string().optional(),
   participatingSchools: z.array(z.string()),
-});
+  // Other: "Please specify" is required, and shown instead of "Other" (db/028).
+  typeOther: z.string().optional(),
+}).refine((d) => d.type !== 'other' || !!d.typeOther?.trim(), { path: ['typeOther'], message: 'Please specify' });
 
 type EventFormData = z.infer<typeof eventSchema>;
 
@@ -53,7 +55,9 @@ export function EventForm({ event, onClose, onCreated, initialDate }: EventFormP
     defaultValues: event
       ? {
           name: event.name,
-          type: event.type,
+          // Events saved before db/028 have no type: the form asks for one.
+          type: event.type ?? '',
+          typeOther: event.typeOther ?? '',
           date: event.date.slice(0, 16),
           endDate: event.endDate?.slice(0, 16) || '',
           location: event.location,
@@ -63,6 +67,7 @@ export function EventForm({ event, onClose, onCreated, initialDate }: EventFormP
         }
       : {
           type: '',
+          typeOther: '',
           date: initialDate ? `${initialDate}T09:00` : '',
           participatingSchools: [],
           attendeeCountStr: '',
@@ -96,6 +101,7 @@ export function EventForm({ event, onClose, onCreated, initialDate }: EventFormP
     const eventData = {
       name: data.name,
       type: data.type as EventType,
+      typeOther: data.type === 'other' ? data.typeOther?.trim() : undefined,
       date: new Date(data.date).toISOString(),
       endDate: data.endDate ? new Date(data.endDate).toISOString() : undefined,
       location: data.location ?? '',
@@ -154,6 +160,15 @@ export function EventForm({ event, onClose, onCreated, initialDate }: EventFormP
           {...register('location')}
         />
       </div>
+      {watch('type') === 'other' && (
+        <Input
+          label="Please specify"
+          required
+          placeholder="What kind of event is it?"
+          error={errors.typeOther?.message}
+          {...register('typeOther')}
+        />
+      )}
       <div className="grid grid-cols-2 gap-4">
         <Input
           label="Start Date & Time"

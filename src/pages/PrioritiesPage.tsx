@@ -206,7 +206,7 @@ export function PrioritiesPage() {
       recent: lists.recent.map((x) => item(x.schoolId,
         x.daysLeft === 0 ? 'Leaves the list tomorrow.' : `Leaves the list in ${plural(x.daysLeft, 'day')}.`,
         x.daysLeft <= 14 ? 'overdue' : 'due',
-        `${formatDay(x.lastDay)} · ${activityTypeLabel(x.lastType)}`)),
+        `${formatDay(x.lastDay)} · ${activityTypeLabel(x.lastType, x.lastTypeOther)}`)),
       neverReached: lists.neverReached.map((x) => item(x.schoolId,
         x.upcoming
           ? `On ${event.get(x.upcoming.eventId)?.name ?? 'an event'}, ${formatDay(x.upcoming.day)}. ${plural(x.activeContacts, 'contact')} on file, never contacted.`

@@ -12,7 +12,9 @@ const programSchema = z.object({
   name: z.string().min(1, 'Program name is required'),
   category: z.string().min(1, 'Category is required'),
   description: z.string().optional(),
-});
+  // Other: "Please specify" is required, and shown instead of "Other" (db/028).
+  categoryOther: z.string().optional(),
+}).refine((d) => d.category !== 'other' || !!d.categoryOther?.trim(), { path: ['categoryOther'], message: 'Please specify' });
 
 type ProgramFormData = z.infer<typeof programSchema>;
 
@@ -30,6 +32,7 @@ export function ProgramForm({ program, onSubmit, onCancel }: ProgramFormProps) {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<ProgramFormData>({
     resolver: zodResolver(programSchema),
@@ -37,6 +40,7 @@ export function ProgramForm({ program, onSubmit, onCancel }: ProgramFormProps) {
       ? {
           name: program.name,
           category: program.category,
+          categoryOther: program.categoryOther ?? '',
           description: program.description ?? '',
         }
       : {},
@@ -46,6 +50,7 @@ export function ProgramForm({ program, onSubmit, onCancel }: ProgramFormProps) {
     onSubmit({
       name: data.name,
       category: data.category as Program['category'],
+      categoryOther: data.category === 'other' ? data.categoryOther?.trim() : undefined,
       description: data.description || undefined,
       isActive: true,
     });
@@ -73,6 +78,15 @@ export function ProgramForm({ program, onSubmit, onCancel }: ProgramFormProps) {
         error={errors.category?.message}
         {...register('category')}
       />
+      {watch('category') === 'other' && (
+        <Input
+          label="Please specify"
+          required
+          placeholder="e.g. Drone club"
+          error={errors.categoryOther?.message}
+          {...register('categoryOther')}
+        />
+      )}
       <Textarea
         label="Description"
         rows={3}

@@ -13,6 +13,8 @@ interface ActivityRow {
   /** db/022; absent until that migration is applied. */
   import_batch_id?: string | null;
   attendee_count?: number | null;
+  /** db/028 */
+  activity_type_other?: string | null;
   /** db/026: stamped by triggers from the signed-in email; null on older rows. */
   created_by?: string | null;
   updated_at?: string | null;
@@ -45,6 +47,7 @@ function rowToActivity(row: ActivityRow): ActivityRecord {
     outcome: row.outcome ?? undefined,
     importBatchId: row.import_batch_id ?? undefined,
     attendeeCount: row.attendee_count ?? undefined,
+    activityTypeOther: row.activity_type_other ?? undefined,
     createdBy: row.created_by ?? undefined,
     updatedAt: row.updated_at ?? undefined,
     updatedBy: row.updated_by ?? undefined,
@@ -74,6 +77,7 @@ export async function createActivity(
       description: activity.description,
       outcome: activity.outcome ?? null,
       attendee_count: activity.attendeeCount ?? null,
+      activity_type_other: activity.activityType === 'other' ? activity.activityTypeOther ?? null : null,
     })
     .select()
     .single();
@@ -90,6 +94,7 @@ export async function updateActivity(id: string, changes: ActivityChanges): Prom
     .from('activities')
     .update({
       activity_type: changes.activityType,
+      activity_type_other: changes.activityType === 'other' ? changes.activityTypeOther : null,
       date: changes.date.slice(0, 10),
       description: changes.description,
       contact_id: changes.contactId,

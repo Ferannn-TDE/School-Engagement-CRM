@@ -21,6 +21,7 @@ export interface RecentItem {
   /** The last activity: its day, type (and the Other text, when there is one). */
   lastDay: Day;
   lastType: string;
+  lastTypeOther?: string;
   /** Days until it falls out of the window (0 = last day). */
   daysLeft: number;
 }
@@ -60,12 +61,12 @@ export function priorityLists(
   for (const c of contacts) if (c.isActive) active.set(c.schoolId, (active.get(c.schoolId) ?? 0) + 1);
 
   // Each school's latest activity whose day has come.
-  const last = new Map<string, { day: Day; type: string }>();
+  const last = new Map<string, { day: Day; type: string; other?: string }>();
   for (const a of activities) {
     const d = dayOf(a.date);
     if (d > today) continue;
     const seen = last.get(a.schoolId);
-    if (!seen || d > seen.day) last.set(a.schoolId, { day: d, type: a.activityType });
+    if (!seen || d > seen.day) last.set(a.schoolId, { day: d, type: a.activityType, other: a.activityTypeOther });
   }
 
   const upcoming = new Map<string, { eventId: string; day: Day }>();
@@ -87,7 +88,7 @@ export function priorityLists(
   for (const s of schools) {
     const l = last.get(s.id);
     if (!l || l.day < windowFrom) continue;
-    recent.push({ schoolId: s.id, lastDay: l.day, lastType: l.type, daysLeft: RECENT_CONTACT_DAYS - daysBetween(l.day, today) });
+    recent.push({ schoolId: s.id, lastDay: l.day, lastType: l.type, lastTypeOther: l.other, daysLeft: RECENT_CONTACT_DAYS - daysBetween(l.day, today) });
     placed.add(s.id);
   }
   // Oldest contact first, then name.

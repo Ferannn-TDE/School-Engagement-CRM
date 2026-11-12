@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { Calendar, Clock, MapPin, School } from 'lucide-react';
 import type { Event } from '../../types';
 import { eventSourceLabel } from '../../utils/events';
+import { eventTypeLabel } from '../../utils/labels';
 import { Button } from '../common/Button';
 import { useAppContext } from '../../context/useAppContext';
 
@@ -16,7 +17,8 @@ export function EventDetails({ event, onEdit }: { event: Event; onEdit?: () => v
     <div className="space-y-4">
       <div>
         <p className="text-lg font-semibold text-neutral-800">{event.name}</p>
-        <p className="mt-0.5 text-sm text-neutral-500">{eventSourceLabel(event)}</p>
+        {/* Source as before; Type is the one chosen in the event form (db/028), "Not set" until then. */}
+        <p className="mt-0.5 text-sm text-neutral-500">{eventSourceLabel(event)} · Type: {eventTypeLabel(event)}</p>
       </div>
 
       <dl className="space-y-3 text-sm">

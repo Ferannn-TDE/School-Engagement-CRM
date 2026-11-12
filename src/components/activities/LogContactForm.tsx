@@ -7,6 +7,7 @@ import { Button } from '../common/Button';
 import { useAppContext } from '../../context/useAppContext';
 import { ContactMethodLabels, IN_PERSON_ACTIVITY_TYPES } from '../../types';
 import { parseVisitors } from '../../utils/visitors';
+import { specifyError } from '../../utils/labels';
 import { activityDateError, futureDateNote, latestActivityDay } from '../../utils/activityDates';
 import toast from 'react-hot-toast';
 import { writeErrorMessage } from '../../utils/writeErrors';
@@ -24,6 +25,7 @@ export function LogContactForm({ schoolId, onClose }: LogContactFormProps) {
   const today = format(new Date(), 'yyyy-MM-dd');
 
   const [method, setMethod] = useState('call');
+  const [methodOther, setMethodOther] = useState('');
   const [date, setDate] = useState(today);
   const [contactId, setContactId] = useState('');
   const [notes, setNotes] = useState('');
@@ -37,10 +39,11 @@ export function LogContactForm({ schoolId, onClose }: LogContactFormProps) {
   // Only in-person types have visitors; a count typed before switching to a call is dropped.
   const inPerson = IN_PERSON_ACTIVITY_TYPES.includes(method);
   const visitors = inPerson ? parseVisitors(visitorsText) : { value: null, error: '' };
+  const otherError = specifyError(method, methodOther);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (dateError || visitors.error) return;
+    if (dateError || visitors.error || otherError) return;
     setSaving(true);
     setError('');
     try {
@@ -48,6 +51,7 @@ export function LogContactForm({ schoolId, onClose }: LogContactFormProps) {
         schoolId,
         contactId: contactId || undefined,
         activityType: method,
+        activityTypeOther: method === 'other' ? methodOther.trim() : undefined,
         date,
         description: notes.trim(),
         attendeeCount: visitors.value ?? undefined,
@@ -90,6 +94,18 @@ export function LogContactForm({ schoolId, onClose }: LogContactFormProps) {
           onChange={(e) => setDate(e.target.value)}
         />
       </div>
+      {/* Other: "Please specify" is required, and shown instead of "Other" (db/028). */}
+      {method === 'other' && (
+        <Input
+          id="log-contact-method-other"
+          label="Please specify"
+          required
+          placeholder="What kind of contact was it?"
+          value={methodOther}
+          error={otherError || undefined}
+          onChange={(e) => setMethodOther(e.target.value)}
+        />
+      )}
       {inPerson && (
         <Input
           id="log-contact-visitors"
@@ -128,7 +144,7 @@ export function LogContactForm({ schoolId, onClose }: LogContactFormProps) {
         <Button variant="ghost" type="button" onClick={onClose} disabled={saving}>
           Cancel
         </Button>
-        <Button type="submit" loading={saving} disabled={!!dateError || !!visitors.error}>
+        <Button type="submit" loading={saving} disabled={!!dateError || !!visitors.error || !!otherError}>
           Log contact
         </Button>
       </div>

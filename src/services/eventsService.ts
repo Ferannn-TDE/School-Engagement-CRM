@@ -18,6 +18,9 @@ interface EventRow {
   external_id: string | null;
   fair_name: string | null;
   category: string | null;
+  /** db/028: NULL = "Not set". */
+  event_type?: string | null;
+  event_type_other?: string | null;
   created_at: string | null;
   updated_at: string | null;
 }
@@ -43,7 +46,10 @@ function rowToEvent(row: EventRow): Event {
   return {
     id: `e_${row.event_id}`,
     name: row.fair_name ?? row.location ?? 'Untitled Event',
-    type: row.is_scraped ? EventType.OUTREACH_FAIR : EventType.OTHER,
+    // Saved since db/028. Before, the app showed "Outreach Fair" for scraped events and
+    // "Other" for the rest; those events now show "Not set" until someone edits them.
+    type: (row.event_type as EventType | null) ?? undefined,
+    typeOther: row.event_type_other ?? undefined,
     date,
     hasTime,
     source: row.external_id?.startsWith('schoolreach:')
@@ -92,6 +98,8 @@ export async function createEvent(
       date: dateOnly,
       attendance: event.attendeeCount ?? null,
       is_scraped: false,
+      event_type: event.type ?? null,
+      event_type_other: event.type === 'other' ? event.typeOther ?? null : null,
     })
     .select()
     .single();
@@ -105,6 +113,10 @@ export async function updateEvent(id: string, updates: Partial<Event>): Promise<
   if (updates.name !== undefined) patch.fair_name = updates.name;
   if (updates.location !== undefined) patch.location = updates.location || null;
   if (updates.attendeeCount !== undefined) patch.attendance = updates.attendeeCount;
+  if (updates.type !== undefined) {
+    patch.event_type = updates.type;
+    patch.event_type_other = updates.type === 'other' ? updates.typeOther ?? null : null;
+  }
   if (updates.participatingSchools !== undefined) {
     patch.schools_involved = updates.participatingSchools.join(',') || null;
   }

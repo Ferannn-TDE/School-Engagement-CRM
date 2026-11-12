@@ -78,9 +78,12 @@ export function ActivityDetails({ activity, onClose, onArchive }: ActivityDetail
           {upcoming && <Badge variant="info" className="ml-2 align-middle">Upcoming</Badge>}
         </Field>
         <Field label="Date">{format(new Date(activity.date), 'EEEE, MMM d, yyyy')}</Field>
-        <Field label="Number of visitors">
-          {activity.attendeeCount != null ? visitorsLabel(activity.attendeeCount) : <Muted>Not recorded</Muted>}
-        </Field>
+        {/* Calls and emails have no visitors: the row only shows for in-person types. */}
+        {IN_PERSON_ACTIVITY_TYPES.includes(activity.activityType) && (
+          <Field label="Number of visitors">
+            {activity.attendeeCount != null ? visitorsLabel(activity.attendeeCount) : <Muted>Not recorded</Muted>}
+          </Field>
+        )}
         <Field label="Who you spoke to">
           {person ? `${person.firstName} ${person.lastName}`.trim() || person.email : activity.contactId ? <Muted>A contact no longer at this school</Muted> : <Muted>Not a specific person</Muted>}
         </Field>

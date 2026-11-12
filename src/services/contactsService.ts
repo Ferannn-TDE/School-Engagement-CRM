@@ -1,5 +1,6 @@
 import { supabase, fetchAllRows } from './supabase';
 import { acceptPatch, dismissPatch } from '../utils/pending';
+import type { VerificationStamp } from './schoolsService';
 import type { PendingMap } from '../utils/pending';
 import type { Contact } from '../types';
 import type { ContactRole } from '../types';
@@ -20,6 +21,9 @@ interface StaffRow {
   data_source: string | null;
   is_verified: boolean | null;
   last_verified_at: string | null;
+  /** db/027 */
+  verified_by?: string | null;
+  updated_by?: string | null;
   last_scraped_at?: string | null;
   missed_runs?: number | null;
   missing_since?: string | null;
@@ -59,6 +63,9 @@ function rowToContact(staff: StaffRow, schoolId: string): Contact {
     dataSource: (staff.data_source as Contact['dataSource']) ?? 'manual',
     isVerified: staff.is_verified ?? false,
     lastVerifiedAt: staff.last_verified_at ?? undefined,
+    verifiedBy: staff.verified_by ?? undefined,
+    lastUpdatedAt: staff.updated_at ?? undefined,
+    updatedBy: staff.updated_by ?? undefined,
     lastScrapedAt: staff.last_scraped_at ?? undefined,
     missedRuns: staff.missed_runs ?? undefined,
     missingSince: staff.missing_since ?? undefined,
@@ -217,13 +224,17 @@ export async function updateContact(id: string, updates: Partial<Contact>): Prom
   }
 }
 
-export async function markContactVerified(id: string): Promise<void> {
-  const staffId = parseInt(id, 10);
-  const { error } = await supabase
+/** Turns Verified on or off for a contact; returns what the database stamped (db/027). */
+export async function setContactVerified(id: string, verified: boolean): Promise<VerificationStamp> {
+  const { data, error } = await supabase
     .from('staff')
-    .update({ is_verified: true, last_verified_at: new Date().toISOString() })
-    .eq('staff_id', staffId);
+    .update({ is_verified: verified })
+    .eq('staff_id', parseInt(id, 10))
+    .select('is_verified, last_verified_at, verified_by')
+    .single();
   if (error) throw error;
+  const r = data as { is_verified: boolean | null; last_verified_at: string | null; verified_by: string | null };
+  return { id, isVerified: !!r.is_verified, lastVerifiedAt: r.last_verified_at ?? undefined, verifiedBy: r.verified_by ?? undefined };
 }
 
 export interface ImportContactsResult {
@@ -389,4 +400,12 @@ export async function resolveContactPending(
   const { data, error } = await supabase.from('staff').update(patch).eq('staff_id', staffId).select().single();
   if (error) throw error;
   return rowToContact(data as StaffRow, contact.schoolId);
+}
+
+/** The "last updated" stamp the database recorded for a contact (db/027), read after an edit. */
+export async function fetchContactUpdateStamp(id: string): Promise<{ lastUpdatedAt?: string; updatedBy?: string }> {
+  const { data, error } = await supabase.from('staff').select('updated_at, updated_by').eq('staff_id', parseInt(id, 10)).single();
+  if (error) throw error;
+  const r = data as { updated_at: string | null; updated_by: string | null };
+  return { lastUpdatedAt: r.updated_at ?? undefined, updatedBy: r.updated_by ?? undefined };
 }

@@ -41,14 +41,14 @@
     { "event_id": 9, "fair_name": "Summer visit", "date": "2026-06-01", "time": null, "schools_involved": "s5", "location": "", "category": null, "archived": false, "note": "before the range" }
   ],
   "staff": [
-    { "staff_id": 1, "school_worked_at": "s1", "is_active": true, "archived": false, "last_verified_at": "2026-07-01T15:00:00+00:00", "last_scraped_at": null, "note": "verified recently" },
-    { "staff_id": 2, "school_worked_at": "s1", "is_active": true, "archived": false, "last_verified_at": "2026-04-26T23:30:00+00:00", "last_scraped_at": null, "note": "verified the day before the 6-month line" },
-    { "staff_id": 3, "school_worked_at": "s2", "is_active": true, "archived": false, "last_verified_at": null, "last_scraped_at": "2026-10-01T00:00:00+00:00", "note": "no junction row: school from school_worked_at; scraped" },
-    { "staff_id": 4, "school_worked_at": "s3", "is_active": false, "archived": false, "last_verified_at": null, "last_scraped_at": null, "note": "inactive" },
-    { "staff_id": 5, "school_worked_at": "s5", "is_active": null, "archived": false, "last_verified_at": null, "last_scraped_at": null, "note": "is_active null counts as active" },
-    { "staff_id": 6, "school_worked_at": "sx", "is_active": true, "archived": false, "last_verified_at": null, "last_scraped_at": null, "note": "on an archived school: never counted" },
-    { "staff_id": 7, "school_worked_at": "s6", "is_active": true, "archived": true, "last_verified_at": null, "last_scraped_at": null, "note": "archived: never counted" },
-    { "staff_id": 8, "school_worked_at": "s6", "is_active": true, "archived": false, "last_verified_at": null, "last_scraped_at": null, "note": "its junction row is archived, so school_worked_at (s6) is used" }
+    { "staff_id": 1, "school_worked_at": "s1", "is_active": true, "archived": false, "last_verified_at": "2026-07-01T15:00:00+00:00", "updated_at": "2026-07-01T15:00:00+00:00", "last_scraped_at": null, "note": "verified recently" },
+    { "staff_id": 2, "school_worked_at": "s1", "is_active": true, "archived": false, "last_verified_at": "2026-04-26T23:30:00+00:00", "updated_at": "2025-10-26T23:30:00+00:00", "last_scraped_at": null, "note": "verified the day before the 6-month line" },
+    { "staff_id": 3, "school_worked_at": "s2", "is_active": true, "archived": false, "last_verified_at": null, "updated_at": "2026-10-01T00:00:00+00:00", "last_scraped_at": "2026-10-01T00:00:00+00:00", "note": "no junction row: school from school_worked_at; scraped" },
+    { "staff_id": 4, "school_worked_at": "s3", "is_active": false, "archived": false, "last_verified_at": null, "updated_at": null, "last_scraped_at": null, "note": "inactive" },
+    { "staff_id": 5, "school_worked_at": "s5", "is_active": null, "archived": false, "last_verified_at": null, "updated_at": "2024-01-01T00:00:00+00:00", "last_scraped_at": null, "note": "is_active null counts as active" },
+    { "staff_id": 6, "school_worked_at": "sx", "is_active": true, "archived": false, "last_verified_at": null, "updated_at": null, "last_scraped_at": null, "note": "on an archived school: never counted" },
+    { "staff_id": 7, "school_worked_at": "s6", "is_active": true, "archived": true, "last_verified_at": null, "updated_at": null, "last_scraped_at": null, "note": "archived: never counted" },
+    { "staff_id": 8, "school_worked_at": "s6", "is_active": true, "archived": false, "last_verified_at": null, "updated_at": null, "last_scraped_at": null, "note": "its junction row is archived, so school_worked_at (s6) is used" }
   ],
   "contacts": [
     { "school_id": "s1", "staff_id": 1, "archived": false },

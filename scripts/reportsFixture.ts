@@ -17,7 +17,7 @@ export interface FixtureRows {
   schools: { facility_key: string; name: string; state_code: string | null; county_name: string | null; archived: boolean; source_status: School['sourceStatus'] | null }[];
   activities: { activity_id: string; event_id: number | null; school_id: string; activity_type: string; date: string; archived: boolean; import_batch_id: string | null; attendee_count: number | null }[];
   events: { event_id: number; fair_name: string | null; date: string | null; time: string | null; schools_involved: string | null; location: string | null; category: string | null; archived: boolean }[];
-  staff: { staff_id: number; school_worked_at: string | null; is_active: boolean | null; archived: boolean; last_verified_at: string | null; last_scraped_at: string | null }[];
+  staff: { staff_id: number; school_worked_at: string | null; is_active: boolean | null; archived: boolean; last_verified_at: string | null; updated_at?: string | null; last_scraped_at: string | null }[];
   contacts: { school_id: string; staff_id: number; archived: boolean }[];
 }
 
@@ -60,7 +60,7 @@ export function toAppData(rows: FixtureRows, today: string): ReportInput & { pro
   const contacts: Contact[] = rows.staff.filter((s) => !s.archived).map((s) => ({
     id: String(s.staff_id), firstName: '', lastName: '', email: '', role: ContactRole.OTHER,
     schoolId: junction.get(s.staff_id) ?? s.school_worked_at ?? '', isActive: s.is_active ?? true,
-    lastVerifiedAt: s.last_verified_at ?? undefined, lastScrapedAt: s.last_scraped_at ?? undefined,
+    lastVerifiedAt: s.last_verified_at ?? undefined, lastUpdatedAt: s.updated_at ?? undefined, lastScrapedAt: s.last_scraped_at ?? undefined,
     createdAt: STAMP, updatedAt: STAMP,
   })).filter((c) => !archivedSchools.has(c.schoolId));
 

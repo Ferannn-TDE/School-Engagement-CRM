@@ -126,7 +126,7 @@ export function listBuilders(data: ReportInput, asOf: Day) {
         title, subtitle, filename,
         columns: [
           { key: 'name', label: 'Name' }, { key: 'title', label: 'Title' }, { key: 'school', label: 'School' },
-          { key: 'verified', label: 'Last verified' },
+          { key: 'updated', label: 'Last updated' },
         ],
         rows: ids.map((id) => contacts.get(id)).filter((c): c is Contact => !!c)
           .sort((a, b) => schoolName(a.schoolId).localeCompare(schoolName(b.schoolId)) || a.lastName.localeCompare(b.lastName))
@@ -134,7 +134,7 @@ export function listBuilders(data: ReportInput, asOf: Day) {
             link: schoolLink(c.schoolId),
             cells: {
               name: `${c.firstName} ${c.lastName}`.trim(), title: c.title ?? '', school: schoolName(c.schoolId),
-              verified: c.lastVerifiedAt ? formatDay(dayOf(c.lastVerifiedAt)) : 'Never',
+              updated: c.lastUpdatedAt ? formatDay(dayOf(c.lastUpdatedAt)) : 'Not recorded',
             },
           })),
       };

@@ -31,8 +31,8 @@ export const FOLLOW_UP_DAYS = 60;
 /** A school with no activity for this many months has gone quiet. */
 export const QUIET_MONTHS = 6;
 
-/** A contact verified within this many months counts as current. */
-export const VERIFIED_RECENT_MONTHS = 6;
+/** A record updated within this many months is current; older ones get the amber flag. */
+export const UPDATED_RECENT_MONTHS = 12;
 
 /** Month-by-month charts appear once this many months have activity. */
 export const MIN_MONTHS_FOR_TREND = 3;

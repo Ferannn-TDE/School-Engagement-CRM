@@ -19,8 +19,9 @@ import {
   createSchoolsBulk,
   updateSchool as dbUpdateSchool,
   archiveSchool as dbArchiveSchool,
-  markSchoolVerified,
-  markSchoolsVerifiedBulk,
+  setSchoolsVerified,
+  fetchSchoolUpdateStamp,
+  type VerificationStamp,
 } from '../services/schoolsService';
 import {
   fetchContacts,
@@ -28,7 +29,8 @@ import {
   createContactsBulk,
   updateContact as dbUpdateContact,
   archiveContact as dbArchiveContact,
-  markContactVerified,
+  setContactVerified,
+  fetchContactUpdateStamp,
 } from '../services/contactsService';
 import {
   fetchEvents,
@@ -87,8 +89,8 @@ type Action =
   | { type: 'ADD_PROGRAM'; payload: Program }
   | { type: 'UPDATE_PROGRAM'; payload: Program }
   | { type: 'ARCHIVE_PROGRAM'; payload: string }
-  | { type: 'VERIFY_SCHOOLS_BULK'; payload: { ids: string[]; now: string } }
-  | { type: 'VERIFY_CONTACT'; payload: { id: string; now: string } }
+  | { type: 'SET_SCHOOLS_VERIFIED'; payload: VerificationStamp[] }
+  | { type: 'SET_CONTACT_VERIFIED'; payload: VerificationStamp }
   | { type: 'LOAD_STATE'; payload: AppState }
   | { type: 'LOAD_PARTIAL'; payload: Partial<AppState> };
 
@@ -185,24 +187,27 @@ function reducer(state: AppState, action: Action): AppState {
         ...state,
         programs: state.programs.filter((p) => p.id !== action.payload),
       };
-    case 'VERIFY_SCHOOLS_BULK':
+    // Verify / Unverify: the stamps come back from the database (db/027). Switching
+    // Verified isn't an update, so updatedAt is left alone.
+    case 'SET_SCHOOLS_VERIFIED': {
+      const byId = new Map(action.payload.map((v) => [v.id, v]));
       return {
         ...state,
-        schools: state.schools.map((s) =>
-          action.payload.ids.includes(s.id)
-            ? { ...s, isVerified: true, lastVerifiedAt: action.payload.now, updatedAt: action.payload.now }
-            : s
-        ),
+        schools: state.schools.map((s) => {
+          const v = byId.get(s.id);
+          return v ? { ...s, isVerified: v.isVerified, lastVerifiedAt: v.lastVerifiedAt, verifiedBy: v.verifiedBy } : s;
+        }),
       };
-    case 'VERIFY_CONTACT':
+    }
+    case 'SET_CONTACT_VERIFIED': {
+      const v = action.payload;
       return {
         ...state,
         contacts: state.contacts.map((c) =>
-          c.id === action.payload.id
-            ? { ...c, isVerified: true, lastVerifiedAt: action.payload.now, updatedAt: action.payload.now }
-            : c
+          c.id === v.id ? { ...c, isVerified: v.isVerified, lastVerifiedAt: v.lastVerifiedAt, verifiedBy: v.verifiedBy } : c
         ),
       };
+    }
     default:
       return state;
   }
@@ -246,8 +251,10 @@ export interface AppContextValue {
   updateProgram: (program: Program) => void;
   archiveProgram: (id: string) => void;
   verifySchool: (id: string) => void;
+  unverifySchool: (id: string) => void;
   verifySchoolsBulk: (ids: string[]) => void;
   verifyContact: (id: string) => void;
+  unverifyContact: (id: string) => void;
   getSchoolById: (id: string) => School | undefined;
   getContactsBySchool: (schoolId: string) => Contact[];
   getActivitiesBySchool: (schoolId: string) => ActivityRecord[];
@@ -331,10 +338,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const updateSchool = (school: School, changes?: Partial<School>): void => {
     dbUpdateSchool(school.id, changes ?? school)
-      .then(() =>
+      // The database decides whether this was a real change and stamps who and when (db/027).
+      .then(() => fetchSchoolUpdateStamp(school.id).catch(() => ({})))
+      .then((stamp) =>
         dispatch({
           type: 'UPDATE_SCHOOL',
-          payload: { ...school, updatedAt: nowISO() },
+          payload: { ...school, updatedAt: nowISO(), ...stamp },
         })
       )
       .catch((err) => {
@@ -378,10 +387,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const updateContact = (contact: Contact, changes?: Partial<Contact>): void => {
     dbUpdateContact(contact.id, changes ?? contact)
-      .then(() =>
+      .then(() => fetchContactUpdateStamp(contact.id).catch(() => ({})))
+      .then((stamp) =>
         dispatch({
           type: 'UPDATE_CONTACT',
-          payload: { ...contact, updatedAt: nowISO() },
+          payload: { ...contact, updatedAt: nowISO(), ...stamp },
         })
       )
       .catch((err) => {
@@ -486,45 +496,39 @@ export function AppProvider({ children }: { children: ReactNode }) {
       });
   };
 
-  const verifySchool = (id: string): void => {
-    markSchoolVerified(id)
-      .then(() => {
-        const now = new Date().toISOString();
-        dispatch({ type: 'VERIFY_SCHOOLS_BULK', payload: { ids: [id], now } });
-        toast.success('School marked as verified');
-      })
-      .catch((err) => {
-        console.error('verifySchool failed:', err);
-        toast.error(writeErrorMessage(err, 'Failed to verify school'));
-      });
-  };
-
-  const verifySchoolsBulk = (ids: string[]): void => {
+  // Verify / Unverify. The database stamps who and when (db/027); the reply carries them.
+  const setSchoolsVerifiedState = (ids: string[], verified: boolean, done: string, failed: string): void => {
     if (ids.length === 0) return;
-    markSchoolsVerifiedBulk(ids)
-      .then(() => {
-        const now = new Date().toISOString();
-        dispatch({ type: 'VERIFY_SCHOOLS_BULK', payload: { ids, now } });
-        toast.success(`${ids.length} school${ids.length !== 1 ? 's' : ''} marked as verified`);
+    setSchoolsVerified(ids, verified)
+      .then((stamps) => {
+        dispatch({ type: 'SET_SCHOOLS_VERIFIED', payload: stamps });
+        toast.success(done);
       })
       .catch((err) => {
-        console.error('verifySchoolsBulk failed:', err);
-        toast.error(writeErrorMessage(err, 'Failed to bulk verify schools'));
+        console.error('setSchoolsVerified failed:', err);
+        toast.error(writeErrorMessage(err, failed));
       });
   };
+  const verifySchool = (id: string): void =>
+    setSchoolsVerifiedState([id], true, 'School marked as verified', 'Failed to verify school');
+  const unverifySchool = (id: string): void =>
+    setSchoolsVerifiedState([id], false, 'School marked as unverified', 'Failed to unverify school');
+  const verifySchoolsBulk = (ids: string[]): void =>
+    setSchoolsVerifiedState(ids, true, `${ids.length} school${ids.length !== 1 ? 's' : ''} marked as verified`, 'Failed to bulk verify schools');
 
-  const verifyContact = (id: string): void => {
-    markContactVerified(id)
-      .then(() => {
-        const now = new Date().toISOString();
-        dispatch({ type: 'VERIFY_CONTACT', payload: { id, now } });
-        toast.success('Contact marked as verified');
+  const setContactVerifiedState = (id: string, verified: boolean): void => {
+    setContactVerified(id, verified)
+      .then((stamp) => {
+        dispatch({ type: 'SET_CONTACT_VERIFIED', payload: stamp });
+        toast.success(verified ? 'Contact marked as verified' : 'Contact marked as unverified');
       })
       .catch((err) => {
-        console.error('verifyContact failed:', err);
-        toast.error(writeErrorMessage(err, 'Failed to verify contact'));
+        console.error('setContactVerified failed:', err);
+        toast.error(writeErrorMessage(err, verified ? 'Failed to verify contact' : 'Failed to unverify contact'));
       });
   };
+  const verifyContact = (id: string): void => setContactVerifiedState(id, true);
+  const unverifyContact = (id: string): void => setContactVerifiedState(id, false);
 
   // Selectors — memoized so consumers don't re-render on unrelated state changes
   const getSchoolById = useCallback(
@@ -575,8 +579,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         updateProgram,
         archiveProgram,
         verifySchool,
+        unverifySchool,
         verifySchoolsBulk,
         verifyContact,
+        unverifyContact,
         getSchoolById,
         getContactsBySchool,
         getActivitiesBySchool,

@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Edit, MapPin, Users, Calendar, CalendarX, Archive, School, ArrowLeft, Plus, BookOpen, TrendingUp, ShieldCheck, Phone, Globe } from 'lucide-react';
+import { Edit, MapPin, Users, Calendar, CalendarX, Archive, School, ArrowLeft, Plus, BookOpen, TrendingUp, ShieldCheck, ShieldOff, Phone, Globe } from 'lucide-react';
 import { format, startOfDay } from 'date-fns';
 import { Header } from '../components/layout/Header';
 import { Card } from '../components/common/Card';
@@ -30,7 +30,7 @@ import type { Contact, Program } from '../types';
 import { formatSchoolType } from '../utils/helpers';
 import { computeEngagementScore } from '../utils/engagementScore';
 import { isTestingDate } from '../utils/events';
-import { schoolFreshness } from '../utils/freshness';
+import { lastUpdatedText, schoolFreshness, verificationText } from '../utils/freshness';
 import { contactRoleLabel } from '../utils/contactRoles';
 import { countyLabel } from '../utils/counties';
 import { formatPhone, websiteHref, websiteLabel } from '../utils/helpers';
@@ -42,13 +42,14 @@ export function SchoolDetailPage() {
   const navigate = useNavigate();
   const {
     getSchoolById, getContactsBySchool, getActivitiesBySchool, getEventsBySchool,
-    archiveSchool, archiveActivity, verifySchool,
+    archiveSchool, archiveActivity, verifySchool, unverifySchool,
     addProgram, archiveProgram, getProgramsBySchool,
     loading,
   } = useAppContext();
   const { canEdit } = useRole();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showArchiveConfirm, setShowArchiveConfirm] = useState(false);
+  const [showUnverifyConfirm, setShowUnverifyConfirm] = useState(false);
   const [showAddProgramModal, setShowAddProgramModal] = useState(false);
   const [programToArchive, setProgramToArchive] = useState<Program | null>(null);
   const [activityToArchive, setActivityToArchive] = useState<string | null>(null);
@@ -125,7 +126,7 @@ export function SchoolDetailPage() {
       variant: school.isVerified ? 'success' as const : 'warning' as const,
       className: school.isVerified ? 'border border-green-200' : 'border border-amber-200',
     },
-    // Freshness (db/011): "Not verified in 6+ months", "Website link broken", ...
+    // Freshness (db/011, db/027): "Not updated in over 12 months", "Website link broken", ...
     ...schoolFreshness(school).map((f) => ({
       label: f.label,
       variant: f.variant,
@@ -145,7 +146,12 @@ export function SchoolDetailPage() {
         actions={
           canEdit &&
           <div className="flex gap-2">
-            {!school.isVerified && (
+            {school.isVerified ? (
+              <Button size="sm" variant="secondary" onClick={() => setShowUnverifyConfirm(true)}>
+                <ShieldOff size={16} />
+                Unverify
+              </Button>
+            ) : (
               <Button size="sm" variant="secondary" onClick={() => verifySchool(school.id)}>
                 <ShieldCheck size={16} />
                 Verify
@@ -163,6 +169,13 @@ export function SchoolDetailPage() {
         }
       />
       <div className="p-8 space-y-6">
+        {/* Who verified it, and who last changed it (db/027). */}
+        <p className="-mt-2 -mb-2 text-xs text-neutral-500 flex flex-wrap items-center gap-x-3 gap-y-1">
+          {verificationText(school.isVerified, school.lastVerifiedAt, school.verifiedBy) && (
+            <span>{verificationText(school.isVerified, school.lastVerifiedAt, school.verifiedBy)}</span>
+          )}
+          <span>{lastUpdatedText(school.lastUpdatedAt, school.updatedBy)}</span>
+        </p>
         {/* Info Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card>
@@ -586,6 +599,18 @@ export function SchoolDetailPage() {
         message="Archive this logged contact? It will be hidden from the school's history and counts. You can restore it from Settings → Archived."
         confirmLabel="Archive"
         variant="destructive"
+      />
+
+      <ConfirmDialog
+        open={showUnverifyConfirm}
+        onClose={() => setShowUnverifyConfirm(false)}
+        onConfirm={() => {
+          unverifySchool(school.id);
+          setShowUnverifyConfirm(false);
+        }}
+        title="Unverify school"
+        message={`Mark "${school.name}" as unverified? Its details stay as they are; it just goes back to the Unverified list. Your name and the time are recorded.`}
+        confirmLabel="Unverify"
       />
 
       <ConfirmDialog

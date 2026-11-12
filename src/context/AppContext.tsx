@@ -309,8 +309,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setLoadErrors(errors);
     setLoading(false);
   }, []);
+  // Refreshes in the background: the current data stays on screen until the new data
+  // arrives, so an import, a restore or a Retry never shows the full-page spinner.
   const reload = useCallback(async () => {
-    setLoading(true);
     applyLoad(await loadStartupTables());
   }, [applyLoad]);
   // `loading` starts true, so the first load only has to apply the result.

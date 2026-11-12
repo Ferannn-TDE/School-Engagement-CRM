@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { RoleContext } from './useRole';
 import { fetchMyRole, isRolesMissing, type Role } from '../services/rolesService';
+import { useAuth } from './useAuth';
 
 /**
  * The signed-in account's role (db/023), for showing or hiding controls. The database
@@ -30,9 +31,14 @@ export function RoleProvider({ children }: { children: ReactNode }) {
     []
   );
 
+  // Read again whenever the sign-in level changes: an editor whose session drops to a
+  // password-only sign-in (aal1) is a viewer to the database (db/025), and the controls
+  // follow straight away, without a reload.
+  const { mfaLevel } = useAuth();
+  const level = mfaLevel?.currentLevel ?? null;
   useEffect(() => {
     void load().then(apply);
-  }, [load, apply]);
+  }, [load, apply, level]);
 
   const refresh = useCallback(async () => {
     apply(await load());

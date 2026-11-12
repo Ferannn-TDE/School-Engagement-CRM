@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { MapPin, School, Users, Calendar, BookOpen, ChevronUp, ChevronDown, ChevronsUpDown, ArrowLeft } from 'lucide-react';
 import { format } from 'date-fns';
@@ -12,10 +12,11 @@ import { useAppContext } from '../context/useAppContext';
 import { ProgramCategory, ProgramCategoryLabels } from '../types';
 import type { ActivityRecord, Contact, Program } from '../types';
 import { computeEngagementScore } from '../utils/engagementScore';
-import { engagementRateFromData, getCountySchoolSummary, type CountySchoolSummaryRow } from '../services/analyticsService';
+import { countySummaryFromData, engagementRateFromData } from '../services/analyticsService';
 import { formatSchoolType } from '../utils/helpers';
 import { countyLabel, countyPath, mergeCountyRows, sameCounty } from '../utils/counties';
-import { eventSourceLabel, outreachEvents } from '../utils/events';
+import { attendanceByEvent, eventSourceLabel, outreachEvents, schoolsAtEvent, schoolsWithAttendance } from '../utils/events';
+import { todayDay } from '../utils/activityDates';
 
 type SortField = 'name' | 'contacts' | 'score';
 type SortDir = 'asc' | 'desc';
@@ -37,45 +38,23 @@ export function CountyDetailPage() {
   const { state, loading } = useAppContext();
   // Testing dates are busy dates, not outreach: never counted (db/007).
   const countedEvents = useMemo(() => outreachEvents(state.events), [state.events]);
-  // The county views' figures, tagged with the county they belong to, so moving to
-  // another county reads as loading until its own figures arrive.
-  const viewKey = `${countyState ?? ''}|${countyName}`;
-  const [views, setViews] = useState<{
-    key: string;
-    summaryRow: CountySchoolSummaryRow | null;
-    engagementPct: number;
-  } | null>(null);
-  const loadingViews = views?.key !== viewKey;
-  const summaryRow = loadingViews ? null : views.summaryRow;
-  const engagementPct = loadingViews ? 0 : views.engagementPct;
+  // The county's figures, from the data already loaded (countySummaryFromData), so they
+  // match the schools table below and every other page. The county_school_summary view
+  // gives different numbers and isn't used for counts (db/README.md).
+  const isThis = (r: { county_name: string | null; state_code: string | null }) =>
+    !!r.county_name && sameCounty(r.county_name, countyName) && (!countyState || r.state_code === countyState);
+  const summaryRow = useMemo(() => {
+    const rows = countySummaryFromData(state.schools, state.contacts, state.events, state.activities, state.programs, todayDay());
+    return mergeCountyRows(rows.filter(isThis))[0] ?? null;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.schools, state.contacts, state.events, state.activities, state.programs, countyName, countyState]);
+  const engagementPct = useMemo(
+    () => mergeCountyRows(engagementRateFromData(state.schools, state.events, schoolsWithAttendance(state.activities, todayDay())).filter(isThis))[0]?.engagement_pct ?? 0,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [state.schools, state.events, state.activities, countyName, countyState]
+  );
   const [sortField, setSortField] = useState<SortField>('score');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
-
-  useEffect(() => {
-    let current = true;
-    // The summary comes from the shared cache; engagement from the loaded data (the
-    // engagement view took several seconds).
-    getCountySchoolSummary()
-      .then((summary) => {
-        const engagement = engagementRateFromData(state.schools, state.events);
-        const isThis = (r: { county_name: string | null; state_code: string | null }) =>
-          !!r.county_name && sameCounty(r.county_name, countyName) && (!countyState || r.state_code === countyState);
-        if (current) {
-          setViews({
-            key: viewKey,
-            summaryRow: mergeCountyRows(summary.filter(isThis))[0] ?? null,
-            engagementPct: mergeCountyRows(engagement.filter(isThis))[0]?.engagement_pct ?? 0,
-          });
-        }
-      })
-      .catch(() => {
-        if (current) setViews({ key: viewKey, summaryRow: null, engagementPct: 0 });
-      });
-    // A reply for a county the user has already left is ignored.
-    return () => {
-      current = false;
-    };
-  }, [countyName, countyState, viewKey, state.schools, state.events]);
 
   // ── Per-county derived data ──────────────────────────────────────────────────
   const countySchools = useMemo(
@@ -112,17 +91,20 @@ export function CountyDetailPage() {
     return map;
   }, [state.activities]);
 
+  // Who was at each event: listed on it, or imported attendance for it.
+  const attendance = useMemo(() => attendanceByEvent(state.activities, todayDay()), [state.activities]);
+
   const eventsBySchool = useMemo(() => {
     const map = new Map<string, typeof countedEvents>();
     for (const e of countedEvents) {
-      for (const sid of e.participatingSchools) {
+      for (const sid of schoolsAtEvent(e, attendance)) {
         const list = map.get(sid) ?? [];
         list.push(e);
         map.set(sid, list);
       }
     }
     return map;
-  }, [countedEvents]);
+  }, [countedEvents, attendance]);
 
   const programsBySchool = useMemo(() => {
     const map = new Map<string, Program[]>();
@@ -161,13 +143,13 @@ export function CountyDetailPage() {
     });
   }, [scoredSchools, sortField, sortDir]);
 
-  // County events: any event where at least one participating school is in this county
+  // County events: any event where at least one school in this county was listed or attended
   const countyEvents = useMemo(
     () =>
       countedEvents
-        .filter((e) => e.participatingSchools.some((sid) => countySchoolIds.has(sid)))
+        .filter((e) => schoolsAtEvent(e, attendance).some((sid) => countySchoolIds.has(sid)))
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
-    [countedEvents, countySchoolIds]
+    [countedEvents, countySchoolIds, attendance]
   );
 
   // Program coverage: count per category across all county schools
@@ -224,7 +206,7 @@ export function CountyDetailPage() {
     }
   }
 
-  if (countySchools.length === 0 && !loadingViews) {
+  if (countySchools.length === 0) {
     return (
       <EmptyState
         icon={<MapPin size={32} />}
@@ -261,44 +243,40 @@ export function CountyDetailPage() {
 
       <div className="p-8 space-y-6">
         {/* ── Section 1: Summary metrics ───────────────────────────────────────── */}
-        {loadingViews ? (
-          <div className="flex justify-center py-8">
-            <LoadingSpinner />
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-            <MetricCard
-              title="Total Schools"
-              value={summaryRow?.total_schools ?? countySchools.length}
-              subtitle="in this county"
-              icon={<School size={20} />}
-            />
-            <MetricCard
-              title="Verified Schools"
-              value={summaryRow?.verified_schools ?? countySchools.filter((s) => s.isVerified).length}
-              subtitle={`of ${summaryRow?.total_schools ?? countySchools.length} total`}
-              icon={<School size={20} />}
-            />
-            <MetricCard
-              title="Contacts"
-              value={summaryRow?.total_contacts ?? 0}
-              subtitle="staff records"
-              icon={<Users size={20} />}
-            />
-            <MetricCard
-              title="Events"
-              value={summaryRow?.total_events ?? countyEvents.length}
-              subtitle="appearances"
-              icon={<Calendar size={20} />}
-            />
-            <MetricCard
-              title="Programs"
-              value={summaryRow?.total_programs ?? state.programs.filter((p) => countySchoolIds.has(p.schoolId)).length}
-              subtitle="active offerings"
-              icon={<BookOpen size={20} />}
-            />
-          </div>
-        )}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+          <MetricCard
+            title="Total Schools"
+            value={summaryRow?.total_schools ?? countySchools.length}
+            subtitle="in this county"
+            icon={<School size={20} />}
+          />
+          <MetricCard
+            title="Verified Schools"
+            value={summaryRow?.verified_schools ?? countySchools.filter((s) => s.isVerified).length}
+            subtitle={`of ${summaryRow?.total_schools ?? countySchools.length} total`}
+            icon={<School size={20} />}
+          />
+          <MetricCard
+            title="Contacts"
+            value={summaryRow?.total_contacts ?? 0}
+            subtitle={summaryRow && summaryRow.contacts_on_file !== summaryRow.total_contacts
+              ? `active, of ${summaryRow.contacts_on_file} on file`
+              : 'active people at these schools'}
+            icon={<Users size={20} />}
+          />
+          <MetricCard
+            title="Events"
+            value={summaryRow?.total_events ?? countyEvents.length}
+            subtitle="attended or listed"
+            icon={<Calendar size={20} />}
+          />
+          <MetricCard
+            title="Programs"
+            value={summaryRow?.total_programs ?? state.programs.filter((p) => countySchoolIds.has(p.schoolId)).length}
+            subtitle="STEM programs at these schools"
+            icon={<BookOpen size={20} />}
+          />
+        </div>
 
         {/* ── Section 2: Schools table ─────────────────────────────────────────── */}
         <Card padding={false}>
@@ -404,7 +382,7 @@ export function CountyDetailPage() {
           {countyEvents.length > 0 ? (
             <div className="divide-y divide-neutral-50">
               {countyEvents.slice(0, 20).map((event) => {
-                const schoolsInCounty = event.participatingSchools.filter((sid) =>
+                const schoolsInCounty = schoolsAtEvent(event, attendance).filter((sid) =>
                   countySchoolIds.has(sid)
                 ).length;
                 return (

@@ -34,6 +34,28 @@ how 001 and 002 went missing once (found and re-applied on 2026-09-26/28).
 | `025_mfa_for_editors_and_admins_only.sql` | Applied 2026-11-09 by sophie, no test results recorded. Sign-up opened to any email (the 004 hook switched off). The authenticator step (aal2) is now needed only by editors and admins: `app_role()` returns the assigned role only at aal2, else viewer; new `assigned_role()` gives the assigned role at any level. The restrictive "Require MFA (aal2)" policy dropped from schools, staff, contacts, events, programs, activities, import_batches and bug_reports (kept on user_roles and role_changes), so viewers read with a password session. Policies before it saved in `backup.policies_before_025`. |
 | `026_activity_audit.sql` | `created_by`, `updated_at`, `updated_by` on `activities`, stamped by triggers from the signed-in email ('database' for the owner): who logged an activity, and who last edited its content and when. Archiving is not an edit. Existing rows not backfilled. Shown in the visit details panel on a school's Activity History. |
 
+## County views: not for counts
+
+`county_school_summary` and `county_engagement_rate` (005, revised in 008 and 009;
+SELECT granted in 021; mentioned in 001 and 003) give **different numbers from the
+app** and shouldn't be used for counts:
+
+- `total_contacts` counts staff only through the `contacts` link table, active or not.
+  The app places a person by that link row, or by `staff.school_worked_at` when there
+  is none, and counts active people. On 2026-11-12 the view counted 3,217 people and the
+  app 4,625; 138 of 219 counties differed (Adair, MO: 2 against 5).
+- `total_events` and `county_engagement_rate` count a school only when an event's
+  school list names it. The app also counts imported attendance (activities of type
+  `event_participation`), linked to an event or not.
+- `county_engagement_rate` took 3–7 s per request (it matches keys with LIKE).
+
+Since 2026-11-12 nothing reads them: the app works the same figures out from the data
+it loads (`countySummaryFromData` and `engagementRateFromData` in
+`src/services/analyticsService.ts`). Before that, the Counties page and county pages
+read `county_school_summary` (prefetched in `AppLayout`), and `fetchCountyEngagementRate`
+existed but was unused. The scraper and the SQL checks (`db/checks/`) never read either
+view. The views are left in place, unchanged.
+
 ## Archive, never delete (009)
 
 The app has no delete. Archiving sets `archived = true`; the row stays and is left out

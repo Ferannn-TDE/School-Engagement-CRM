@@ -18,7 +18,8 @@ import type { Contact } from '../types';
 import { ContactRole, ContactRoleLabels } from '../types';
 import { contactRoleLabel } from '../utils/contactRoles';
 import toast from 'react-hot-toast';
-import { FreshnessBadges } from '../components/common/FreshnessBadges';
+import { FreshnessIcon } from '../components/common/FreshnessIcon';
+import { OneLine } from '../components/common/OneLine';
 import { contactFreshness } from '../utils/freshness';
 import { useRole } from '../context/useRole';
 import { RowMenu } from '../components/common/RowActions';
@@ -35,6 +36,7 @@ export function ContactsPage() {
   const [roleFilter, setRoleFilter] = useUrlState('role');
   const [schoolFilter, setSchoolFilter] = useUrlState('school');
   const [activeFilter, setActiveFilter] = useUrlState('status');
+  const [attentionFilter, setAttentionFilter] = useUrlState('attention');
   const [tabRaw, setVerifiedTab] = useUrlState('tab', 'all');
   const verifiedTab = (['all', 'verified', 'unverified'].includes(tabRaw) ? tabRaw : 'all') as VerifiedTab;
   const [showAddModal, setShowAddModal] = useState(false);
@@ -55,8 +57,9 @@ export function ContactsPage() {
     if (schoolFilter) contacts = contacts.filter((c) => c.schoolId === schoolFilter);
     if (activeFilter === 'active') contacts = contacts.filter((c) => c.isActive);
     if (activeFilter === 'inactive') contacts = contacts.filter((c) => !c.isActive);
+    if (attentionFilter === 'yes') contacts = contacts.filter((c) => contactFreshness(c).length > 0);
     return contacts;
-  }, [state.contacts, verifiedTab, roleFilter, schoolFilter, activeFilter]);
+  }, [state.contacts, verifiedTab, roleFilter, schoolFilter, activeFilter, attentionFilter]);
 
   const columns: ColumnDef<Contact, unknown>[] = useMemo(
     () => [
@@ -64,13 +67,15 @@ export function ContactsPage() {
         accessorFn: (row) => `${row.firstName} ${row.lastName}`,
         id: 'name',
         header: 'Name',
+        // Two lines at most: the name (with the amber icon when something needs
+        // attention) and the job title, each cut to fit.
         cell: ({ row }) => (
-          <div className="min-w-0 break-words">
-            <p className="font-medium text-neutral-800">
-              {row.original.firstName} {row.original.lastName}
-            </p>
-            {row.original.title && <p className="text-xs text-neutral-500">{row.original.title}</p>}
-            <FreshnessBadges flags={contactFreshness(row.original)} className="mt-1 flex flex-wrap gap-1" />
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <OneLine className="font-medium text-neutral-800">{`${row.original.firstName} ${row.original.lastName}`.trim()}</OneLine>
+              <FreshnessIcon flags={contactFreshness(row.original)} />
+            </div>
+            {row.original.title && <OneLine className="text-xs text-neutral-500">{row.original.title}</OneLine>}
           </div>
         ),
       },
@@ -78,20 +83,29 @@ export function ContactsPage() {
         accessorKey: 'email',
         header: 'Email',
         cell: ({ row }) => row.original.email
-          ? <span className="break-all text-neutral-700">{row.original.email}</span>
+          ? <OneLine className="text-neutral-700">{row.original.email}</OneLine>
           : <Missing label="No email" />,
       },
       {
         accessorKey: 'phone',
         header: 'Phone',
-        cell: ({ row }) => row.original.phone
-          ? <span className="break-words text-neutral-700">{row.original.phone}</span>
-          : <Missing label="No phone" />,
+        // One line: the number, then any extension in smaller text, cut to fit.
+        cell: ({ row }) => {
+          const phone = row.original.phone;
+          if (!phone) return <Missing label="No phone" />;
+          const [number, ext] = phone.split(/\s*(?:ext\.?|x)\s*(?=\d)/i);
+          return (
+            <OneLine className="text-neutral-700" title={phone}>
+              {number}
+              {ext && <span className="ml-1 text-xs text-neutral-500">ext. {ext}</span>}
+            </OneLine>
+          );
+        },
       },
       {
         accessorKey: 'role',
         header: 'Role',
-        cell: ({ row }) => <Badge variant="info" wrap>{contactRoleLabel(row.original)}</Badge>,
+        cell: ({ row }) => <Badge variant="info">{contactRoleLabel(row.original)}</Badge>,
       },
       {
         id: 'school',
@@ -102,7 +116,8 @@ export function ContactsPage() {
           return school ? (
             <Link
               to={`/schools/${encodeURIComponent(school.id)}`}
-              className="break-words text-neutral-700 hover:text-siue-red transition-colors"
+              className="block truncate text-neutral-700 hover:text-siue-red transition-colors"
+              title={school.name}
               onClick={(e) => e.stopPropagation()}
             >
               {school.name}
@@ -242,11 +257,19 @@ export function ContactsPage() {
               placeholder: 'All Status',
               className: 'w-36',
             },
+            {
+              value: attentionFilter,
+              onChange: setAttentionFilter,
+              options: [{ value: 'yes', label: 'Needs attention' }],
+              placeholder: 'Any condition',
+              className: 'w-44',
+            },
           ]}
           onClear={() => {
             setRoleFilter('');
             setSchoolFilter('');
             setActiveFilter('');
+            setAttentionFilter('');
           }}
         />
 
@@ -279,10 +302,10 @@ export function ContactsPage() {
             <DataTable
               data={filteredContacts}
               columns={shownColumns}
-              columnWidths={canEdit ? ['', '', '9.5rem', '10rem', '', '7rem', '8rem'] : ['', '', '9.5rem', '10rem', '', '7rem']}
+              columnWidths={canEdit ? ['', '', '12rem', '10rem', '', '7rem', '8rem'] : ['', '', '12rem', '10rem', '', '7rem']}
               searchValue={search}
               urlState
-              resetKey={[verifiedTab, roleFilter, schoolFilter, activeFilter].join('|')}
+              resetKey={[verifiedTab, roleFilter, schoolFilter, activeFilter, attentionFilter].join('|')}
               emptyMessage="No contacts match your filters."
             />
           </Card>

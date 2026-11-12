@@ -113,15 +113,15 @@ export function ArchivedPage() {
                   </thead>
                   <tbody className="divide-y divide-neutral-50">
                     {byKind.get(section.kind)!.map((item) => (
-                      <tr key={item.id}>
-                        <td className="px-6 py-3 break-words">
-                          <p className="font-medium text-neutral-800">{item.label}</p>
-                          {item.detail && <p className="text-xs text-neutral-500">{item.detail}</p>}
+                      <tr key={item.id} style={{ height: '4rem' }}>
+                        <td className="px-6 py-2 max-w-0">
+                          <p className="truncate font-medium text-neutral-800" title={item.label}>{item.label}</p>
+                          {item.detail && <p className="truncate text-xs text-neutral-500" title={item.detail}>{item.detail}</p>}
                         </td>
                         <td className="px-4 py-3 text-neutral-600">
                           {item.archivedAt ? format(new Date(item.archivedAt), 'MMM d, yyyy h:mm a') : <Missing label="Not recorded" />}
                         </td>
-                        <td className="px-4 py-3 text-neutral-600 break-all">{item.archivedBy ?? <Missing label="Not recorded" />}</td>
+                        <td className="px-4 py-2 max-w-0 truncate text-neutral-600" title={item.archivedBy ?? undefined}>{item.archivedBy ?? <Missing label="Not recorded" />}</td>
                         {canEdit && (
                           <td className="px-6 py-3">
                             <RowActions>

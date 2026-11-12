@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
@@ -18,14 +18,14 @@ import { countyDisplayName, countyKey, countyPath, isIndependentCity, isStateRun
 import { useStateFilter } from '../hooks/useStateFilter';
 import { ProgramCategory, ProgramCategoryLabels } from '../types';
 import {
+  countySummaryFromData,
   engagementRateFromData,
-  getCountySchoolSummary,
-  peekCountySchoolSummary,
-  type CountySchoolSummaryRow,
   type CountyEngagementRow,
 } from '../services/analyticsService';
 import { useAppContext } from '../context/useAppContext';
 import { useRegionScope } from '../context/RegionScopeContext';
+import { schoolsWithAttendance } from '../utils/events';
+import { todayDay } from '../utils/activityDates';
 
 /** Collapsible wrapper for the county-level charts below the directory. */
 function AnalysisSection({
@@ -91,36 +91,27 @@ function engagementBadgeVariant(pct: number): 'success' | 'warning' | 'error' {
 }
 
 export function CountiesPage() {
-  // The summary comes from the cache when there is one (prefetched after sign-in), so
-  // the page usually opens at once; a stale cache is refreshed in the background.
-  const [summaryData, setSummaryData] = useState<CountySchoolSummaryRow[] | null>(() => peekCountySchoolSummary());
-  const [error, setError] = useState<string | null>(null);
-  const loading = summaryData === null && !error;
-
-  useEffect(() => {
-    let current = true;
-    getCountySchoolSummary()
-      .then((rows) => { if (current) setSummaryData(rows); })
-      .catch((err: unknown) => {
-        if (current) setError(err instanceof Error ? err.message : 'Failed to load county data');
-      });
-    return () => { current = false; };
-  }, []);
-
   // Engagement is worked out from the schools and events already loaded (the view
   // took several seconds). Every state's data, then limited below like the summary.
-  const { state } = useAppContext();
+  const { state, loading } = useAppContext();
   const full = useRegionScope()?.fullState ?? state;
+  // Every county figure comes from the data already loaded, so it matches the county
+  // pages and the rest of the app. The county_school_summary view counts contacts and
+  // events differently and isn't used for counts (db/README.md).
+  const summaryData = useMemo(
+    () => countySummaryFromData(full.schools, full.contacts, full.events, full.activities, full.programs, todayDay()),
+    [full.schools, full.contacts, full.events, full.activities, full.programs]
+  );
   const engagementData = useMemo<CountyEngagementRow[]>(
-    () => engagementRateFromData(full.schools, full.events),
-    [full.schools, full.events]
+    () => engagementRateFromData(full.schools, full.events, schoolsWithAttendance(full.activities, todayDay())),
+    [full.schools, full.events, full.activities]
   );
 
   // The county views cover both states; apply the shared All / IL / MO choice.
   const [region] = useStateFilter();
   // The state-run labels arrive as two rows; they are merged into one group.
   const regionSummary = useMemo(
-    () => mergeCountyRows(region ? (summaryData ?? []).filter((r) => r.state_code === region) : (summaryData ?? [])),
+    () => mergeCountyRows(region ? summaryData.filter((r) => r.state_code === region) : summaryData),
     [summaryData, region]
   );
   const regionEngagement = useMemo(
@@ -193,12 +184,6 @@ export function CountiesPage() {
               </Card>
             ))}
           </div>
-        ) : error ? (
-          <EmptyState
-            icon={<MapPin size={32} />}
-            title="Could not load county data"
-            description={error}
-          />
         ) : counties.length === 0 ? (
           <EmptyState
             icon={<MapPin size={32} />}
@@ -295,7 +280,7 @@ export function CountiesPage() {
         )}
 
         {/* ── County-level analysis, moved here from the old Analytics page ──── */}
-        {!loading && !error && counties.length > 0 && (
+        {!loading && counties.length > 0 && (
           <div className="mt-8 space-y-5">
             <h2 className="text-lg font-semibold text-neutral-800">Compare counties</h2>
 

@@ -5,6 +5,7 @@ import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { Select } from '../components/common/Select';
 import { Badge } from '../components/common/Badge';
+import { OneLine } from '../components/common/OneLine';
 import { useAppContext } from '../context/useAppContext';
 import { useUrlState } from '../hooks/useUrlState';
 import { countyChoiceLabel, countyOptions, inCounty } from '../utils/counties';
@@ -16,6 +17,8 @@ import { type ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '../components/common/DataTable';
 import { Missing } from '../components/common/Missing';
 import type { Contact, School } from '../types';
+import { attendanceByEvent, schoolsAtEvent } from '../utils/events';
+import { todayDay } from '../utils/activityDates';
 
 function previewColumnsFor(getSchoolById: (id: string) => School | undefined): ColumnDef<Contact, unknown>[] {
   return [
@@ -23,27 +26,27 @@ function previewColumnsFor(getSchoolById: (id: string) => School | undefined): C
       id: 'name',
       header: 'Name',
       accessorFn: (c) => `${c.firstName} ${c.lastName}`.trim(),
-      cell: ({ getValue }) => <span className="break-words font-medium text-neutral-800">{getValue() as string}</span>,
+      cell: ({ getValue }) => <OneLine className="font-medium text-neutral-800">{getValue() as string}</OneLine>,
     },
     {
       accessorKey: 'email',
       header: 'Email',
       cell: ({ row }) => row.original.email
-        ? <span className="break-all text-neutral-700">{row.original.email}</span>
+        ? <OneLine className="text-neutral-700">{row.original.email}</OneLine>
         : <Missing label="No email" />,
     },
     {
       id: 'role',
       header: 'Role',
       accessorFn: (c) => contactRoleLabel(c),
-      cell: ({ getValue }) => <Badge variant="info" wrap>{getValue() as string}</Badge>,
+      cell: ({ getValue }) => <Badge variant="info">{getValue() as string}</Badge>,
     },
     {
       id: 'school',
       header: 'School',
       accessorFn: (c) => getSchoolById(c.schoolId)?.name ?? '',
       cell: ({ getValue }) => (getValue() as string)
-        ? <span className="break-words text-neutral-700">{getValue() as string}</span>
+        ? <OneLine className="text-neutral-700">{getValue() as string}</OneLine>
         : <Missing label="No school" />,
     },
     {
@@ -51,7 +54,7 @@ function previewColumnsFor(getSchoolById: (id: string) => School | undefined): C
       header: 'County',
       accessorFn: (c) => getSchoolById(c.schoolId)?.county ?? '',
       cell: ({ getValue }) => (getValue() as string)
-        ? <span className="break-words text-neutral-600">{getValue() as string}</span>
+        ? <OneLine className="text-neutral-600">{getValue() as string}</OneLine>
         : <Missing label="No county" />,
     },
   ];
@@ -106,7 +109,8 @@ export function GenerateListsPage() {
     if (eventFilter) {
       const event = state.events.find((e) => e.id === eventFilter);
       if (event) {
-        const schoolIds = new Set(event.participatingSchools);
+        // Listed on the event, or imported attendance for it.
+        const schoolIds = new Set(schoolsAtEvent(event, attendanceByEvent(state.activities, todayDay())));
         contacts = contacts.filter((c) => schoolIds.has(c.schoolId));
       }
     }

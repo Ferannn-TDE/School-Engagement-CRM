@@ -9,6 +9,7 @@ import { Button } from '../components/common/Button';
 import { FilterBar } from '../components/common/FilterBar';
 import { Badge } from '../components/common/Badge';
 import { DataTable } from '../components/common/DataTable';
+import { OneLine } from '../components/common/OneLine';
 import { Modal } from '../components/common/Modal';
 import { EmptyState } from '../components/common/EmptyState';
 import { ConfirmDialog } from '../components/common/ConfirmDialog';
@@ -63,16 +64,17 @@ export function EventsPage() {
         accessorKey: 'name',
         header: 'Event Name',
         cell: ({ row }) => (
-          <div>
-            <p className={classNames('font-medium', isTestingDate(row.original) ? 'text-neutral-500' : 'text-neutral-800')}>
+          // Name and place, one line each, cut to fit, so every row is the same height.
+          <div className="min-w-0">
+            <OneLine className={classNames('font-medium', isTestingDate(row.original) ? 'text-neutral-500' : 'text-neutral-800')}>
               {row.original.name}
-            </p>
-            <div className="flex items-center gap-2 mt-0.5">
-              <span className="text-xs text-neutral-500 flex items-center gap-1">
-                <MapPin size={12} />
-                {row.original.location}
+            </OneLine>
+            {row.original.location && (
+              <span className="mt-0.5 flex min-w-0 items-center gap-1 text-xs text-neutral-500">
+                <MapPin size={12} className="shrink-0" />
+                <OneLine>{row.original.location}</OneLine>
               </span>
-            </div>
+            )}
           </div>
         ),
       },
@@ -87,7 +89,7 @@ export function EventsPage() {
               Testing date
             </span>
           ) : (
-            <span className="break-words text-sm text-neutral-600">{eventSourceLabel(row.original)}</span>
+            <OneLine className="text-sm text-neutral-600">{eventSourceLabel(row.original)}</OneLine>
           ),
       },
       {
@@ -242,7 +244,7 @@ export function EventsPage() {
                 <DataTable
                   data={filteredEvents}
                   columns={shownColumns}
-                  columnWidths={canEdit ? ['', '11rem', '9rem', '7rem', '7rem', '8rem'] : ['', '11rem', '9rem', '7rem', '7rem']}
+                  columnWidths={canEdit ? ['', '18%', '13%', '10%', '11%', '8rem'] : ['', '20%', '15%', '12%', '13%']}
                   urlState
                   resetKey={`${sourceFilter}|${showTesting}`}
                   onRowClick={(event) => setViewingEvent(event)}

@@ -1,4 +1,3 @@
-import { supabase } from './supabase';
 
 export interface CountyEngagementRow {
   county_name: string | null;
@@ -18,64 +17,24 @@ export interface CountySchoolSummaryRow {
   state_code: string | null;
 }
 
-export async function fetchCountyEngagementRate(): Promise<CountyEngagementRow[]> {
-  const { data, error } = await supabase
-    .from('county_engagement_rate')
-    .select('*')
-    .order('total_schools', { ascending: false });
-  if (error) throw error;
-  return data as CountyEngagementRow[];
-}
-
-export async function fetchCountySchoolSummary(): Promise<CountySchoolSummaryRow[]> {
-  const { data, error } = await supabase
-    .from('county_school_summary')
-    .select('*')
-    .order('county_name', { ascending: true });
-  if (error) throw error;
-  return data as CountySchoolSummaryRow[];
-}
-
-// ── Counties page speed ────────────────────────────────────────────────────────
-// county_engagement_rate took 3–7 s per request (it matches every school against
-// every event with LIKE '%key%'), so the Counties pages compute it from the schools
-// and events already loaded instead. county_school_summary is quick but was fetched
-// on every visit; it's kept for a short while, prefetched once the app has loaded,
-// and refreshed in the background when it's older than that.
-
-const SUMMARY_FRESH_MS = 2 * 60_000;
-let summaryCache: { at: number; promise: Promise<CountySchoolSummaryRow[]> } | null = null;
-let summaryLatest: CountySchoolSummaryRow[] | null = null;
-
-/** The county summary, from the cache when it's fresh. */
-export function getCountySchoolSummary(): Promise<CountySchoolSummaryRow[]> {
-  if (!summaryCache || Date.now() - summaryCache.at > SUMMARY_FRESH_MS) {
-    const promise = fetchCountySchoolSummary().then((rows) => {
-      summaryLatest = rows;
-      return rows;
-    });
-    // A failed fetch isn't kept, so the next visit tries again.
-    promise.catch(() => { summaryCache = null; });
-    summaryCache = { at: Date.now(), promise };
-  }
-  return summaryCache.promise;
-}
-
-/** The last summary fetched, if any: shown at once while a refresh runs. */
-export function peekCountySchoolSummary(): CountySchoolSummaryRow[] | null {
-  return summaryLatest;
-}
+// The two county views (county_engagement_rate, county_school_summary) are no longer
+// read by the app: they count differently from it (contacts only through the link
+// table, events only by their school list, and the engagement view took 3–7 s), so
+// the Counties pages work everything out from the data already loaded, below. The
+// views stay in the database; see db/README.md before using them for counts.
 
 /**
  * The county_engagement_rate view's rows, from loaded data: per county, its schools
- * and those listed on an outreach event (testing dates left out). Schools are matched
+ * and those at an outreach event (testing dates left out): listed on it, or with any
+ * imported attendance (pass `attended`, from utils/events schoolsWithAttendance). Schools are matched
  * by exact id, where the view's LIKE could also match a key inside a longer one.
  */
 export function engagementRateFromData(
   schools: { id: string; county: string; state: string }[],
   events: { participatingSchools: string[]; category?: string }[],
+  attended: Set<string> = new Set(),
 ): CountyEngagementRow[] {
-  const listed = new Set<string>();
+  const listed = new Set<string>(attended);
   for (const e of events) {
     if (e.category === 'school_testing_date') continue;
     for (const id of e.participatingSchools) listed.add(id);
@@ -91,4 +50,61 @@ export function engagementRateFromData(
   return [...rows.values()]
     .map((r) => ({ ...r, engagement_pct: r.total_schools ? Math.round((r.engaged_schools / r.total_schools) * 1000) / 10 : 0 }))
     .sort((a, b) => a.engagement_pct - b.engagement_pct);
+}
+
+export interface CountySummaryRow extends CountySchoolSummaryRow {
+  /** Everyone on file at the county's schools, active or not (total_contacts is active only). */
+  contacts_on_file: number;
+}
+
+/**
+ * The county_school_summary view's figures, from loaded data, so the Counties pages
+ * agree with every other page. The view counts staff only through the contacts link
+ * table (so it misses people placed by staff.school_worked_at: 3,217 against 4,625 on
+ * 2026-11-12) and counts events only by their school list. Here:
+ *   * total_contacts: active people at the county's schools, placed as contactsService
+ *     places them (link row, else school_worked_at); contacts_on_file: all of them;
+ *   * total_events: outreach events with a county school listed or attending (imported
+ *     attendance), plus attendance imports with no event linked, one per import;
+ *   * total_programs: the programs on file at the county's schools.
+ * Rows are keyed by county and state like the view, for mergeCountyRows.
+ */
+export function countySummaryFromData(
+  schools: { id: string; county: string; state: string; isVerified?: boolean }[],
+  contacts: { schoolId: string; isActive: boolean }[],
+  events: { id: string; participatingSchools: string[]; category?: string }[],
+  activities: { id: string; schoolId: string; eventId?: string; activityType: string; date: string; importBatchId?: string }[],
+  programs: { schoolId: string }[],
+  today: string,
+): CountySummaryRow[] {
+  const keyOf = new Map<string, string>();
+  const rows = new Map<string, CountySummaryRow & { eventKeys: Set<string> }>();
+  for (const s of schools) {
+    const key = `${s.state}|${s.county}`;
+    keyOf.set(s.id, key);
+    const row = rows.get(key) ?? {
+      county_name: s.county || null, state_code: s.state || null, total_schools: 0, verified_schools: 0,
+      total_contacts: 0, contacts_on_file: 0, total_events: 0, total_programs: 0, eventKeys: new Set<string>(),
+    };
+    row.total_schools++;
+    if (s.isVerified) row.verified_schools++;
+    rows.set(key, row);
+  }
+  const rowOf = (schoolId: string) => { const k = keyOf.get(schoolId); return k ? rows.get(k) : undefined; };
+  for (const c of contacts) {
+    const row = rowOf(c.schoolId);
+    if (!row) continue;
+    row.contacts_on_file++;
+    if (c.isActive) row.total_contacts++;
+  }
+  for (const p of programs) { const row = rowOf(p.schoolId); if (row) row.total_programs++; }
+  for (const e of events) {
+    if (e.category === 'school_testing_date') continue;
+    for (const id of e.participatingSchools) rowOf(id)?.eventKeys.add(`e:${e.id}`);
+  }
+  for (const a of activities) {
+    if (a.activityType !== 'event_participation' || a.date.slice(0, 10) > today) continue;
+    rowOf(a.schoolId)?.eventKeys.add(a.eventId ? `e:${a.eventId}` : `import:${a.importBatchId ?? a.id}`);
+  }
+  return [...rows.values()].map(({ eventKeys, ...row }) => ({ ...row, total_events: eventKeys.size }));
 }

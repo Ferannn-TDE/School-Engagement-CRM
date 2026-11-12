@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { AlertTriangle } from 'lucide-react';
 import { Sidebar } from './Sidebar';
@@ -12,7 +11,6 @@ import { navGroups } from './navigation';
 import { tablesForPath } from './pageTables';
 import { ReportProblemButton } from './ReportProblemButton';
 import { RoleProvider } from '../../context/RoleContext';
-import { getCountySchoolSummary } from '../../services/analyticsService';
 
 const SIDEBAR_PATHS = navGroups.flatMap((g) => g.items.map((i) => i.to));
 
@@ -33,12 +31,6 @@ export function AppLayout() {
   const { loading, loadErrors, reload } = useAppContext();
   const { pathname } = useLocation();
   usePlaceMemory(SIDEBAR_PATHS);
-
-  // Fetch the county summary in the background once the app has loaded, so the
-  // Counties pages open without waiting for it.
-  useEffect(() => {
-    if (!loading) getCountySchoolSummary().catch(() => undefined);
-  }, [loading]);
 
   const failed = Object.keys(loadErrors) as DataTable[];
   const missingHere = tablesForPath(pathname).filter((t) => loadErrors[t] !== undefined);

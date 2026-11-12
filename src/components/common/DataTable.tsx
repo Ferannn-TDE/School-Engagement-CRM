@@ -34,6 +34,9 @@ interface DataTableProps<T> {
   /** Changes whenever the page's own filters change; the table then returns to
    *  page 1. Restoring a saved address is not a change. */
   resetKey?: string;
+  /** Every row's height, so rows stay the same however long a value is. Cells cut long
+   *  text to fit (see OneLine); room for two lines by default. */
+  rowHeight?: string;
 }
 
 const PAGE_SIZES = [25, 50, 100];
@@ -60,6 +63,7 @@ export function DataTable<T>({
   columnWidths,
   urlState = false,
   resetKey,
+  rowHeight = '4rem',
 }: DataTableProps<T>) {
   // Both stores always exist (hooks can't be conditional); urlState picks one.
   const [localSorting, setLocalSorting] = useState<SortingState>([]);
@@ -192,9 +196,10 @@ export function DataTable<T>({
                     onRowClick && 'cursor-pointer'
                   )}
                   onClick={() => onRowClick?.(row.original)}
+                  style={{ height: rowHeight }}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-4 py-3 text-sm text-neutral-700">
+                    <td key={cell.id} className="px-4 py-2 text-sm text-neutral-700 overflow-hidden">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}

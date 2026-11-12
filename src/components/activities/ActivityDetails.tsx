@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { format } from 'date-fns';
 import { Archive, Pencil } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -14,9 +14,9 @@ import type { ActivityRecord } from '../../types';
 import { activityTypeLabel } from '../../utils/reportLists';
 import { parseVisitors, visitorsLabel } from '../../utils/visitors';
 import { activityDateError, futureDateNote, hasHappened, latestActivityDay, todayDay } from '../../utils/activityDates';
-import { isTestingDate } from '../../utils/events';
 import { writeErrorMessage } from '../../utils/writeErrors';
 import { fetchImportBatch, type ImportBatch } from '../../services/importBatchesService';
+import { EventPicker } from '../events/EventPicker';
 
 /** Every type an activity can have: the three Log contact methods and imported attendance. */
 const ACTIVITY_TYPES = ['call', 'email', 'visit', 'event_participation'];
@@ -161,7 +161,7 @@ function ActivityEditForm({ activity, onCancel, onSaved, save }: {
   onSaved: () => void;
   save: ReturnType<typeof useAppContext>['updateActivity'];
 }) {
-  const { state, getContactsBySchool } = useAppContext();
+  const { getContactsBySchool } = useAppContext();
   const today = todayDay();
   const [type, setType] = useState(activity.activityType);
   const [date, setDate] = useState(activity.date.slice(0, 10));
@@ -183,18 +183,6 @@ function ActivityEditForm({ activity, onCancel, onSaved, save }: {
     .slice()
     .sort((a, b) => a.lastName.localeCompare(b.lastName) || a.firstName.localeCompare(b.firstName))
     .map((c) => ({ value: c.id, label: `${c.firstName} ${c.lastName}`.trim() || c.email || 'Unnamed contact' }));
-  // App events only (scraped ones have no events-table id to link), testing dates left out.
-  const eventOptions = useMemo(
-    () => state.events
-      .filter((e) => e.id.startsWith('e_') && !isTestingDate(e))
-      .sort((a, b) => b.date.localeCompare(a.date))
-      .map((e) => ({ value: e.id, label: `${e.name} (${format(new Date(e.date), 'MMM d, yyyy')})` }))
-      // Keep a link the list can't show (an archived event), so saving never drops it silently.
-      .concat(activity.eventId && !state.events.some((e) => e.id === activity.eventId && e.id.startsWith('e_') && !isTestingDate(e))
-        ? [{ value: activity.eventId, label: 'The current event (archived or hidden)' }]
-        : []),
-    [state.events, activity.eventId]
-  );
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -257,13 +245,13 @@ function ActivityEditForm({ activity, onCancel, onSaved, save }: {
           value={contactId}
           onChange={(e) => setContactId(e.target.value)}
         />
-        <Select
+        <EventPicker
           id="activity-edit-event"
           label="Event"
-          placeholder="No event"
-          options={eventOptions}
           value={eventId}
-          onChange={(e) => setEventId(e.target.value)}
+          near={date}
+          allowCreate
+          onChange={(id) => setEventId(id)}
         />
       </div>
       <Textarea id="activity-edit-notes" label="Description" rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} />

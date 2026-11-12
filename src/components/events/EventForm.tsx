@@ -32,9 +32,13 @@ type EventFormData = z.infer<typeof eventSchema>;
 interface EventFormProps {
   event?: Event;
   onClose: () => void;
+  /** Called with a new event once it's saved (the event picker selects it). */
+  onCreated?: (event: Event) => void;
+  /** A starting date for a new event, "yyyy-MM-dd". */
+  initialDate?: string;
 }
 
-export function EventForm({ event, onClose }: EventFormProps) {
+export function EventForm({ event, onClose, onCreated, initialDate }: EventFormProps) {
   const { state, addEvent, updateEvent } = useAppContext();
   const isEditing = !!event;
 
@@ -59,6 +63,7 @@ export function EventForm({ event, onClose }: EventFormProps) {
         }
       : {
           type: '',
+          date: initialDate ? `${initialDate}T09:00` : '',
           participatingSchools: [],
           attendeeCountStr: '',
         },
@@ -82,7 +87,7 @@ export function EventForm({ event, onClose }: EventFormProps) {
     });
   }, [pickableSchools, schoolQuery]);
 
-  const onSubmit = (data: EventFormData) => {
+  const onSubmit = async (data: EventFormData) => {
     const attendeeCount =
       data.attendeeCountStr && data.attendeeCountStr !== ''
         ? parseInt(data.attendeeCountStr, 10)
@@ -104,8 +109,10 @@ export function EventForm({ event, onClose }: EventFormProps) {
       updateEvent({ ...event, ...changes }, changes);
       toast.success('Event updated successfully');
     } else {
-      addEvent(eventData);
+      const created = await addEvent(eventData);
+      if (!created) return; // the error is shown; the form stays open with what was typed
       toast.success('Event created successfully');
+      onCreated?.(created);
     }
     onClose();
   };

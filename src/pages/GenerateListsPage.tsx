@@ -8,6 +8,7 @@ import { Select } from '../components/common/Select';
 import { Badge } from '../components/common/Badge';
 import { OneLine } from '../components/common/OneLine';
 import { useAppContext } from '../context/useAppContext';
+import { EventPicker } from '../components/events/EventPicker';
 import { useUrlState } from '../hooks/useUrlState';
 import { countyChoiceLabel, countyOptions, inCounty } from '../utils/counties';
 import { ContactRole, ContactRoleLabels } from '../types';
@@ -223,15 +224,13 @@ export function GenerateListsPage() {
                 value={schoolTypeFilter}
                 onChange={(e) => setSchoolTypeFilter(e.target.value)}
               />
-              <Select
+              <EventPicker
+                id="lists-event"
                 label="Event Participation"
-                options={state.events.map((e) => ({
-                  value: e.id,
-                  label: e.name,
-                }))}
-                placeholder="All Events"
                 value={eventFilter}
-                onChange={(e) => setEventFilter(e.target.value)}
+                noneLabel="All events"
+                linkableOnly={false}
+                onChange={(id) => setEventFilter(id)}
               />
               <label className="flex items-center gap-2 cursor-pointer">
                 <input

@@ -24,6 +24,7 @@ import {
 import { buildActivityTemplate, fileHash, planActivities, readActivityWorkbook } from '../../utils/activityImportFile';
 import { looksLikeSpreadsheet } from '../../utils/importParsing';
 import { parseVisitors, visitorsLabel } from '../../utils/visitors';
+import { EventPicker } from '../events/EventPicker';
 import { activityDateError, futureDateNote, latestActivityDay } from '../../utils/activityDates';
 import { describeFileRejection, formatBytes, MAX_UPLOAD_BYTES } from '../../utils/helpers';
 import type { ArchivedDecision, ArchivedMatch } from '../../utils/archivedMatches';
@@ -226,15 +227,6 @@ export function ActivityImport() {
   const dateError = activityDateError(details.date);
   const isFuture = !!details.date && !dateError && details.date > today;
   const detailsReady = !!details.activityType && !dateError;
-
-  const eventOptions = useMemo(
-    () =>
-      state.events
-        .filter((e) => e.id.startsWith('e_') && e.category !== 'school_testing_date')
-        .sort((a, b) => b.date.localeCompare(a.date))
-        .map((e) => ({ value: e.id, label: `${e.name} (${format(new Date(e.date), 'MMM d, yyyy')})` })),
-    [state.events]
-  );
 
   const schoolById = useMemo(() => new Map((preview?.schools ?? []).map((s) => [s.id, s])), [preview]);
 
@@ -487,16 +479,16 @@ export function ActivityImport() {
               helpText={isFuture ? futureDateNote(details.date) : undefined}
               onChange={(e) => setDetails((d) => ({ ...d, date: e.target.value }))}
             />
-            <Select
+            <EventPicker
+              id="activity-import-event"
               label="Linked event (optional)"
               value={details.eventId}
-              onChange={(e) => {
-                const eventId = e.target.value;
-                const ev = state.events.find((x) => x.id === eventId);
+              near={details.date}
+              allowCreate
+              onChange={(eventId, ev) => {
                 const evDay = ev?.date.slice(0, 10);
                 setDetails((d) => ({ ...d, eventId, date: !d.date && evDay && evDay <= latestDay ? evDay : d.date }));
               }}
-              options={[{ value: '', label: 'No event' }, ...eventOptions]}
             />
             <Textarea
               label="Description"

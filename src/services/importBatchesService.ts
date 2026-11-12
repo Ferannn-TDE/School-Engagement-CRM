@@ -115,9 +115,95 @@ export interface NewImportBatch {
   /** App event id ("e_123"), if the activities are linked to an event. */
   eventId?: string;
   activities: PlannedActivity[];
+  /** The file's rows that were saved (db/029): kept so the batch can be previewed. */
+  rows: NewImportRow[];
 }
 
-/** Saves the batch and one activity per school in one transaction; returns the batch id. */
+/**
+ * One saved file row (db/029). visitorName is student data: the table is readable by
+ * editors and admins only (RLS), and names never go to lists, exports or Reports
+ * (scripts/verify-no-names.mjs fails the build if they do).
+ */
+export interface NewImportRow {
+  rowNumber: number;
+  schoolAsTyped: string;
+  cityAsTyped: string;
+  stateAsTyped: string;
+  schoolId: string | null;
+  visitors: number | null;
+  visitorName: string | null;
+}
+
+export interface ImportRow extends NewImportRow {
+  id: string;
+  activityId?: string;
+  archived: boolean;
+}
+
+interface ImportRowRow {
+  row_id: number;
+  row_number: number;
+  school_as_typed: string;
+  city_as_typed: string;
+  state_as_typed: string;
+  school_id: string | null;
+  activity_id: string | null;
+  visitors: number | null;
+  visitor_name: string | null;
+  archived: boolean;
+}
+
+const rowsPayload = (rows: NewImportRow[]) => rows.map((r) => ({
+  row_number: r.rowNumber, school_as_typed: r.schoolAsTyped, city_as_typed: r.cityAsTyped,
+  state_as_typed: r.stateAsTyped, school_id: r.schoolId, visitors: r.visitors, visitor_name: r.visitorName,
+}));
+
+const toImportRow = (r: ImportRowRow): ImportRow => ({
+  id: String(r.row_id), rowNumber: r.row_number, schoolAsTyped: r.school_as_typed, cityAsTyped: r.city_as_typed,
+  stateAsTyped: r.state_as_typed, schoolId: r.school_id, activityId: r.activity_id ?? undefined,
+  visitors: r.visitors, visitorName: r.visitor_name, archived: r.archived,
+});
+
+/** A batch's saved rows, in file order. Empty for viewers (RLS) and for batches saved before 029. */
+export async function fetchImportRows(batchId: string): Promise<ImportRow[]> {
+  const { data, error } = await supabase
+    .from('import_rows').select('*').eq('batch_id', batchId).order('row_number');
+  if (error) throw error;
+  return ((data ?? []) as ImportRowRow[]).map(toImportRow);
+}
+
+/** How many rows each batch has saved (0 = saved before 029, or a viewer). */
+export async function fetchImportRowCounts(batchIds: string[]): Promise<Map<string, number>> {
+  const counts = new Map<string, number>();
+  if (!batchIds.length) return counts;
+  const { data, error } = await supabase.from('import_rows').select('batch_id').in('batch_id', batchIds);
+  if (error) throw error;
+  for (const r of (data ?? []) as { batch_id: string }[]) counts.set(r.batch_id, (counts.get(r.batch_id) ?? 0) + 1);
+  return counts;
+}
+
+/** The visitors' names behind one activity (editors and admins only; [] for viewers). */
+export async function fetchVisitorNames(activityId: string): Promise<string[]> {
+  const { data, error } = await supabase
+    .from('import_rows').select('visitor_name, row_number').eq('activity_id', activityId)
+    .not('visitor_name', 'is', null).order('row_number');
+  if (error) throw error;
+  return ((data ?? []) as { visitor_name: string }[]).map((r) => r.visitor_name);
+}
+
+/**
+ * Adds the rows of a batch saved before 029 from its original file: refused unless the
+ * file's SHA-256 is the batch's, and only once. Creates no activity. Returns the count.
+ */
+export async function attachImportRows(batchId: string, fileHash: string, rows: NewImportRow[]): Promise<number> {
+  const { data, error } = await supabase.rpc('attach_import_rows', {
+    p_batch_id: batchId, p_file_hash: fileHash, p_rows: rowsPayload(rows),
+  });
+  if (error) throw error;
+  return data as number;
+}
+
+/** Saves the batch, one activity per school, and the rows, in one transaction; returns the batch id. */
 export async function createImportBatch(batch: NewImportBatch): Promise<string> {
   const eventId = batch.eventId ? parseInt(batch.eventId.replace(/^e_/, ''), 10) : null;
   const { data, error } = await supabase.rpc('create_import_batch', {
@@ -129,6 +215,7 @@ export async function createImportBatch(batch: NewImportBatch): Promise<string> 
     p_description: batch.description,
     p_event_id: eventId != null && !Number.isNaN(eventId) ? eventId : null,
     p_schools: batch.activities.map((a) => ({ school_id: a.schoolId, attendee_count: a.attendeeCount })),
+    p_rows: rowsPayload(batch.rows),
   });
   if (error) throw error;
   return data as string;
@@ -155,4 +242,12 @@ export async function fetchArchivedSchoolsForMatching(): Promise<MatchSchool[]> 
     { archived: true }
   );
   return rows.map((r) => ({ id: r.facility_key, name: r.name, city: r.city ?? '', state: r.state_code ?? '', archived: true }));
+}
+
+/** Blanks one visitor's name (nothing is deleted: the row, school and count stay). Editors only. */
+export async function removeVisitorName(rowId: string): Promise<void> {
+  const { data, error } = await supabase
+    .from('import_rows').update({ visitor_name: null }).eq('row_id', Number(rowId)).select('row_id');
+  if (error) throw error;
+  if (!data?.length) throw new Error('The name could not be removed (no row changed).');
 }

@@ -7,6 +7,8 @@ interface ProgramRow {
   school_id: string;
   name: string;
   category: string;
+  /** db/028 */
+  category_other?: string | null;
   description: string | null;
   is_active: boolean | null;
   created_at: string | null;
@@ -19,6 +21,7 @@ function rowToProgram(row: ProgramRow): Program {
     schoolId: row.school_id,
     name: row.name,
     category: row.category as ProgramCategory,
+    categoryOther: row.category_other ?? undefined,
     description: row.description ?? undefined,
     isActive: row.is_active ?? true,
     createdAt: row.created_at ?? nowISO(),
@@ -42,6 +45,7 @@ export async function createProgram(
       school_id: program.schoolId,
       name: program.name,
       category: program.category,
+      category_other: program.category === 'other' ? program.categoryOther ?? null : null,
       description: program.description ?? null,
       is_active: program.isActive,
     })
@@ -54,7 +58,10 @@ export async function createProgram(
 export async function updateProgram(id: string, updates: Partial<Program>): Promise<void> {
   const patch: Partial<ProgramRow> = {};
   if (updates.name !== undefined) patch.name = updates.name;
-  if (updates.category !== undefined) patch.category = updates.category;
+  if (updates.category !== undefined) {
+    patch.category = updates.category;
+    patch.category_other = updates.category === 'other' ? updates.categoryOther ?? null : null;
+  }
   if (updates.description !== undefined) patch.description = updates.description ?? null;
   if (updates.isActive !== undefined) patch.is_active = updates.isActive;
   const { error } = await supabase.from('programs').update(patch).eq('program_id', id);

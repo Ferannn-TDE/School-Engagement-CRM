@@ -39,6 +39,9 @@ function MfaGuard() {
 function AuthGuard() {
   const { user, loading, mfaLevel, mfaLoading, mfaRequired } = useAuth();
 
+  // Only the first check (and a different account signing in) shows the spinner: background
+  // checks after a token refresh or tab focus are quiet (AuthContext), so the app below
+  // stays mounted with its data and the page keeps its place.
   if (loading || mfaLoading) return <LoadingSpinner />;
   if (!user) return <Navigate to="/login" replace />;
 
@@ -52,7 +55,8 @@ function AuthGuard() {
   }
 
   return (
-    <AppProvider>
+    // Keyed by account: a different person signing in always gets a fresh load.
+    <AppProvider key={user.id}>
       <Outlet />
     </AppProvider>
   );

@@ -1,5 +1,6 @@
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useMemo } from 'react';
-import { Copy, Download, MapPin } from 'lucide-react';
+import { Copy, Download, MapPin, X } from 'lucide-react';
 import { Header } from '../components/layout/Header';
 import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
@@ -7,6 +8,7 @@ import { Select } from '../components/common/Select';
 import { Badge } from '../components/common/Badge';
 import { OneLine } from '../components/common/OneLine';
 import { useAppContext } from '../context/useAppContext';
+import { EventPicker } from '../components/events/EventPicker';
 import { useUrlState } from '../hooks/useUrlState';
 import { countyChoiceLabel, countyOptions, inCounty } from '../utils/counties';
 import { ContactRole, ContactRoleLabels } from '../types';
@@ -81,12 +83,22 @@ export function GenerateListsPage() {
   const exportFormat = (['email', 'csv', 'mailing'].includes(formatRaw) ? formatRaw : 'email') as 'email' | 'csv' | 'mailing';
   const setExportFormat = (f: 'email' | 'csv' | 'mailing') => setFormatRaw(f);
 
+  // Limited to a set of schools, e.g. "Export contacts" on Priorities. The list comes with
+  // the page change (location.state), not the address, so the link stays short; it's
+  // dropped with the chip's ×, or by opening Generate Lists again from the menu.
+  const location = useLocation();
+  const navigate = useNavigate();
+  const limit = (location.state as { schoolIds?: string[]; label?: string } | null) ?? null;
+  const limitIds = useMemo(() => (limit?.schoolIds?.length ? new Set(limit.schoolIds) : null), [limit]);
+  const clearLimit = () => navigate(`${location.pathname}${location.search}`, { replace: true, state: null });
+
   // Each county tied to its state: 40 names exist in both Illinois and Missouri.
   const uniqueCounties = useMemo(() => countyOptions(state.schools), [state.schools]);
 
   const filteredContacts = useMemo(() => {
     let contacts = state.contacts;
 
+    if (limitIds) contacts = contacts.filter((c) => limitIds.has(c.schoolId));
     if (activeOnly) contacts = contacts.filter((c) => c.isActive);
     if (!includeUnverified) contacts = contacts.filter((c) => c.isVerified === true);
     if (roleFilter) contacts = contacts.filter((c) => c.role === roleFilter);
@@ -116,7 +128,7 @@ export function GenerateListsPage() {
     }
 
     return contacts;
-  }, [state, countyFilter, roleFilter, schoolTypeFilter, eventFilter, activeOnly, includeUnverified]);
+  }, [state, countyFilter, roleFilter, schoolTypeFilter, eventFilter, activeOnly, includeUnverified, limitIds]);
 
   const handleCopyEmails = () => {
     const emails = filteredContacts.map((c) => c.email).join(', ');
@@ -212,15 +224,13 @@ export function GenerateListsPage() {
                 value={schoolTypeFilter}
                 onChange={(e) => setSchoolTypeFilter(e.target.value)}
               />
-              <Select
+              <EventPicker
+                id="lists-event"
                 label="Event Participation"
-                options={state.events.map((e) => ({
-                  value: e.id,
-                  label: e.name,
-                }))}
-                placeholder="All Events"
                 value={eventFilter}
-                onChange={(e) => setEventFilter(e.target.value)}
+                noneLabel="All events"
+                linkableOnly={false}
+                onChange={(id) => setEventFilter(id)}
               />
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -289,6 +299,14 @@ export function GenerateListsPage() {
                   Preview ({filteredContacts.length.toLocaleString()} contacts)
                 </h3>
                 <div className="flex gap-2">
+                  {limitIds && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-siue-red/10 pl-2.5 pr-1 py-0.5 text-xs font-medium text-siue-red">
+                      From Priorities: {limit?.label} ({limitIds.size.toLocaleString()} schools)
+                      <button type="button" onClick={clearLimit} aria-label="Remove the Priorities limit" className="rounded-full p-0.5 hover:bg-siue-red/20">
+                        <X size={12} />
+                      </button>
+                    </span>
+                  )}
                   {countyFilter && <Badge><MapPin size={12} className="mr-1" />{countyChoiceLabel(countyFilter)}</Badge>}
                   {roleFilter && <Badge variant="info">{ContactRoleLabels[roleFilter as ContactRole]}</Badge>}
                 </div>

@@ -1,17 +1,19 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  School, Clock, ChevronDown, ChevronUp, MapPin, CheckCircle2, Plus, ExternalLink,
-  Moon, UserPlus, UserX,
+  School, Clock, MapPin, CheckCircle2, Plus, ExternalLink, UserPlus, UserX, Download,
 } from 'lucide-react';
 import { Header } from '../components/layout/Header';
 import { Card } from '../components/common/Card';
 import { Badge } from '../components/common/Badge';
+import { Button } from '../components/common/Button';
 import { Modal } from '../components/common/Modal';
 import { LogContactForm } from '../components/activities/LogContactForm';
 import { useAppContext } from '../context/useAppContext';
 import { priorityLists, countyGaps } from '../utils/priorities';
-import { dayOf, daysBetween, formatDay, loggingStatus, addMonths } from '../utils/reports';
+import { dayOf, formatDay } from '../utils/reports';
+import { activityTypeLabel } from '../utils/reportLists';
+import { classNames } from '../utils/helpers';
 import { todayDay } from '../utils/activityDates';
 import { countyGroupName, countyKey, countyLabel, countyPath } from '../utils/counties';
 import { useUrlState } from '../hooks/useUrlState';
@@ -19,7 +21,7 @@ import { useRole } from '../context/useRole';
 import { Pagination } from '../components/common/Pagination';
 import { RowAction, RowActions } from '../components/common/RowActions';
 import { Missing } from '../components/common/Missing';
-import { FOLLOW_UP_DAYS, QUIET_MONTHS } from '../constants/reportSettings';
+import { RECENT_CONTACT_DAYS } from '../constants/reportSettings';
 
 /** How overdue something is, used to colour the left edge of a row.
  *  Deliberately distinct from SIUE red, which means "brand", not "urgent". */
@@ -45,42 +47,29 @@ export interface WorkItem {
 
 const ROWS_PER_PAGE = 25;
 
-function WorkSection({
-  icon,
-  title,
-  description,
-  count,
-  countTone,
-  open,
-  onToggle,
-  emptyTitle,
-  emptyBody,
-  emptyNeutral,
-  children,
-}: {
-  icon: React.ReactNode;
+type ListKey = 'recent' | 'never' | 'nocontact' | 'counties';
+
+/** One of the four equal boxes in the grid. The chosen one shows its list below. */
+function ListTile({ icon, title, description, count, selected, onSelect }: {
+  icon: ReactNode;
   title: string;
   description: string;
   count: number;
-  countTone: 'attention' | 'neutral';
-  /** Controlled by the page so which sections are open can live in the address. */
-  open: boolean;
-  onToggle: () => void;
-  emptyTitle: string;
-  emptyBody?: string;
-  /** Shown instead of the green "all clear" when an empty list isn't good news yet. */
-  emptyNeutral?: boolean;
-  children: React.ReactNode;
+  selected: boolean;
+  onSelect: () => void;
 }) {
-  const isEmpty = count === 0;
-
   return (
-    <Card padding={false} className={open ? 'md:col-span-2' : undefined}>
-      <button
-        className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left hover:bg-neutral-50 rounded-xl transition-colors"
-        onClick={onToggle}
-        aria-expanded={open}
-      >
+    <button
+      type="button"
+      onClick={onSelect}
+      aria-pressed={selected}
+      className={classNames(
+        'h-full w-full rounded-xl border bg-white px-6 py-5 text-left transition-colors',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-siue-red',
+        selected ? 'border-siue-red ring-1 ring-siue-red' : 'border-neutral-100 shadow-sm hover:bg-neutral-50'
+      )}
+    >
+      <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-3 min-w-0">
           <span className="mt-0.5 shrink-0 text-neutral-400">{icon}</span>
           <div className="min-w-0">
@@ -88,32 +77,10 @@ function WorkSection({
             <p className="text-sm text-neutral-500 mt-0.5">{description}</p>
           </div>
         </div>
-        <div className="flex items-center gap-3 shrink-0">
-          <Badge variant={isEmpty ? (emptyNeutral ? 'default' : 'success') : countTone === 'attention' ? 'warning' : 'info'}>
-            {count.toLocaleString()}
-          </Badge>
-          {open ? (
-            <ChevronUp size={18} className="text-neutral-400" />
-          ) : (
-            <ChevronDown size={18} className="text-neutral-400" />
-          )}
-        </div>
-      </button>
-
-      {open && (
-        <div className="border-t border-neutral-100">
-          {isEmpty ? (
-            <div className="py-10 px-6 text-center">
-              {!emptyNeutral && <CheckCircle2 size={28} className="mx-auto mb-3 text-success opacity-60" />}
-              <p className={`text-sm font-medium ${emptyNeutral ? 'text-neutral-700' : 'text-success'}`}>{emptyTitle}</p>
-              {emptyBody && <p className="text-sm text-neutral-500 mt-1 max-w-xl mx-auto">{emptyBody}</p>}
-            </div>
-          ) : (
-            children
-          )}
-        </div>
-      )}
-    </Card>
+        <Badge variant={count === 0 ? 'success' : 'info'}>{count.toLocaleString()}</Badge>
+      </div>
+      <p className="mt-3 text-xs font-medium text-siue-red">{selected ? 'Showing below' : 'Show list'}</p>
+    </button>
   );
 }
 
@@ -197,19 +164,13 @@ function WorkTable({
 export function PrioritiesPage() {
   const { canEdit } = useRole();
   const { state } = useAppContext();
+  const navigate = useNavigate();
   const today = todayDay();
   // Kept in the address so the view survives leaving the tab, a refresh and Back:
-  // which sections are open, and each list's page number.
-  const [openRaw, setOpenRaw] = useUrlState('open');
-  const openSections = new Set(openRaw.split(',').filter(Boolean));
-  const toggleSection = (id: string) => {
-    const next = new Set(openSections);
-    if (next.has(id)) next.delete(id);
-    else next.add(id);
-    setOpenRaw([...next].join(','));
-  };
-  const [eventPage, setEventPage] = useUrlState('p_event', '1');
-  const [quietPage, setQuietPage] = useUrlState('p_quiet', '1');
+  // which list is open, and each list's page number.
+  const [listRaw, setList] = useUrlState('list', 'recent');
+  const list: ListKey = (['recent', 'never', 'nocontact', 'counties'] as const).includes(listRaw as ListKey) ? (listRaw as ListKey) : 'recent';
+  const [recentPage, setRecentPage] = useUrlState('p_recent', '1');
   const [neverPage, setNeverPage] = useUrlState('p_never', '1');
   const [noContactPage, setNoContactPage] = useUrlState('p_nocontact', '1');
   const pageNum = (v: string) => Math.max(1, Number(v) || 1);
@@ -220,7 +181,7 @@ export function PrioritiesPage() {
     [state.schools, state.contacts, state.activities, state.events, today]
   );
 
-  // The shared columns, so rows line up across sections.
+  // The shared columns, so rows line up across lists.
   const rows = useMemo(() => {
     const school = new Map(state.schools.map((s) => [s.id, s]));
     const event = new Map(state.events.map((e) => [e.id, e]));
@@ -232,25 +193,23 @@ export function PrioritiesPage() {
       if (d > today) continue;
       if (!lastDay.has(a.schoolId) || d > lastDay.get(a.schoolId)!) lastDay.set(a.schoolId, d);
     }
-    const item = (id: string, reason: string, urgency: Urgency): WorkItem => {
+    const item = (id: string, reason: string, urgency: Urgency, lastContact?: string): WorkItem => {
       const s = school.get(id);
       const d = lastDay.get(id);
       return {
         id, name: s?.name ?? id, county: s?.county ?? '', contactCount: contacts.get(id) ?? 0,
-        lastContact: d ? formatDay(d) : 'Never', reason, urgency,
+        lastContact: lastContact ?? (d ? formatDay(d) : 'Never'), reason, urgency,
       };
     };
-    const eventName = (id?: string, fallback?: string) => (id ? event.get(id)?.name : undefined) ?? (fallback ? `“${fallback}”` : 'an event');
     const plural = (n: number, one: string) => `${n} ${one}${n === 1 ? '' : 's'}`;
     return {
-      followUp: lists.followUp.map((x) => item(x.schoolId,
-        `Attended ${eventName(x.eventId, x.description)} on ${formatDay(x.eventDay)}. ${x.daysLeft === 0 ? 'Last day' : plural(x.daysLeft, 'day') + ' left'} to follow up.`,
-        x.daysLeft <= 14 ? 'overdue' : 'due')),
-      quiet: lists.quiet.map((x) => item(x.schoolId,
-        `Nothing since ${formatDay(x.lastDay)} (${plural(Math.floor(daysBetween(x.lastDay, today) / 30), 'month')}).`, 'overdue')),
+      recent: lists.recent.map((x) => item(x.schoolId,
+        x.daysLeft === 0 ? 'Leaves the list tomorrow.' : `Leaves the list in ${plural(x.daysLeft, 'day')}.`,
+        x.daysLeft <= 14 ? 'overdue' : 'due',
+        `${formatDay(x.lastDay)} · ${activityTypeLabel(x.lastType, x.lastTypeOther)}`)),
       neverReached: lists.neverReached.map((x) => item(x.schoolId,
         x.upcoming
-          ? `On ${eventName(x.upcoming.eventId)}, ${formatDay(x.upcoming.day)}. ${plural(x.activeContacts, 'contact')} on file, never contacted.`
+          ? `On ${event.get(x.upcoming.eventId)?.name ?? 'an event'}, ${formatDay(x.upcoming.day)}. ${plural(x.activeContacts, 'contact')} on file, never contacted.`
           : `${plural(x.activeContacts, 'contact')} on file, never contacted.`,
         x.upcoming ? 'due' : 'cold')),
       noContact: lists.noContact.map((x) => {
@@ -272,137 +231,109 @@ export function PrioritiesPage() {
     [state.schools, state.contacts, state.activities, today]
   );
 
-  // When the first schools can go quiet: six months after logging started.
-  const firstQuietDay = useMemo(() => {
-    const start = loggingStatus(state.activities.filter((a) => dayOf(a.date) <= today)).start;
-    return start ? addMonths(start, 6) : null;
-  }, [state.activities, today]);
+  // Generate Lists, limited to these schools' contacts (for event invites). The school
+  // list travels with the page change, not in the address, so the link stays short.
+  const exportContacts = (schoolIds: string[], label: string) =>
+    navigate('/generate', { state: { schoolIds, label } });
 
-  // The four lists never overlap, so this is a plain sum.
-  const waiting = lists.followUp.length + lists.quiet.length + lists.neverReached.length + lists.noContact.length;
+  // The three lists never overlap, so this is a plain sum.
+  const total = lists.recent.length + lists.neverReached.length + lists.noContact.length;
+
+  const tiles: { key: ListKey; icon: ReactNode; title: string; description: string; count: number }[] = [
+    { key: 'recent', icon: <Clock size={18} />, title: 'Recently in touch: keep the connection going',
+      description: `Any visit, call, email or event in the last ${RECENT_CONTACT_DAYS} days. Oldest contact first.`, count: lists.recent.length },
+    { key: 'never', icon: <UserPlus size={18} />, title: 'Has contacts but never reached out',
+      description: 'A contact person on file, but nothing ever logged. Schools on an upcoming event first.', count: lists.neverReached.length },
+    { key: 'nocontact', icon: <UserX size={18} />, title: 'No contact person on file',
+      description: 'No active contact to reach. Schools already contacted first, then those with a working website.', count: lists.noContact.length },
+    { key: 'counties', icon: <MapPin size={18} />, title: 'Counties with the widest gaps',
+      description: 'Where the most schools have no contact person on file.', count: gaps.length },
+  ];
+  const chosen = tiles.find((t) => t.key === list)!;
+  const exportable = list === 'recent' ? lists.recent : list === 'never' ? lists.neverReached : null;
 
   return (
     <div>
       <Header title="Priorities" subtitle="Schools waiting on you, most urgent first" />
       <div className="p-8 space-y-6">
         <p className="text-lg text-neutral-600 max-w-3xl">
-          {waiting === 0 ? (
-            <>Nothing is waiting. Every school has a contact person and recent outreach.</>
-          ) : (
-            <>
-              <span className="font-semibold text-neutral-800">
-                {waiting.toLocaleString()} of {state.schools.length.toLocaleString()} schools
-              </span>{' '}
-              are waiting on you. Each school is on one list only.
-            </>
-          )}
+          <span className="font-semibold text-neutral-800">{lists.recent.length.toLocaleString()} schools</span> were in touch in the last {RECENT_CONTACT_DAYS} days,{' '}
+          <span className="font-semibold text-neutral-800">{lists.neverReached.length.toLocaleString()}</span> have contacts but were never reached, and{' '}
+          <span className="font-semibold text-neutral-800">{lists.noContact.length.toLocaleString()}</span> have no contact person:{' '}
+          {total.toLocaleString()} of {state.schools.length.toLocaleString()} schools, each on one list only.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
-          <WorkSection
-            icon={<Clock size={18} />}
-            title="Follow up after an event"
-            open={openSections.has('event')}
-            onToggle={() => toggleSection('event')}
-            description={`Attended an event in the last ${FOLLOW_UP_DAYS} days, with no call, email or visit since. Fewest days left first.`}
-            count={lists.followUp.length}
-            countTone="attention"
-            emptyTitle="No follow-ups waiting"
-            emptyBody="Every school that came to a recent event has heard from you since."
-          >
-            <WorkTable items={rows.followUp} onLog={canEdit ? setLogFor : undefined} page={pageNum(eventPage)} onPageChange={(n) => setEventPage(String(n))} />
-          </WorkSection>
+        <div className="grid grid-cols-1 md:grid-cols-2 auto-rows-fr gap-5">
+          {tiles.map((t) => (
+            <ListTile key={t.key} icon={t.icon} title={t.title} description={t.description} count={t.count}
+              selected={list === t.key} onSelect={() => setList(t.key)} />
+          ))}
+        </div>
 
-          <WorkSection
-            icon={<Moon size={18} />}
-            title="Gone quiet"
-            open={openSections.has('quiet')}
-            onToggle={() => toggleSection('quiet')}
-            description={`Had outreach before, but nothing in ${QUIET_MONTHS} months. Longest silence first.`}
-            count={lists.quiet.length}
-            countTone="attention"
-            emptyNeutral={!!firstQuietDay && firstQuietDay > today}
-            emptyTitle={firstQuietDay && firstQuietDay > today ? 'Nobody can have gone quiet yet' : 'Nobody has gone quiet'}
-            emptyBody={firstQuietDay && firstQuietDay > today
-              ? `Logging started on ${formatDay(addMonths(firstQuietDay, -6))}, so this list starts filling in from ${formatDay(firstQuietDay)}, when the first schools reach ${QUIET_MONTHS} months without contact.`
-              : `Every school with past outreach has been contacted in the last ${QUIET_MONTHS} months.`}
-          >
-            <WorkTable items={rows.quiet} onLog={canEdit ? setLogFor : undefined} page={pageNum(quietPage)} onPageChange={(n) => setQuietPage(String(n))} />
-          </WorkSection>
-
-          <WorkSection
-            icon={<UserPlus size={18} />}
-            title="Has contacts but never reached out"
-            open={openSections.has('never')}
-            onToggle={() => toggleSection('never')}
-            description="A contact person on file, but nothing ever logged. Schools on an upcoming event first."
-            count={lists.neverReached.length}
-            countTone="neutral"
-            emptyTitle="Every school with contacts has been reached"
-          >
+        <Card padding={false}>
+          <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-neutral-100">
+            <div>
+              <h2 className="text-base font-semibold text-neutral-800">{chosen.title}</h2>
+              <p className="text-sm text-neutral-500">{chosen.count.toLocaleString()} {list === 'counties' ? 'counties' : 'schools'}</p>
+            </div>
+            {exportable && exportable.length > 0 && (
+              <Button size="sm" variant="secondary" onClick={() => exportContacts(exportable.map((x) => x.schoolId), chosen.title)}>
+                <Download size={14} />
+                Export contacts
+              </Button>
+            )}
+          </div>
+          {chosen.count === 0 ? (
+            <div className="py-10 text-center">
+              <CheckCircle2 size={28} className="mx-auto mb-3 text-success opacity-60" />
+              <p className="text-sm font-medium text-success">Nothing here</p>
+            </div>
+          ) : list === 'recent' ? (
+            <WorkTable items={rows.recent} onLog={canEdit ? setLogFor : undefined} page={pageNum(recentPage)} onPageChange={(n) => setRecentPage(String(n))} />
+          ) : list === 'never' ? (
             <WorkTable items={rows.neverReached} onLog={canEdit ? setLogFor : undefined} page={pageNum(neverPage)} onPageChange={(n) => setNeverPage(String(n))} />
-          </WorkSection>
-
-          <WorkSection
-            icon={<UserX size={18} />}
-            title="No contact person on file"
-            open={openSections.has('nocontact')}
-            onToggle={() => toggleSection('nocontact')}
-            description="No active contact to reach. Schools already contacted first, then those with a working website."
-            count={lists.noContact.length}
-            countTone="neutral"
-            emptyTitle="Every school has a contact person"
-          >
+          ) : list === 'nocontact' ? (
             <WorkTable items={rows.noContact} onLog={canEdit ? setLogFor : undefined} page={pageNum(noContactPage)} onPageChange={(n) => setNoContactPage(String(n))} />
-          </WorkSection>
-
-          <WorkSection
-            icon={<MapPin size={18} />}
-            title="Counties with the widest gaps"
-            open={openSections.has('counties')}
-            onToggle={() => toggleSection('counties')}
-            description="Where the most schools have no contact person on file."
-            count={gaps.length}
-            countTone="neutral"
-            emptyTitle="Every county has a contact person at every school"
-          >
-            <div className="divide-y divide-neutral-50">
-              {gaps.slice(0, 12).map((c) => {
-                const rate = c.total ? c.withContact / c.total : 0;
-                const without = c.total - c.withContact;
-                return (
-                  <div key={countyKey(c.county, c.state)} className="relative">
-                    <span className={`absolute left-0 top-0 bottom-0 w-1 ${rate < 0.34 ? urgencyBar.overdue : urgencyBar.due}`} aria-hidden="true" />
-                    <div className="px-6 py-3">
-                      <div className="flex items-center justify-between gap-4 mb-1.5">
-                        <Link to={countyPath(c.county, c.state)} className="text-sm font-medium text-neutral-800 hover:text-siue-red transition-colors truncate">
-                          {countyLabel(c.county, c.state)}
-                        </Link>
-                        <span className="text-xs text-neutral-600 shrink-0">
-                          <span className="font-medium text-attention-high-text">{without} with no contact person</span>
-                          {' · '}{c.neverContacted} never contacted
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="flex-1 h-1.5 bg-neutral-100 rounded-full overflow-hidden">
-                          <div className="h-full bg-attention-medium rounded-full" style={{ width: `${Math.round(rate * 100)}%` }} />
+          ) : (
+            <>
+              <div className="divide-y divide-neutral-50">
+                {gaps.slice(0, 12).map((c) => {
+                  const rate = c.total ? c.withContact / c.total : 0;
+                  const without = c.total - c.withContact;
+                  return (
+                    <div key={countyKey(c.county, c.state)} className="relative">
+                      <span className={`absolute left-0 top-0 bottom-0 w-1 ${rate < 0.34 ? urgencyBar.overdue : urgencyBar.due}`} aria-hidden="true" />
+                      <div className="px-6 py-3">
+                        <div className="flex items-center justify-between gap-4 mb-1.5">
+                          <Link to={countyPath(c.county, c.state)} className="text-sm font-medium text-neutral-800 hover:text-siue-red transition-colors truncate">
+                            {countyLabel(c.county, c.state)}
+                          </Link>
+                          <span className="text-xs text-neutral-600 shrink-0">
+                            <span className="font-medium text-attention-high-text">{without} with no contact person</span>
+                            {' · '}{c.neverContacted} never contacted
+                          </span>
                         </div>
-                        <span className="text-xs text-neutral-500 shrink-0 text-right">
-                          {c.withContact} of {c.total} have a contact person
-                        </span>
+                        <div className="flex items-center gap-3">
+                          <div className="flex-1 h-1.5 bg-neutral-100 rounded-full overflow-hidden">
+                            <div className="h-full bg-attention-medium rounded-full" style={{ width: `${Math.round(rate * 100)}%` }} />
+                          </div>
+                          <span className="text-xs text-neutral-500 shrink-0 text-right">
+                            {c.withContact} of {c.total} have a contact person
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-            {gaps.length > 12 && (
-              <div className="px-6 py-3 text-xs text-neutral-500 border-t border-neutral-100">
-                Showing the 12 widest gaps of {gaps.length.toLocaleString()} counties.
+                  );
+                })}
               </div>
-            )}
-          </WorkSection>
-        </div>
+              {gaps.length > 12 && (
+                <div className="px-6 py-3 text-xs text-neutral-500 border-t border-neutral-100">
+                  Showing the 12 widest gaps of {gaps.length.toLocaleString()} counties.
+                </div>
+              )}
+            </>
+          )}
+        </Card>
 
         <p className="text-xs text-neutral-500 flex items-center gap-1.5 pt-2">
           <School size={13} />

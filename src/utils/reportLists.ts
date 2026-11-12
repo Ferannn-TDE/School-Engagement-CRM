@@ -36,8 +36,10 @@ export function activityCount(type: string, n: number): string {
   return `${n.toLocaleString('en-US')} ${label}${n === 1 ? '' : 's'}`;
 }
 
-export function activityTypeLabel(type: string): string {
+/** An activity type as people say it; with `other`, the "Please specify" text for Other (db/028). */
+export function activityTypeLabel(type: string, other?: string): string {
   if (type === EVENT_ATTENDANCE_TYPE) return 'Event attendance';
+  if (type === 'other' && other?.trim()) return other.trim();
   return ContactMethodLabels[type] ?? type.replace(/_/g, ' ');
 }
 
@@ -98,7 +100,7 @@ export function listBuilders(data: ReportInput, asOf: Day) {
           .map((a) => ({
             link: schoolLink(a.schoolId),
             cells: {
-              date: formatDay(dayOf(a.date)), school: schoolName(a.schoolId), type: activityTypeLabel(a.activityType),
+              date: formatDay(dayOf(a.date)), school: schoolName(a.schoolId), type: activityTypeLabel(a.activityType, a.activityTypeOther),
               event: a.eventId ? events.get(a.eventId)?.name ?? '' : '', visitors: a.attendeeCount ?? '',
             },
           })),

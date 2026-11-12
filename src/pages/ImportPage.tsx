@@ -9,6 +9,7 @@ import { Button } from '../components/common/Button';
 import { Select } from '../components/common/Select';
 import { Badge } from '../components/common/Badge';
 import { useAppContext } from '../context/useAppContext';
+import { useUrlState } from '../hooks/useUrlState';
 import { roleFromTitle } from '../utils/contactRoles';
 import {
   isValidEmail,
@@ -145,7 +146,14 @@ export function ImportPage() {
   };
 
   // Single-entity import state
-  const [activeTab, setActiveTab] = useState<ImportTab>('combined');
+  // Two tabs: "Schools & contacts" (with "What's in your file?": both, schools only or
+  // contacts only, each with its own template and the same rules as before) and
+  // "Activities". Kept in the address (?tab=activities, ?file=schools) so links and Back work.
+  const [tabRaw, setTabRaw] = useUrlState('tab', 'people');
+  const [fileRaw, setFileRaw] = useUrlState('file', 'combined');
+  const fileKind: 'combined' | 'schools' | 'contacts' =
+    fileRaw === 'schools' || fileRaw === 'contacts' ? fileRaw : 'combined';
+  const activeTab: ImportTab = tabRaw === 'activities' ? 'activities' : fileKind;
   const [parsedData, setParsedData] = useState<ParsedRow[]>([]);
   const [headers, setHeaders] = useState<string[]>([]);
   const [columnMapping, setColumnMapping] = useState<Record<string, string>>({});
@@ -711,30 +719,58 @@ export function ImportPage() {
       />
       <div className="p-8 space-y-6">
         {/* Tabs */}
-        <div className="flex border-b border-neutral-200">
+        <div className="flex border-b border-neutral-200" role="tablist">
           {([
-            { key: 'combined', label: 'Import Schools + Contacts' },
-            { key: 'contacts', label: 'Import Contacts' },
-            { key: 'schools', label: 'Import Schools' },
-            { key: 'activities', label: 'Import Activities' },
-          ] as const).map(({ key, label }) => (
-            <button
-              key={key}
-              onClick={() => {
-                setActiveTab(key);
-                reset();
-                resetCombined();
-              }}
-              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === key
-                  ? 'border-siue-red text-siue-red'
-                  : 'border-transparent text-neutral-500 hover:text-neutral-700'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
+            { key: 'people', label: 'Schools & contacts' },
+            { key: 'activities', label: 'Activities' },
+          ] as const).map(({ key, label }) => {
+            const selected = (key === 'activities') === (activeTab === 'activities');
+            return (
+              <button
+                key={key}
+                role="tab"
+                aria-selected={selected}
+                onClick={() => {
+                  setTabRaw(key === 'people' ? '' : key);
+                  reset();
+                  resetCombined();
+                }}
+                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                  selected ? 'border-siue-red text-siue-red' : 'border-transparent text-neutral-500 hover:text-neutral-700'
+                }`}
+              >
+                {label}
+              </button>
+            );
+          })}
         </div>
+
+        {activeTab !== 'activities' && (
+          <fieldset className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            <legend className="sr-only">What's in your file?</legend>
+            <span className="text-sm font-medium text-neutral-700" aria-hidden="true">What's in your file?</span>
+            {([
+              { key: 'combined', label: 'Schools and contacts' },
+              { key: 'schools', label: 'Schools only' },
+              { key: 'contacts', label: 'Contacts only' },
+            ] as const).map(({ key, label }) => (
+              <label key={key} className="inline-flex items-center gap-2 text-sm text-neutral-700 cursor-pointer">
+                <input
+                  type="radio"
+                  name="import-file-kind"
+                  className="accent-siue-red"
+                  checked={fileKind === key}
+                  onChange={() => {
+                    setFileRaw(key === 'combined' ? '' : key);
+                    reset();
+                    resetCombined();
+                  }}
+                />
+                {label}
+              </label>
+            ))}
+          </fieldset>
+        )}
 
         {parseError && (
           <UploadError message={parseError} onDismiss={() => setParseError(null)} />

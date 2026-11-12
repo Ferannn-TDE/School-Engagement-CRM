@@ -406,7 +406,12 @@ export function SchoolDetailPage() {
                           className="flex items-start justify-between py-2.5"
                         >
                           <div>
-                            <p className="text-sm font-medium text-neutral-700">{program.name}</p>
+                            <p className="text-sm font-medium text-neutral-700">
+                              {program.name}
+                              {program.category === 'other' && program.categoryOther && (
+                                <span className="ml-2 text-xs font-normal text-neutral-500">{program.categoryOther}</span>
+                              )}
+                            </p>
                             {program.description && (
                               <p className="text-xs text-neutral-500 mt-0.5">{program.description}</p>
                             )}
@@ -458,7 +463,7 @@ export function SchoolDetailPage() {
                     key={activity.id}
                     role="button"
                     tabIndex={0}
-                    aria-label={`Details of ${activityTypeLabel(activity.activityType)} on ${format(new Date(activity.date), 'MMM d, yyyy')}`}
+                    aria-label={`Details of ${activityTypeLabel(activity.activityType, activity.activityTypeOther)} on ${format(new Date(activity.date), 'MMM d, yyyy')}`}
                     onClick={() => setOpenActivityId(activity.id)}
                     onKeyDown={(e) => {
                       if (e.target !== e.currentTarget) return;
@@ -469,7 +474,7 @@ export function SchoolDetailPage() {
                     <div className="w-2 h-2 rounded-full bg-siue-red mt-2 shrink-0" />
                     <div className="flex-1">
                       <p className="text-sm font-medium text-neutral-800">
-                        {activityTypeLabel(activity.activityType)}
+                        {activityTypeLabel(activity.activityType, activity.activityTypeOther)}
                         {upcoming && (
                           <Badge variant="info" className="ml-2 align-middle">
                             Upcoming

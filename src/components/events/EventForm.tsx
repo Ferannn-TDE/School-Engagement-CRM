@@ -25,16 +25,22 @@ const eventSchema = z.object({
   attendeeCountStr: z.string().optional(),
   notes: z.string().optional(),
   participatingSchools: z.array(z.string()),
-});
+  // Other: "Please specify" is required, and shown instead of "Other" (db/028).
+  typeOther: z.string().optional(),
+}).refine((d) => d.type !== 'other' || !!d.typeOther?.trim(), { path: ['typeOther'], message: 'Please specify' });
 
 type EventFormData = z.infer<typeof eventSchema>;
 
 interface EventFormProps {
   event?: Event;
   onClose: () => void;
+  /** Called with a new event once it's saved (the event picker selects it). */
+  onCreated?: (event: Event) => void;
+  /** A starting date for a new event, "yyyy-MM-dd". */
+  initialDate?: string;
 }
 
-export function EventForm({ event, onClose }: EventFormProps) {
+export function EventForm({ event, onClose, onCreated, initialDate }: EventFormProps) {
   const { state, addEvent, updateEvent } = useAppContext();
   const isEditing = !!event;
 
@@ -49,7 +55,9 @@ export function EventForm({ event, onClose }: EventFormProps) {
     defaultValues: event
       ? {
           name: event.name,
-          type: event.type,
+          // Events saved before db/028 have no type: the form asks for one.
+          type: event.type ?? '',
+          typeOther: event.typeOther ?? '',
           date: event.date.slice(0, 16),
           endDate: event.endDate?.slice(0, 16) || '',
           location: event.location,
@@ -59,6 +67,8 @@ export function EventForm({ event, onClose }: EventFormProps) {
         }
       : {
           type: '',
+          typeOther: '',
+          date: initialDate ? `${initialDate}T09:00` : '',
           participatingSchools: [],
           attendeeCountStr: '',
         },
@@ -82,7 +92,7 @@ export function EventForm({ event, onClose }: EventFormProps) {
     });
   }, [pickableSchools, schoolQuery]);
 
-  const onSubmit = (data: EventFormData) => {
+  const onSubmit = async (data: EventFormData) => {
     const attendeeCount =
       data.attendeeCountStr && data.attendeeCountStr !== ''
         ? parseInt(data.attendeeCountStr, 10)
@@ -91,6 +101,7 @@ export function EventForm({ event, onClose }: EventFormProps) {
     const eventData = {
       name: data.name,
       type: data.type as EventType,
+      typeOther: data.type === 'other' ? data.typeOther?.trim() : undefined,
       date: new Date(data.date).toISOString(),
       endDate: data.endDate ? new Date(data.endDate).toISOString() : undefined,
       location: data.location ?? '',
@@ -104,8 +115,10 @@ export function EventForm({ event, onClose }: EventFormProps) {
       updateEvent({ ...event, ...changes }, changes);
       toast.success('Event updated successfully');
     } else {
-      addEvent(eventData);
+      const created = await addEvent(eventData);
+      if (!created) return; // the error is shown; the form stays open with what was typed
       toast.success('Event created successfully');
+      onCreated?.(created);
     }
     onClose();
   };
@@ -147,6 +160,15 @@ export function EventForm({ event, onClose }: EventFormProps) {
           {...register('location')}
         />
       </div>
+      {watch('type') === 'other' && (
+        <Input
+          label="Please specify"
+          required
+          placeholder="What kind of event is it?"
+          error={errors.typeOther?.message}
+          {...register('typeOther')}
+        />
+      )}
       <div className="grid grid-cols-2 gap-4">
         <Input
           label="Start Date & Time"

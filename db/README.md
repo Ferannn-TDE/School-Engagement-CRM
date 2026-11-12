@@ -34,6 +34,26 @@ how 001 and 002 went missing once (found and re-applied on 2026-09-26/28).
 | `025_mfa_for_editors_and_admins_only.sql` | Applied 2026-11-09 by sophie, no test results recorded. Sign-up opened to any email (the 004 hook switched off). The authenticator step (aal2) is now needed only by editors and admins: `app_role()` returns the assigned role only at aal2, else viewer; new `assigned_role()` gives the assigned role at any level. The restrictive "Require MFA (aal2)" policy dropped from schools, staff, contacts, events, programs, activities, import_batches and bug_reports (kept on user_roles and role_changes), so viewers read with a password session. Policies before it saved in `backup.policies_before_025`. |
 | `026_activity_audit.sql` | `created_by`, `updated_at`, `updated_by` on `activities`, stamped by triggers from the signed-in email ('database' for the owner): who logged an activity, and who last edited its content and when. Archiving is not an edit. Existing rows not backfilled. Shown in the visit details panel on a school's Activity History. |
 | `027_last_updated_and_verified_stamps.sql` | Applied 2026-11-12: `updated_by` and `verified_by` on `schools` and `staff`. A trigger (`stamp_record_changes`) moves `updated_at` / `updated_by` only when the content really changes (the scraper's bookkeeping, edit locks, archiving and verification don't count), and stamps `last_verified_at` / `verified_by` only when Verified is switched on or off. The app shows "Last updated <date> by <who>" and flags records not updated in over 12 months. No backfill. The next migration is 028. |
+| `028_other_details_and_event_type.sql` | Applied 2026-11-12: `programs.category_other`, `activities.activity_type_other`, `events.event_type` (six types, NULL = "Not set") and `events.event_type_other`. A trigger (`require_other_text`) requires the "Please specify" text when Other is being set, and lets every other update of an existing row through (archive, restore). |
+| `029_import_rows.sql` | Applied 2026-11-12: `import_rows`, each saved row of an activity import (school as typed, matched school, activity, visitors, optional `visitor_name`). Editors and admins only, for reading too (RLS on `can_edit()`); viewers and anon get no rows. `create_import_batch` (9 arguments) saves rows with the batch; `attach_import_rows` adds an older batch's rows from its original file (same SHA-256, once); archiving a batch archives its rows. |
+
+## Removing a visitor's name (029)
+
+Visitors' names in `import_rows.visitor_name` are student data. Nothing is ever deleted,
+so a name is removed by blanking it on its row:
+
+1. An editor or admin (after the authenticator step) opens Import data → Activities →
+   Recent imports → **View rows** on the batch.
+2. On the row, **Remove name**, and confirm. The name is blanked (`visitor_name = null`);
+   the row, its school and its visitor count stay, so the activity and Reports are
+   unchanged. Without the app, the same from the SQL Editor:
+   `update public.import_rows set visitor_name = null where row_id = <row id>;`
+   (check it changed exactly one row).
+3. If the name is also in the original spreadsheet, delete it there too: the app never
+   kept the file.
+
+Names never appear in Generate Lists, CSV or Excel exports, or Reports;
+`npm run verify:no-names` fails the build if code would put them there.
 
 ## County views: not for counts
 

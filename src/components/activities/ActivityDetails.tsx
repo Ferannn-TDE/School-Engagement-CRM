@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { format } from 'date-fns';
 import { Archive, Pencil } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -12,14 +12,15 @@ import { useRole } from '../../context/useRole';
 import { IN_PERSON_ACTIVITY_TYPES } from '../../types';
 import type { ActivityRecord } from '../../types';
 import { activityTypeLabel } from '../../utils/reportLists';
+import { specifyError } from '../../utils/labels';
 import { parseVisitors, visitorsLabel } from '../../utils/visitors';
 import { activityDateError, futureDateNote, hasHappened, latestActivityDay, todayDay } from '../../utils/activityDates';
-import { isTestingDate } from '../../utils/events';
 import { writeErrorMessage } from '../../utils/writeErrors';
-import { fetchImportBatch, type ImportBatch } from '../../services/importBatchesService';
+import { fetchImportBatch, fetchVisitorNames, type ImportBatch } from '../../services/importBatchesService';
+import { EventPicker } from '../events/EventPicker';
 
 /** Every type an activity can have: the three Log contact methods and imported attendance. */
-const ACTIVITY_TYPES = ['call', 'email', 'visit', 'event_participation'];
+const ACTIVITY_TYPES = ['call', 'email', 'visit', 'event_participation', 'other'];
 
 interface ActivityDetailsProps {
   activity: ActivityRecord;
@@ -41,6 +42,16 @@ export function ActivityDetails({ activity, onClose, onArchive }: ActivityDetail
   const [editing, setEditing] = useState(false);
   const [batch, setBatch] = useState<ImportBatch | null>(null);
   const [batchError, setBatchError] = useState(false);
+
+  // Visitors' names from the import's rows (db/029). Student data: only editors and admins
+  // can read them (RLS); for everyone else this stays empty and the count is shown.
+  const [names, setNames] = useState<string[]>([]);
+  useEffect(() => {
+    if (!activity.importBatchId || !canEdit) return;
+    let live = true;
+    fetchVisitorNames(activity.id).then((n) => { if (live) setNames(n); }).catch(() => undefined);
+    return () => { live = false; };
+  }, [activity.id, activity.importBatchId, canEdit]);
 
   useEffect(() => {
     if (!activity.importBatchId) return;
@@ -74,7 +85,7 @@ export function ActivityDetails({ activity, onClose, onArchive }: ActivityDetail
     <div className="space-y-4">
       <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
         <Field label="Type">
-          {activityTypeLabel(activity.activityType)}
+          {activityTypeLabel(activity.activityType, activity.activityTypeOther)}
           {upcoming && <Badge variant="info" className="ml-2 align-middle">Upcoming</Badge>}
         </Field>
         <Field label="Date">{format(new Date(activity.date), 'EEEE, MMM d, yyyy')}</Field>
@@ -82,6 +93,11 @@ export function ActivityDetails({ activity, onClose, onArchive }: ActivityDetail
         {IN_PERSON_ACTIVITY_TYPES.includes(activity.activityType) && (
           <Field label="Number of visitors">
             {activity.attendeeCount != null ? visitorsLabel(activity.attendeeCount) : <Muted>Not recorded</Muted>}
+            {names.length > 0 && (
+              <ul className="mt-1 text-sm text-neutral-700 list-disc ml-4">
+                {names.map((n, i) => <li key={i}>{n}</li>)}
+              </ul>
+            )}
           </Field>
         )}
         <Field label="Who you spoke to">
@@ -161,9 +177,10 @@ function ActivityEditForm({ activity, onCancel, onSaved, save }: {
   onSaved: () => void;
   save: ReturnType<typeof useAppContext>['updateActivity'];
 }) {
-  const { state, getContactsBySchool } = useAppContext();
+  const { getContactsBySchool } = useAppContext();
   const today = todayDay();
   const [type, setType] = useState(activity.activityType);
+  const [typeOther, setTypeOther] = useState(activity.activityTypeOther ?? '');
   const [date, setDate] = useState(activity.date.slice(0, 10));
   const [contactId, setContactId] = useState(activity.contactId ?? '');
   const [eventId, setEventId] = useState(activity.eventId ?? '');
@@ -176,6 +193,7 @@ function ActivityEditForm({ activity, onCancel, onSaved, save }: {
   const isFuture = !dateError && date > today;
   const inPerson = IN_PERSON_ACTIVITY_TYPES.includes(type);
   const visitors = inPerson ? parseVisitors(visitorsText) : { value: null, error: '' };
+  const otherError = specifyError(type, typeOther);
 
   const typeOptions = [...new Set([...ACTIVITY_TYPES, activity.activityType])]
     .map((t) => ({ value: t, label: activityTypeLabel(t) }));
@@ -183,27 +201,16 @@ function ActivityEditForm({ activity, onCancel, onSaved, save }: {
     .slice()
     .sort((a, b) => a.lastName.localeCompare(b.lastName) || a.firstName.localeCompare(b.firstName))
     .map((c) => ({ value: c.id, label: `${c.firstName} ${c.lastName}`.trim() || c.email || 'Unnamed contact' }));
-  // App events only (scraped ones have no events-table id to link), testing dates left out.
-  const eventOptions = useMemo(
-    () => state.events
-      .filter((e) => e.id.startsWith('e_') && !isTestingDate(e))
-      .sort((a, b) => b.date.localeCompare(a.date))
-      .map((e) => ({ value: e.id, label: `${e.name} (${format(new Date(e.date), 'MMM d, yyyy')})` }))
-      // Keep a link the list can't show (an archived event), so saving never drops it silently.
-      .concat(activity.eventId && !state.events.some((e) => e.id === activity.eventId && e.id.startsWith('e_') && !isTestingDate(e))
-        ? [{ value: activity.eventId, label: 'The current event (archived or hidden)' }]
-        : []),
-    [state.events, activity.eventId]
-  );
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (dateError || visitors.error) return;
+    if (dateError || visitors.error || otherError) return;
     setSaving(true);
     setError('');
     try {
       await save(activity.id, {
         activityType: type,
+        activityTypeOther: type === 'other' ? typeOther.trim() : null,
         date,
         description: notes.trim(),
         contactId: contactId || null,
@@ -235,6 +242,18 @@ function ActivityEditForm({ activity, onCancel, onSaved, save }: {
           onChange={(e) => setDate(e.target.value)}
         />
       </div>
+      {/* Other: "Please specify" is required, and shown instead of "Other" (db/028). */}
+      {type === 'other' && (
+        <Input
+          id="activity-edit-type-other"
+          label="Please specify"
+          required
+          placeholder="What kind of contact was it?"
+          value={typeOther}
+          error={otherError || undefined}
+          onChange={(e) => setTypeOther(e.target.value)}
+        />
+      )}
       {inPerson && (
         <Input
           id="activity-edit-visitors"
@@ -257,13 +276,13 @@ function ActivityEditForm({ activity, onCancel, onSaved, save }: {
           value={contactId}
           onChange={(e) => setContactId(e.target.value)}
         />
-        <Select
+        <EventPicker
           id="activity-edit-event"
           label="Event"
-          placeholder="No event"
-          options={eventOptions}
           value={eventId}
-          onChange={(e) => setEventId(e.target.value)}
+          near={date}
+          allowCreate
+          onChange={(id) => setEventId(id)}
         />
       </div>
       <Textarea id="activity-edit-notes" label="Description" rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} />
@@ -275,7 +294,7 @@ function ActivityEditForm({ activity, onCancel, onSaved, save }: {
       {error && <p role="alert" className="text-sm text-error">{error}</p>}
       <div className="flex justify-end gap-3 pt-4 border-t border-neutral-100">
         <Button variant="ghost" type="button" onClick={onCancel} disabled={saving}>Cancel</Button>
-        <Button type="submit" loading={saving} disabled={!!dateError || !!visitors.error}>Save changes</Button>
+        <Button type="submit" loading={saving} disabled={!!dateError || !!visitors.error || !!otherError}>Save changes</Button>
       </div>
     </form>
   );

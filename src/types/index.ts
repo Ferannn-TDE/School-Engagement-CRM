@@ -24,6 +24,8 @@ export interface Program {
   schoolId: string;
   name: string;
   category: ProgramCategory;
+  /** The "Please specify" text when category is 'other' (db/028). */
+  categoryOther?: string;
   description?: string;
   isActive: boolean;
   createdAt: string;
@@ -163,7 +165,10 @@ export interface School {
 export interface Event {
   id: string;
   name: string;
-  type: EventType;
+  /** Saved since db/028; undefined = "Not set" (events saved before, and scraped ones). */
+  type?: EventType;
+  /** The "Please specify" text when type is 'other' (db/028). */
+  typeOther?: string;
   /** Local date and time, "2026-11-12T18:30:00" (Central time for scraped events). */
   date: string;
   /** False for all-day events and events with no recorded time: show the date only. */
@@ -186,14 +191,15 @@ export const ContactMethodLabels: Record<string, string> = {
   call: 'Phone call',
   email: 'Email',
   visit: 'Visit',
+  other: 'Other',
 };
 
 /**
  * Activity types where people are there in person, so a visitor count makes sense:
- * a visit, and attendance at an event (imports, campus visits and fairs are saved as
- * event_participation). Calls and emails have no visitors.
+ * a visit, attendance at an event (imports, campus visits and fairs are saved as
+ * event_participation), and Other (db/028). Calls and emails have no visitors.
  */
-export const IN_PERSON_ACTIVITY_TYPES: readonly string[] = ['visit', 'event_participation'];
+export const IN_PERSON_ACTIVITY_TYPES: readonly string[] = ['visit', 'event_participation', 'other'];
 
 export interface ActivityRecord {
   id: string;
@@ -208,6 +214,8 @@ export interface ActivityRecord {
   importBatchId?: string;
   /** Number of visitors: entered on a logged visit, or counted by an import (db/022). */
   attendeeCount?: number;
+  /** The "Please specify" text when activityType is 'other' (db/028). */
+  activityTypeOther?: string;
   /** Who logged it, and who last changed its content and when (db/026). Empty on rows saved before 026. */
   createdBy?: string;
   updatedAt?: string;
@@ -216,6 +224,7 @@ export interface ActivityRecord {
 
 /** The fields an editor can change on a logged activity (visit details panel). */
 export type ActivityChanges = Pick<ActivityRecord, 'activityType' | 'date' | 'description'> & {
+  activityTypeOther: string | null;
   contactId: string | null;
   eventId: string | null;
   attendeeCount: number | null;

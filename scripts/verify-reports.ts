@@ -308,23 +308,30 @@ console.log('Priorities: four lists that never overlap');
   ];
   const events = [ev('e_1', '2026-10-20', []), ev('e_2', '2026-11-05', ['s5'])];
   const L = priorityLists(schools, contacts, acts, events, T);
-  check('follow up after an event: attended in the last 60 days, nothing since, fewest days left first', () => {
-    assert.deepEqual(L.followUp.map((x) => [x.schoolId, x.daysLeft, x.eventId]), [['s1', 53, 'e_1']]);
+  // T = Oct 27: the window is Aug 28 – Oct 27.
+  check('recently in touch: any activity in the last 60 days, oldest first, with date and type', () => {
+    assert.equal(L.windowFrom, '2026-08-28');
+    assert.deepEqual(L.recent.map((x) => [x.schoolId, x.lastDay, x.lastType, x.daysLeft]), [
+      ['s2', '2026-09-10', 'call', 13],
+      ['s4', '2026-10-01', 'visit', 34],
+      ['s1', '2026-10-20', 'event_participation', 53],
+    ]);
   });
-  check('gone quiet: had activity, none in 6 months', () => {
-    assert.deepEqual(L.quiet.map((x) => [x.schoolId, x.lastDay]), [['s3', '2026-03-01']]);
-    assert.equal(L.quietBefore, '2026-04-27');
+  check('outside the window (s8 Aug 1, s3 March) and future-dated (s7 Nov 1) are not recent', () => {
+    const ids = L.recent.map((x) => x.schoolId);
+    for (const id of ['s3', 's7', 's8']) assert.equal(ids.includes(id), false, id);
   });
   check('never reached out: contacts, nothing logged (future-dated ignored), upcoming event first', () => {
     assert.deepEqual(L.neverReached.map((x) => [x.schoolId, x.upcoming?.eventId ?? null]), [['s5', 'e_2'], ['s7', null]]);
   });
-  check('no contact person: an inactive contact counts as none; contacted first, then working website', () => {
-    assert.deepEqual(L.noContact.map((x) => x.schoolId), ['s4', 's6']);
+  check('no contact person: an inactive contact counts as none; a working website first', () => {
+    // s4 has no active contact but was contacted on Oct 1, so it's in Recently in touch.
+    assert.deepEqual(L.noContact.map((x) => x.schoolId), ['s6']);
   });
-  check('the lists never overlap, and recently contacted schools are on none', () => {
-    const all = [...L.followUp, ...L.quiet, ...L.neverReached, ...L.noContact].map((x) => x.schoolId);
+  check('the lists never overlap; a school whose last contact is older than 60 days is on none', () => {
+    const all = [...L.recent, ...L.neverReached, ...L.noContact].map((x) => x.schoolId);
     assert.equal(new Set(all).size, all.length);
-    assert.deepEqual(schools.map((s) => s.id).filter((id) => !all.includes(id)), ['s2', 's8']);
+    assert.deepEqual(schools.map((s) => s.id).filter((id) => !all.includes(id)), ['s3', 's8']);
   });
   check('county gaps: no contact person and never contacted, counted separately', () => {
     const g = countyGaps(schools, contacts, acts, T, (s) => s.county, (s) => s.county);

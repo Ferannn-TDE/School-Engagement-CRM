@@ -238,7 +238,8 @@ export interface AppContextValue {
   /** `changes` limits the database write to those fields; without it every field is written. */
   updateContact: (contact: Contact, changes?: Partial<Contact>) => void;
   archiveContact: (id: string) => void;
-  addEvent: (event: Omit<Event, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  /** Resolves to the saved event, or null when saving failed (the error is shown). */
+  addEvent: (event: Omit<Event, 'id' | 'createdAt' | 'updatedAt'>) => Promise<Event | null>;
   /** `changes` limits the database write to those fields; without it every field is written. */
   updateEvent: (event: Event, changes?: Partial<Event>) => void;
   archiveEvent: (id: string) => void;
@@ -309,8 +310,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setLoadErrors(errors);
     setLoading(false);
   }, []);
+  // Refreshes in the background: the current data stays on screen until the new data
+  // arrives, so an import, a restore or a Retry never shows the full-page spinner.
   const reload = useCallback(async () => {
-    setLoading(true);
     applyLoad(await loadStartupTables());
   }, [applyLoad]);
   // `loading` starts true, so the first load only has to apply the result.
@@ -410,14 +412,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   // Events
-  const addEvent = (event: Omit<Event, 'id' | 'createdAt' | 'updatedAt'>): void => {
+  const addEvent = (event: Omit<Event, 'id' | 'createdAt' | 'updatedAt'>): Promise<Event | null> =>
     createEvent(event)
-      .then((created) => dispatch({ type: 'ADD_EVENT', payload: created }))
+      .then((created) => {
+        dispatch({ type: 'ADD_EVENT', payload: created });
+        return created;
+      })
       .catch((err) => {
         console.error('addEvent failed:', err);
         toast.error(writeErrorMessage(err, 'Failed to save event'));
+        return null;
       });
-  };
 
   const updateEvent = (event: Event, changes?: Partial<Event>): void => {
     dbUpdateEvent(event.id, changes ?? event)

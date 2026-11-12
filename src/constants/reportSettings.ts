@@ -31,6 +31,9 @@ export const FOLLOW_UP_DAYS = 60;
 /** A school with no activity for this many months has gone quiet. */
 export const QUIET_MONTHS = 6;
 
+/** Priorities: a school contacted within this many days is "Recently in touch". */
+export const RECENT_CONTACT_DAYS = 60;
+
 /** A record updated within this many months is current; older ones get the amber flag. */
 export const UPDATED_RECENT_MONTHS = 12;
 

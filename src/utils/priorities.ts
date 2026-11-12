@@ -1,35 +1,28 @@
-// The Priorities page: four worklists that never overlap, and the county gaps.
+// The Priorities page: three worklists that never overlap, and the county gaps.
 // Pure functions of the loaded data and "today", like utils/reports.ts, so
 // scripts/verify-reports.ts can check them against a fixture.
 //
 // A school goes in the first list that fits, in this order:
-//   1. Follow up after an event — attended an event (imported attendance) in the last
-//      FOLLOW_UP_DAYS days, with no call, email or visit since.
-//   2. Gone quiet — had activity, but none in QUIET_MONTHS months.
-//   3. Has contacts but never reached out — an active contact, nothing ever logged.
-//   4. No contact person on file — no active contact.
-// Everything else (contacted recently) is on no list. Upcoming (future-dated)
-// activities don't count; the caller passes only activities whose day has come.
+//   1. Recently in touch — any activity (visit, call, email, event attendance, other)
+//      in the last RECENT_CONTACT_DAYS days. Oldest contact first: those are about to
+//      fall out of the window.
+//   2. Has contacts but never reached out — an active contact, nothing ever logged.
+//   3. No contact person on file — no active contact.
+// A school whose last activity is older than the window is on no list. Upcoming
+// (future-dated) activities never count.
 
 import type { ActivityRecord, Contact, Event, School } from '../types';
-import { FOLLOW_UP_DAYS, QUIET_MONTHS, EVENT_ATTENDANCE_TYPE } from '../constants/reportSettings';
-import { addMonths, dayOf, daysBetween, type Day } from './reports';
+import { RECENT_CONTACT_DAYS } from '../constants/reportSettings';
+import { addDays, dayOf, daysBetween, type Day } from './reports';
 import { isTestingDate } from './events';
 
-export interface FollowUpItem {
+export interface RecentItem {
   schoolId: string;
-  /** The latest attended event's day and id (the window runs from it). */
-  eventDay: Day;
-  eventId?: string;
-  /** The attendance row's description: names the event when the import linked none. */
-  description?: string;
-  /** Days left in the follow-up window (0 = last day). */
-  daysLeft: number;
-}
-
-export interface QuietItem {
-  schoolId: string;
+  /** The last activity: its day, type (and the Other text, when there is one). */
   lastDay: Day;
+  lastType: string;
+  /** Days until it falls out of the window (0 = last day). */
+  daysLeft: number;
 }
 
 export interface NeverReachedItem {
@@ -46,12 +39,11 @@ export interface NoContactItem {
 }
 
 export interface PriorityLists {
-  followUp: FollowUpItem[];
-  quiet: QuietItem[];
+  recent: RecentItem[];
   neverReached: NeverReachedItem[];
   noContact: NoContactItem[];
-  /** The day before which a last activity counts as quiet. */
-  quietBefore: Day;
+  /** The first day of the window (today minus RECENT_CONTACT_DAYS). */
+  windowFrom: Day;
 }
 
 const TIER_ORDER: Record<string, number> = { high: 0, standard: 1, low: 2 };
@@ -64,26 +56,16 @@ export function priorityLists(
   events: Event[],
   today: Day
 ): PriorityLists {
-  const done = activities.filter((a) => dayOf(a.date) <= today);
   const active = new Map<string, number>();
   for (const c of contacts) if (c.isActive) active.set(c.schoolId, (active.get(c.schoolId) ?? 0) + 1);
 
-  const last = new Map<string, Day>();
-  const lastAttended = new Map<string, { day: Day; eventId?: string; description?: string }>();
-  for (const a of done) {
+  // Each school's latest activity whose day has come.
+  const last = new Map<string, { day: Day; type: string }>();
+  for (const a of activities) {
     const d = dayOf(a.date);
-    if (!last.has(a.schoolId) || d > last.get(a.schoolId)!) last.set(a.schoolId, d);
-    if (a.activityType === EVENT_ATTENDANCE_TYPE) {
-      const seen = lastAttended.get(a.schoolId);
-      if (!seen || d > seen.day) lastAttended.set(a.schoolId, { day: d, eventId: a.eventId, description: a.description || undefined });
-    }
-  }
-  // The latest call, email or visit (anything but attendance), per school.
-  const lastOutreach = new Map<string, Day>();
-  for (const a of done) {
-    if (a.activityType === EVENT_ATTENDANCE_TYPE) continue;
-    const d = dayOf(a.date);
-    if (!lastOutreach.has(a.schoolId) || d > lastOutreach.get(a.schoolId)!) lastOutreach.set(a.schoolId, d);
+    if (d > today) continue;
+    const seen = last.get(a.schoolId);
+    if (!seen || d > seen.day) last.set(a.schoolId, { day: d, type: a.activityType });
   }
 
   const upcoming = new Map<string, { eventId: string; day: Day }>();
@@ -99,31 +81,17 @@ export function priorityLists(
 
   const byId = new Map(schools.map((s) => [s.id, s]));
   const placed = new Set<string>();
-  const quietBefore = addMonths(today, -QUIET_MONTHS);
+  const windowFrom = addDays(today, -RECENT_CONTACT_DAYS);
 
-  const followUp: FollowUpItem[] = [];
+  const recent: RecentItem[] = [];
   for (const s of schools) {
-    const att = lastAttended.get(s.id);
-    if (!att) continue;
-    const since = daysBetween(att.day, today);
-    if (since > FOLLOW_UP_DAYS) continue;
-    const out = lastOutreach.get(s.id);
-    if (out && out > att.day) continue;
-    followUp.push({ schoolId: s.id, eventDay: att.day, eventId: att.eventId, description: att.description, daysLeft: FOLLOW_UP_DAYS - since });
+    const l = last.get(s.id);
+    if (!l || l.day < windowFrom) continue;
+    recent.push({ schoolId: s.id, lastDay: l.day, lastType: l.type, daysLeft: RECENT_CONTACT_DAYS - daysBetween(l.day, today) });
     placed.add(s.id);
   }
-  followUp.sort((a, b) => a.daysLeft - b.daysLeft || nameOrder(byId, a.schoolId, b.schoolId));
-
-  const quiet: QuietItem[] = [];
-  for (const s of schools) {
-    if (placed.has(s.id)) continue;
-    const d = last.get(s.id);
-    if (d && d < quietBefore) {
-      quiet.push({ schoolId: s.id, lastDay: d });
-      placed.add(s.id);
-    }
-  }
-  quiet.sort((a, b) => (a.lastDay < b.lastDay ? -1 : a.lastDay > b.lastDay ? 1 : nameOrder(byId, a.schoolId, b.schoolId)));
+  // Oldest contact first, then name.
+  recent.sort((a, b) => (a.lastDay < b.lastDay ? -1 : a.lastDay > b.lastDay ? 1 : nameOrder(byId, a.schoolId, b.schoolId)));
 
   const neverReached: NeverReachedItem[] = [];
   for (const s of schools) {
@@ -144,7 +112,7 @@ export function priorityLists(
   for (const s of schools) {
     if (placed.has(s.id)) continue;
     if ((active.get(s.id) ?? 0) > 0) continue;
-    noContact.push({ schoolId: s.id, lastDay: last.get(s.id) });
+    noContact.push({ schoolId: s.id, lastDay: last.get(s.id)?.day });
     placed.add(s.id);
   }
   // Someone is already talking to them first (latest first), then priority tier, then a
@@ -157,7 +125,7 @@ export function priorityLists(
     return tier(sa) - tier(sb) || wa - wb || sa.name.localeCompare(sb.name);
   });
 
-  return { followUp, quiet, neverReached, noContact, quietBefore };
+  return { recent, neverReached, noContact, windowFrom };
 }
 
 function nameOrder(byId: Map<string, School>, a: string, b: string): number {

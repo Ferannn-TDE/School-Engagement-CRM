@@ -20,7 +20,7 @@ import { countyGroupName, countyKey, countyLabel, countyPath } from '../utils/co
 import { useUrlState } from '../hooks/useUrlState';
 import { useRole } from '../context/useRole';
 import { Pagination } from '../components/common/Pagination';
-import { RowAction, RowActions } from '../components/common/RowActions';
+import { RowMenu } from '../components/common/RowActions';
 import { Missing } from '../components/common/Missing';
 import { RECENT_CONTACT_DAYS } from '../constants/reportSettings';
 
@@ -42,6 +42,10 @@ export interface WorkItem {
   county: string;
   contactCount: number;
   lastContact: string;
+  /** More about the reason, on hover (e.g. the event's name). */
+  reasonDetail?: string;
+  /** The last contact's type, shown on a second line (Recently in touch). */
+  lastContactType?: string;
   reason: string;
   urgency: Urgency;
 }
@@ -80,7 +84,6 @@ function ListTile({ icon, title, description, count, selected, onSelect }: {
         </div>
         <Badge variant={count === 0 ? 'success' : 'info'}>{count.toLocaleString()}</Badge>
       </div>
-      <p className="mt-3 text-xs font-medium text-siue-red">{selected ? 'Showing below' : 'Show list'}</p>
     </button>
   );
 }
@@ -112,11 +115,11 @@ function WorkTable({
         <table className="w-full min-w-[52rem] table-fixed text-sm">
           <colgroup>
             <col />
-            <col style={{ width: '10rem' }} />
-            <col style={{ width: '7rem' }} />
+            <col style={{ width: '8rem' }} />
+            <col style={{ width: '6rem' }} />
             <col style={{ width: '8.5rem' }} />
-            <col />
-            <col style={{ width: onLog ? '9.5rem' : '5.5rem' }} />
+            <col style={{ width: '20%' }} />
+            <col style={{ width: '8rem' }} />
           </colgroup>
           <thead className="bg-neutral-50 border-b border-neutral-100">
             <tr>
@@ -135,7 +138,7 @@ function WorkTable({
                   <span className={`absolute left-0 top-0 bottom-0 w-1 ${urgencyBar[item.urgency]}`} aria-hidden="true" />
                   <Link
                     to={`/schools/${encodeURIComponent(item.id)}`}
-                    className="block truncate font-medium text-neutral-800 hover:text-siue-red transition-colors"
+                    className="line-clamp-2 break-words font-medium text-neutral-800 hover:text-siue-red transition-colors"
                     title={item.name}
                   >
                     {item.name}
@@ -143,14 +146,22 @@ function WorkTable({
                 </td>
                 <td className="px-4 py-2 truncate text-neutral-600" title={item.county}>{item.county || <Missing label="No county" />}</td>
                 <td className="px-4 py-2 text-right tabular-nums text-neutral-700">{item.contactCount}</td>
-                <td className="px-4 py-2 whitespace-nowrap text-neutral-600">{item.lastContact}</td>
+                {/* Date, and the type on a second line, within the 64px row: nothing runs into the next column. */}
+                <td className="px-4 py-2 text-neutral-600">
+                  <span className="block whitespace-nowrap">{item.lastContact}</span>
+                  {item.lastContactType && <span className="block truncate text-xs text-neutral-500" title={item.lastContactType}>{item.lastContactType}</span>}
+                </td>
                 {/* Up to two lines, the rest on hover: rows stay the same height. */}
-                <td className="px-4 py-2 text-neutral-600"><span className="line-clamp-2" title={item.reason}>{item.reason}</span></td>
+                <td className="px-4 py-2 text-neutral-600"><span className="line-clamp-2" title={item.reasonDetail ? `${item.reason} ${item.reasonDetail}` : item.reason}>{item.reason}</span></td>
                 <td className="px-4 py-2">
-                  <RowActions>
-                    {onLog && <RowAction icon={<Plus size={13} />} label="Log" tone="primary" title={`Log contact with ${item.name}`} onClick={() => onLog(item)} />}
-                    <RowAction icon={<ExternalLink size={13} />} label="Open" title={`Open ${item.name}`} onClick={() => navigate(`/schools/${encodeURIComponent(item.id)}`)} />
-                  </RowActions>
+                  {/* The same Actions menu as Schools and Contacts. */}
+                  <RowMenu
+                    name={item.name}
+                    items={[
+                      ...(onLog ? [{ icon: <Plus size={14} />, label: 'Log activity', onClick: () => onLog(item) }] : []),
+                      { icon: <ExternalLink size={14} />, label: 'Open school', onClick: () => navigate(`/schools/${encodeURIComponent(item.id)}`) },
+                    ]}
+                  />
                 </td>
               </tr>
             ))}
@@ -194,12 +205,12 @@ export function PrioritiesPage() {
       if (d > today) continue;
       if (!lastDay.has(a.schoolId) || d > lastDay.get(a.schoolId)!) lastDay.set(a.schoolId, d);
     }
-    const item = (id: string, reason: string, urgency: Urgency, lastContact?: string): WorkItem => {
+    const item = (id: string, reason: string, urgency: Urgency, lastContact?: string, lastContactType?: string): WorkItem => {
       const s = school.get(id);
       const d = lastDay.get(id);
       return {
         id, name: s?.name ?? id, county: s?.county ?? '', contactCount: contacts.get(id) ?? 0,
-        lastContact: lastContact ?? (d ? formatDay(d) : 'Never'), reason, urgency,
+        lastContact: lastContact ?? (d ? formatDay(d) : 'Never'), lastContactType, reason, urgency,
       };
     };
     const plural = (n: number, one: string) => `${n} ${one}${n === 1 ? '' : 's'}`;
@@ -207,21 +218,24 @@ export function PrioritiesPage() {
       recent: lists.recent.map((x) => item(x.schoolId,
         x.daysLeft === 0 ? 'Leaves the list tomorrow.' : `Leaves the list in ${plural(x.daysLeft, 'day')}.`,
         x.daysLeft <= 14 ? 'overdue' : 'due',
-        `${formatDay(x.lastDay)} · ${activityTypeLabel(x.lastType, x.lastTypeOther)}`)),
-      neverReached: lists.neverReached.map((x) => item(x.schoolId,
-        x.upcoming
-          ? `On ${event.get(x.upcoming.eventId)?.name ?? 'an event'}, ${formatDay(x.upcoming.day)}. ${plural(x.activeContacts, 'contact')} on file, never contacted.`
-          : `${plural(x.activeContacts, 'contact')} on file, never contacted.`,
-        x.upcoming ? 'due' : 'cold')),
+        formatDay(x.lastDay), activityTypeLabel(x.lastType, x.lastTypeOther))),
+      // Short enough for two lines at 1280px; the event's name is on hover, and the
+      // Contacts column already shows how many people are on file.
+      neverReached: lists.neverReached.map((x) => ({
+        ...item(x.schoolId, x.upcoming ? `On an event ${formatDay(x.upcoming.day)}. Never contacted.` : 'Never contacted.',
+          x.upcoming ? 'due' : 'cold'),
+        reasonDetail: x.upcoming ? `${event.get(x.upcoming.eventId)?.name ?? 'An event'}, ${formatDay(x.upcoming.day)}` : undefined,
+      })),
       noContact: lists.noContact.map((x) => {
         const s = school.get(x.schoolId);
         const why = x.lastDay
-          ? 'Contacted, but no contact person on file.'
-          : s?.sourceStatus === 'working' ? 'No contact person. The school website works: its staff page may list someone.'
-          : s?.sourceStatus === 'broken' ? 'No contact person, and the website link is broken.'
-          : s?.sourceStatus === 'not_found' ? 'No contact person, and no website found.'
+          ? 'Contacted, but no contact person.'
+          : s?.sourceStatus === 'working' ? 'Website works: check its staff page.'
+          : s?.sourceStatus === 'broken' ? 'Website link is broken.'
+          : s?.sourceStatus === 'not_found' ? 'No website found.'
           : 'No contact person on file.';
-        return item(x.schoolId, why, x.lastDay ? 'due' : 'cold');
+        return { ...item(x.schoolId, why, x.lastDay ? 'due' : 'cold'),
+          reasonDetail: x.lastDay ? undefined : 'No contact person on file' };
       }),
     };
   }, [lists, state.schools, state.events, state.contacts, state.activities, today]);
@@ -237,8 +251,6 @@ export function PrioritiesPage() {
   const exportContacts = (schoolIds: string[], label: string) =>
     navigate('/generate', { state: { schoolIds, label } });
 
-  // The three lists never overlap, so this is a plain sum.
-  const total = lists.recent.length + lists.neverReached.length + lists.noContact.length;
 
   const tiles: { key: ListKey; icon: ReactNode; title: string; description: string; count: number }[] = [
     { key: 'recent', icon: <Clock size={18} />, title: 'Recently in touch: keep the connection going',
@@ -257,12 +269,6 @@ export function PrioritiesPage() {
     <div>
       <Header title="Priorities" subtitle="Schools waiting on you, most urgent first" />
       <div className="p-8 space-y-6">
-        <p className="text-lg text-neutral-600 max-w-3xl">
-          <span className="font-semibold text-neutral-800">{lists.recent.length.toLocaleString()} schools</span> were in touch in the last {RECENT_CONTACT_DAYS} days,{' '}
-          <span className="font-semibold text-neutral-800">{lists.neverReached.length.toLocaleString()}</span> have contacts but were never reached, and{' '}
-          <span className="font-semibold text-neutral-800">{lists.noContact.length.toLocaleString()}</span> have no contact person:{' '}
-          {total.toLocaleString()} of {state.schools.length.toLocaleString()} schools, each on one list only.
-        </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 auto-rows-fr gap-5">
           {tiles.map((t) => (
@@ -301,7 +307,8 @@ export function PrioritiesPage() {
                     { label: 'County', value: (r: WorkItem) => r.county },
                     { label: 'Contacts', value: (r: WorkItem) => r.contactCount },
                     { label: 'Last contact', value: (r: WorkItem) => r.lastContact },
-                    { label: 'Why it\'s here', value: (r: WorkItem) => r.reason },
+                    { label: 'Last contact type', value: (r: WorkItem) => r.lastContactType ?? '' },
+                    { label: 'Why it\'s here', value: (r: WorkItem) => (r.reasonDetail ? `${r.reason} ${r.reasonDetail}` : r.reason) },
                   ]} />
               )}
             </div>

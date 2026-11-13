@@ -20,6 +20,7 @@ import { useUrlState } from '../hooks/useUrlState';
 import type { Event } from '../types';
 import { classNames } from '../utils/helpers';
 import { EVENT_SOURCE_OPTIONS, eventSourceLabel, isTestingDate } from '../utils/events';
+import { eventTypeLabel } from '../utils/labels';
 import toast from 'react-hot-toast';
 import { useRole } from '../context/useRole';
 
@@ -243,6 +244,19 @@ export function EventsPage() {
               <Card padding={false}>
                 <DataTable
                   data={filteredEvents}
+                  exportCsv={{
+                    name: 'events',
+                    columns: [
+                      { label: 'Event', value: (e) => e.name },
+                      { label: 'Type', value: (e) => eventTypeLabel(e) },
+                      { label: 'Source', value: (e) => eventSourceLabel(e) },
+                      { label: 'Date', value: (e) => e.date.slice(0, 10) },
+                      { label: 'Time', value: (e) => (e.hasTime ? e.date.slice(11, 16) : '') },
+                      { label: 'Location', value: (e) => e.location },
+                      { label: 'Schools listed', value: (e) => e.participatingSchools.length },
+                      { label: 'Attendees', value: (e) => e.attendeeCount ?? '' },
+                    ],
+                  }}
                   columns={shownColumns}
                   columnWidths={canEdit ? ['', '18%', '13%', '10%', '11%', '8rem'] : ['', '20%', '15%', '12%', '13%']}
                   urlState

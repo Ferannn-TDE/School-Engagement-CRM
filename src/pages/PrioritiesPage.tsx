@@ -7,6 +7,7 @@ import { Header } from '../components/layout/Header';
 import { Card } from '../components/common/Card';
 import { Badge } from '../components/common/Badge';
 import { Button } from '../components/common/Button';
+import { ExportCsvButton } from '../components/common/ExportCsvButton';
 import { Modal } from '../components/common/Modal';
 import { LogContactForm } from '../components/activities/LogContactForm';
 import { useAppContext } from '../context/useAppContext';
@@ -276,12 +277,34 @@ export function PrioritiesPage() {
               <h2 className="text-base font-semibold text-neutral-800">{chosen.title}</h2>
               <p className="text-sm text-neutral-500">{chosen.count.toLocaleString()} {list === 'counties' ? 'counties' : 'schools'}</p>
             </div>
-            {exportable && exportable.length > 0 && (
-              <Button size="sm" variant="secondary" onClick={() => exportContacts(exportable.map((x) => x.schoolId), chosen.title)}>
-                <Download size={14} />
-                Export contacts
-              </Button>
-            )}
+            <div className="flex flex-wrap gap-2 print:hidden">
+              {exportable && exportable.length > 0 && (
+                <Button size="sm" variant="secondary" onClick={() => exportContacts(exportable.map((x) => x.schoolId), chosen.title)}>
+                  <Download size={14} />
+                  Export contacts
+                </Button>
+              )}
+              {list === 'counties' ? (
+                <ExportCsvButton name="priorities-county-gaps" rows={gaps} columns={[
+                  { label: 'County', value: (c) => c.county },
+                  { label: 'State', value: (c) => c.state },
+                  { label: 'Schools', value: (c) => c.total },
+                  { label: 'With a contact person', value: (c) => c.withContact },
+                  { label: 'No contact person', value: (c) => c.total - c.withContact },
+                  { label: 'Never contacted', value: (c) => c.neverContacted },
+                ]} />
+              ) : (
+                <ExportCsvButton name={`priorities-${chosen.title}`}
+                  rows={list === 'recent' ? rows.recent : list === 'never' ? rows.neverReached : rows.noContact}
+                  columns={[
+                    { label: 'School', value: (r: WorkItem) => r.name },
+                    { label: 'County', value: (r: WorkItem) => r.county },
+                    { label: 'Contacts', value: (r: WorkItem) => r.contactCount },
+                    { label: 'Last contact', value: (r: WorkItem) => r.lastContact },
+                    { label: 'Why it\'s here', value: (r: WorkItem) => r.reason },
+                  ]} />
+              )}
+            </div>
           </div>
           {chosen.count === 0 ? (
             <div className="py-10 text-center">

@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
 import { format } from 'date-fns';
+import { Link } from 'react-router-dom';
+import { FileText } from 'lucide-react';
 import { Header } from '../components/layout/Header';
 import { useAppContext } from '../context/useAppContext';
 import { useRegionScope } from '../context/RegionScopeContext';
@@ -114,7 +116,16 @@ export function ReportsPage() {
 
   return (
     <div>
-      <Header title="Reports" subtitle="Who we can reach, what's coming up, and how outreach is going" />
+      <Header
+        title="Reports"
+        subtitle="Who we can reach, what's coming up, and how outreach is going"
+        actions={
+          <Link to={`/reports/summary${window.location.search}`}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-200 bg-white px-3 py-1.5 text-sm font-medium text-neutral-700 hover:bg-neutral-50">
+            <FileText size={14} /> Meeting summary
+          </Link>
+        }
+      />
       <div className="p-4 sm:p-8 space-y-6">
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-3">

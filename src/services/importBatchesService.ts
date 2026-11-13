@@ -12,6 +12,8 @@ interface ImportBatchRow {
   file_hash: string;
   row_count: number;
   activity_type: string;
+  /** db/030 */
+  activity_type_other?: string | null;
   activity_date: string;
   description: string;
   event_id: number | null;
@@ -28,6 +30,8 @@ export interface ImportBatch {
   fileHash: string;
   rowCount: number;
   activityType: string;
+  /** The "Please specify" text when activityType is 'other' (db/030). */
+  activityTypeOther?: string;
   activityDate: string;
   description: string;
   eventId?: string;
@@ -48,6 +52,7 @@ function rowToBatch(row: ImportBatchRow, counts?: { total: number; archived: num
     fileHash: row.file_hash,
     rowCount: row.row_count,
     activityType: row.activity_type,
+    activityTypeOther: row.activity_type_other ?? undefined,
     activityDate: row.activity_date,
     description: row.description,
     eventId: row.event_id != null ? `e_${row.event_id}` : undefined,
@@ -109,6 +114,7 @@ export interface NewImportBatch {
   fileHash: string;
   rowCount: number;
   activityType: string;
+  activityTypeOther?: string;
   /** "2026-10-01" */
   activityDate: string;
   description: string;
@@ -216,6 +222,8 @@ export async function createImportBatch(batch: NewImportBatch): Promise<string> 
     p_event_id: eventId != null && !Number.isNaN(eventId) ? eventId : null,
     p_schools: batch.activities.map((a) => ({ school_id: a.schoolId, attendee_count: a.attendeeCount })),
     p_rows: rowsPayload(batch.rows),
+    // db/030: kept only when the type is 'other'.
+    p_activity_type_other: batch.activityTypeOther ?? null,
   });
   if (error) throw error;
   return data as string;

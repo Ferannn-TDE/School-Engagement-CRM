@@ -304,6 +304,24 @@ export function SchoolsPage() {
           <Card padding={false}>
             <DataTable
               data={filteredSchools}
+              exportCsv={{
+                name: 'schools',
+                columns: [
+                  { label: 'School', value: (s) => s.name },
+                  { label: 'District', value: (s) => s.districtName },
+                  { label: 'County', value: (s) => s.county },
+                  { label: 'State', value: (s) => s.state },
+                  { label: 'City', value: (s) => s.city },
+                  { label: 'Type', value: (s) => formatSchoolType(s.schoolType) },
+                  { label: 'Contacts', value: (s) => getContactsBySchool(s.id).length },
+                  { label: 'Activities', value: (s) => activityStats.get(s.id)?.count ?? 0 },
+                  { label: 'Last activity', value: (s) => activityStats.get(s.id)?.last },
+                  { label: 'Status', value: (s) => (s.isActive ? 'Active' : 'Inactive') },
+                  { label: 'Verified', value: (s) => (s.isVerified ? 'Yes' : 'No') },
+                  { label: 'Last updated', value: (s) => s.lastUpdatedAt?.slice(0, 10) },
+                  { label: 'Needs attention', value: (s) => schoolFreshness(s).map((f) => f.label).join('; ') },
+                ],
+              }}
               columns={columns}
               columnWidths={columns.length > 5 ? ['34%', '18%', '11%', '22%', '11%', '7rem'] : ['38%', '20%', '12%', '20%', '10%']}
               searchValue={search}

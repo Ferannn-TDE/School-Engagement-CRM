@@ -120,6 +120,8 @@ export interface School {
   district?: string;
   /** The district's name, from the district table. Shown instead of the id. */
   districtName?: string;
+  /** schools.district_id as a number, for saving a district chosen in the app or matched on import. */
+  districtId?: number;
   county: string;
   address: string;
   city: string;

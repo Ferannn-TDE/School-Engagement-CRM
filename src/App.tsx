@@ -18,6 +18,7 @@ import { EventsPage } from './pages/EventsPage';
 import { ImportPage } from './pages/ImportPage';
 import { GenerateListsPage } from './pages/GenerateListsPage';
 import { ReportsPage } from './pages/ReportsPage';
+import { MeetingSummaryPage } from './pages/MeetingSummaryPage';
 import { PrioritiesPage } from './pages/PrioritiesPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { ArchivedPage } from './pages/ArchivedPage';
@@ -84,6 +85,7 @@ function App() {
                 <Route path="/events" element={<EventsPage />} />
                 <Route path="/generate" element={<GenerateListsPage />} />
                 <Route path="/reports" element={<ReportsPage />} />
+                <Route path="/reports/summary" element={<MeetingSummaryPage />} />
                 <Route path="/counties" element={<CountiesPage />} />
               </Route>
               <Route path="/schools/:id" element={<SchoolDetailPage />} />

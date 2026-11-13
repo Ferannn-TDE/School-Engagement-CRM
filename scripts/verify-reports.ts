@@ -13,6 +13,8 @@ import { strict as assert } from 'node:assert';
 import type { ActivityRecord, School } from '../src/types';
 import { priorityLists, countyGaps } from '../src/utils/priorities';
 import { countySummaryFromData } from '../src/services/analyticsService';
+import { meetingSummary } from '../src/utils/meetingSummary';
+import { toCsv, csvFilename } from '../src/utils/csv';
 import { contactFreshness, lastUpdatedText, schoolFreshness, verificationText } from '../src/utils/freshness';
 import { attendanceByEvent, schoolsAtEvent, schoolsWithAttendance, unlinkedAttendance } from '../src/utils/events';
 import type { Contact, Event as AppEvent } from '../src/types';
@@ -382,6 +384,34 @@ console.log('Last updated and Verified (db/027)');
     assert.equal(verificationText(false, undefined, undefined), undefined);
   });
 }
+
+console.log('Meeting summary and Export CSV');
+check('the meeting summary shows the same figures as the Reports page for the same term', () => {
+  const snap = reportSnapshot(data, FALL, TODAY);
+  const m = meetingSummary(data, FALL, TODAY);
+  assert.deepEqual(
+    [m.headline.schools, m.headline.reached, m.headline.firstTime, m.headline.activities, m.headline.visitors],
+    [snap['schools.total'], snap['reach.engaged'], snap['reach.first_time'], snap['activity.total'], snap['activity.visitors']]);
+  assert.deepEqual([m.events.past, m.events.upcoming, m.events.withAttendance, m.events.visitorsAtEvents],
+    [snap['events.past'], snap['events.upcoming'], snap['impact.events'], snap['impact.visitors']]);
+  assert.deepEqual([m.followUps.schools, m.followUps.followed], [snap['impact.schools'], snap['impact.followed']]);
+  assert.deepEqual([m.gaps.neverContacted, m.gaps.quiet, m.gaps.untouchedCounties], [snap['gaps.never'], snap['gaps.quiet'], snap['gaps.untouched_counties']]);
+  assert.equal(m.mix.reduce((n, x) => n + x.count, 0), snap['activity.total']);
+  assert.equal(m.followUps.byEvent.length, snap['impact.events']);
+});
+check("the meeting summary's Priorities counts are the Priorities page's", () => {
+  const m = meetingSummary(data, FALL, TODAY);
+  const p = priorityLists(data.schools, data.contacts, data.activities, data.events, TODAY);
+  assert.deepEqual([m.priorities.recentlyInTouch, m.priorities.neverReached, m.priorities.noContactPerson],
+    [p.recent.length, p.neverReached.length, p.noContact.length]);
+});
+check('Export CSV: header row, quotes around commas, quotes and line breaks, a BOM, blanks for missing values', () => {
+  type R = { n: string; c?: number };
+  const csv = toCsv([{ label: 'Name', value: (r: R) => r.n }, { label: 'Count', value: (r: R) => r.c }],
+    [{ n: 'A, "B"', c: 2 }, { n: 'Line\nbreak' }]);
+  assert.equal(csv, '﻿Name,Count\r\n"A, ""B""",2\r\n"Line\nbreak",');
+  assert.equal(csvFilename('Priorities: Recently in touch', new Date('2026-11-13T10:00:00')), 'priorities-recently-in-touch-2026-11-13.csv');
+});
 
 console.log(`\n${passed} passed, ${failures.length} failed`);
 if (failures.length) process.exit(1);

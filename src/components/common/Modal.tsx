@@ -6,7 +6,7 @@ interface ModalProps {
   onClose: () => void;
   title: string;
   children: ReactNode;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'wide';
 }
 
 const sizeClasses = {
@@ -14,6 +14,8 @@ const sizeClasses = {
   md: 'max-w-lg',
   lg: 'max-w-2xl',
   xl: 'max-w-4xl',
+  /** Most of the screen on desktop, for wide tables. */
+  wide: 'max-w-[min(92vw,1400px)]',
 };
 
 export function Modal({ open, onClose, title, children, size = 'md' }: ModalProps) {

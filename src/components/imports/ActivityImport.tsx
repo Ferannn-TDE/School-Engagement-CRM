@@ -24,6 +24,7 @@ import { buildActivityTemplate, fileHash, planActivities, readActivityWorkbook }
 import { looksLikeSpreadsheet } from '../../utils/importParsing';
 import { parseVisitors, visitorsLabel } from '../../utils/visitors';
 import { EventPicker } from '../events/EventPicker';
+import { specifyError } from '../../utils/labels';
 import { AttachRowsButton, BatchRowsModal } from './ImportRows';
 import { useUrlState } from '../../hooks/useUrlState';
 import { activityDateError, futureDateNote, latestActivityDay } from '../../utils/activityDates';
@@ -54,6 +55,8 @@ const IMPORT_ACTIVITY_TYPES: Record<string, string> = {
   visit: 'Visit',
   call: 'Phone call',
   email: 'Email',
+  // Saved with its "Please specify" text since db/030.
+  other: 'Other',
 };
 
 const OUTCOME_LABELS: Record<Exclude<RowOutcome, 'header' | 'blank' | 'not_a_school'>, string> = {
@@ -65,6 +68,8 @@ const OUTCOME_LABELS: Record<Exclude<RowOutcome, 'header' | 'blank' | 'not_a_sch
 
 interface Details {
   activityType: string;
+  /** The "Please specify" text when activityType is 'other' (db/030). */
+  activityTypeOther: string;
   date: string;
   description: string;
   eventId: string;
@@ -175,7 +180,7 @@ function RecentImports({ refreshKey, onChanged }: { refreshKey: number; onChange
                   {b.archived && <Badge variant="default" className="ml-2">Archived</Badge>}
                 </p>
                 <p className="text-xs text-neutral-500">
-                  {IMPORT_ACTIVITY_TYPES[b.activityType] ?? b.activityType} on {format(new Date(`${b.activityDate}T12:00:00`), 'MMM d, yyyy')}
+                  {b.activityType === 'other' && b.activityTypeOther ? b.activityTypeOther : IMPORT_ACTIVITY_TYPES[b.activityType] ?? b.activityType} on {format(new Date(`${b.activityDate}T12:00:00`), 'MMM d, yyyy')}
                   {' · '}{b.activityCount} activit{b.activityCount === 1 ? 'y' : 'ies'} from {b.rowCount} rows
                   {' · '}imported {format(new Date(b.createdAt), 'MMM d, yyyy h:mm a')}{b.createdBy ? ` by ${b.createdBy}` : ''}
                   {b.archived && b.archivedAt ? ` · archived ${format(new Date(b.archivedAt), 'MMM d, yyyy')}${b.archivedBy ? ` by ${b.archivedBy}` : ''}` : ''}
@@ -231,7 +236,7 @@ function RecentImports({ refreshKey, onChanged }: { refreshKey: number; onChange
 export function ActivityImport() {
   const { state, reload } = useAppContext();
   const today = format(new Date(), 'yyyy-MM-dd');
-  const [details, setDetails] = useState<Details>({ activityType: 'event_participation', date: '', description: '', eventId: '' });
+  const [details, setDetails] = useState<Details>({ activityType: 'event_participation', activityTypeOther: '', date: '', description: '', eventId: '' });
   const [preview, setPreview] = useState<Preview | null>(null);
   const [choices, setChoices] = useState<Record<number, string | null>>({});
   const [searching, setSearching] = useState<Record<number, boolean>>({});
@@ -248,7 +253,8 @@ export function ActivityImport() {
   const latestDay = latestActivityDay();
   const dateError = activityDateError(details.date);
   const isFuture = !!details.date && !dateError && details.date > today;
-  const detailsReady = !!details.activityType && !dateError;
+  const otherError = specifyError(details.activityType, details.activityTypeOther);
+  const detailsReady = !!details.activityType && !dateError && !otherError;
 
   const schoolById = useMemo(() => new Map((preview?.schools ?? []).map((s) => [s.id, s])), [preview]);
 
@@ -419,6 +425,7 @@ export function ActivityImport() {
         fileHash: preview.hash,
         rowCount: preview.results.filter((r) => r.outcome !== 'header' && r.outcome !== 'blank').length,
         activityType: details.activityType,
+        activityTypeOther: details.activityType === 'other' ? details.activityTypeOther.trim() : undefined,
         activityDate: details.date,
         description: details.description.trim(),
         eventId: details.eventId || undefined,
@@ -530,6 +537,20 @@ export function ActivityImport() {
               placeholder="e.g. Students attended Engineering Day"
             />
           </div>
+          {/* Other: "Please specify" is required, full width under the 2×2 grid (db/030). */}
+          {details.activityType === 'other' && (
+            <div className="mb-4">
+              <Input
+                id="activity-import-type-other"
+                label="Please specify"
+                required
+                placeholder="What kind of activity was it?"
+                value={details.activityTypeOther}
+                error={otherError || undefined}
+                onChange={(e) => setDetails((d) => ({ ...d, activityTypeOther: e.target.value }))}
+              />
+            </div>
+          )}
 
           {parseError && (
             <div role="alert" className="mb-4 flex items-start gap-2 p-3 rounded-lg border border-error/30 bg-error/5 text-sm text-neutral-800">
@@ -553,7 +574,7 @@ export function ActivityImport() {
             <input {...getInputProps()} aria-label="Upload a list of schools" />
             <Upload size={28} className="mx-auto mb-2 text-neutral-400" />
             <p className="text-sm font-medium text-neutral-700">
-              {!detailsReady ? 'Choose the activity type and date first' : parsing ? 'Reading the file…' : 'Drag and drop the list, or click to browse'}
+              {!detailsReady ? (otherError ? 'Fill in “Please specify” for Other first' : 'Choose the activity type and date first') : parsing ? 'Reading the file…' : 'Drag and drop the list, or click to browse'}
             </p>
             <p className="text-xs text-neutral-500 mt-1">
               .xlsx, .xls or .csv, up to {formatBytes(MAX_UPLOAD_BYTES)}. Columns: school name, city, state, with or without a header.
@@ -568,7 +589,7 @@ export function ActivityImport() {
             <div>
               <h2 className="text-lg font-semibold text-neutral-800">Preview: {preview.fileName}</h2>
               <p className="text-sm text-neutral-500 mt-1">
-                {IMPORT_ACTIVITY_TYPES[details.activityType]} on {format(new Date(`${details.date}T12:00:00`), 'MMM d, yyyy')}
+                {details.activityType === 'other' ? details.activityTypeOther.trim() : IMPORT_ACTIVITY_TYPES[details.activityType]} on {format(new Date(`${details.date}T12:00:00`), 'MMM d, yyyy')}
                 {details.eventId && ` · ${state.events.find((e) => e.id === details.eventId)?.name ?? ''}`}. Nothing is saved until you choose Save.
               </p>
             </div>

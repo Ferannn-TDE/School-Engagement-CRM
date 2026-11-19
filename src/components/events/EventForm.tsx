@@ -128,7 +128,10 @@ export function EventForm({ event, onClose, onCreated, initialDate }: EventFormP
     label: EventTypeLabels[type],
   }));
 
+  // The school whose calendar listed the event stays on it (events.schools_involved).
+  const hostId = event?.hostSchoolId;
   const toggleSchool = (schoolId: string) => {
+    if (schoolId === hostId) return;
     const current = selectedSchools || [];
     if (current.includes(schoolId)) {
       setValue('participatingSchools', current.filter((id) => id !== schoolId));
@@ -210,6 +213,9 @@ export function EventForm({ event, onClose, onCreated, initialDate }: EventFormP
               return (
                 <li key={id} className="inline-flex items-center gap-1 rounded-full border border-siue-red/30 bg-siue-red/5 pl-2.5 pr-1 py-0.5 text-xs text-neutral-800">
                   <span className="max-w-[16rem] truncate" title={s ? `${s.name} (${[s.city, s.county].filter(Boolean).join(', ')})` : name}>{name}</span>
+                  {id === hostId ? (
+                    <span className="px-1 text-[11px] text-neutral-500" title="This event came from this school's calendar, so the school stays on it.">host</span>
+                  ) : (
                   <button
                     type="button"
                     onClick={() => toggleSchool(id)}
@@ -218,6 +224,7 @@ export function EventForm({ event, onClose, onCreated, initialDate }: EventFormP
                   >
                     <X size={12} />
                   </button>
+                  )}
                 </li>
               );
             })}
@@ -247,6 +254,7 @@ export function EventForm({ event, onClose, onCreated, initialDate }: EventFormP
                 <input
                   type="checkbox"
                   checked={selectedSchools?.includes(school.id) || false}
+                  disabled={school.id === hostId}
                   onChange={() => toggleSchool(school.id)}
                   className="rounded border-neutral-300 text-siue-red focus:ring-siue-red"
                 />

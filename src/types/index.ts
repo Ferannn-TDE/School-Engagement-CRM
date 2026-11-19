@@ -182,6 +182,8 @@ export interface Event {
   endDate?: string;
   location: string;
   participatingSchools: string[];
+  /** The school whose calendar listed the event (events.schools_involved); not removable in the app. */
+  hostSchoolId?: string;
   attendeeCount?: number;
   notes?: string;
   createdAt: string;

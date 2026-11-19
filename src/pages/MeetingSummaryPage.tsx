@@ -77,7 +77,12 @@ export function MeetingSummaryPage() {
             {fmt(s.events.withAttendance)} event{s.events.withAttendance === 1 ? '' : 's'} with imported attendance brought {fmt(s.events.visitorsAtEvents)} visitors.{' '}
             {s.followUps.schools
               ? <>{fmt(s.followUps.followed)} of {fmt(s.followUps.schools)} attending schools ({pct(s.followUps.followed, s.followUps.schools)}) got a call, email or visit within {FOLLOW_UP_DAYS} days.</>
-              : 'No attendance imported for this term yet.'}
+              : s.followUps.pending
+                ? `Follow-up rates are final ${FOLLOW_UP_DAYS} days after each event.`
+                : 'No attendance imported for this term yet.'}
+            {s.followUps.schools > 0 && s.followUps.pending > 0 && (
+              <> {fmt(s.followUps.pending)} more school{s.followUps.pending === 1 ? '' : 's'} at events in the last {FOLLOW_UP_DAYS} days aren't counted yet.</>
+            )}
           </p>
           {s.followUps.byEvent.length > 0 && (
             <table className="w-full table-fixed text-sm">

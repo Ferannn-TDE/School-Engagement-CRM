@@ -397,7 +397,9 @@ check('the meeting summary shows the same figures as the Reports page for the sa
     [snap['schools.total'], snap['reach.engaged'], snap['reach.first_time'], snap['activity.total'], snap['activity.visitors']]);
   assert.deepEqual([m.events.past, m.events.upcoming, m.events.withAttendance, m.events.visitorsAtEvents],
     [snap['events.past'], snap['events.upcoming'], snap['impact.events'], snap['impact.visitors']]);
-  assert.deepEqual([m.followUps.schools, m.followUps.followed], [snap['impact.schools'], snap['impact.followed']]);
+  // Reports' rate counts only events whose follow-up window has closed; so does the summary.
+  assert.deepEqual([m.followUps.schools, m.followUps.followed], [snap['impact.closed_schools'], snap['impact.closed_followed']]);
+  assert.equal(m.followUps.pending, snap['impact.schools'] - snap['impact.closed_schools']);
   assert.deepEqual([m.gaps.neverContacted, m.gaps.quiet, m.gaps.untouchedCounties], [snap['gaps.never'], snap['gaps.quiet'], snap['gaps.untouched_counties']]);
   assert.equal(m.mix.reduce((n, x) => n + x.count, 0), snap['activity.total']);
   assert.equal(m.followUps.byEvent.length, snap['impact.events']);

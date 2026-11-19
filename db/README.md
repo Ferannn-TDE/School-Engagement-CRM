@@ -37,6 +37,7 @@ how 001 and 002 went missing once (found and re-applied on 2026-09-26/28).
 | `028_other_details_and_event_type.sql` | Applied 2026-11-12: `programs.category_other`, `activities.activity_type_other`, `events.event_type` (six types, NULL = "Not set") and `events.event_type_other`. A trigger (`require_other_text`) requires the "Please specify" text when Other is being set, and lets every other update of an existing row through (archive, restore). |
 | `029_import_rows.sql` | Applied 2026-11-12: `import_rows`, each saved row of an activity import (school as typed, matched school, activity, visitors, optional `visitor_name`). Editors and admins only, for reading too (RLS on `can_edit()`); viewers and anon get no rows. `create_import_batch` (9 arguments) saves rows with the batch; `attach_import_rows` adds an older batch's rows from its original file (same SHA-256, once); archiving a batch archives its rows. |
 | `030_import_other_text.sql` | Applied 2026-11-13: `import_batches.activity_type_other` (with `require_other_text`), and one `create_import_batch` in place of the 022 and 029 forms: the same arguments plus optional `p_rows` and `p_activity_type_other`, the same checks and messages, the Other text saved on the batch and its activities. TEST A showed old and new give identical results. The next migration is 031. |
+| `031_event_schools.sql` | Applied 2026-11-19: `event_schools`, an event's participating schools (one row per event and school, archived rather than removed), and `set_event_schools(event, schools)`, which adds, restores and archives them in one transaction. `events.schools_involved` stays the host school from the scraper (one school, its foreign key), and the app never writes it. Protections as on every data table. The next migration is 032. |
 
 ## Open items (handoff, 2026-11-13)
 
@@ -179,6 +180,8 @@ cleared on restore.
   links.
 - Moving a contact to another school archives the old link and adds (or reactivates)
   the new one, so the history of which schools they were at is kept.
+- Archiving an event keeps its `event_schools` links (031) as they are; they're hidden
+  because the event is, and restoring the event brings its schools back with it.
 - To find archived rows by hand: `select * from schools where archived;` (same for the
   other five tables). To restore by hand, use the app, or
   `select restore_school('<facility_key>');` with claims set as in the unlock command

@@ -10,17 +10,19 @@ interface PaginationProps {
   pageSizes?: number[];
   /** What the rows are, for "Showing 1–10 of 219 counties". */
   noun?: string;
+  /** Under a list with no side padding: line up with its edges instead of a table's cell padding. */
+  flush?: boolean;
 }
 
 /** Previous / Next paging under a table, the same everywhere. Hidden when one page holds everything. */
-export function Pagination({ pageIndex, pageSize, total, onPageChange, onPageSizeChange, pageSizes = DEFAULT_SIZES, noun }: PaginationProps) {
+export function Pagination({ pageIndex, pageSize, total, onPageChange, onPageSizeChange, pageSizes = DEFAULT_SIZES, noun, flush }: PaginationProps) {
   const pageCount = Math.max(1, Math.ceil(total / pageSize));
   if (pageCount <= 1) return null;
   const first = pageIndex * pageSize + 1;
   const last = Math.min((pageIndex + 1) * pageSize, total);
   const button = 'px-3 py-1 pointer-coarse:min-h-10 rounded-lg border border-neutral-200 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed';
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 mt-4 px-4 text-sm">
+    <div className={`flex flex-wrap items-center justify-between gap-3 mt-4 text-sm ${flush ? '' : 'px-4'}`}>
       <p className="text-neutral-500">
         Showing {first.toLocaleString('en-US')}–{last.toLocaleString('en-US')} of {total.toLocaleString('en-US')}{noun ? ` ${noun}` : ''}
       </p>

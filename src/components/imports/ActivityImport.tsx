@@ -233,7 +233,7 @@ function RecentImports({ refreshKey, onChanged }: { refreshKey: number; onChange
         </ul>
       )}
       {batches !== null && !error && (
-        <Pagination pageIndex={page} pageSize={BATCHES_PER_PAGE} total={total} onPageChange={setPage} noun="batches" />
+        <Pagination pageIndex={page} pageSize={BATCHES_PER_PAGE} total={total} onPageChange={setPage} noun="batches" flush />
       )}
       {viewing && <BatchRowsModal batch={viewing} onClose={() => setBatchParam('')} />}
       <ConfirmDialog

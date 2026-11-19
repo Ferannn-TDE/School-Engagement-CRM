@@ -42,9 +42,10 @@ function localDateTime(row: EventRow): { date: string; hasTime: boolean } {
 function rowToEvent(row: EventRow, listed: string[] = []): Event {
   const { date, hasTime } = localDateTime(row);
   // schools_involved holds at most one school (its foreign key): the host school the
-  // school-calendar scraper found. Everyone else listed is in event_schools (db/031).
+  // school-calendar scraper found, kept apart as hostSchoolId. participatingSchools is
+  // only the live event_schools rows (db/031). utils/events eventSchoolIds joins them.
   const host = row.schools_involved?.trim() || undefined;
-  const schools = [...new Set([...(host ? [host] : []), ...listed])];
+  const schools = [...new Set(listed)].filter((id) => id !== host);
   return {
     id: `e_${row.event_id}`,
     name: row.fair_name ?? row.location ?? 'Untitled Event',

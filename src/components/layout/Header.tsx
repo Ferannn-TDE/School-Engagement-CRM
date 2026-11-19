@@ -59,22 +59,23 @@ export function Header({ title, subtitle, actions }: HeaderProps) {
 
   return (
     <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-sm border-b border-neutral-100">
-      <div className="flex items-center justify-between px-4 sm:px-8 py-4">
-        <div className="flex items-center gap-3">
+      {/* On a narrow screen the page's buttons wrap under the title instead of pushing the page sideways. */}
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 px-4 sm:px-6 lg:px-8 py-4">
+        <div className="flex min-w-0 items-center gap-3">
           <button
             onClick={toggleSidebar}
-            className="lg:hidden p-2 rounded-lg hover:bg-neutral-50 text-neutral-400 hover:text-neutral-600 transition-colors"
+            className="lg:hidden p-2.5 -ml-2 rounded-lg hover:bg-neutral-50 text-neutral-500 hover:text-neutral-700 transition-colors"
             aria-label="Toggle sidebar"
           >
             <Menu size={20} />
           </button>
-          <div>
-            <h1 className="text-xl font-bold text-neutral-800">{title}</h1>
+          <div className="min-w-0">
+            <h1 className="text-xl font-bold text-neutral-800 break-words">{title}</h1>
             {subtitle && <p className="text-sm text-neutral-500 mt-0.5">{subtitle}</p>}
           </div>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-4">
+        <div className="flex min-w-0 flex-wrap items-center gap-2 sm:gap-4">
           {scope && <StateFilter />}
           {actions}
 
@@ -175,7 +176,7 @@ export function Header({ title, subtitle, actions }: HeaderProps) {
           </div>
 
           <button
-            className="p-2 rounded-lg hover:bg-neutral-50 text-neutral-400 hover:text-neutral-600 transition-colors"
+            className="p-2.5 rounded-lg hover:bg-neutral-50 text-neutral-400 hover:text-neutral-600 transition-colors"
             aria-label="Notifications"
           >
             <Bell size={20} />

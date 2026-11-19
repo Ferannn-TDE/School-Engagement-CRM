@@ -23,6 +23,7 @@ import { EVENT_SOURCE_OPTIONS, eventSourceLabel, isTestingDate } from '../utils/
 import { eventTypeLabel } from '../utils/labels';
 import toast from 'react-hot-toast';
 import { useRole } from '../context/useRole';
+import { COLUMN_HELP } from '../constants/columnHelp';
 
 export function EventsPage() {
   const { state, archiveEvent } = useAppContext();
@@ -64,6 +65,7 @@ export function EventsPage() {
       {
         accessorKey: 'name',
         header: 'Event Name',
+        meta: { kind: 'primary' },
         cell: ({ row }) => (
           // Name and place, one line each, cut to fit, so every row is the same height.
           <div className="min-w-0">
@@ -83,6 +85,7 @@ export function EventsPage() {
         id: 'source',
         accessorFn: (row) => eventSourceLabel(row),
         header: 'Source',
+        meta: { kind: 'text', info: COLUMN_HELP.eventSource },
         cell: ({ row }) =>
           isTestingDate(row.original) ? (
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium border border-dashed border-neutral-400 text-neutral-600">
@@ -96,6 +99,7 @@ export function EventsPage() {
       {
         accessorKey: 'date',
         header: 'Date',
+        meta: { kind: 'date', width: '11rem' },
         cell: ({ row }) => {
           const isPast = !isAfter(new Date(row.original.date), new Date());
           return (
@@ -111,6 +115,7 @@ export function EventsPage() {
       {
         id: 'schools',
         header: 'Schools',
+        meta: { kind: 'number', info: COLUMN_HELP.eventSchools },
         cell: ({ row }) => (
           <div className="flex items-center gap-1">
             <Users size={14} className="text-neutral-400" />
@@ -121,6 +126,7 @@ export function EventsPage() {
       {
         accessorKey: 'attendeeCount',
         header: 'Attendees',
+        meta: { kind: 'number', width: '8rem', info: COLUMN_HELP.eventAttendees },
         cell: ({ getValue }) => {
           const count = getValue() as number | undefined;
           return count ?? 0;
@@ -128,7 +134,8 @@ export function EventsPage() {
       },
       {
         id: 'actions',
-        header: () => <span className="block text-right">Actions</span>,
+        header: 'Actions',
+        meta: { kind: 'actions' },
         enableSorting: false,
         // The same Actions menu as Contacts: one fixed-width button, choices in a list.
         cell: ({ row }) => (
@@ -174,8 +181,8 @@ export function EventsPage() {
             : `${outreachCount} events`
         }
         actions={
-          <div className="flex gap-2">
-            <label className="flex items-center gap-2 px-3 py-1.5 text-sm text-neutral-600 border border-neutral-200 rounded-lg bg-white cursor-pointer select-none whitespace-nowrap">
+          <div className="flex flex-wrap gap-2">
+            <label className="flex items-center gap-2 px-3 py-1.5 pointer-coarse:min-h-10 text-sm text-neutral-600 border border-neutral-200 rounded-lg bg-white cursor-pointer select-none whitespace-nowrap">
               <input
                 type="checkbox"
                 checked={showTesting}
@@ -191,7 +198,7 @@ export function EventsPage() {
                 title="List view"
                 aria-pressed={view === 'list'}
                 className={classNames(
-                  'px-3 py-1.5 text-sm',
+                  'px-3 py-1.5 pointer-coarse:min-h-10 text-sm',
                   view === 'list' ? 'bg-siue-red text-white' : 'bg-white text-neutral-600 hover:bg-neutral-50'
                 )}
               >
@@ -203,7 +210,7 @@ export function EventsPage() {
                 title="Calendar view"
                 aria-pressed={view === 'calendar'}
                 className={classNames(
-                  'px-3 py-1.5 text-sm',
+                  'px-3 py-1.5 pointer-coarse:min-h-10 text-sm',
                   view === 'calendar' ? 'bg-siue-red text-white' : 'bg-white text-neutral-600 hover:bg-neutral-50'
                 )}
               >
@@ -219,7 +226,7 @@ export function EventsPage() {
           </div>
         }
       />
-      <div className="p-8 space-y-6">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6">
         {view === 'list' ? (
           <>
             <FilterBar
@@ -258,7 +265,6 @@ export function EventsPage() {
                     ],
                   }}
                   columns={shownColumns}
-                  columnWidths={canEdit ? ['', '18%', '13%', '10%', '11%', '8rem'] : ['', '20%', '15%', '12%', '13%']}
                   urlState
                   resetKey={`${sourceFilter}|${showTesting}`}
                   onRowClick={(event) => setViewingEvent(event)}
@@ -281,7 +287,9 @@ export function EventsPage() {
                 Next
               </Button>
             </div>
-            <div className="grid grid-cols-7 gap-px bg-neutral-100 rounded-lg overflow-hidden">
+            {/* Seven columns need about 42rem: narrower screens scroll the calendar, not the page. */}
+            <div className="overflow-x-auto">
+            <div className="grid min-w-[42rem] grid-cols-7 gap-px bg-neutral-100 rounded-lg overflow-hidden">
               {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
                 <div key={day} className="bg-neutral-50 p-2 text-center text-xs font-semibold text-neutral-500">
                   {day}
@@ -332,6 +340,7 @@ export function EventsPage() {
                   </div>
                 );
               })}
+            </div>
             </div>
           </Card>
         )}

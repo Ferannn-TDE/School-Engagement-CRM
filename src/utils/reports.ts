@@ -16,6 +16,7 @@ import { isTestingDate } from './events';
 import {
   EVENT_ATTENDANCE_TYPE,
   FOLLOW_UP_DAYS,
+  IN_APP_LOGGING_START,
   QUIET_MONTHS,
   SCHOOL_YEAR_START,
   SIUE_TERMS,
@@ -150,6 +151,8 @@ export interface Comparison {
   range: DayRange | null;
   /** Always shown next to a comparison: what it is compared with, or why there's none. */
   label: string;
+  /** Set when the compared period starts before in-app logging: it holds imported lists only. */
+  note?: string;
 }
 
 /**
@@ -157,16 +160,19 @@ export interface Comparison {
  * of them, otherwise the same number of days just before, otherwise nothing. A
  * period from before logging started would read as a false zero, so it's never used.
  */
-export function comparisonFor(range: DayRange, loggingStart: Day | null): Comparison {
+export function comparisonFor(range: DayRange, loggingStart: Day | null, inAppStart: Day = IN_APP_LOGGING_START): Comparison {
   const covered = (r: DayRange) => loggingStart !== null && loggingStart <= r.start;
+  const note = (r: DayRange) => (r.start < inAppStart
+    ? { note: `In-app logging started ${formatDay(inAppStart)}; earlier years include imported lists only.` }
+    : {});
   const lastYear = { start: addMonths(range.start, -12), end: addMonths(range.end, -12) };
   if (covered(lastYear)) {
-    return { kind: 'last-year', range: lastYear, label: `the same dates last year (${formatRange(lastYear)})` };
+    return { kind: 'last-year', range: lastYear, label: `the same dates last year (${formatRange(lastYear)})`, ...note(lastYear) };
   }
   const length = daysBetween(range.start, range.end) + 1;
   const previous = { start: addDays(range.start, -length), end: addDays(range.start, -1) };
   if (covered(previous)) {
-    return { kind: 'previous', range: previous, label: `the ${length} days before (${formatRange(previous)})` };
+    return { kind: 'previous', range: previous, label: `the ${length} days before (${formatRange(previous)})`, ...note(previous) };
   }
   return {
     kind: 'none',

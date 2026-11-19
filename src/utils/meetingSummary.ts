@@ -15,8 +15,11 @@ export interface MeetingSummary {
   mix: { type: string; count: number }[];
   events: { past: number; upcoming: number; withAttendance: number; visitorsAtEvents: number };
   followUps: {
+    /** Schools at events whose follow-up window has closed: the same rate Reports shows. */
     schools: number;
     followed: number;
+    /** Schools at events still inside the window, not yet counted in the rate. */
+    pending: number;
     /** Per event, most schools first (as Reports ranks them). */
     byEvent: { eventId: string; day: Day; schools: number; followed: number; visitors: number; windowOpen: boolean }[];
   };
@@ -52,7 +55,8 @@ export function meetingSummary(
       withAttendance: snap['impact.events'], visitorsAtEvents: snap['impact.visitors'],
     },
     followUps: {
-      schools: snap['impact.schools'], followed: snap['impact.followed'],
+      schools: snap['impact.closed_schools'], followed: snap['impact.closed_followed'],
+      pending: snap['impact.schools'] - snap['impact.closed_schools'],
       byEvent: impact.map((x) => ({ eventId: x.eventId, day: x.day, schools: x.schoolIds.length, followed: x.followedIds.length, visitors: x.visitors, windowOpen: x.windowOpen })),
     },
     gaps: {

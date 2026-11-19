@@ -1,4 +1,5 @@
 import { supabase, fetchAllRows } from './supabase';
+import { collectPages } from '../utils/paging';
 import type { MatchSchool } from '../utils/activityImportMatch';
 import type { PlannedActivity } from '../utils/activityImportFile';
 
@@ -66,29 +67,35 @@ function rowToBatch(row: ImportBatchRow, counts?: { total: number; archived: num
   };
 }
 
-/** The most recent batches, newest first, with their activity counts. */
-export async function fetchRecentImportBatches(limit = 20): Promise<ImportBatch[]> {
-  const { data, error } = await supabase
+/** One page of batches, newest first, with their activity counts, and how many there are in all. */
+export async function fetchImportBatchPage(pageIndex: number, pageSize: number): Promise<{ batches: ImportBatch[]; total: number }> {
+  const from = pageIndex * pageSize;
+  const { data, error, count } = await supabase
     .from('import_batches')
-    .select('*')
+    .select('*', { count: 'exact' })
     .order('created_at', { ascending: false })
-    .limit(limit);
+    .order('batch_id', { ascending: true })
+    .range(from, from + pageSize - 1);
   if (error) throw error;
   const rows = (data ?? []) as ImportBatchRow[];
-  if (!rows.length) return [];
-  const { data: acts, error: actsError } = await supabase
-    .from('activities')
-    .select('import_batch_id, archived')
-    .in('import_batch_id', rows.map((r) => r.batch_id));
-  if (actsError) throw actsError;
+  if (!rows.length) return { batches: [], total: count ?? 0 };
+  // Every activity of these batches, a page at a time: one request returns at most
+  // 1,000 rows, and a large batch alone can have more.
+  const ids = rows.map((r) => r.batch_id);
+  const acts = await collectPages<{ import_batch_id: string; archived: boolean }>(async (lo, hi) => {
+    const res = await supabase.from('activities').select('import_batch_id, archived')
+      .in('import_batch_id', ids).order('activity_id').range(lo, hi);
+    if (res.error) throw res.error;
+    return (res.data ?? []) as { import_batch_id: string; archived: boolean }[];
+  });
   const counts = new Map<string, { total: number; archived: number }>();
-  for (const a of (acts ?? []) as { import_batch_id: string; archived: boolean }[]) {
+  for (const a of acts) {
     const c = counts.get(a.import_batch_id) ?? { total: 0, archived: 0 };
     c.total += 1;
     if (a.archived) c.archived += 1;
     counts.set(a.import_batch_id, c);
   }
-  return rows.map((r) => rowToBatch(r, counts.get(r.batch_id)));
+  return { batches: rows.map((r) => rowToBatch(r, counts.get(r.batch_id))), total: count ?? rows.length };
 }
 
 /** One batch by id (the visit details panel), without activity counts. Null if not found. */
@@ -182,9 +189,13 @@ export async function fetchImportRows(batchId: string): Promise<ImportRow[]> {
 export async function fetchImportRowCounts(batchIds: string[]): Promise<Map<string, number>> {
   const counts = new Map<string, number>();
   if (!batchIds.length) return counts;
-  const { data, error } = await supabase.from('import_rows').select('batch_id').in('batch_id', batchIds);
-  if (error) throw error;
-  for (const r of (data ?? []) as { batch_id: string }[]) counts.set(r.batch_id, (counts.get(r.batch_id) ?? 0) + 1);
+  // A page at a time, like the activities above: a batch can have over 1,000 rows.
+  const rows = await collectPages<{ batch_id: string }>(async (lo, hi) => {
+    const res = await supabase.from('import_rows').select('batch_id').in('batch_id', batchIds).order('row_id').range(lo, hi);
+    if (res.error) throw res.error;
+    return (res.data ?? []) as { batch_id: string }[];
+  });
+  for (const r of rows) counts.set(r.batch_id, (counts.get(r.batch_id) ?? 0) + 1);
   return counts;
 }
 

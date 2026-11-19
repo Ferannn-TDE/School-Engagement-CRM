@@ -12,6 +12,9 @@ import type { Region } from '../../utils/region';
 import { Columns, Figure, Meter, Note, ReportSection, Tile, Tiles } from './ReportParts';
 import { Pagination } from '../common/Pagination';
 import { Missing } from '../common/Missing';
+import { HeaderWithInfo } from '../common/InfoTip';
+import { COLUMN_HELP } from '../../constants/columnHelp';
+import { ColGroup, cellClass, headClass, tableProps, type ColumnSpec } from '../common/tableColumns';
 
 export interface ReportModel {
   data: ReportInput;
@@ -50,15 +53,18 @@ function compare(now: number, before: number | null, comparison: Comparison) {
         {diff >= 0 ? '▲' : '▼'} {fmt(Math.abs(diff))}
       </span>{' '}
       vs {fmt(before)} in {comparison.label}
+      {comparison.note && <span className="block text-neutral-500">{comparison.note}</span>}
     </>
   );
 }
 
 const COUNTY_PAGE = 10;
 
-function CountyTable({ rows, cols, csv }: {
+function CountyTable({ rows, cols, csv, info = {} }: {
   rows: { key: string; name: string; cells: ReactNode[] }[];
   cols: string[];
+  /** Plain-language explanations for unclear column headers, by label. */
+  info?: Record<string, string>;
   /** "Export CSV": the same rows as plain values (every page). */
   csv?: { name: string; rows: (string | number)[][] };
 }) {
@@ -66,28 +72,29 @@ function CountyTable({ rows, cols, csv }: {
   // A narrower state filter can leave fewer pages than the one open.
   const current = Math.min(page, Math.max(0, Math.ceil(rows.length / COUNTY_PAGE) - 1));
   const shown = rows.slice(current * COUNTY_PAGE, (current + 1) * COUNTY_PAGE);
+  const specs: ColumnSpec[] = ['primary', ...cols.map(() => ({ kind: 'number' as const, width: '9rem' }))];
   return (
     <div>
       {csv && (
-        <div className="flex justify-end mb-2 print:hidden">
+        <div className="flex justify-end mb-3 print:hidden">
           <ExportCsvButton name={csv.name} rows={csv.rows}
             columns={['County', ...cols].map((label, i) => ({ label, value: (r: (string | number)[]) => r[i] }))} />
         </div>
       )}
       <div className="overflow-x-auto rounded-lg border border-neutral-100">
-        <table className="w-full table-fixed text-sm">
-          <colgroup><col style={{ width: `${100 - cols.length * 20}%` }} />{cols.map((c) => <col key={c} style={{ width: '20%' }} />)}</colgroup>
+        <table {...tableProps(specs, 'text-sm')}>
+          <ColGroup specs={specs} />
           <thead className="bg-neutral-50">
             <tr>
-              <th className="text-left px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-neutral-500">County</th>
-              {cols.map((c) => <th key={c} className="text-right px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-neutral-500 whitespace-nowrap">{c}</th>)}
+              <th className={headClass(specs[0])}>County</th>
+              {cols.map((c, i) => <th key={c} className={headClass(specs[i + 1])}>{info[c] ? <HeaderWithInfo label={c} info={info[c]} /> : c}</th>)}
             </tr>
           </thead>
           <tbody className="divide-y divide-neutral-50">
             {shown.map((r) => (
               <tr key={r.key}>
-                <td className="px-4 py-2.5 text-neutral-700 truncate">{r.name}</td>
-                {r.cells.map((c, i) => <td key={i} className="px-4 py-2.5 text-right tabular-nums">{c}</td>)}
+                <td className={`${cellClass(specs[0])} py-2.5 text-neutral-700 truncate`} title={r.name}>{r.name}</td>
+                {r.cells.map((c, i) => <td key={i} className={`${cellClass(specs[i + 1])} py-2.5`}>{c}</td>)}
               </tr>
             ))}
           </tbody>
@@ -181,6 +188,7 @@ export function CoverageSection({ m }: { m: ReportModel }) {
         <p className="text-xs text-neutral-500">Counties, lowest share with a contact first</p>
         <CountyTable
           cols={['Schools', 'No contact']}
+          info={{ 'No contact': COLUMN_HELP.noContact }}
           csv={{ name: `contact-coverage-${slug(m.range.label)}`, rows: c.byCounty.map((x) => [`${x.county}, ${x.state}`, x.schoolIds.length, x.withoutIds.length]) }}
           rows={c.byCounty.map((x) => ({
             key: `${x.state}|${x.county}`, name: `${x.county}, ${x.state}`,
@@ -428,6 +436,7 @@ export function GapsSection({ m }: { m: ReportModel }) {
         <p className="text-xs text-neutral-500">Counties, lowest share contacted first (county names as stored)</p>
         <CountyTable
           cols={['Schools', 'Contacted']}
+          info={{ Contacted: COLUMN_HELP.contacted }}
           csv={{ name: `coverage-gaps-${slug(m.range.label)}`, rows: g.byCounty.map((x) => [`${x.county}, ${x.state}`, x.schoolIds.length, x.contactedIds.length]) }}
           rows={g.byCounty.map((x) => ({
             key: `${x.state}|${x.county}`, name: `${x.county}, ${x.state}`,
@@ -442,6 +451,9 @@ export function GapsSection({ m }: { m: ReportModel }) {
 }
 
 // ── 7. Event impact ─────────────────────────────────────────────────────────────
+
+/** Event, Date, Schools, Visitors, Followed up. */
+const IMPACT_COLUMNS: ColumnSpec[] = ['primary', 'date', 'number', 'number', { kind: 'text', width: '15rem' }];
 
 export function ImpactSection({ m }: { m: ReportModel }) {
   const { impact, events: e, lists, open, range, today } = m;
@@ -469,7 +481,7 @@ export function ImpactSection({ m }: { m: ReportModel }) {
       </Tiles>
       {impact.length ? (
         <div className="overflow-x-auto">
-          <div className="flex justify-end mb-2 print:hidden">
+          <div className="flex justify-end mb-3 print:hidden">
             <ExportCsvButton name={`event-follow-ups-${slug(range.label)}`} rows={impact} columns={[
               { label: 'Event', value: (x) => names.get(x.eventId) ?? x.eventId },
               { label: 'Date', value: (x) => x.day },
@@ -479,24 +491,27 @@ export function ImpactSection({ m }: { m: ReportModel }) {
               { label: 'Window open', value: (x) => (x.windowOpen ? 'Yes' : 'No') },
             ]} />
           </div>
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-neutral-100 text-xs text-neutral-500">
-                <th className="text-left font-medium px-2 py-1.5">Event</th><th className="text-left font-medium px-2 py-1.5">Date</th>
-                <th className="text-right font-medium px-2 py-1.5">Schools</th><th className="text-right font-medium px-2 py-1.5">Visitors</th>
-                <th className="text-right font-medium px-2 py-1.5">Followed up in {FOLLOW_UP_DAYS} days</th>
+          <table {...tableProps(IMPACT_COLUMNS, 'text-sm')}>
+            <ColGroup specs={IMPACT_COLUMNS} />
+            <thead className="bg-neutral-50">
+              <tr className="border-b border-neutral-100">
+                <th className={headClass(IMPACT_COLUMNS[0])}>Event</th>
+                <th className={headClass(IMPACT_COLUMNS[1])}>Date</th>
+                <th className={headClass(IMPACT_COLUMNS[2])}>Schools</th>
+                <th className={headClass(IMPACT_COLUMNS[3])}>Visitors</th>
+                <th className={headClass(IMPACT_COLUMNS[4])}><HeaderWithInfo label={`Followed up in ${FOLLOW_UP_DAYS} days`} info={COLUMN_HELP.followedUp} /></th>
               </tr>
             </thead>
             <tbody>
               {impact.map((x) => (
                 <tr key={x.eventId} className="border-b border-neutral-50 last:border-0">
-                  <td className="px-2 py-1.5">{names.get(x.eventId)}</td>
-                  <td className="px-2 py-1.5 whitespace-nowrap">{formatDay(x.day)}</td>
-                  <td className="px-2 py-1.5 text-right tabular-nums">
+                  <td className={`${cellClass(IMPACT_COLUMNS[0])} truncate`} title={names.get(x.eventId)}>{names.get(x.eventId)}</td>
+                  <td className={cellClass(IMPACT_COLUMNS[1])}>{formatDay(x.day)}</td>
+                  <td className={cellClass(IMPACT_COLUMNS[2])}>
                     <Figure value={x.schoolIds.length} onOpen={open} list={() => lists.schools(x.schoolIds, `${names.get(x.eventId)}: schools`, formatDay(x.day), `event-${slug(names.get(x.eventId) ?? x.eventId)}-schools`)} />
                   </td>
-                  <td className="px-2 py-1.5 text-right tabular-nums">{x.visitors ? fmt(x.visitors) : <Missing label="No visitor count" />}</td>
-                  <td className="px-2 py-1.5 text-right tabular-nums">
+                  <td className={cellClass(IMPACT_COLUMNS[3])}>{x.visitors ? fmt(x.visitors) : <Missing label="No visitor count" />}</td>
+                  <td className={`${cellClass(IMPACT_COLUMNS[4])} tabular-nums`}>
                     <Figure value={`${fmt(x.followedIds.length)} of ${fmt(x.schoolIds.length)}`} onOpen={open}
                       list={() => lists.schools(x.schoolIds.filter((id) => !x.followedIds.includes(id)), `${names.get(x.eventId)}: not followed up yet`, `No call, email or visit within ${FOLLOW_UP_DAYS} days`, `event-${slug(names.get(x.eventId) ?? x.eventId)}-not-followed`)} />
                     {x.windowOpen && <span className="ml-2 text-xs text-neutral-500">window open</span>}

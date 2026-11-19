@@ -77,6 +77,47 @@ Known, decided not to build yet. Each needs an owner or a client decision.
    50 states resolver and data integrity", "Stabilize scraper writes and event
    handling"); ask Sean before touching it.
 
+## Proposals (not built, 2026-11-19)
+
+Written up for a decision. Neither changes the database or the app yet.
+
+**A. Show matched visitors and total attendees separately.** Today an event's "visitors"
+is the sum of its activities' visitor counts, built from the rows (blank = 1) matched to a listed
+school. Rows that matched no school, or were left out on the Import screen, are not saved:
+the batch keeps only `import_batches.row_count`, so their visitor counts are lost. Proposed:
+
+- Save every data row in `import_rows`, the unmatched and skipped ones too, with
+  `school_id` and `activity_id` left null (029 already allows both). No new column, and
+  no activity is created for them, so Reports, Priorities and the scores stay the same.
+- Matched visitors = the sum over rows with an `activity_id`, as today. Total attendees =
+  the sum over every row in the batch. Reports → Event impact and the event's details show
+  both, e.g. "38 visitors from listed schools · 52 attendees in total".
+- Batches saved before this have no unmatched rows, so they show "total not recorded"
+  rather than a false equal number. `attach_import_rows` (029) can't fill them in, because
+  the batch already has rows; a second, file-hash-checked form that adds only the
+  missing row numbers would.
+- Needs: a change to `create_import_batch` (031) so the unmatched rows are accepted, the
+  app change on Import, and a `verify:reports` check that matched ≤ total and that
+  matched equals today's figure.
+
+**B. A logged "Change type or event" action for an import batch.** Today a batch saved
+with the wrong activity type or event can only be archived and imported again. Proposed:
+
+- `change_import_batch(p_batch_id, p_activity_type, p_activity_type_other, p_event_id,
+  p_reason)`: editors and admins only (`can_edit()`, aal2), one transaction. It updates
+  the batch and every non-archived activity in it to the new type and event. **The date
+  never changes**: activities keep the batch's own date even when the new event is on a
+  different day.
+- A new `import_batch_changes` table (RLS, deny delete, SELECT/INSERT only) records who,
+  when, the old and new type, the old and new event, the reason, and how many activities
+  changed. The function checks the count it changed equals the batch's non-archived
+  activities and fails otherwise.
+- On Import → Recent imports, a "Change type or event" button opens the same pickers as
+  Import, requires a reason, and shows the batch's change history beneath it.
+- Archived batches can't be changed (restore first). Activities edited one by one since
+  the import are still changed, and the log lists them, so nothing is overwritten
+  silently.
+
 ## Removing a visitor's name (029)
 
 Visitors' names in `import_rows.visitor_name` are student data. Nothing is ever deleted,

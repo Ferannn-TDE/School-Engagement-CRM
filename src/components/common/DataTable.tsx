@@ -16,7 +16,9 @@ import { classNames } from '../../utils/helpers';
 import { Pagination } from './Pagination';
 import { useUrlState, useUrlStateBatch } from '../../hooks/useUrlState';
 import { ExportCsvButton } from './ExportCsvButton';
+import { InfoTip } from './InfoTip';
 import type { CsvColumn } from '../../utils/csv';
+import { ColGroup, cellClass, headClass, specKind, tableProps, type ColumnSpec } from './tableColumns';
 
 interface DataTableProps<T> {
   data: T[];
@@ -26,10 +28,6 @@ interface DataTableProps<T> {
   onRowClick?: (row: T) => void;
   emptyMessage?: string;
   emptyAction?: React.ReactNode;
-  /** Optional column widths: percentages, fixed sizes ('120px'), or '' to share what's left. */
-  columnWidths?: string[];
-  /** With columnWidths: the narrowest the table gets before it scrolls sideways. */
-  minWidth?: string;
   /** Keep sort, page and page size in the address (?sort=-name&page=3&size=50), so
    *  they survive leaving the tab, a refresh and the back button. */
   urlState?: boolean;
@@ -60,11 +58,9 @@ export function DataTable<T>({
   columns,
   searchValue,
   pageSize = 25,
-  minWidth = '48rem',
   onRowClick,
   emptyMessage = 'No data found.',
   emptyAction,
-  columnWidths,
   urlState = false,
   resetKey,
   rowHeight = '4rem',
@@ -139,51 +135,64 @@ export function DataTable<T>({
     if (pageCount > 0 && pagination.pageIndex >= pageCount) table.setPageIndex(pageCount - 1);
   }, [pageCount, pagination.pageIndex, table]);
 
+  // Each column's type (columnDef.meta.kind, see tableColumns.ts) sets its width and
+  // alignment; the first column is the primary one unless another says so.
+  const visible = table.getVisibleLeafColumns();
+  const hasPrimary = visible.some((c) => c.columnDef.meta?.kind === 'primary');
+  const specs: ColumnSpec[] = visible.map((c, i) => ({
+    kind: c.columnDef.meta?.kind ?? (!hasPrimary && i === 0 ? 'primary' : 'text'),
+    width: c.columnDef.meta?.width,
+  }));
+  const specById = new Map(visible.map((c, i) => [c.id, specs[i]]));
+
   return (
     <div className="pb-4">
       {exportCsv && (
-        <div className="flex justify-end mb-2 print:hidden">
+        <div className="flex justify-end px-4 pt-4 pb-3 print:hidden">
           <ExportCsvButton name={exportCsv.name} columns={exportCsv.columns}
             rows={table.getPrePaginationRowModel().rows.map((r) => r.original)} />
         </div>
       )}
       <div className="overflow-x-auto rounded-lg border border-neutral-100">
-        <table className={classNames('divide-y divide-neutral-100 table-fixed', columnWidths ? 'w-full' : 'min-w-full')} style={columnWidths ? { minWidth } : undefined}>
-          {columnWidths && (
-            <colgroup>
-              {columnWidths.map((w, i) => (
-                <col key={i} style={{ width: w }} />
-              ))}
-            </colgroup>
-          )}
+        <table {...tableProps(specs, 'divide-y divide-neutral-100')}>
+          <ColGroup specs={specs} />
           <thead className="bg-neutral-50">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    className={classNames(
-                      'px-4 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider',
-                      header.column.getCanSort() && 'cursor-pointer select-none hover:text-neutral-700'
-                    )}
-                    onClick={header.column.getToggleSortingHandler()}
-                  >
-                    <div className="flex items-center gap-1">
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                      {header.column.getCanSort() && (
-                        <span className="text-neutral-300">
-                          {header.column.getIsSorted() === 'asc' ? (
-                            <ChevronUp size={14} />
-                          ) : header.column.getIsSorted() === 'desc' ? (
-                            <ChevronDown size={14} />
-                          ) : (
-                            <ChevronsUpDown size={14} />
-                          )}
-                        </span>
+                {headerGroup.headers.map((header) => {
+                  const spec = specById.get(header.column.id) ?? 'text';
+                  return (
+                    <th
+                      key={header.id}
+                      className={classNames(
+                        headClass(spec),
+                        header.column.getCanSort() && 'cursor-pointer select-none hover:text-neutral-700'
                       )}
-                    </div>
-                  </th>
-                ))}
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      <div className={classNames('flex items-center gap-1', specKind(spec) === 'actions' && 'justify-end')}>
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {header.column.columnDef.meta?.info && (
+                          <InfoTip
+                            label={typeof header.column.columnDef.header === 'string' ? header.column.columnDef.header : header.column.id}
+                            text={header.column.columnDef.meta.info}
+                          />
+                        )}
+                        {header.column.getCanSort() && (
+                          <span className="text-neutral-300">
+                            {header.column.getIsSorted() === 'asc' ? (
+                              <ChevronUp size={14} />
+                            ) : header.column.getIsSorted() === 'desc' ? (
+                              <ChevronDown size={14} />
+                            ) : (
+                              <ChevronsUpDown size={14} />
+                            )}
+                          </span>
+                        )}
+                      </div>
+                    </th>
+                  );
+                })}
               </tr>
             ))}
           </thead>
@@ -191,7 +200,7 @@ export function DataTable<T>({
             {table.getRowModel().rows.length === 0 ? (
               <tr>
                 <td
-                  colSpan={columns.length}
+                  colSpan={visible.length}
                   className="px-4 py-12 text-center text-neutral-400"
                 >
                   <p className="text-lg mb-2">{emptyMessage}</p>
@@ -210,7 +219,7 @@ export function DataTable<T>({
                   style={{ height: rowHeight }}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-4 py-2 text-sm text-neutral-700 overflow-hidden">
+                    <td key={cell.id} className={classNames(cellClass(specById.get(cell.column.id) ?? 'text'), 'text-sm text-neutral-700')}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}

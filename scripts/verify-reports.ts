@@ -38,6 +38,9 @@ import {
 import { scopeToRegion } from '../src/utils/region';
 import { activityCount, listBuilders, listToCsv, pctText } from '../src/utils/reportLists';
 import { loadFixtureRows, toAppData } from './reportsFixture';
+import { computeEngagementScore } from '../src/utils/engagementScore';
+import { COLUMN_HELP } from '../src/constants/columnHelp';
+import type { Program } from '../src/types';
 
 let passed = 0;
 const failures: string[] = [];
@@ -110,6 +113,12 @@ check('with a year of logging, the same dates last year are used', () => {
   const c = comparisonFor(FALL, '2025-01-01');
   assert.deepEqual([c.kind, c.range], ['last-year', { start: '2025-08-24', end: '2025-10-27' }]);
   assert.equal(c.label, 'the same dates last year (Aug 24 – Oct 27, 2025)');
+  // Last year is before in-app logging (Sep 28, 2026): it holds imported lists only.
+  assert.equal(c.note, 'In-app logging started Sep 28, 2026; earlier years include imported lists only.');
+});
+check('no note when the compared period is all in-app logging', () => {
+  assert.equal(comparisonFor({ start: '2027-10-01', end: '2027-10-27' }, '2026-09-28').note, undefined);
+  assert.equal(comparisonFor(FALL, '2026-09-28').note, undefined);
 });
 check('with a few months of logging, the period just before is used', () => {
   const c = comparisonFor({ start: '2026-10-01', end: '2026-10-27' }, '2026-08-01');
@@ -394,7 +403,9 @@ check('the meeting summary shows the same figures as the Reports page for the sa
     [snap['schools.total'], snap['reach.engaged'], snap['reach.first_time'], snap['activity.total'], snap['activity.visitors']]);
   assert.deepEqual([m.events.past, m.events.upcoming, m.events.withAttendance, m.events.visitorsAtEvents],
     [snap['events.past'], snap['events.upcoming'], snap['impact.events'], snap['impact.visitors']]);
-  assert.deepEqual([m.followUps.schools, m.followUps.followed], [snap['impact.schools'], snap['impact.followed']]);
+  // Reports' rate counts only events whose follow-up window has closed; so does the summary.
+  assert.deepEqual([m.followUps.schools, m.followUps.followed], [snap['impact.closed_schools'], snap['impact.closed_followed']]);
+  assert.equal(m.followUps.pending, snap['impact.schools'] - snap['impact.closed_schools']);
   assert.deepEqual([m.gaps.neverContacted, m.gaps.quiet, m.gaps.untouchedCounties], [snap['gaps.never'], snap['gaps.quiet'], snap['gaps.untouched_counties']]);
   assert.equal(m.mix.reduce((n, x) => n + x.count, 0), snap['activity.total']);
   assert.equal(m.followUps.byEvent.length, snap['impact.events']);
@@ -411,6 +422,30 @@ check('Export CSV: header row, quotes around commas, quotes and line breaks, a B
     [{ n: 'A, "B"', c: 2 }, { n: 'Line\nbreak' }]);
   assert.equal(csv, '﻿Name,Count\r\n"A, ""B""",2\r\n"Line\nbreak",');
   assert.equal(csvFilename('Priorities: Recently in touch', new Date('2026-11-13T10:00:00')), 'priorities-recently-in-touch-2026-11-13.csv');
+});
+
+check('the Score and Engagement explanations match the scoring code', () => {
+  // COLUMN_HELP.score: 10 points each, contacts up to 30, recent activity up to 30,
+  // events up to 20, programs up to 20; COLUMN_HELP.engagement: High 60+, Medium 30-59.
+  const contact = (isActive: boolean) => ({ isActive }) as Contact;
+  const program = { isActive: true } as Program;
+  const act = (date: string) => ({ date, activityType: 'call' }) as ActivityRecord;
+  const event = { id: 'e_1' } as AppEvent;
+  const recent = new Date(Date.now() - 7 * 864e5).toISOString().slice(0, 10);
+  const old = new Date(Date.now() - 400 * 864e5).toISOString().slice(0, 10);
+  const score = (c: Contact[], a: ActivityRecord[], e: AppEvent[], p: Program[]) => computeEngagementScore(c, a, e, p);
+  assert.equal(score(Array(5).fill(contact(true)), [], [], []).score, 30);
+  assert.equal(score([contact(true), contact(false)], [], [], []).score, 10);
+  assert.equal(score([], Array(5).fill(act(recent)), [], []).score, 30);
+  assert.equal(score([], [act(old)], [], []).score, 0);
+  assert.equal(score([], [], [event, event, event], []).score, 20);
+  assert.equal(score([], [], [], [program, program, program]).score, 20);
+  assert.equal(score([], [{ ...act(recent), activityType: 'event_participation' } as ActivityRecord], [], []).score, 20);
+  assert.equal(score(Array(3).fill(contact(true)), [], [], []).tier, 'medium');
+  assert.equal(score(Array(2).fill(contact(true)), [], [], []).tier, 'low');
+  assert.equal(score(Array(3).fill(contact(true)), Array(3).fill(act(recent)), [], []).tier, 'high');
+  assert.match(COLUMN_HELP.score, /up to 30[\s\S]*up to 30[\s\S]*up to 20[\s\S]*up to 20/);
+  assert.match(COLUMN_HELP.engagement, /High: 60 to 100[\s\S]*Medium: 30 to 59[\s\S]*Low: 0 to 29/);
 });
 
 console.log(`\n${passed} passed, ${failures.length} failed`);

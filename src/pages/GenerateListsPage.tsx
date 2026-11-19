@@ -27,12 +27,14 @@ function previewColumnsFor(getSchoolById: (id: string) => School | undefined): C
     {
       id: 'name',
       header: 'Name',
+      meta: { kind: 'primary', width: '10rem' },
       accessorFn: (c) => `${c.firstName} ${c.lastName}`.trim(),
       cell: ({ getValue }) => <OneLine className="font-medium text-neutral-800">{getValue() as string}</OneLine>,
     },
     {
       accessorKey: 'email',
       header: 'Email',
+      meta: { kind: 'text', width: '13rem' },
       cell: ({ row }) => row.original.email
         ? <OneLine className="text-neutral-700">{row.original.email}</OneLine>
         : <Missing label="No email" />,
@@ -40,12 +42,14 @@ function previewColumnsFor(getSchoolById: (id: string) => School | undefined): C
     {
       id: 'role',
       header: 'Role',
+      meta: { kind: 'badge', width: '9rem' },
       accessorFn: (c) => contactRoleLabel(c),
       cell: ({ getValue }) => <Badge variant="info">{getValue() as string}</Badge>,
     },
     {
       id: 'school',
       header: 'School',
+      meta: { kind: 'text', width: '12rem' },
       accessorFn: (c) => getSchoolById(c.schoolId)?.name ?? '',
       cell: ({ getValue }) => (getValue() as string)
         ? <OneLine className="text-neutral-700">{getValue() as string}</OneLine>
@@ -54,6 +58,7 @@ function previewColumnsFor(getSchoolById: (id: string) => School | undefined): C
     {
       id: 'county',
       header: 'County',
+      meta: { kind: 'text', width: '8rem' },
       accessorFn: (c) => getSchoolById(c.schoolId)?.county ?? '',
       cell: ({ getValue }) => (getValue() as string)
         ? <OneLine className="text-neutral-600">{getValue() as string}</OneLine>
@@ -194,7 +199,7 @@ export function GenerateListsPage() {
         title="Generate Lists"
         subtitle="Build filtered mailing and email lists"
       />
-      <div className="p-8 space-y-6">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Filter Builder */}
           <Card className="lg:col-span-1">
@@ -294,11 +299,11 @@ export function GenerateListsPage() {
           {/* Preview */}
           <Card className="lg:col-span-2" padding={false}>
             <div className="px-6 py-4 border-b border-neutral-100">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <h3 className="text-base font-semibold text-neutral-800">
                   Preview ({filteredContacts.length.toLocaleString()} contacts)
                 </h3>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   {limitIds && (
                     <span className="inline-flex items-center gap-1 rounded-full bg-siue-red/10 pl-2.5 pr-1 py-0.5 text-xs font-medium text-siue-red">
                       From Priorities: {limit?.label} ({limitIds.size.toLocaleString()} schools)
@@ -315,8 +320,6 @@ export function GenerateListsPage() {
             <DataTable
               data={filteredContacts}
               columns={previewColumns}
-              columnWidths={['', '', '9rem', '', '8rem']}
-              minWidth="0"
               emptyMessage="No contacts match your filters. Adjust them to find contacts."
             />
           </Card>

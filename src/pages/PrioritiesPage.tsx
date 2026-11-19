@@ -22,6 +22,9 @@ import { useRole } from '../context/useRole';
 import { Pagination } from '../components/common/Pagination';
 import { RowMenu } from '../components/common/RowActions';
 import { Missing } from '../components/common/Missing';
+import { HeaderWithInfo } from '../components/common/InfoTip';
+import { COLUMN_HELP } from '../constants/columnHelp';
+import { ColGroup, cellClass, headClass, tableProps, type ColumnSpec } from '../components/common/tableColumns';
 import { RECENT_CONTACT_DAYS } from '../constants/reportSettings';
 
 /** How overdue something is, used to colour the left edge of a row.
@@ -51,6 +54,16 @@ export interface WorkItem {
 }
 
 const ROWS_PER_PAGE = 25;
+
+/** School, County, Contacts, Last contact, Why it's here, Actions: the same on every list. */
+const WORK_COLUMNS: ColumnSpec[] = [
+  'primary',
+  { kind: 'text', width: '9rem' },
+  'number',
+  { kind: 'date', width: '10rem' },
+  { kind: 'text', width: '17rem' },
+  'actions',
+];
 
 type ListKey = 'recent' | 'never' | 'nocontact' | 'counties';
 
@@ -95,8 +108,11 @@ function WorkTable({
   onLog,
   page,
   onPageChange,
+  recent = false,
 }: {
   items: WorkItem[];
+  /** Recently in touch: Last contact also shows its type, and why the school stays. */
+  recent?: boolean;
   onLog?: (item: WorkItem) => void;
   /** Controlled by the page so each list's page number lives in the address. */
   page: number;
@@ -107,34 +123,26 @@ function WorkTable({
   const current = Math.min(page, pageCount);
   const start = (current - 1) * ROWS_PER_PAGE;
   const slice = items.slice(start, start + ROWS_PER_PAGE);
-  const th = 'px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-neutral-500';
 
   return (
     <div className="pb-4">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[52rem] table-fixed text-sm">
-          <colgroup>
-            <col />
-            <col style={{ width: '8rem' }} />
-            <col style={{ width: '6rem' }} />
-            <col style={{ width: '8.5rem' }} />
-            <col style={{ width: '20%' }} />
-            <col style={{ width: '8rem' }} />
-          </colgroup>
+        <table {...tableProps(WORK_COLUMNS, 'text-sm')}>
+          <ColGroup specs={WORK_COLUMNS} />
           <thead className="bg-neutral-50 border-b border-neutral-100">
             <tr>
-              <th className={`${th} text-left pl-6`}>School</th>
-              <th className={`${th} text-left`}>County</th>
-              <th className={`${th} text-right`}>Contacts</th>
-              <th className={`${th} text-left`}>Last contact</th>
-              <th className={`${th} text-left`}>Why it&rsquo;s here</th>
-              <th className={`${th} text-right`}>Actions</th>
+              <th className={`${headClass(WORK_COLUMNS[0])} pl-6`}>School</th>
+              <th className={headClass(WORK_COLUMNS[1])}>County</th>
+              <th className={headClass(WORK_COLUMNS[2])}><HeaderWithInfo label="Contacts" info={COLUMN_HELP.activeContacts} /></th>
+              <th className={headClass(WORK_COLUMNS[3])}><HeaderWithInfo label="Last contact" info={recent ? COLUMN_HELP.recentLastContact : COLUMN_HELP.lastContact} /></th>
+              <th className={headClass(WORK_COLUMNS[4])}><HeaderWithInfo label={'Why it\u2019s here'} info={COLUMN_HELP.whyHere} /></th>
+              <th className={headClass(WORK_COLUMNS[5])}>Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-neutral-50">
             {slice.map((item) => (
               <tr key={item.id} className="hover:bg-neutral-50 transition-colors" style={{ height: '4rem' }}>
-                <td className="relative pl-6 pr-4 py-2">
+                <td className={`${cellClass(WORK_COLUMNS[0])} relative pl-6`}>
                   <span className={`absolute left-0 top-0 bottom-0 w-1 ${urgencyBar[item.urgency]}`} aria-hidden="true" />
                   <Link
                     to={`/schools/${encodeURIComponent(item.id)}`}
@@ -144,16 +152,16 @@ function WorkTable({
                     {item.name}
                   </Link>
                 </td>
-                <td className="px-4 py-2 truncate text-neutral-600" title={item.county}>{item.county || <Missing label="No county" />}</td>
-                <td className="px-4 py-2 text-right tabular-nums text-neutral-700">{item.contactCount}</td>
+                <td className={`${cellClass(WORK_COLUMNS[1])} truncate text-neutral-600`} title={item.county}>{item.county || <Missing label="No county" />}</td>
+                <td className={`${cellClass(WORK_COLUMNS[2])} text-neutral-700`}>{item.contactCount}</td>
                 {/* Date, and the type on a second line, within the 64px row: nothing runs into the next column. */}
-                <td className="px-4 py-2 text-neutral-600">
+                <td className={`${cellClass(WORK_COLUMNS[3])} text-neutral-600`}>
                   <span className="block whitespace-nowrap">{item.lastContact}</span>
                   {item.lastContactType && <span className="block truncate text-xs text-neutral-500" title={item.lastContactType}>{item.lastContactType}</span>}
                 </td>
                 {/* Up to two lines, the rest on hover: rows stay the same height. */}
-                <td className="px-4 py-2 text-neutral-600"><span className="line-clamp-2" title={item.reasonDetail ? `${item.reason} ${item.reasonDetail}` : item.reason}>{item.reason}</span></td>
-                <td className="px-4 py-2">
+                <td className={`${cellClass(WORK_COLUMNS[4])} text-neutral-600`}><span className="line-clamp-2" title={item.reasonDetail ? `${item.reason} ${item.reasonDetail}` : item.reason}>{item.reason}</span></td>
+                <td className={cellClass(WORK_COLUMNS[5])}>
                   {/* The same Actions menu as Schools and Contacts. */}
                   <RowMenu
                     name={item.name}
@@ -268,7 +276,7 @@ export function PrioritiesPage() {
   return (
     <div>
       <Header title="Priorities" subtitle="Schools waiting on you, most urgent first" />
-      <div className="p-8 space-y-6">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6">
 
         <div className="grid grid-cols-1 md:grid-cols-2 auto-rows-fr gap-5">
           {tiles.map((t) => (
@@ -319,7 +327,7 @@ export function PrioritiesPage() {
               <p className="text-sm font-medium text-success">Nothing here</p>
             </div>
           ) : list === 'recent' ? (
-            <WorkTable items={rows.recent} onLog={canEdit ? setLogFor : undefined} page={pageNum(recentPage)} onPageChange={(n) => setRecentPage(String(n))} />
+            <WorkTable recent items={rows.recent} onLog={canEdit ? setLogFor : undefined} page={pageNum(recentPage)} onPageChange={(n) => setRecentPage(String(n))} />
           ) : list === 'never' ? (
             <WorkTable items={rows.neverReached} onLog={canEdit ? setLogFor : undefined} page={pageNum(neverPage)} onPageChange={(n) => setNeverPage(String(n))} />
           ) : list === 'nocontact' ? (

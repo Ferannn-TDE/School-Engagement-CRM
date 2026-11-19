@@ -22,6 +22,12 @@ export const SIUE_TERMS: Term[] = [
   { name: 'Spring 2027', start: '2027-01-11', end: '2027-05-07' },
 ];
 
+/**
+ * The day the team started logging outreach in the app. Activities dated earlier come
+ * only from imported lists, so a comparison with an earlier period carries a note.
+ */
+export const IN_APP_LOGGING_START = '2026-09-28';
+
 /** The school year runs Aug 1 – Jul 31. */
 export const SCHOOL_YEAR_START = { month: 8, day: 1 };
 

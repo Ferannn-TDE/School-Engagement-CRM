@@ -10,6 +10,7 @@ import { Button } from '../common/Button';
 import { TOOLTIP_CLS } from '../../constants/charts';
 import { downloadFile, classNames } from '../../utils/helpers';
 import { fmt, listToCsv, pct, type ListSpec } from '../../utils/reportLists';
+import { ColGroup, cellClass, headClass, tableProps, type ColumnSpec } from '../common/tableColumns';
 
 export function ReportSection({ label, question, takeaway, children, source }: {
   label: string;
@@ -155,10 +156,23 @@ export function Columns({ rows, xKey, series, colorFor, onPick, ariaLabel, heigh
 
 const SHOWN_ROWS = 500;
 
+/** A list's column type from its key: names fill the space, dates and counts stay narrow. */
+function listColumnSpecs(columns: ListSpec['columns']): ColumnSpec[] {
+  const primary = columns.findIndex((c) => ['school', 'name', 'event'].includes(c.key));
+  return columns.map((c, i) =>
+    i === primary ? 'primary'
+    : c.numeric || c.key === 'schools' ? 'number'
+    : ['date', 'last', 'updated'].includes(c.key) ? 'date'
+    : c.key === 'state' ? { kind: 'text', width: '5rem' }
+    : c.key === 'event' || c.key === 'location' || c.key === 'title' ? { kind: 'text', width: '14rem' }
+    : 'text');
+}
+
 /** The list behind a figure, with a CSV download of every row. */
 export function ListModal({ list, onClose }: { list: ListSpec | null; onClose: () => void }) {
   if (!list) return null;
   const shown = list.rows.slice(0, SHOWN_ROWS);
+  const specs = listColumnSpecs(list.columns);
   return (
     <Modal open onClose={onClose} title={list.title} size="xl">
       <div className="space-y-3">
@@ -175,11 +189,12 @@ export function ListModal({ list, onClose }: { list: ListSpec | null; onClose: (
           <p className="text-sm text-neutral-500 py-6 text-center">Nothing here for this range.</p>
         ) : (
           <div className="overflow-x-auto border border-neutral-100 rounded-lg">
-            <table className="w-full text-sm">
+            <table {...tableProps(specs, 'text-sm')}>
+              <ColGroup specs={specs} />
               <thead className="bg-neutral-50">
                 <tr>
-                  {list.columns.map((c) => (
-                    <th key={c.key} className={classNames('px-3 py-2 text-xs font-medium text-neutral-500 whitespace-nowrap', c.numeric ? 'text-right' : 'text-left')}>{c.label}</th>
+                  {list.columns.map((c, ci) => (
+                    <th key={c.key} className={headClass(specs[ci])}>{c.label}</th>
                   ))}
                 </tr>
               </thead>
@@ -187,7 +202,7 @@ export function ListModal({ list, onClose }: { list: ListSpec | null; onClose: (
                 {shown.map((row, i) => (
                   <tr key={i} className="border-t border-neutral-100">
                     {list.columns.map((c, ci) => (
-                      <td key={c.key} className={classNames('px-3 py-2 tabular-nums', c.numeric ? 'text-right' : 'text-left')}>
+                      <td key={c.key} className={classNames(cellClass(specs[ci]), specs[ci] !== 'number' && specs[ci] !== 'date' && 'break-words')}>
                         {ci === 0 && row.link
                           ? <Link to={row.link} className="text-neutral-800 hover:text-siue-red underline-offset-2 hover:underline">{row.cells[c.key]}</Link>
                           : row.cells[c.key] === '' ? <Missing label={`No ${c.label.toLowerCase()}`} /> : row.cells[c.key]}

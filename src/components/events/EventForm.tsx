@@ -145,7 +145,7 @@ export function EventForm({ event, onClose, onCreated, initialDate }: EventFormP
         error={errors.name?.message}
         {...register('name')}
       />
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Select
           label="Event Type"
           required
@@ -169,7 +169,7 @@ export function EventForm({ event, onClose, onCreated, initialDate }: EventFormP
           {...register('typeOther')}
         />
       )}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Input
           label="Start Date & Time"
           type="datetime-local"

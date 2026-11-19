@@ -14,6 +14,10 @@ import type { ArchivedItem, ArchivedKind } from '../services/archiveService';
 import toast from 'react-hot-toast';
 import { useRole } from '../context/useRole';
 import { writeErrorMessage } from '../utils/writeErrors';
+import { ColGroup, cellClass, headClass, tableProps, type ColumnSpec } from '../components/common/tableColumns';
+
+/** Name, Archived (date and time), By, Actions. */
+const COLUMNS: ColumnSpec[] = ['primary', { kind: 'date', width: '12rem' }, { kind: 'text', width: '16rem' }, 'actions'];
 
 const SECTIONS: { kind: ArchivedKind; title: string; note?: string }[] = [
   { kind: 'school', title: 'Schools', note: 'Restoring a school also brings back the contacts archived with it.' },
@@ -30,6 +34,7 @@ const SECTIONS: { kind: ArchivedKind; title: string; note?: string }[] = [
 export function ArchivedPage() {
   const { reload } = useAppContext();
   const { canEdit } = useRole();
+  const columns = canEdit ? COLUMNS : COLUMNS.slice(0, 3);
   const [items, setItems] = useState<ArchivedItem[] | null>(null);
   const [restoring, setRestoring] = useState<string | null>(null);
 
@@ -75,7 +80,7 @@ export function ArchivedPage() {
         title="Archived"
         subtitle="Nothing is deleted. Archived items are hidden everywhere else and can be restored here."
       />
-      <div className="p-8 space-y-6">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6">
         {items === null ? (
           <LoadingSpinner />
         ) : items.length === 0 ? (
@@ -96,34 +101,29 @@ export function ArchivedPage() {
                 {section.note && <p className="text-xs text-neutral-500 mt-0.5">{section.note}</p>}
               </div>
               <div className="overflow-x-auto pb-2">
-                <table className="w-full table-fixed text-sm">
-                  <colgroup>
-                    <col />
-                    <col style={{ width: '13rem' }} />
-                    <col style={{ width: '16rem' }} />
-                    {canEdit && <col style={{ width: '9rem' }} />}
-                  </colgroup>
+                <table {...tableProps(columns, 'text-sm')}>
+                  <ColGroup specs={columns} />
                   <thead className="bg-neutral-50 border-y border-neutral-100">
-                    <tr className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
-                      <th className="px-6 py-2.5 text-left">Name</th>
-                      <th className="px-4 py-2.5 text-left">Archived</th>
-                      <th className="px-4 py-2.5 text-left">By</th>
-                      {canEdit && <th className="px-6 py-2.5 text-right">Actions</th>}
+                    <tr>
+                      <th className={`${headClass(COLUMNS[0])} pl-6`}>Name</th>
+                      <th className={headClass(COLUMNS[1])}>Archived</th>
+                      <th className={headClass(COLUMNS[2])}>By</th>
+                      {canEdit && <th className={`${headClass(COLUMNS[3])} pr-6`}>Actions</th>}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-neutral-50">
                     {byKind.get(section.kind)!.map((item) => (
                       <tr key={item.id} style={{ height: '4rem' }}>
-                        <td className="px-6 py-2 max-w-0">
+                        <td className={`${cellClass(COLUMNS[0])} pl-6`}>
                           <p className="truncate font-medium text-neutral-800" title={item.label}>{item.label}</p>
                           {item.detail && <p className="truncate text-xs text-neutral-500" title={item.detail}>{item.detail}</p>}
                         </td>
-                        <td className="px-4 py-3 text-neutral-600">
+                        <td className={`${cellClass(COLUMNS[1])} text-neutral-600`}>
                           {item.archivedAt ? format(new Date(item.archivedAt), 'MMM d, yyyy h:mm a') : <Missing label="Not recorded" />}
                         </td>
-                        <td className="px-4 py-2 max-w-0 truncate text-neutral-600" title={item.archivedBy ?? undefined}>{item.archivedBy ?? <Missing label="Not recorded" />}</td>
+                        <td className={`${cellClass(COLUMNS[2])} truncate text-neutral-600`} title={item.archivedBy ?? undefined}>{item.archivedBy ?? <Missing label="Not recorded" />}</td>
                         {canEdit && (
-                          <td className="px-6 py-3">
+                          <td className={`${cellClass(COLUMNS[3])} pr-6`}>
                             <RowActions>
                               <RowAction
                                 icon={<RotateCcw size={13} />}

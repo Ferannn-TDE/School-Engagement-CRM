@@ -10,8 +10,12 @@ import { formatDay, resolveRange, type RangePreset } from '../utils/reports';
 import { activityTypeLabel, fmt } from '../utils/reportLists';
 import { meetingSummary } from '../utils/meetingSummary';
 import { RECENT_CONTACT_DAYS, FOLLOW_UP_DAYS, QUIET_MONTHS } from '../constants/reportSettings';
+import { ColGroup, type ColumnSpec } from '../components/common/tableColumns';
 
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
+/** The printed tables use the shared column types with tighter widths (half a page each). */
+const EVENT_COLUMNS: ColumnSpec[] = ['primary', { kind: 'date', width: '7rem' }, { kind: 'number', width: '4.5rem' }, { kind: 'text', width: '7rem' }];
+const COUNTY_COLUMNS: ColumnSpec[] = ['primary', { kind: 'text', width: '7rem' }];
 const placeName = (region: string) => (region === 'IL' ? 'Illinois' : region === 'MO' ? 'Missouri' : 'Illinois and Missouri');
 const PRESETS = ['month', 'semester', 'year', 'custom'];
 
@@ -42,7 +46,7 @@ export function MeetingSummaryPage() {
   const back = `/reports${window.location.search}`;
 
   return (
-    <div className="p-8 print:p-0 max-w-5xl mx-auto meeting-summary">
+    <div className="p-4 sm:p-6 lg:p-8 print:p-0 max-w-5xl mx-auto meeting-summary">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6 print:hidden">
         <Link to={back} className="inline-flex items-center gap-1.5 text-sm text-neutral-600 hover:text-siue-red">
           <ArrowLeft size={14} /> Back to Reports
@@ -73,21 +77,27 @@ export function MeetingSummaryPage() {
             {fmt(s.events.withAttendance)} event{s.events.withAttendance === 1 ? '' : 's'} with imported attendance brought {fmt(s.events.visitorsAtEvents)} visitors.{' '}
             {s.followUps.schools
               ? <>{fmt(s.followUps.followed)} of {fmt(s.followUps.schools)} attending schools ({pct(s.followUps.followed, s.followUps.schools)}) got a call, email or visit within {FOLLOW_UP_DAYS} days.</>
-              : 'No attendance imported for this term yet.'}
+              : s.followUps.pending
+                ? `Follow-up rates are final ${FOLLOW_UP_DAYS} days after each event.`
+                : 'No attendance imported for this term yet.'}
+            {s.followUps.schools > 0 && s.followUps.pending > 0 && (
+              <> {fmt(s.followUps.pending)} more school{s.followUps.pending === 1 ? '' : 's'} at events in the last {FOLLOW_UP_DAYS} days aren't counted yet.</>
+            )}
           </p>
           {s.followUps.byEvent.length > 0 && (
-            <table className="w-full text-sm">
+            <table className="w-full table-fixed text-sm">
+              <ColGroup specs={EVENT_COLUMNS} />
               <thead><tr className="text-xs text-neutral-500 border-b border-neutral-200">
-                <th className="text-left font-medium py-1">Event</th><th className="text-left font-medium py-1">Date</th>
-                <th className="text-right font-medium py-1">Schools</th><th className="text-right font-medium py-1">Followed up</th>
+                <th className="text-left font-medium py-1 pr-2">Event</th><th className="text-left font-medium py-1 pr-2">Date</th>
+                <th className="text-left font-medium py-1 pr-2">Schools</th><th className="text-left font-medium py-1">Followed up</th>
               </tr></thead>
               <tbody>
                 {s.followUps.byEvent.slice(0, 8).map((x) => (
                   <tr key={x.eventId} className="border-b border-neutral-100 last:border-0">
-                    <td className="py-1 pr-2">{names.get(x.eventId) ?? 'Event'}</td>
-                    <td className="py-1 whitespace-nowrap">{formatDay(x.day)}</td>
-                    <td className="py-1 text-right tabular-nums">{fmt(x.schools)}</td>
-                    <td className="py-1 text-right tabular-nums">{fmt(x.followed)}{x.windowOpen ? ' (open)' : ''}</td>
+                    <td className="py-1 pr-2 break-words">{names.get(x.eventId) ?? 'Event'}</td>
+                    <td className="py-1 pr-2 whitespace-nowrap tabular-nums">{formatDay(x.day)}</td>
+                    <td className="py-1 pr-2 tabular-nums">{fmt(x.schools)}</td>
+                    <td className="py-1 tabular-nums">{fmt(x.followed)}{x.windowOpen ? ' (open)' : ''}</td>
                   </tr>
                 ))}
               </tbody>
@@ -101,16 +111,17 @@ export function MeetingSummaryPage() {
             <li><b>{fmt(s.gaps.quiet)}</b> gone quiet (nothing in {QUIET_MONTHS} months)</li>
             <li><b>{fmt(s.gaps.untouchedCounties)}</b> counties where no school has been contacted</li>
           </ul>
-          <table className="w-full text-sm">
+          <table className="w-full table-fixed text-sm">
+            <ColGroup specs={COUNTY_COLUMNS} />
             <thead><tr className="text-xs text-neutral-500 border-b border-neutral-200">
-              <th className="text-left font-medium py-1">Least-reached counties</th>
-              <th className="text-right font-medium py-1">Contacted</th>
+              <th className="text-left font-medium py-1 pr-2">Least-reached counties</th>
+              <th className="text-left font-medium py-1">Contacted</th>
             </tr></thead>
             <tbody>
               {s.gaps.lowestCounties.map((c) => (
                 <tr key={`${c.state}|${c.county}`} className="border-b border-neutral-100 last:border-0">
-                  <td className="py-1">{c.county}, {c.state}</td>
-                  <td className="py-1 text-right tabular-nums">{fmt(c.contacted)} of {fmt(c.schools)}</td>
+                  <td className="py-1 pr-2 break-words">{c.county}, {c.state}</td>
+                  <td className="py-1 tabular-nums">{fmt(c.contacted)} of {fmt(c.schools)}</td>
                 </tr>
               ))}
             </tbody>

@@ -22,7 +22,14 @@ import {
 import { databaseMessage } from '../utils/writeErrors';
 import { useConfirm } from '../hooks/useConfirm';
 import { RowAction, RowActions } from '../components/common/RowActions';
+import { IconButton } from '../components/common/IconButton';
 import { Missing } from '../components/common/Missing';
+import { ColGroup, cellClass, headClass, tableProps, type ColumnSpec } from '../components/common/tableColumns';
+
+/** Account, Role, Last change, Actions. */
+const ACCOUNT_COLUMNS: ColumnSpec[] = ['primary', { kind: 'text', width: '19rem' }, { kind: 'text', width: '16rem' }, 'actions'];
+/** When, Who, Account, Change. */
+const LOG_COLUMNS: ColumnSpec[] = [{ kind: 'date', width: '12rem' }, { kind: 'text', width: '15rem' }, { kind: 'text', width: '15rem' }, 'primary'];
 
 const ROLE_LABELS: Record<Role, string> = { admin: 'Admin', editor: 'Editor', viewer: 'Viewer' };
 const ROLE_RANK: Record<Role, number> = { admin: 3, editor: 2, viewer: 1 };
@@ -101,11 +108,11 @@ export function TeamPage() {
       const me = m.userId === user?.id;
       return (
         <tr key={m.userId} style={{ height: '4rem' }}>
-          <td className="px-6 py-2 max-w-0 truncate" title={m.email ?? m.userId}>
+          <td className={`${cellClass(ACCOUNT_COLUMNS[0])} pl-6 truncate`} title={m.email ?? m.userId}>
             <span className="font-medium text-neutral-800">{m.email ?? m.userId}</span>
             {me && <Badge variant="info" className="ml-2">You</Badge>}
           </td>
-          <td className="px-4 py-3">
+          <td className={cellClass(ACCOUNT_COLUMNS[1])}>
             {m.archived ? (
               <span className="text-neutral-500">Viewer (removed)</span>
             ) : (
@@ -133,16 +140,16 @@ export function TeamPage() {
               </label>
             )}
           </td>
-          <td className="px-4 py-3 text-neutral-600">
+          <td className={`${cellClass(ACCOUNT_COLUMNS[2])} text-neutral-600`}>
             {m.updatedAt ? `${format(new Date(m.updatedAt), 'MMM d, yyyy')}${m.updatedBy ? ` by ${m.updatedBy}` : ''}` : `Joined ${format(new Date(m.createdAt), 'MMM d, yyyy')}`}
           </td>
-          <td className="px-6 py-3">
+          <td className={cellClass(ACCOUNT_COLUMNS[3])}>
             <RowActions>
               {m.archived ? (
                 <RowAction icon={<UserPlus size={13} />} label="Add back" disabled={busy !== null}
                   onClick={() => void change(m, () => setMemberArchived(m.userId, false), `${m.email ?? 'Account'} added back`)} />
               ) : (
-                <RowAction icon={<UserMinus size={13} />} label="Remove from team" tone="danger" disabled={busy !== null}
+                <IconButton icon={<UserMinus size={15} />} label="Remove from team" tone="danger" disabled={busy !== null}
                   onClick={() => confirm({
                     title: `Remove ${m.email ?? 'this account'} from the team?`,
                     message: 'They keep their account but count as a viewer: they can read, not change anything. You can add them back from the list below.',
@@ -156,19 +163,14 @@ export function TeamPage() {
     };
     const accountsTable = (members: TeamMember[]) => (
       <div className="overflow-x-auto pb-2">
-        <table className="w-full min-w-[48rem] table-fixed text-sm">
-          <colgroup>
-            <col />
-            <col style={{ width: '24rem' }} />
-            <col style={{ width: '15rem' }} />
-            <col style={{ width: '11rem' }} />
-          </colgroup>
+        <table {...tableProps(ACCOUNT_COLUMNS, 'text-sm')}>
+          <ColGroup specs={ACCOUNT_COLUMNS} />
           <thead className="bg-neutral-50 border-y border-neutral-100">
-            <tr className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
-              <th className="px-6 py-2.5 text-left">Account</th>
-              <th className="px-4 py-2.5 text-left">Role</th>
-              <th className="px-4 py-2.5 text-left">Last change</th>
-              <th className="px-6 py-2.5 text-right">Actions</th>
+            <tr>
+              <th className={`${headClass(ACCOUNT_COLUMNS[0])} pl-6`}>Account</th>
+              <th className={headClass(ACCOUNT_COLUMNS[1])}>Role</th>
+              <th className={headClass(ACCOUNT_COLUMNS[2])}>Last change</th>
+              <th className={headClass(ACCOUNT_COLUMNS[3])}>Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-neutral-50">{members.map(row)}</tbody>
@@ -177,7 +179,7 @@ export function TeamPage() {
     );
     return (
       <>
-        <p className="text-sm text-neutral-600 max-w-2xl">
+        <p className="text-sm text-neutral-600">
           New accounts start as viewers. Removing someone from the team makes them a viewer; to stop an account
           signing in at all, delete or ban it in Supabase → Authentication. To hand over admin, make the new person
           admin first, let them confirm this page works for them, then step down.
@@ -205,22 +207,23 @@ export function TeamPage() {
             <p className="text-xs text-neutral-500">Every role change, kept by the database. Nobody can edit it.</p>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table {...tableProps(LOG_COLUMNS, 'text-sm')}>
+              <ColGroup specs={LOG_COLUMNS} />
               <thead>
-                <tr className="text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 bg-neutral-50 border-y border-neutral-100">
-                  <th className="px-6 py-2.5">When</th>
-                  <th className="px-4 py-2.5">Who</th>
-                  <th className="px-4 py-2.5">Account</th>
-                  <th className="px-4 py-2.5">Change</th>
+                <tr className="bg-neutral-50 border-y border-neutral-100">
+                  <th className={`${headClass(LOG_COLUMNS[0])} pl-6`}>When</th>
+                  <th className={headClass(LOG_COLUMNS[1])}>Who</th>
+                  <th className={headClass(LOG_COLUMNS[2])}>Account</th>
+                  <th className={headClass(LOG_COLUMNS[3])}>Change</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-100">
                 {log.map((c) => (
                   <tr key={c.id} style={{ height: '4rem' }}>
-                    <td className="px-6 py-3 whitespace-nowrap text-neutral-600">{format(new Date(c.changedAt), 'MMM d, yyyy h:mm a')}</td>
-                    <td className="px-4 py-2 max-w-0 truncate text-neutral-600" title={c.changedByEmail}>{c.changedByEmail ?? <Missing label="Not recorded" />}</td>
-                    <td className="px-4 py-2 max-w-0 truncate" title={c.email ?? c.userId}>{c.email ?? c.userId}</td>
-                    <td className="px-4 py-3">{describeChange(c)}</td>
+                    <td className={`${cellClass(LOG_COLUMNS[0])} pl-6 text-neutral-600`}>{format(new Date(c.changedAt), 'MMM d, yyyy h:mm a')}</td>
+                    <td className={`${cellClass(LOG_COLUMNS[1])} truncate text-neutral-600`} title={c.changedByEmail}>{c.changedByEmail ?? <Missing label="Not recorded" />}</td>
+                    <td className={`${cellClass(LOG_COLUMNS[2])} truncate`} title={c.email ?? c.userId}>{c.email ?? c.userId}</td>
+                    <td className={cellClass(LOG_COLUMNS[3])}>{describeChange(c)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -235,7 +238,7 @@ export function TeamPage() {
     <div>
       <Breadcrumb crumbs={[{ label: 'Settings', href: '/settings' }, { label: 'Team' }]} />
       <Header title="Team" subtitle="Who can do what: admins manage the team, editors change data, viewers read." />
-      <div className="p-8 space-y-6">{body()}</div>
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6">{body()}</div>
       {dialog}
     </div>
   );

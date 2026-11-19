@@ -91,13 +91,10 @@ type Action =
   | { type: 'ARCHIVE_PROGRAM'; payload: string }
   | { type: 'SET_SCHOOLS_VERIFIED'; payload: VerificationStamp[] }
   | { type: 'SET_CONTACT_VERIFIED'; payload: VerificationStamp }
-  | { type: 'LOAD_STATE'; payload: AppState }
   | { type: 'LOAD_PARTIAL'; payload: Partial<AppState> };
 
 function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
-    case 'LOAD_STATE':
-      return action.payload;
     case 'LOAD_PARTIAL':
       return { ...state, ...action.payload };
     case 'SET_SCHOOLS':

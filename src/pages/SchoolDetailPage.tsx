@@ -168,7 +168,7 @@ export function SchoolDetailPage() {
           </div>
         }
       />
-      <div className="p-8 space-y-6">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6">
         {/* Who verified it, and who last changed it (db/027). */}
         <p className="text-xs text-neutral-500 flex flex-wrap items-center gap-x-3 gap-y-1">
           {verificationText(school.isVerified, school.lastVerifiedAt, school.verifiedBy) && (
@@ -369,7 +369,7 @@ export function SchoolDetailPage() {
 
         {/* STEM programs the school itself runs (not events) */}
         <Card>
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-siue-red/10">
                 <BookOpen size={20} className="text-siue-red" />
@@ -441,7 +441,7 @@ export function SchoolDetailPage() {
 
         {/* Activity Timeline */}
         <Card>
-          <div className="flex items-center justify-between gap-4 mb-4">
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
             <h3 className="text-base font-semibold text-neutral-800">Activity History</h3>
             {canEdit && (
               <Button size="sm" onClick={() => setShowLogContact(true)}>

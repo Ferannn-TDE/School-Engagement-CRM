@@ -7,6 +7,9 @@ import { Modal } from '../common/Modal';
 import { Missing } from '../common/Missing';
 import { Pagination } from '../common/Pagination';
 import { ConfirmDialog } from '../common/ConfirmDialog';
+import { HeaderWithInfo } from '../common/InfoTip';
+import { COLUMN_HELP } from '../../constants/columnHelp';
+import { ColGroup, cellClass, headClass, tableProps, type ColumnSpec } from '../common/tableColumns';
 import { useAppContext } from '../../context/useAppContext';
 import { fileHash, readActivityWorkbook } from '../../utils/activityImportFile';
 import { matchRows, type MatchSchool } from '../../utils/activityImportMatch';
@@ -24,6 +27,12 @@ import {
 // The rows of an activity import (db/029): what each row said, which school it matched,
 // its visitors and an optional name. Names are student data: only editors and admins
 // can read import_rows (RLS), and the Import page is editors-only anyway.
+
+/** Row, School as typed, City, State, Matched school, Visitors, Name. */
+const ROW_COLUMNS: ColumnSpec[] = [
+  { kind: 'number', width: '4.5rem' }, 'primary', { kind: 'text', width: '9rem' }, { kind: 'text', width: '5rem' },
+  { kind: 'text', width: '16rem' }, 'number', { kind: 'text', width: '15rem' },
+];
 
 /** "View rows": a batch's saved rows in a table. */
 export function BatchRowsModal({ batch, onClose }: { batch: ImportBatch; onClose: () => void }) {
@@ -47,8 +56,8 @@ export function BatchRowsModal({ batch, onClose }: { batch: ImportBatch; onClose
   const pages = rows ? Math.max(1, Math.ceil(rows.length / PAGE)) : 1;
   const current = Math.min(page, pages - 1);
   const shown = rows ? rows.slice(current * PAGE, (current + 1) * PAGE) : [];
-  const th = 'px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500';
-  const td = 'px-4 py-2 align-top text-sm text-neutral-700 break-words';
+  const th = (i: number) => headClass(ROW_COLUMNS[i]);
+  const td = (i: number) => `${cellClass(ROW_COLUMNS[i])} align-top text-sm text-neutral-700 break-words`;
   return (
     <Modal open onClose={onClose} title={`Rows of ${batch.fileName}`} size="wide">
       {error ? (
@@ -62,39 +71,31 @@ export function BatchRowsModal({ batch, onClose }: { batch: ImportBatch; onClose
       ) : (
         <>
           <div className="max-h-[65vh] overflow-auto rounded-lg border border-neutral-100">
-            <table className="w-full table-fixed divide-y divide-neutral-100">
-              <colgroup>
-                <col style={{ width: '4.5rem' }} />
-                <col style={{ width: '24%' }} />
-                <col style={{ width: '12%' }} />
-                <col style={{ width: '5rem' }} />
-                <col style={{ width: '24%' }} />
-                <col style={{ width: '6rem' }} />
-                <col />
-              </colgroup>
+            <table {...tableProps(ROW_COLUMNS, 'divide-y divide-neutral-100')}>
+              <ColGroup specs={ROW_COLUMNS} />
               <thead className="bg-neutral-50 sticky top-0 z-10">
                 <tr>
-                  <th className={th}>Row</th>
-                  <th className={th}>School as typed</th>
-                  <th className={th}>City</th>
-                  <th className={th}>State</th>
-                  <th className={th}>Matched school</th>
-                  <th className={`${th} text-right`}>Visitors</th>
-                  <th className={th}>Name</th>
+                  <th className={th(0)}>Row</th>
+                  <th className={th(1)}><HeaderWithInfo label="School as typed" info={COLUMN_HELP.schoolAsTyped} /></th>
+                  <th className={th(2)}>City</th>
+                  <th className={th(3)}>State</th>
+                  <th className={th(4)}><HeaderWithInfo label="Matched school" info={COLUMN_HELP.matchedSchool} /></th>
+                  <th className={th(5)}><HeaderWithInfo label="Visitors" info={COLUMN_HELP.visitors} /></th>
+                  <th className={th(6)}>Name</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-neutral-50">
                 {shown.map((r) => (
                   <tr key={r.id} className="hover:bg-neutral-50">
-                    <td className={`${td} tabular-nums text-neutral-500`}>{r.rowNumber}</td>
-                    <td className={td}>{r.schoolAsTyped || <Missing label="Blank" />}</td>
-                    <td className={td}>{r.cityAsTyped || <Missing label="No city" />}</td>
-                    <td className={td}>{r.stateAsTyped || <Missing label="No state" />}</td>
-                    <td className={td}>
+                    <td className={`${td(0)} text-neutral-500`}>{r.rowNumber}</td>
+                    <td className={td(1)}>{r.schoolAsTyped || <Missing label="Blank" />}</td>
+                    <td className={td(2)}>{r.cityAsTyped || <Missing label="No city" />}</td>
+                    <td className={td(3)}>{r.stateAsTyped || <Missing label="No state" />}</td>
+                    <td className={td(4)}>
                       {r.schoolId ? getSchoolById(r.schoolId)?.name ?? 'An archived school' : <Missing label="Not matched" />}
                     </td>
-                    <td className={`${td} text-right tabular-nums`}>{r.visitors ?? 1}</td>
-                    <td className={td}>
+                    <td className={td(5)}>{r.visitors ?? 1}</td>
+                    <td className={td(6)}>
                       {r.visitorName ? (
                         <div className="flex items-start justify-between gap-3">
                           <span className="min-w-0 break-words">{r.visitorName}</span>

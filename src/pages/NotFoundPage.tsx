@@ -6,7 +6,7 @@ import { Button } from '../components/common/Button';
 export function NotFoundPage() {
   const navigate = useNavigate();
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <EmptyState
         icon={<FileQuestion size={32} />}
         title="Page not found"

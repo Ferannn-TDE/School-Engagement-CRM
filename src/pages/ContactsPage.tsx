@@ -65,6 +65,7 @@ export function ContactsPage() {
         accessorFn: (row) => `${row.firstName} ${row.lastName}`,
         id: 'name',
         header: 'Name',
+        meta: { kind: 'primary' },
         // Two lines at most: the name (with the amber icon when something needs
         // attention) and the job title, each cut to fit.
         cell: ({ row }) => (
@@ -80,6 +81,7 @@ export function ContactsPage() {
       {
         accessorKey: 'email',
         header: 'Email',
+        meta: { kind: 'text', width: '15rem' },
         cell: ({ row }) => row.original.email
           ? <OneLine className="text-neutral-700">{row.original.email}</OneLine>
           : <Missing label="No email" />,
@@ -87,6 +89,7 @@ export function ContactsPage() {
       {
         accessorKey: 'phone',
         header: 'Phone',
+        meta: { kind: 'text', width: '10rem' },
         // One line: the number, then any extension in smaller text, cut to fit.
         cell: ({ row }) => {
           const phone = row.original.phone;
@@ -103,11 +106,13 @@ export function ContactsPage() {
       {
         accessorKey: 'role',
         header: 'Role',
+        meta: { kind: 'badge', width: '10rem' },
         cell: ({ row }) => <Badge variant="info">{contactRoleLabel(row.original)}</Badge>,
       },
       {
         id: 'school',
         header: 'School',
+        meta: { kind: 'text', width: '14rem' },
         accessorFn: (row) => getSchoolById(row.schoolId)?.name || '',
         cell: ({ row }) => {
           const school = getSchoolById(row.original.schoolId);
@@ -128,6 +133,7 @@ export function ContactsPage() {
       {
         accessorKey: 'isActive',
         header: 'Status',
+        meta: { kind: 'badge' },
         cell: ({ getValue }) => (
           <Badge variant={getValue() ? 'success' : 'default'}>
             {getValue() ? 'Active' : 'Inactive'}
@@ -136,7 +142,8 @@ export function ContactsPage() {
       },
       {
         id: 'actions',
-        header: () => <span className="block text-right">Actions</span>,
+        header: 'Actions',
+        meta: { kind: 'actions' },
         enableSorting: false,
         cell: ({ row }) => {
           const c = row.original;
@@ -218,7 +225,7 @@ export function ContactsPage() {
           </Button>
         }
       />
-      <div className="p-8 space-y-6">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6">
 
         {/* Verified / Unverified tabs */}
         <div className="flex gap-1 bg-neutral-100 p-1 rounded-lg w-fit">
@@ -231,7 +238,7 @@ export function ContactsPage() {
               key={key}
               onClick={() => setVerifiedTab(key)}
               className={
-                'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ' +
+                'flex items-center gap-1.5 px-3 py-1.5 pointer-coarse:min-h-10 rounded-md text-xs font-medium transition-colors ' +
                 (verifiedTab === key
                   ? 'bg-white text-neutral-800 shadow-sm'
                   : 'text-neutral-500 hover:text-neutral-700')
@@ -319,7 +326,6 @@ export function ContactsPage() {
                 ],
               }}
               columns={shownColumns}
-              columnWidths={canEdit ? ['', '', '12rem', '10rem', '', '7rem', '8rem'] : ['', '', '12rem', '10rem', '', '7rem']}
               searchValue={search}
               urlState
               resetKey={[verifiedTab, roleFilter, schoolFilter, activeFilter].join('|')}

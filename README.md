@@ -74,7 +74,6 @@ A web-based Customer Relationship Management system built for the **SIUE School 
 ### Settings
 - Export the full database to a JSON snapshot
 - Import from a previously exported JSON backup
-- Reset session to built-in demo seed data (live DB unaffected until reload)
 - Account section with sign-out and current user display
 
 ---
@@ -119,8 +118,7 @@ School-Engagement-CRM/
 │   │   ├── contacts/            # Contact form + detail panels
 │   │   ├── events/              # Event form + calendar cells
 │   │   └── programs/            # Program form components
-│   ├── constants/
-│   │   └── seedData.ts          # Demo dataset (not loaded at runtime)
+│   ├── constants/               # Report settings, chart colours, column help
 │   ├── context/
 │   │   ├── AppContext.tsx        # Global state — useReducer + Supabase fetch
 │   │   └── AuthContext.tsx       # Supabase Auth session + AuthGuard

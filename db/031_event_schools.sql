@@ -1,7 +1,6 @@
 -- 031 — An event's participating schools, in their own table
 --
--- DRAFT, NOT APPLIED. Run BEFORE APPLYING, apply in the SQL Editor, then run TEST 1–3
--- and paste the outputs into "Checked before applying" at the bottom.
+-- APPLIED 2026-11-19 (results under "Checked before applying" at the bottom).
 --
 -- Why: Create Event fails for any event with two or more schools. The form saved them
 -- as a comma-joined list in events.schools_involved, but that column has a foreign key
@@ -258,4 +257,15 @@ notify pgrst, 'reload schema';
 --   * The stub reproduces the production error for a comma list in schools_involved.
 --   * Migration: success. Policies: Editors add, Editors change, Signed-in users, deny delete.
 --   * TEST 3: all 8 PASS (5: DELETE isn't granted, so it's refused outright).
---   Not yet run on production.
+--
+--   Applied 2026-11-19 in the SQL Editor. Results as reported:
+--   * BEFORE APPLYING 1: null.
+--   * BEFORE APPLYING 2: events.event_id integer, schools.facility_key text.
+--   * BEFORE APPLYING 3: 255 events, 171 with a host school, multi_school 0.
+--   * Migration: success.
+--   * TEST 1: RLS on. Policies "Signed-in users" (permissive, ALL), "Editors add"
+--     (restrictive, INSERT), "Editors change" (restrictive, UPDATE), "deny delete"
+--     (restrictive, DELETE). Grants: authenticated INSERT, SELECT, UPDATE; nothing for
+--     anon; postgres and service_role full (owner and admin).
+--   * TEST 2: events 255, with_host 171, multi_school 0, event_schools 0.
+--   * TEST 3: all 8 PASS (1, 2, 2b, 3, 4, 4b, 5, 6).

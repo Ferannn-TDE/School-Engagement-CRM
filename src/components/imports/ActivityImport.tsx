@@ -11,6 +11,7 @@ import { Select } from '../common/Select';
 import { Badge } from '../common/Badge';
 import { ConfirmDialog } from '../common/ConfirmDialog';
 import { IconButton } from '../common/IconButton';
+import { Pagination } from '../common/Pagination';
 import { ArchivedMatchesPanel } from './ArchivedMatchesPanel';
 import { useAppContext } from '../../context/useAppContext';
 import {
@@ -36,7 +37,8 @@ import {
   archiveImportBatch,
   createImportBatch,
   fetchArchivedSchoolsForMatching,
-  fetchRecentImportBatches,
+  fetchImportBatch,
+  fetchImportBatchPage,
   findImportBatchesByHash,
   restoreImportBatch,
   type ImportBatch,
@@ -130,8 +132,13 @@ function SchoolSearch({ schools, preferState, onPick }: { schools: MatchSchool[]
   );
 }
 
+/** Batches per page in Recent imports. */
+const BATCHES_PER_PAGE = 10;
+
 function RecentImports({ refreshKey, onChanged }: { refreshKey: number; onChanged: () => void }) {
   const [batches, setBatches] = useState<ImportBatch[] | null>(null);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [confirm, setConfirm] = useState<ImportBatch | null>(null);
   // Saved rows per batch (db/029): "View rows" when there are some, "Add rows from the
@@ -139,17 +146,28 @@ function RecentImports({ refreshKey, onChanged }: { refreshKey: number; onChange
   const [rowCounts, setRowCounts] = useState<Map<string, number>>(new Map());
   // ?batch=<id> (the link from a county page) opens that batch's rows.
   const [batchParam, setBatchParam] = useUrlState('batch');
-  const viewing = batches?.find((b) => b.id === batchParam) ?? null;
+  // The linked batch may be on another page: then it's fetched on its own.
+  const [linked, setLinked] = useState<ImportBatch | null>(null);
+  const viewing = batches?.find((b) => b.id === batchParam) ?? (linked?.id === batchParam ? linked : null);
+  useEffect(() => {
+    if (!batchParam || !batches || batches.some((b) => b.id === batchParam)) return;
+    let live = true;
+    fetchImportBatch(batchParam).then((b) => { if (live) setLinked(b); }).catch(() => {});
+    return () => { live = false; };
+  }, [batchParam, batches]);
 
   const load = useCallback(() => {
-    fetchRecentImportBatches()
-      .then(async (b) => {
+    fetchImportBatchPage(page, BATCHES_PER_PAGE)
+      .then(async ({ batches: b, total: n }) => {
+        // A page past the end (batches can't be deleted, but be safe): go to the last one.
+        if (!b.length && n > 0 && page > 0) { setPage(Math.ceil(n / BATCHES_PER_PAGE) - 1); return; }
         setBatches(b);
+        setTotal(n);
         setError(null);
         setRowCounts(await fetchImportRowCounts(b.map((x) => x.id)).catch(() => new Map()));
       })
       .catch((err: unknown) => setError((err as { message?: string })?.message ?? String(err)));
-  }, []);
+  }, [page]);
   useEffect(() => { load(); }, [load, refreshKey]);
 
   const restore = async (b: ImportBatch) => {
@@ -208,6 +226,9 @@ function RecentImports({ refreshKey, onChanged }: { refreshKey: number; onChange
             </li>
           ))}
         </ul>
+      )}
+      {batches !== null && !error && (
+        <Pagination pageIndex={page} pageSize={BATCHES_PER_PAGE} total={total} onPageChange={setPage} noun="batches" />
       )}
       {viewing && <BatchRowsModal batch={viewing} onClose={() => setBatchParam('')} />}
       <ConfirmDialog

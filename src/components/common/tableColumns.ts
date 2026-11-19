@@ -85,8 +85,9 @@ export function headClass(spec: ColumnSpec): string {
 export function cellClass(spec: ColumnSpec): string {
   const kind = specKind(spec);
   return classNames(
-    'px-4 py-2 overflow-hidden',
-    kind === 'actions' ? 'text-right' : 'text-left',
+    'px-4 py-2',
+    // Actions aren't clipped: an IconButton opens out over the column to its left.
+    kind === 'actions' ? 'text-right' : 'text-left overflow-hidden',
     (kind === 'number' || kind === 'date') && 'tabular-nums whitespace-nowrap',
   );
 }

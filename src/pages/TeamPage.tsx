@@ -22,6 +22,7 @@ import {
 import { databaseMessage } from '../utils/writeErrors';
 import { useConfirm } from '../hooks/useConfirm';
 import { RowAction, RowActions } from '../components/common/RowActions';
+import { IconButton } from '../components/common/IconButton';
 import { Missing } from '../components/common/Missing';
 import { ColGroup, cellClass, headClass, tableProps, type ColumnSpec } from '../components/common/tableColumns';
 
@@ -142,13 +143,13 @@ export function TeamPage() {
           <td className={`${cellClass(ACCOUNT_COLUMNS[2])} text-neutral-600`}>
             {m.updatedAt ? `${format(new Date(m.updatedAt), 'MMM d, yyyy')}${m.updatedBy ? ` by ${m.updatedBy}` : ''}` : `Joined ${format(new Date(m.createdAt), 'MMM d, yyyy')}`}
           </td>
-          <td className={`${cellClass(ACCOUNT_COLUMNS[3])} pr-6`}>
+          <td className={cellClass(ACCOUNT_COLUMNS[3])}>
             <RowActions>
               {m.archived ? (
                 <RowAction icon={<UserPlus size={13} />} label="Add back" disabled={busy !== null}
                   onClick={() => void change(m, () => setMemberArchived(m.userId, false), `${m.email ?? 'Account'} added back`)} />
               ) : (
-                <RowAction icon={<UserMinus size={13} />} label="Remove from team" tone="danger" disabled={busy !== null}
+                <IconButton icon={<UserMinus size={15} />} label="Remove from team" tone="danger" disabled={busy !== null}
                   onClick={() => confirm({
                     title: `Remove ${m.email ?? 'this account'} from the team?`,
                     message: 'They keep their account but count as a viewer: they can read, not change anything. You can add them back from the list below.',
@@ -169,7 +170,7 @@ export function TeamPage() {
               <th className={`${headClass(ACCOUNT_COLUMNS[0])} pl-6`}>Account</th>
               <th className={headClass(ACCOUNT_COLUMNS[1])}>Role</th>
               <th className={headClass(ACCOUNT_COLUMNS[2])}>Last change</th>
-              <th className={`${headClass(ACCOUNT_COLUMNS[3])} pr-6`}>Actions</th>
+              <th className={headClass(ACCOUNT_COLUMNS[3])}>Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-neutral-50">{members.map(row)}</tbody>

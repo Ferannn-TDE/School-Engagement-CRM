@@ -10,6 +10,7 @@ import { Input } from '../common/Input';
 import { Select } from '../common/Select';
 import { Badge } from '../common/Badge';
 import { ConfirmDialog } from '../common/ConfirmDialog';
+import { IconButton } from '../common/IconButton';
 import { ArchivedMatchesPanel } from './ArchivedMatchesPanel';
 import { useAppContext } from '../../context/useAppContext';
 import {
@@ -192,9 +193,7 @@ function RecentImports({ refreshKey, onChanged }: { refreshKey: number; onChange
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 {(rowCounts.get(b.id) ?? 0) > 0 ? (
-                  <Button size="sm" variant="ghost" onClick={() => setBatchParam(b.id)}>
-                    <Eye size={14} /> View rows
-                  </Button>
+                  <IconButton icon={<Eye size={15} />} label="View rows" onClick={() => setBatchParam(b.id)} />
                 ) : !b.archived && (
                   <AttachRowsButton batch={b} onDone={() => { load(); setBatchParam(b.id); }} />
                 )}
@@ -203,9 +202,7 @@ function RecentImports({ refreshKey, onChanged }: { refreshKey: number; onChange
                     <RotateCcw size={14} /> Restore
                   </Button>
                 ) : (
-                  <Button size="sm" variant="ghost" onClick={() => setConfirm(b)}>
-                    <Archive size={14} /> Archive this batch
-                  </Button>
+                  <IconButton icon={<Archive size={15} />} label="Archive this batch" tone="danger" onClick={() => setConfirm(b)} />
                 )}
               </div>
             </li>

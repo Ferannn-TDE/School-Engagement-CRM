@@ -25,7 +25,7 @@ import { countyLabel, countyPath, mergeCountyRows, sameCounty } from '../utils/c
 import { attendanceByEvent, eventSourceLabel, outreachEvents, schoolsAtEvent, schoolsWithAttendance } from '../utils/events';
 import { todayDay } from '../utils/activityDates';
 
-/** School, Type, Contacts, Score, Tier. */
+/** School, Type, Contacts, Score, Engagement (the score's band, not the priority tier). */
 const SCHOOL_COLUMNS: ColumnSpec[] = ['primary', { kind: 'badge', width: '9.5rem' }, 'number', 'number', 'badge'];
 
 type SortField = 'name' | 'contacts' | 'score';
@@ -363,7 +363,7 @@ export function CountyDetailPage() {
                       <SortIcon field="score" current={sortField} dir={sortDir} />
                     </span>
                   </th>
-                  <th className={headClass(SCHOOL_COLUMNS[4])}><HeaderWithInfo label="Tier" info={COLUMN_HELP.engagement} /></th>
+                  <th className={headClass(SCHOOL_COLUMNS[4])}><HeaderWithInfo label="Engagement" info={COLUMN_HELP.engagement} /></th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-neutral-50">

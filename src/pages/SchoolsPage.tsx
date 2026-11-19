@@ -114,6 +114,7 @@ export function SchoolsPage() {
       {
         accessorKey: 'name',
         header: 'School Name',
+        meta: { kind: 'primary' },
         // Two lines at most: the name (with the amber icon when something needs
         // attention) and the district, each cut to fit.
         cell: ({ row }) => (
@@ -139,6 +140,7 @@ export function SchoolsPage() {
       {
         accessorKey: 'county',
         header: 'County',
+        meta: { kind: 'text' },
         cell: ({ getValue }) => (getValue() as string)?.trim() ? (
           <div className="flex items-center gap-1 text-neutral-600 break-words">
             <MapPin size={14} className="shrink-0" />
@@ -149,6 +151,7 @@ export function SchoolsPage() {
       {
         id: 'contacts',
         header: 'Contacts',
+        meta: { kind: 'number' },
         accessorFn: (s) => getContactsBySchool(s.id).length,
         sortDescFirst: true,
         cell: ({ getValue }) => <span className="tabular-nums">{getValue() as number}</span>,
@@ -158,6 +161,7 @@ export function SchoolsPage() {
         // schools with none go last.
         id: 'activity',
         header: 'Activity',
+        meta: { kind: 'text', width: '13rem' },
         accessorFn: (s) => {
           const a = activityStats.get(s.id);
           return a ? `${a.last}|${String(a.count).padStart(5, '0')}` : undefined;
@@ -178,6 +182,7 @@ export function SchoolsPage() {
       {
         accessorKey: 'isActive',
         header: 'Status',
+        meta: { kind: 'badge' },
         cell: ({ getValue }) => (
           <Badge variant={getValue() ? 'success' : 'default'}>
             {getValue() ? 'Active' : 'Inactive'}
@@ -191,7 +196,8 @@ export function SchoolsPage() {
   const verifyColumn: ColumnDef<SchoolType, unknown> = useMemo(
     () => ({
       id: 'verify',
-      header: () => <span className="block text-right">Actions</span>,
+      header: 'Actions',
+      meta: { kind: 'actions' },
       cell: ({ row }) => (
         <RowActions>
           <RowAction icon={<CheckCircle size={13} />} label="Verify" title="Mark as verified" onClick={() => verifySchool(row.original.id)} />
@@ -323,7 +329,6 @@ export function SchoolsPage() {
                 ],
               }}
               columns={columns}
-              columnWidths={columns.length > 5 ? ['34%', '18%', '11%', '22%', '11%', '7rem'] : ['38%', '20%', '12%', '20%', '10%']}
               searchValue={search}
               urlState
               resetKey={[verifiedTab, countyFilter, typeFilter, contactsFilter].join('|')}

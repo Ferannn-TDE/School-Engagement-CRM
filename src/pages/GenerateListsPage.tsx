@@ -27,12 +27,14 @@ function previewColumnsFor(getSchoolById: (id: string) => School | undefined): C
     {
       id: 'name',
       header: 'Name',
+      meta: { kind: 'primary', width: '10rem' },
       accessorFn: (c) => `${c.firstName} ${c.lastName}`.trim(),
       cell: ({ getValue }) => <OneLine className="font-medium text-neutral-800">{getValue() as string}</OneLine>,
     },
     {
       accessorKey: 'email',
       header: 'Email',
+      meta: { kind: 'text', width: '13rem' },
       cell: ({ row }) => row.original.email
         ? <OneLine className="text-neutral-700">{row.original.email}</OneLine>
         : <Missing label="No email" />,
@@ -40,12 +42,14 @@ function previewColumnsFor(getSchoolById: (id: string) => School | undefined): C
     {
       id: 'role',
       header: 'Role',
+      meta: { kind: 'badge', width: '9rem' },
       accessorFn: (c) => contactRoleLabel(c),
       cell: ({ getValue }) => <Badge variant="info">{getValue() as string}</Badge>,
     },
     {
       id: 'school',
       header: 'School',
+      meta: { kind: 'text', width: '12rem' },
       accessorFn: (c) => getSchoolById(c.schoolId)?.name ?? '',
       cell: ({ getValue }) => (getValue() as string)
         ? <OneLine className="text-neutral-700">{getValue() as string}</OneLine>
@@ -54,6 +58,7 @@ function previewColumnsFor(getSchoolById: (id: string) => School | undefined): C
     {
       id: 'county',
       header: 'County',
+      meta: { kind: 'text', width: '8rem' },
       accessorFn: (c) => getSchoolById(c.schoolId)?.county ?? '',
       cell: ({ getValue }) => (getValue() as string)
         ? <OneLine className="text-neutral-600">{getValue() as string}</OneLine>
@@ -315,8 +320,6 @@ export function GenerateListsPage() {
             <DataTable
               data={filteredContacts}
               columns={previewColumns}
-              columnWidths={['', '', '9rem', '', '8rem']}
-              minWidth="0"
               emptyMessage="No contacts match your filters. Adjust them to find contacts."
             />
           </Card>

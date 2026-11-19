@@ -42,6 +42,10 @@ import {
   fetchImportRowCounts,
 } from '../../services/importBatchesService';
 import { writeErrorMessage } from '../../utils/writeErrors';
+import { ColGroup, cellClass, headClass, tableProps, type ColumnSpec } from '../common/tableColumns';
+
+/** Use, Row, In the file, School. */
+const MATCH_COLUMNS: ColumnSpec[] = [{ kind: 'text', width: '4.5rem' }, { kind: 'number', width: '4.5rem' }, { kind: 'text', width: '20rem' }, 'primary'];
 
 // Import → Import Activities: a list of schools (the client's template, e.g. the
 // attendees of an event) becomes one activity per school, all with the details chosen
@@ -646,13 +650,14 @@ export function ActivityImport() {
                   {outcome === 'not_found' && 'No school matched. Search for it, or leave it skipped.'}
                 </p>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="text-left text-xs uppercase tracking-wide text-neutral-500 border-b border-neutral-200">
-                        <th className="py-2 pr-3 w-12">Use</th>
-                        <th className="py-2 pr-3 w-12">Row</th>
-                        <th className="py-2 pr-3">In the file</th>
-                        <th className="py-2 pr-3">School</th>
+                  <table {...tableProps(MATCH_COLUMNS, 'text-sm')}>
+                    <ColGroup specs={MATCH_COLUMNS} />
+                    <thead className="bg-neutral-50">
+                      <tr className="border-b border-neutral-200">
+                        <th className={headClass(MATCH_COLUMNS[0])}>Use</th>
+                        <th className={headClass(MATCH_COLUMNS[1])}>Row</th>
+                        <th className={headClass(MATCH_COLUMNS[2])}>In the file</th>
+                        <th className={headClass(MATCH_COLUMNS[3])}>School</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-neutral-100">
@@ -662,7 +667,7 @@ export function ActivityImport() {
                         const chosenSchool = chosen ? schoolById.get(chosen) : undefined;
                         return (
                           <tr key={r.row} className="align-top">
-                            <td className="py-2 pr-3">
+                            <td className={cellClass(MATCH_COLUMNS[0])}>
                               <input
                                 type="checkbox"
                                 aria-label={`Use row ${r.row}`}
@@ -672,8 +677,8 @@ export function ActivityImport() {
                                 className="accent-siue-red"
                               />
                             </td>
-                            <td className="py-2 pr-3 text-neutral-500">{r.row}</td>
-                            <td className="py-2 pr-3">
+                            <td className={`${cellClass(MATCH_COLUMNS[1])} text-neutral-500`}>{r.row}</td>
+                            <td className={`${cellClass(MATCH_COLUMNS[2])} break-words`}>
                               {r.name} <span className="text-neutral-500">({placeLabel(r) || 'no city or state'})</span>
                               {r.visitors && (
                                 visitorsByRow.get(r.row)?.error ? (
@@ -683,7 +688,7 @@ export function ActivityImport() {
                                 )
                               )}
                             </td>
-                            <td className="py-2 pr-3">
+                            <td className={`${cellClass(MATCH_COLUMNS[3])} break-words`}>
                               {outcome === 'matched' && (
                                 <>
                                   {chosen ? renderChosen(r) : (

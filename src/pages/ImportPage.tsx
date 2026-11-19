@@ -42,6 +42,12 @@ import type { ArchivedDecision, ArchivedLookup, ArchivedMatch, ImportRowRef } fr
 import toast from 'react-hot-toast';
 import { useRole } from '../context/useRole';
 import { NO_EDIT_ACCESS, writeErrorMessage } from '../utils/writeErrors';
+import { ColGroup, cellClass, headClass, tableProps, type ColumnSpec } from '../components/common/tableColumns';
+
+/** Name, County, City, Type, Status. */
+const SCHOOL_PREVIEW: ColumnSpec[] = ['primary', 'text', 'text', { kind: 'text', width: '9rem' }, { kind: 'badge', width: '11rem' }];
+/** Name, Email, Role, School. */
+const CONTACT_PREVIEW: ColumnSpec[] = ['primary', { kind: 'text', width: '15rem' }, { kind: 'text', width: '9rem' }, { kind: 'text', width: '14rem' }];
 
 type ImportTab = 'contacts' | 'schools' | 'combined' | 'activities';
 
@@ -187,6 +193,13 @@ export function ImportPage() {
   const [parsedData, setParsedData] = useState<ParsedRow[]>([]);
   const [headers, setHeaders] = useState<string[]>([]);
   const [columnMapping, setColumnMapping] = useState<Record<string, string>>({});
+  // The preview's columns: Row, each mapped field (the name, else the first, fills the space), Status.
+  const mappedFields = Object.values(columnMapping).filter(Boolean);
+  const previewSpecs: ColumnSpec[] = [
+    { kind: 'number', width: '4.5rem' },
+    ...mappedFields.map((f, i): ColumnSpec => (f === 'name' || (!mappedFields.includes('name') && i === 0) ? 'primary' : 'text')),
+    { kind: 'badge', width: '10rem' },
+  ];
   const [validationErrors, setValidationErrors] = useState<ValidationResult[]>([]);
   const [fileName, setFileName] = useState('');
   const [step, setStep] = useState<'upload' | 'mapping' | 'preview' | 'done'>('upload');
@@ -933,11 +946,12 @@ export function ImportPage() {
                   <div className="mb-4">
                     <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2">Schools to import</p>
                     <div className="overflow-x-auto border border-neutral-100 rounded-lg">
-                      <table className="min-w-full divide-y divide-neutral-100 text-sm">
+                      <table {...tableProps(SCHOOL_PREVIEW, 'divide-y divide-neutral-100 text-sm')}>
+                        <ColGroup specs={SCHOOL_PREVIEW} />
                         <thead className="bg-neutral-50">
                           <tr>
-                            {['Name', 'County', 'City', 'Type', 'Status'].map((h) => (
-                              <th key={h} className="px-3 py-2 text-left text-xs font-semibold text-neutral-500">{h}</th>
+                            {['Name', 'County', 'City', 'Type', 'Status'].map((h, i) => (
+                              <th key={h} className={headClass(SCHOOL_PREVIEW[i])}>{h}</th>
                             ))}
                           </tr>
                         </thead>
@@ -948,11 +962,11 @@ export function ImportPage() {
                             );
                             return (
                               <tr key={i} className={isDup ? 'bg-amber-50/50' : ''}>
-                                <td className="px-3 py-2 font-medium text-neutral-700">{row['name'] as string}</td>
-                                <td className="px-3 py-2 text-neutral-500">{row['county'] as string}</td>
-                                <td className="px-3 py-2 text-neutral-500">{row['city'] as string}</td>
-                                <td className="px-3 py-2 text-neutral-500">{row['schoolType'] as string}</td>
-                                <td className="px-3 py-2">
+                                <td className={`${cellClass(SCHOOL_PREVIEW[0])} truncate font-medium text-neutral-700`}>{row['name'] as string}</td>
+                                <td className={`${cellClass(SCHOOL_PREVIEW[1])} truncate text-neutral-500`}>{row['county'] as string}</td>
+                                <td className={`${cellClass(SCHOOL_PREVIEW[2])} truncate text-neutral-500`}>{row['city'] as string}</td>
+                                <td className={`${cellClass(SCHOOL_PREVIEW[3])} truncate text-neutral-500`}>{row['schoolType'] as string}</td>
+                                <td className={cellClass(SCHOOL_PREVIEW[4])}>
                                   {archivedStatus(combinedRefs.schools[i]) ? (
                                     archivedBadge(archivedStatus(combinedRefs.schools[i])!)
                                   ) : isDup ? (
@@ -980,23 +994,24 @@ export function ImportPage() {
                   <div className="mb-6">
                     <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2">Contacts to import</p>
                     <div className="overflow-x-auto border border-neutral-100 rounded-lg">
-                      <table className="min-w-full divide-y divide-neutral-100 text-sm">
+                      <table {...tableProps(CONTACT_PREVIEW, 'divide-y divide-neutral-100 text-sm')}>
+                        <ColGroup specs={CONTACT_PREVIEW} />
                         <thead className="bg-neutral-50">
                           <tr>
-                            {['Name', 'Email', 'Role', 'School'].map((h) => (
-                              <th key={h} className="px-3 py-2 text-left text-xs font-semibold text-neutral-500">{h}</th>
+                            {['Name', 'Email', 'Role', 'School'].map((h, i) => (
+                              <th key={h} className={headClass(CONTACT_PREVIEW[i])}>{h}</th>
                             ))}
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-neutral-50">
                           {combinedPreview.contactRows.slice(0, 8).map((row, i) => (
                             <tr key={i}>
-                              <td className="px-3 py-2 font-medium text-neutral-700">
+                              <td className={`${cellClass(CONTACT_PREVIEW[0])} truncate font-medium text-neutral-700`}>
                                 {row['firstName'] as string} {row['lastName'] as string}
                               </td>
-                              <td className="px-3 py-2 text-neutral-500">{row['email'] as string}</td>
-                              <td className="px-3 py-2 text-neutral-500">{row['role'] as string}</td>
-                              <td className="px-3 py-2 text-neutral-500">{row['schoolName'] as string}</td>
+                              <td className={`${cellClass(CONTACT_PREVIEW[1])} truncate text-neutral-500`}>{row['email'] as string}</td>
+                              <td className={`${cellClass(CONTACT_PREVIEW[2])} truncate text-neutral-500`}>{row['role'] as string}</td>
+                              <td className={`${cellClass(CONTACT_PREVIEW[3])} truncate text-neutral-500`}>{row['schoolName'] as string}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -1219,18 +1234,19 @@ export function ImportPage() {
                 )}
 
                 <div className="overflow-x-auto border border-neutral-100 rounded-lg">
-                  <table className="min-w-full divide-y divide-neutral-100 text-sm">
+                  <table {...tableProps(previewSpecs, 'divide-y divide-neutral-100 text-sm')}>
+                    <ColGroup specs={previewSpecs} />
                     <thead className="bg-neutral-50">
                       <tr>
-                        <th className="px-3 py-2 text-left text-xs font-semibold text-neutral-500">Row</th>
+                        <th className={headClass(previewSpecs[0])}>Row</th>
                         {Object.entries(columnMapping)
                           .filter(([, v]) => v)
-                          .map(([h, v]) => (
-                            <th key={h} className="px-3 py-2 text-left text-xs font-semibold text-neutral-500">
+                          .map(([h, v], i) => (
+                            <th key={h} className={headClass(previewSpecs[i + 1])}>
                               {fieldOptions.find((f) => f.value === v)?.label || v}
                             </th>
                           ))}
-                        <th className="px-3 py-2 text-left text-xs font-semibold text-neutral-500">Status</th>
+                        <th className={headClass(previewSpecs[previewSpecs.length - 1])}>Status</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-neutral-50">
@@ -1239,15 +1255,15 @@ export function ImportPage() {
                         const hasError = rowErrors.some((e) => e.severity === 'error');
                         return (
                           <tr key={i} className={hasError ? 'bg-red-50/50' : ''}>
-                            <td className="px-3 py-2 text-neutral-400">{i + 1}</td>
+                            <td className={`${cellClass(previewSpecs[0])} text-neutral-400`}>{i + 1}</td>
                             {Object.entries(columnMapping)
                               .filter(([, v]) => v)
-                              .map(([h]) => (
-                                <td key={h} className="px-3 py-2 text-neutral-700 max-w-[200px] truncate">
+                              .map(([h], ci) => (
+                                <td key={h} className={`${cellClass(previewSpecs[ci + 1])} text-neutral-700 truncate`} title={String(row[h] ?? '')}>
                                   {row[h]}
                                 </td>
                               ))}
-                            <td className="px-3 py-2">
+                            <td className={cellClass(previewSpecs[previewSpecs.length - 1])}>
                               {!hasError && archivedStatus(singleRefs[i]) ? (
                                 archivedBadge(archivedStatus(singleRefs[i])!)
                               ) : hasError ? (

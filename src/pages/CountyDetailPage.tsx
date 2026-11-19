@@ -16,10 +16,15 @@ import { ProgramCategory, ProgramCategoryLabels } from '../types';
 import type { ActivityRecord, Contact, Event, Program } from '../types';
 import { computeEngagementScore } from '../utils/engagementScore';
 import { countySummaryFromData, engagementRateFromData } from '../services/analyticsService';
-import { formatSchoolType } from '../utils/helpers';
+import { classNames, formatSchoolType } from '../utils/helpers';
+import { OneLine } from '../components/common/OneLine';
+import { ColGroup, cellClass, headClass, tableProps, type ColumnSpec } from '../components/common/tableColumns';
 import { countyLabel, countyPath, mergeCountyRows, sameCounty } from '../utils/counties';
 import { attendanceByEvent, eventSourceLabel, outreachEvents, schoolsAtEvent, schoolsWithAttendance } from '../utils/events';
 import { todayDay } from '../utils/activityDates';
+
+/** School, Type, Contacts, Score, Tier. */
+const SCHOOL_COLUMNS: ColumnSpec[] = ['primary', { kind: 'badge', width: '9.5rem' }, 'number', 'number', 'badge'];
 
 type SortField = 'name' | 'contacts' | 'score';
 type SortDir = 'asc' | 'desc';
@@ -331,71 +336,53 @@ export function CountyDetailPage() {
             </div>
           </div>
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-neutral-100 table-fixed">
-              <colgroup>
-                <col style={{ width: '38%' }} />
-                <col style={{ width: '15%' }} />
-                <col style={{ width: '15%' }} />
-                <col style={{ width: '15%' }} />
-                <col style={{ width: '17%' }} />
-              </colgroup>
+            <table {...tableProps(SCHOOL_COLUMNS, 'divide-y divide-neutral-100')}>
+              <ColGroup specs={SCHOOL_COLUMNS} />
               <thead className="bg-neutral-50">
                 <tr>
-                  <th
-                    className="px-4 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider cursor-pointer select-none hover:text-neutral-700"
-                    onClick={() => handleSort('name')}
-                  >
+                  <th className={classNames(headClass(SCHOOL_COLUMNS[0]), 'cursor-pointer select-none hover:text-neutral-700')} onClick={() => handleSort('name')}>
                     <span className="flex items-center gap-1">
                       School
                       <SortIcon field="name" current={sortField} dir={sortDir} />
                     </span>
                   </th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-                    Type
-                  </th>
-                  <th
-                    className="px-4 py-3 text-center text-xs font-semibold text-neutral-500 uppercase tracking-wider cursor-pointer select-none hover:text-neutral-700"
-                    onClick={() => handleSort('contacts')}
-                  >
-                    <span className="flex items-center justify-center gap-1">
+                  <th className={headClass(SCHOOL_COLUMNS[1])}>Type</th>
+                  <th className={classNames(headClass(SCHOOL_COLUMNS[2]), 'cursor-pointer select-none hover:text-neutral-700')} onClick={() => handleSort('contacts')}>
+                    <span className="flex items-center gap-1">
                       Contacts
                       <SortIcon field="contacts" current={sortField} dir={sortDir} />
                     </span>
                   </th>
-                  <th
-                    className="px-4 py-3 text-center text-xs font-semibold text-neutral-500 uppercase tracking-wider cursor-pointer select-none hover:text-neutral-700"
-                    onClick={() => handleSort('score')}
-                  >
-                    <span className="flex items-center justify-center gap-1">
+                  <th className={classNames(headClass(SCHOOL_COLUMNS[3]), 'cursor-pointer select-none hover:text-neutral-700')} onClick={() => handleSort('score')}>
+                    <span className="flex items-center gap-1">
                       Score
                       <SortIcon field="score" current={sortField} dir={sortDir} />
                     </span>
                   </th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-                    Tier
-                  </th>
+                  <th className={headClass(SCHOOL_COLUMNS[4])}>Tier</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-neutral-50">
                 {sortedSchools.map(({ school, contacts, score, tier }) => (
-                  <tr key={school.id} className="hover:bg-neutral-50 transition-colors">
-                    <td className="px-4 py-3 text-sm">
+                  <tr key={school.id} className="hover:bg-neutral-50 transition-colors" style={{ height: '4rem' }}>
+                    <td className={classNames(cellClass(SCHOOL_COLUMNS[0]), 'text-sm')}>
                       <Link
                         to={`/schools/${encodeURIComponent(school.id)}`}
-                        className="font-medium text-neutral-800 hover:text-siue-red transition-colors"
+                        className="block truncate font-medium text-neutral-800 hover:text-siue-red transition-colors"
+                        title={school.name}
                       >
                         {school.name}
                       </Link>
                       {school.districtName && (
-                        <p className="text-xs text-neutral-500 mt-0.5">{school.districtName}</p>
+                        <OneLine className="text-xs text-neutral-500 mt-0.5">{school.districtName}</OneLine>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className={cellClass(SCHOOL_COLUMNS[1])}>
                       <Badge variant="default">{formatSchoolType(school.schoolType)}</Badge>
                     </td>
-                    <td className="px-4 py-3 text-sm text-neutral-700 text-center">{contacts}</td>
-                    <td className="px-4 py-3 text-sm font-medium text-neutral-800 text-center">{score}</td>
-                    <td className="px-4 py-3 text-center">
+                    <td className={classNames(cellClass(SCHOOL_COLUMNS[2]), 'text-sm text-neutral-700')}>{contacts}</td>
+                    <td className={classNames(cellClass(SCHOOL_COLUMNS[3]), 'text-sm font-medium text-neutral-800')}>{score}</td>
+                    <td className={cellClass(SCHOOL_COLUMNS[4])}>
                       <Badge variant={tierVariant(tier)}>
                         {tier.charAt(0).toUpperCase() + tier.slice(1)}
                       </Badge>

@@ -64,6 +64,7 @@ export function EventsPage() {
       {
         accessorKey: 'name',
         header: 'Event Name',
+        meta: { kind: 'primary' },
         cell: ({ row }) => (
           // Name and place, one line each, cut to fit, so every row is the same height.
           <div className="min-w-0">
@@ -83,6 +84,7 @@ export function EventsPage() {
         id: 'source',
         accessorFn: (row) => eventSourceLabel(row),
         header: 'Source',
+        meta: { kind: 'text' },
         cell: ({ row }) =>
           isTestingDate(row.original) ? (
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium border border-dashed border-neutral-400 text-neutral-600">
@@ -96,6 +98,7 @@ export function EventsPage() {
       {
         accessorKey: 'date',
         header: 'Date',
+        meta: { kind: 'date', width: '11rem' },
         cell: ({ row }) => {
           const isPast = !isAfter(new Date(row.original.date), new Date());
           return (
@@ -111,6 +114,7 @@ export function EventsPage() {
       {
         id: 'schools',
         header: 'Schools',
+        meta: { kind: 'number' },
         cell: ({ row }) => (
           <div className="flex items-center gap-1">
             <Users size={14} className="text-neutral-400" />
@@ -121,6 +125,7 @@ export function EventsPage() {
       {
         accessorKey: 'attendeeCount',
         header: 'Attendees',
+        meta: { kind: 'number' },
         cell: ({ getValue }) => {
           const count = getValue() as number | undefined;
           return count ?? 0;
@@ -128,7 +133,8 @@ export function EventsPage() {
       },
       {
         id: 'actions',
-        header: () => <span className="block text-right">Actions</span>,
+        header: 'Actions',
+        meta: { kind: 'actions' },
         enableSorting: false,
         // The same Actions menu as Contacts: one fixed-width button, choices in a list.
         cell: ({ row }) => (
@@ -258,7 +264,6 @@ export function EventsPage() {
                     ],
                   }}
                   columns={shownColumns}
-                  columnWidths={canEdit ? ['', '18%', '13%', '10%', '11%', '8rem'] : ['', '20%', '15%', '12%', '13%']}
                   urlState
                   resetKey={`${sourceFilter}|${showTesting}`}
                   onRowClick={(event) => setViewingEvent(event)}

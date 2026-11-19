@@ -21,7 +21,7 @@ export const COLUMN_HELP = {
     'This is not the school’s priority tier (High, Standard or Low), which you set on the school form.',
   schoolActivity:
     'How many visits, calls, emails and events are logged for this school, and the date of the most recent one. Activities dated in the future count once their day comes.',
-  schoolContacts: 'People on file at this school, active or not.',
+  schoolContacts: 'Active contact people at this school. Point at the number to see everyone on file, inactive people included. A school with no active contact counts as “no contact” on every page.',
   activeContacts: 'Active contact people on file at this school.',
   lastContact:
     'The date of the most recent visit, call, email or event logged for this school. “Never” means nothing has been logged yet.',

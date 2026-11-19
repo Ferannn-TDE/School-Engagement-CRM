@@ -13,6 +13,7 @@ import { Badge } from '../components/common/Badge';
 import { useAppContext } from '../context/useAppContext';
 import { eventSourceLabel, outreachEvents } from '../utils/events';
 import { useRole } from '../context/useRole';
+import { contactCountsBySchool, contactCountsOf, hasNoContact } from '../utils/schoolCounts';
 
 const QUICK_ACTIONS = [
   { label: 'Import Contacts', description: 'Bulk import from CSV or Excel', icon: Upload, path: '/import', edits: true },
@@ -45,10 +46,10 @@ export function DashboardPage() {
     const sixMonthsAgo = subMonths(now, 6);
     const total = state.schools.length;
 
-    const contactsMap = new Map<string, number>();
-    for (const c of state.contacts) {
-      contactsMap.set(c.schoolId, (contactsMap.get(c.schoolId) ?? 0) + 1);
-    }
+    // One rule on every page: a school has a contact when an ACTIVE person is on file (utils/schoolCounts).
+    const contactCounts = contactCountsBySchool(state.contacts);
+    let activeTotal = 0;
+    for (const c of state.contacts) if (c.isActive) activeTotal++;
 
     const activityMap = new Map<string, Date>();
     for (const a of happenedActivities(state.activities)) {
@@ -60,19 +61,19 @@ export function DashboardPage() {
     let withContacts = 0;
     let withRecentActivity = 0;
     for (const s of state.schools) {
-      if ((contactsMap.get(s.id) ?? 0) > 0) withContacts++;
+      if (!hasNoContact(contactCounts, s.id)) withContacts++;
       const last = activityMap.get(s.id);
       if (last && isAfter(last, sixMonthsAgo)) withRecentActivity++;
     }
 
-    const avgContacts = total > 0 ? (state.contacts.length / total).toFixed(1) : '0.0';
+    const avgContacts = total > 0 ? (activeTotal / total).toFixed(1) : '0.0';
 
     const topAttention = state.schools
       .map((s) => {
-        const contacts = contactsMap.get(s.id) ?? 0;
+        const contacts = contactCountsOf(contactCounts, s.id).active;
         const lastActivity = activityMap.get(s.id) ?? null;
         const issues: string[] = [];
-        if (contacts === 0) issues.push('No contacts');
+        if (contacts === 0) issues.push('No active contact');
         if (!lastActivity) issues.push('No activity');
         else if (!isAfter(lastActivity, sixMonthsAgo)) issues.push('Activity stale (6+ mo)');
         return { id: s.id, name: s.name, county: s.county, contacts, issues };
@@ -81,7 +82,7 @@ export function DashboardPage() {
       .sort((a, b) => b.issues.length - a.issues.length || a.name.localeCompare(b.name))
       .slice(0, 5);
 
-    return { total, withContacts, withRecentActivity, avgContacts, topAttention };
+    return { total, withContacts, withRecentActivity, avgContacts, activeTotal, topAttention };
   }, [state.schools, state.contacts, state.activities]);
 
   const upcomingEvents = useMemo(
@@ -163,7 +164,7 @@ export function DashboardPage() {
           <h3 className="text-base font-semibold text-neutral-800 mb-5">Engagement Overview</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-neutral-100">
             <div className="pb-4 sm:pb-0 sm:pr-8">
-              <p className="text-xs text-neutral-500 uppercase tracking-wider mb-1">Schools with Contacts</p>
+              <p className="text-xs text-neutral-500 uppercase tracking-wider mb-1">Schools with an Active Contact</p>
               <p className="text-2xl font-bold text-neutral-800">
                 {dashboardComputed.withContacts}
                 <span className="text-base font-normal text-neutral-400">/{dashboardComputed.total}</span>
@@ -195,7 +196,7 @@ export function DashboardPage() {
               </p>
             </div>
             <div className="pt-4 sm:pt-0 sm:pl-8">
-              <p className="text-xs text-neutral-500 uppercase tracking-wider mb-1">Avg Contacts / School</p>
+              <p className="text-xs text-neutral-500 uppercase tracking-wider mb-1">Avg Active Contacts / School</p>
               <p className="text-2xl font-bold text-neutral-800">{dashboardComputed.avgContacts}</p>
               <div className="mt-2 h-1.5 bg-neutral-100 rounded-full overflow-hidden">
                 <div
@@ -204,7 +205,7 @@ export function DashboardPage() {
                 />
               </div>
               <p className="mt-1 text-xs text-neutral-500">
-                {state.contacts.length} contacts across {dashboardComputed.total} schools
+                {dashboardComputed.activeTotal.toLocaleString()} active contacts across {dashboardComputed.total.toLocaleString()} schools
               </p>
             </div>
           </div>
@@ -308,7 +309,7 @@ export function DashboardPage() {
                     >
                       {school.name}
                     </Link>
-                    <p className="text-xs text-neutral-500 mt-0.5">{school.county} County · {school.contacts} contact{school.contacts !== 1 ? 's' : ''}</p>
+                    <p className="text-xs text-neutral-500 mt-0.5">{school.county} County · {school.contacts} active contact{school.contacts !== 1 ? 's' : ''}</p>
                   </div>
                   <div className="flex flex-wrap gap-1 justify-end shrink-0">
                     {school.issues.map((issue) => (
@@ -324,7 +325,7 @@ export function DashboardPage() {
             <div className="py-8 text-center">
               <AlertTriangle size={28} className="mx-auto mb-3 text-success opacity-50" />
               <p className="text-sm font-medium text-success">All schools are in good standing.</p>
-              <p className="text-xs text-neutral-500 mt-1">Every school has contacts and recent activity.</p>
+              <p className="text-xs text-neutral-500 mt-1">Every school has an active contact and recent activity.</p>
             </div>
           )}
         </Card>

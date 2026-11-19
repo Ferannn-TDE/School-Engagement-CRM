@@ -26,11 +26,12 @@ import { lastUpdatedText, schoolFreshness } from '../utils/freshness';
 import { useRole } from '../context/useRole';
 import { happenedActivities } from '../utils/activityDates';
 import { COLUMN_HELP } from '../constants/columnHelp';
+import { contactCountsBySchool, contactCountsOf, hasNoContact } from '../utils/schoolCounts';
 
 type VerifiedTab = 'all' | 'verified' | 'unverified';
 
 export function SchoolsPage() {
-  const { state, getContactsBySchool, verifySchool, verifySchoolsBulk } = useAppContext();
+  const { state, verifySchool, verifySchoolsBulk } = useAppContext();
   // Each school's non-archived activities that have happened (upcoming ones aren't
   // counted), and the day of the latest. state.activities already leaves out archived.
   const activityStats = useMemo(() => {
@@ -63,6 +64,9 @@ export function SchoolsPage() {
     [state.schools]
   );
 
+  // One rule on every page: a school has a contact when an ACTIVE person is on file (utils/schoolCounts).
+  const contactCounts = useMemo(() => contactCountsBySchool(state.contacts), [state.contacts]);
+
   const filteredSchools = useMemo(() => {
     let schools = state.schools;
     if (verifiedTab === 'verified') schools = schools.filter((s) => s.isVerified);
@@ -70,12 +74,12 @@ export function SchoolsPage() {
     if (countyFilter) schools = schools.filter((s) => inCounty(s, countyFilter));
     if (typeFilter) schools = schools.filter((s) => s.schoolType === typeFilter);
     if (contactsFilter === 'has') {
-      schools = schools.filter((s) => getContactsBySchool(s.id).length > 0);
+      schools = schools.filter((s) => !hasNoContact(contactCounts, s.id));
     } else if (contactsFilter === 'none') {
-      schools = schools.filter((s) => getContactsBySchool(s.id).length === 0);
+      schools = schools.filter((s) => hasNoContact(contactCounts, s.id));
     }
     return schools;
-  }, [state.schools, verifiedTab, countyFilter, typeFilter, contactsFilter, getContactsBySchool]);
+  }, [state.schools, verifiedTab, countyFilter, typeFilter, contactsFilter, contactCounts]);
 
   // Each county tied to its state: 40 names exist in both Illinois and Missouri.
   const uniqueCounties = useMemo(() => countyOptions(state.schools), [state.schools]);
@@ -102,8 +106,8 @@ export function SchoolsPage() {
       value: contactsFilter,
       onChange: (v) => setContactsFilter(v as '' | 'has' | 'none'),
       options: [
-        { value: 'has', label: 'Has Contacts' },
-        { value: 'none', label: 'No Contacts' },
+        { value: 'has', label: 'Has an active contact' },
+        { value: 'none', label: 'No active contact' },
       ],
       placeholder: 'Any Contacts',
       className: 'w-44',
@@ -153,9 +157,16 @@ export function SchoolsPage() {
         id: 'contacts',
         header: 'Contacts',
         meta: { kind: 'number', info: COLUMN_HELP.schoolContacts },
-        accessorFn: (s) => getContactsBySchool(s.id).length,
+        accessorFn: (s) => contactCountsOf(contactCounts, s.id).active,
         sortDescFirst: true,
-        cell: ({ getValue }) => <span className="tabular-nums">{getValue() as number}</span>,
+        cell: ({ row, getValue }) => {
+          const { onFile } = contactCountsOf(contactCounts, row.original.id);
+          return (
+            <span className="tabular-nums" title={`${onFile.toLocaleString()} on file, active or not`}>
+              {getValue() as number}
+            </span>
+          );
+        },
       },
       {
         // One cell for both: "3 activities · last Oct 24". Sorts by the last date, then the count;
@@ -191,7 +202,7 @@ export function SchoolsPage() {
         ),
       },
     ],
-    [getContactsBySchool, activityStats]
+    [contactCounts, activityStats]
   );
 
   const verifyColumn: ColumnDef<SchoolType, unknown> = useMemo(
@@ -320,7 +331,8 @@ export function SchoolsPage() {
                   { label: 'State', value: (s) => s.state },
                   { label: 'City', value: (s) => s.city },
                   { label: 'Type', value: (s) => formatSchoolType(s.schoolType) },
-                  { label: 'Contacts', value: (s) => getContactsBySchool(s.id).length },
+                  { label: 'Active contacts', value: (s) => contactCountsOf(contactCounts, s.id).active },
+                  { label: 'On file', value: (s) => contactCountsOf(contactCounts, s.id).onFile },
                   { label: 'Activities', value: (s) => activityStats.get(s.id)?.count ?? 0 },
                   { label: 'Last activity', value: (s) => activityStats.get(s.id)?.last },
                   { label: 'Status', value: (s) => (s.isActive ? 'Active' : 'Inactive') },

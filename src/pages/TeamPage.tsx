@@ -179,7 +179,7 @@ export function TeamPage() {
     );
     return (
       <>
-        <p className="text-sm text-neutral-600 max-w-2xl">
+        <p className="text-sm text-neutral-600">
           New accounts start as viewers. Removing someone from the team makes them a viewer; to stop an account
           signing in at all, delete or ban it in Supabase → Authentication. To hand over admin, make the new person
           admin first, let them confirm this page works for them, then step down.

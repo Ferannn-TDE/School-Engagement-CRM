@@ -37,6 +37,11 @@ const NEVER = [
   /^src\/utils\/report/,
   /^src\/components\/reports\//,
   /^src\/types\//,
+  // Everything that exports CSV, and the Meeting summary.
+  /^src\/utils\/csv\.ts$/,
+  /^src\/components\/common\/(ExportCsvButton|DataTable)\.tsx$/,
+  /^src\/utils\/meetingSummary\.ts$/,
+  /^src\/pages\/MeetingSummaryPage\.tsx$/,
 ];
 
 function* sourceFiles(dir) {

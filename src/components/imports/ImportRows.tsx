@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { Button } from '../common/Button';
 import { Modal } from '../common/Modal';
 import { Missing } from '../common/Missing';
+import { Pagination } from '../common/Pagination';
 import { ConfirmDialog } from '../common/ConfirmDialog';
 import { useAppContext } from '../../context/useAppContext';
 import { fileHash, readActivityWorkbook } from '../../utils/activityImportFile';
@@ -39,9 +40,17 @@ export function BatchRowsModal({ batch, onClose }: { batch: ImportBatch; onClose
     return () => { live = false; };
   }, [batch.id]);
 
-  const th = 'px-3 py-2 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500';
+  // Same look as the other tables (DataTable): grey header, 25 rows a page, nothing cut
+  // off: long school names wrap.
+  const [page, setPage] = useState(0);
+  const PAGE = 25;
+  const pages = rows ? Math.max(1, Math.ceil(rows.length / PAGE)) : 1;
+  const current = Math.min(page, pages - 1);
+  const shown = rows ? rows.slice(current * PAGE, (current + 1) * PAGE) : [];
+  const th = 'px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500';
+  const td = 'px-4 py-2 align-top text-sm text-neutral-700 break-words';
   return (
-    <Modal open onClose={onClose} title={`Rows of ${batch.fileName}`} size="xl">
+    <Modal open onClose={onClose} title={`Rows of ${batch.fileName}`} size="wide">
       {error ? (
         <p className="text-sm text-error">{error}</p>
       ) : rows === null ? (
@@ -51,53 +60,57 @@ export function BatchRowsModal({ batch, onClose }: { batch: ImportBatch; onClose
           This batch was saved before rows were kept. Use “Add rows from the original file” to add them.
         </p>
       ) : (
-        <div className="max-h-[60vh] overflow-auto rounded-lg border border-neutral-100">
-          <table className="w-full table-fixed text-sm">
-            <colgroup>
-              <col style={{ width: '4rem' }} />
-              <col />
-              <col />
-              <col style={{ width: '6rem' }} />
-              <col />
-            </colgroup>
-            <thead className="bg-neutral-50 sticky top-0">
-              <tr>
-                <th className={th}>Row</th>
-                <th className={th}>School as typed</th>
-                <th className={th}>Matched school</th>
-                <th className={`${th} text-right`}>Visitors</th>
-                <th className={th}>Name</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-50">
-              {rows.map((r) => (
-                <tr key={r.id} style={{ height: '3rem' }}>
-                  <td className="px-3 text-neutral-500 tabular-nums">{r.rowNumber}</td>
-                  <td className="px-3 truncate" title={[r.schoolAsTyped, r.cityAsTyped, r.stateAsTyped].filter(Boolean).join(', ')}>
-                    {r.schoolAsTyped || <Missing label="Blank" />}
-                    {(r.cityAsTyped || r.stateAsTyped) && (
-                      <span className="text-neutral-500"> ({[r.cityAsTyped, r.stateAsTyped].filter(Boolean).join(', ')})</span>
-                    )}
-                  </td>
-                  <td className="px-3 truncate">
-                    {r.schoolId ? getSchoolById(r.schoolId)?.name ?? 'An archived school' : <Missing label="Not matched" />}
-                  </td>
-                  <td className="px-3 text-right tabular-nums">{r.visitors ?? 1}</td>
-                  <td className="px-3">
-                    {r.visitorName ? (
-                      <span className="flex items-center justify-between gap-2 min-w-0">
-                        <span className="truncate">{r.visitorName}</span>
-                        <button type="button" onClick={() => setRemoving(r)} className="shrink-0 text-xs text-neutral-500 hover:text-error underline">
-                          Remove name
-                        </button>
-                      </span>
-                    ) : <Missing label="No name" />}
-                  </td>
+        <>
+          <div className="max-h-[65vh] overflow-auto rounded-lg border border-neutral-100">
+            <table className="w-full table-fixed divide-y divide-neutral-100">
+              <colgroup>
+                <col style={{ width: '4.5rem' }} />
+                <col style={{ width: '24%' }} />
+                <col style={{ width: '12%' }} />
+                <col style={{ width: '5rem' }} />
+                <col style={{ width: '24%' }} />
+                <col style={{ width: '6rem' }} />
+                <col />
+              </colgroup>
+              <thead className="bg-neutral-50 sticky top-0 z-10">
+                <tr>
+                  <th className={th}>Row</th>
+                  <th className={th}>School as typed</th>
+                  <th className={th}>City</th>
+                  <th className={th}>State</th>
+                  <th className={th}>Matched school</th>
+                  <th className={`${th} text-right`}>Visitors</th>
+                  <th className={th}>Name</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="bg-white divide-y divide-neutral-50">
+                {shown.map((r) => (
+                  <tr key={r.id} className="hover:bg-neutral-50">
+                    <td className={`${td} tabular-nums text-neutral-500`}>{r.rowNumber}</td>
+                    <td className={td}>{r.schoolAsTyped || <Missing label="Blank" />}</td>
+                    <td className={td}>{r.cityAsTyped || <Missing label="No city" />}</td>
+                    <td className={td}>{r.stateAsTyped || <Missing label="No state" />}</td>
+                    <td className={td}>
+                      {r.schoolId ? getSchoolById(r.schoolId)?.name ?? 'An archived school' : <Missing label="Not matched" />}
+                    </td>
+                    <td className={`${td} text-right tabular-nums`}>{r.visitors ?? 1}</td>
+                    <td className={td}>
+                      {r.visitorName ? (
+                        <div className="flex items-start justify-between gap-3">
+                          <span className="min-w-0 break-words">{r.visitorName}</span>
+                          <button type="button" onClick={() => setRemoving(r)} className="shrink-0 text-xs text-neutral-500 hover:text-error underline">
+                            Remove name
+                          </button>
+                        </div>
+                      ) : <Missing label="No name" />}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <Pagination pageIndex={current} pageSize={PAGE} total={rows.length} onPageChange={setPage} noun="rows" />
+        </>
       )}
       <ConfirmDialog
         open={removing !== null}

@@ -2,6 +2,7 @@ import { supabase, fetchAllRows } from './supabase';
 import { acceptPatch, dismissPatch } from '../utils/pending';
 import type { PendingMap } from '../utils/pending';
 import type { School, SchoolType } from '../types';
+import type { DistrictOption } from '../utils/districts';
 import { nowISO } from '../utils/helpers';
 
 interface SchoolRow {
@@ -57,6 +58,12 @@ function isPriorityTier(value: string | null): value is NonNullable<School['prio
 
 // Filled by fetchSchools; every row read afterwards (after an edit, an import) uses it.
 let districtNames = new Map<number, string>();
+let districtList: DistrictOption[] = [];
+
+/** Every named district (from the last load), for matching imports and the school form's picker. */
+export function getDistricts(): DistrictOption[] {
+  return districtList;
+}
 
 function rowToSchool(row: SchoolRow): School {
   return {
@@ -64,6 +71,7 @@ function rowToSchool(row: SchoolRow): School {
     name: row.name,
     district: row.district_id != null ? row.district_id.toString() : undefined,
     districtName: row.district_id != null ? districtNames.get(row.district_id) : undefined,
+    districtId: row.district_id ?? undefined,
     county: row.county_name ?? '',
     address: row.address ?? '',
     city: row.city ?? '',
@@ -111,14 +119,19 @@ function rowToSchool(row: SchoolRow): School {
  */
 async function fetchDistrictNames(): Promise<Map<number, string>> {
   try {
-    const rows = await fetchAllRows<{ district_id: number; district_name: string | null }>(
-      'district', 'district_id', 'district_id, district_name'
+    const rows = await fetchAllRows<{ district_id: number; district_name: string | null; state_code: string | null }>(
+      'district', 'district_id', 'district_id, district_name, state_code'
     );
     const names = new Map<number, string>();
+    const list: DistrictOption[] = [];
     for (const r of rows) {
       const name = r.district_name?.trim();
-      if (name && name.toLowerCase() !== 'unknown district') names.set(r.district_id, name);
+      if (name && name.toLowerCase() !== 'unknown district') {
+        names.set(r.district_id, name);
+        list.push({ id: r.district_id, name, state: (r.state_code ?? '').trim().toUpperCase() });
+      }
     }
+    districtList = list.sort((a, b) => a.name.localeCompare(b.name));
     return names;
   } catch (err) {
     console.error('fetchDistrictNames failed:', err);
@@ -149,6 +162,7 @@ export async function createSchool(
     .insert({
       facility_key: facilityKey,
       name: school.name,
+    district_id: school.districtId ?? null,
       county_name: school.county,
       address: school.address,
       city: school.city,
@@ -177,6 +191,7 @@ export async function createSchoolsBulk(
   const rows = schools.map((school) => ({
     facility_key: crypto.randomUUID(),
     name: school.name,
+    district_id: school.districtId ?? null,
     county_name: school.county,
     address: school.address,
     city: school.city,
@@ -213,7 +228,8 @@ export interface ImportSchoolsResult {
 export async function importSchoolsBulk(
   schools: Array<{
     name: string;
-    district?: string;
+    /** The matched district (utils/districts matchDistrict); unmatched names are left out. */
+    districtId?: number;
     county: string;
     address: string;
     city: string;
@@ -254,7 +270,8 @@ export async function importSchoolsBulk(
         if (existing) {
           // UPDATE — fill in only what the file provides. A blank cell never
           // overwrites a stored value, and is_verified and data_source are kept.
-          const patch: Record<string, string> = {};
+          const patch: Record<string, string | number> = {};
+          if (school.districtId != null) patch.district_id = school.districtId;
           if (school.county.trim()) patch.county_name = school.county.trim();
           if (school.address.trim()) patch.address = school.address.trim();
           if (school.city.trim()) patch.city = school.city.trim();
@@ -284,6 +301,7 @@ export async function importSchoolsBulk(
             .insert({
               facility_key: crypto.randomUUID(),
               name: school.name,
+              district_id: school.districtId ?? null,
               county_name: school.county,
               address: school.address,
               city: school.city,
@@ -333,6 +351,9 @@ export async function importSchoolsBulk(
 export async function updateSchool(id: string, updates: Partial<School>): Promise<void> {
   const patch: Partial<SchoolRow> = {};
   if (updates.name !== undefined) patch.name = updates.name;
+  // The district chosen in the school form's picker (never free text). The scraper keeps
+  // district_id as it is on its runs, so the choice sticks.
+  if ('districtId' in updates) patch.district_id = updates.districtId ?? null;
   if (updates.county !== undefined) patch.county_name = updates.county;
   if (updates.address !== undefined) patch.address = updates.address;
   if (updates.city !== undefined) patch.city = updates.city;

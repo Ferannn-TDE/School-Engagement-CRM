@@ -302,6 +302,22 @@ export function ContactsPage() {
           <Card padding={false}>
             <DataTable
               data={filteredContacts}
+              exportCsv={{
+                name: 'contacts',
+                columns: [
+                  { label: 'First name', value: (c) => c.firstName },
+                  { label: 'Last name', value: (c) => c.lastName },
+                  { label: 'Title', value: (c) => c.title },
+                  { label: 'Role', value: (c) => contactRoleLabel(c) },
+                  { label: 'Email', value: (c) => c.email },
+                  { label: 'Phone', value: (c) => c.phone },
+                  { label: 'School', value: (c) => getSchoolById(c.schoolId)?.name },
+                  { label: 'County', value: (c) => getSchoolById(c.schoolId)?.county },
+                  { label: 'Status', value: (c) => (c.isActive ? 'Active' : 'Inactive') },
+                  { label: 'Verified', value: (c) => (c.isVerified ? 'Yes' : 'No') },
+                  { label: 'Last updated', value: (c) => c.lastUpdatedAt?.slice(0, 10) },
+                ],
+              }}
               columns={shownColumns}
               columnWidths={canEdit ? ['', '', '12rem', '10rem', '', '7rem', '8rem'] : ['', '', '12rem', '10rem', '', '7rem']}
               searchValue={search}

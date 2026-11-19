@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -8,6 +8,7 @@ import { Textarea } from '../common/Textarea';
 import { Button } from '../common/Button';
 import { useAppContext } from '../../context/useAppContext';
 import type { School } from '../../types';
+import { DistrictPicker } from './DistrictPicker';
 import toast from 'react-hot-toast';
 
 const schoolSchema = z.object({
@@ -69,6 +70,9 @@ export function SchoolForm({ school, onClose }: SchoolFormProps) {
   // state, so Missouri schools get Missouri counties. The school's own county is
   // always included, so editing never silently blanks it.
   const selectedState = watch('state');
+  // The district: picked from the district table, kept outside the form fields because
+  // it's an id, not text. Saved only when it changes.
+  const [district, setDistrict] = useState<{ id?: number; name?: string }>({ id: school?.districtId, name: school?.districtName });
   const countyOptions = useMemo(() => {
     const names = new Set(
       appState.schools.filter((s) => s.state === selectedState && s.county).map((s) => s.county)
@@ -99,6 +103,10 @@ export function SchoolForm({ school, onClose }: SchoolFormProps) {
       for (const key of Object.keys(dirtyFields) as (keyof SchoolFormData)[]) {
         (changes as Record<string, unknown>)[key] = edited[key as keyof School];
       }
+      if (district.id !== school.districtId) {
+        changes.districtId = district.id;
+        changes.districtName = district.name;
+      }
       if (Object.keys(changes).length === 0) {
         toast('No changes to save');
         onClose();
@@ -109,6 +117,7 @@ export function SchoolForm({ school, onClose }: SchoolFormProps) {
     } else {
       addSchool({
         ...data,
+        districtId: district.id,
         notes: data.notes || undefined,
         phone: data.phone?.trim() || undefined,
         isActive: true,
@@ -129,14 +138,12 @@ export function SchoolForm({ school, onClose }: SchoolFormProps) {
         error={errors.name?.message}
         {...register('name')}
       />
-      {/* Read-only: the district comes from the school data (district table) and was
-          never saved from this form. */}
-      {school?.districtName && (
-        <div>
-          <p className="block text-sm font-medium text-neutral-700 mb-1">District</p>
-          <p className="text-sm text-neutral-700">{school.districtName}</p>
-        </div>
-      )}
+      {/* A pick from the existing districts in the school's state; saved as district_id. */}
+      <DistrictPicker
+        value={district.id}
+        state={selectedState ?? ''}
+        onChange={(id, name) => setDistrict({ id, name })}
+      />
       <div className="grid grid-cols-2 gap-4">
         <Select
           label="County"

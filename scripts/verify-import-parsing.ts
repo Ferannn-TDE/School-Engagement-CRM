@@ -8,6 +8,7 @@
  * rejection, both of which previously produced a silent zero.
  */
 import * as XLSX from 'xlsx';
+import { districtProblem, matchDistrict } from '../src/utils/districts.ts';
 import { strict as assert } from 'node:assert';
 import { mkdtempSync, writeFileSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -320,6 +321,33 @@ void (async () => {
     assert.deepEqual(contacts.map((h) => headerField(h, 'contacts')), ['firstName', 'lastName', 'email', 'phone', 'role', 'schoolId', 'notes']);
     assert.deepEqual(schools.map((h) => headerField(h, 'schools')), ['name', 'district', 'county', 'address', 'city', 'state', 'zipCode', 'schoolType', 'notes']);
   });
+
+  console.log('District names from the school import');
+  {
+    const districts = [
+      { id: 1, name: 'Collinsville CUSD 10', state: 'IL' },
+      { id: 2, name: 'Unit 5', state: 'IL' },
+      { id: 3, name: 'Unit 5', state: 'IL' },
+      { id: 4, name: 'Unit 5', state: 'MO' },
+      { id: 5, name: 'Kirksville R-III', state: 'MO' },
+    ];
+    check('a district matches by name, ignoring case and spacing, within the state', () => {
+      assert.deepEqual(matchDistrict('  collinsville   cusd 10 ', 'IL', districts), { kind: 'matched', id: 1, name: 'Collinsville CUSD 10' });
+      assert.deepEqual(matchDistrict('Kirksville R-III', 'mo', districts), { kind: 'matched', id: 5, name: 'Kirksville R-III' });
+    });
+    check('the same name in another state does not match', () => {
+      assert.deepEqual(matchDistrict('Kirksville R-III', 'IL', districts), { kind: 'none' });
+      assert.deepEqual(matchDistrict('Unit 5', 'MO', districts), { kind: 'matched', id: 4, name: 'Unit 5' });
+    });
+    check('unknown and ambiguous names are flagged, blank is just blank; nothing is created', () => {
+      assert.deepEqual(matchDistrict('Nowhere SD', 'IL', districts), { kind: 'none' });
+      assert.deepEqual(matchDistrict('Unit 5', 'IL', districts), { kind: 'ambiguous', count: 2 });
+      assert.deepEqual(matchDistrict('', 'IL', districts), { kind: 'blank' });
+      assert.equal(districtProblem({ kind: 'none' }), 'District not found: saved without a district');
+      assert.equal(districtProblem({ kind: 'ambiguous', count: 2 }), 'Matches 2 districts: saved without a district');
+      assert.equal(districtProblem({ kind: 'blank' }), null);
+    });
+  }
 
   console.log(`\n${passed} passed, ${failures.length} failed\n`);
   if (failures.length) process.exit(1);

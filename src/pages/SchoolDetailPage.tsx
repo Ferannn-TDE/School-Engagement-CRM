@@ -170,7 +170,7 @@ export function SchoolDetailPage() {
       />
       <div className="p-8 space-y-6">
         {/* Who verified it, and who last changed it (db/027). */}
-        <p className="-mt-2 -mb-2 text-xs text-neutral-500 flex flex-wrap items-center gap-x-3 gap-y-1">
+        <p className="text-xs text-neutral-500 flex flex-wrap items-center gap-x-3 gap-y-1">
           {verificationText(school.isVerified, school.lastVerifiedAt, school.verifiedBy) && (
             <span>{verificationText(school.isVerified, school.lastVerifiedAt, school.verifiedBy)}</span>
           )}

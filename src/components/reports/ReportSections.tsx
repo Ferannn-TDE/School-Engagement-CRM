@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { ExportCsvButton } from '../common/ExportCsvButton';
 import { MIN_MONTHS_FOR_TREND, FOLLOW_UP_DAYS, QUIET_MONTHS, UPDATED_RECENT_MONTHS, EVENT_ATTENDANCE_TYPE } from '../../constants/reportSettings';
 import { REPORT_SERIES, REPORT_QUIET } from '../../constants/charts';
 import {
@@ -55,9 +56,11 @@ function compare(now: number, before: number | null, comparison: Comparison) {
 
 const COUNTY_PAGE = 10;
 
-function CountyTable({ rows, cols }: {
+function CountyTable({ rows, cols, csv }: {
   rows: { key: string; name: string; cells: ReactNode[] }[];
   cols: string[];
+  /** "Export CSV": the same rows as plain values (every page). */
+  csv?: { name: string; rows: (string | number)[][] };
 }) {
   const [page, setPage] = useState(0);
   // A narrower state filter can leave fewer pages than the one open.
@@ -65,6 +68,12 @@ function CountyTable({ rows, cols }: {
   const shown = rows.slice(current * COUNTY_PAGE, (current + 1) * COUNTY_PAGE);
   return (
     <div>
+      {csv && (
+        <div className="flex justify-end mb-2 print:hidden">
+          <ExportCsvButton name={csv.name} rows={csv.rows}
+            columns={['County', ...cols].map((label, i) => ({ label, value: (r: (string | number)[]) => r[i] }))} />
+        </div>
+      )}
       <div className="overflow-x-auto rounded-lg border border-neutral-100">
         <table className="w-full table-fixed text-sm">
           <colgroup><col style={{ width: `${100 - cols.length * 20}%` }} />{cols.map((c) => <col key={c} style={{ width: '20%' }} />)}</colgroup>
@@ -172,6 +181,7 @@ export function CoverageSection({ m }: { m: ReportModel }) {
         <p className="text-xs text-neutral-500">Counties, lowest share with a contact first</p>
         <CountyTable
           cols={['Schools', 'No contact']}
+          csv={{ name: `contact-coverage-${slug(m.range.label)}`, rows: c.byCounty.map((x) => [`${x.county}, ${x.state}`, x.schoolIds.length, x.withoutIds.length]) }}
           rows={c.byCounty.map((x) => ({
             key: `${x.state}|${x.county}`, name: `${x.county}, ${x.state}`,
             cells: [fmt(x.schoolIds.length),
@@ -418,6 +428,7 @@ export function GapsSection({ m }: { m: ReportModel }) {
         <p className="text-xs text-neutral-500">Counties, lowest share contacted first (county names as stored)</p>
         <CountyTable
           cols={['Schools', 'Contacted']}
+          csv={{ name: `coverage-gaps-${slug(m.range.label)}`, rows: g.byCounty.map((x) => [`${x.county}, ${x.state}`, x.schoolIds.length, x.contactedIds.length]) }}
           rows={g.byCounty.map((x) => ({
             key: `${x.state}|${x.county}`, name: `${x.county}, ${x.state}`,
             cells: [fmt(x.schoolIds.length),
@@ -458,6 +469,16 @@ export function ImpactSection({ m }: { m: ReportModel }) {
       </Tiles>
       {impact.length ? (
         <div className="overflow-x-auto">
+          <div className="flex justify-end mb-2 print:hidden">
+            <ExportCsvButton name={`event-follow-ups-${slug(range.label)}`} rows={impact} columns={[
+              { label: 'Event', value: (x) => names.get(x.eventId) ?? x.eventId },
+              { label: 'Date', value: (x) => x.day },
+              { label: 'Schools', value: (x) => x.schoolIds.length },
+              { label: 'Visitors', value: (x) => x.visitors },
+              { label: `Followed up in ${FOLLOW_UP_DAYS} days`, value: (x) => x.followedIds.length },
+              { label: 'Window open', value: (x) => (x.windowOpen ? 'Yes' : 'No') },
+            ]} />
+          </div>
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-neutral-100 text-xs text-neutral-500">

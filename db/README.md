@@ -33,9 +33,49 @@ how 001 and 002 went missing once (found and re-applied on 2026-09-26/28).
 | `024_bug_reports.sql` | Applied 2026-10-27, after 023: `bug_reports` for the "Report a problem" button (page, description, browser, screen size, app version, who, when, open / resolved). Everyone files reports and reads their own; admins read and manage all. The reporter and status are stamped by a trigger. RLS, aal2, deny delete, bulk-delete guard, archive stamps. TEST 5: 11 checks PASS. |
 | `025_mfa_for_editors_and_admins_only.sql` | Applied 2026-11-09 by sophie, no test results recorded. Sign-up opened to any email (the 004 hook switched off). The authenticator step (aal2) is now needed only by editors and admins: `app_role()` returns the assigned role only at aal2, else viewer; new `assigned_role()` gives the assigned role at any level. The restrictive "Require MFA (aal2)" policy dropped from schools, staff, contacts, events, programs, activities, import_batches and bug_reports (kept on user_roles and role_changes), so viewers read with a password session. Policies before it saved in `backup.policies_before_025`. |
 | `026_activity_audit.sql` | `created_by`, `updated_at`, `updated_by` on `activities`, stamped by triggers from the signed-in email ('database' for the owner): who logged an activity, and who last edited its content and when. Archiving is not an edit. Existing rows not backfilled. Shown in the visit details panel on a school's Activity History. |
-| `027_last_updated_and_verified_stamps.sql` | Applied 2026-11-12: `updated_by` and `verified_by` on `schools` and `staff`. A trigger (`stamp_record_changes`) moves `updated_at` / `updated_by` only when the content really changes (the scraper's bookkeeping, edit locks, archiving and verification don't count), and stamps `last_verified_at` / `verified_by` only when Verified is switched on or off. The app shows "Last updated <date> by <who>" and flags records not updated in over 12 months. No backfill. The next migration is 028. |
+| `027_last_updated_and_verified_stamps.sql` | Applied 2026-11-12: `updated_by` and `verified_by` on `schools` and `staff`. A trigger (`stamp_record_changes`) moves `updated_at` / `updated_by` only when the content really changes (the scraper's bookkeeping, edit locks, archiving and verification don't count), and stamps `last_verified_at` / `verified_by` only when Verified is switched on or off. The app shows "Last updated <date> by <who>" and flags records not updated in over 12 months. No backfill. |
 | `028_other_details_and_event_type.sql` | Applied 2026-11-12: `programs.category_other`, `activities.activity_type_other`, `events.event_type` (six types, NULL = "Not set") and `events.event_type_other`. A trigger (`require_other_text`) requires the "Please specify" text when Other is being set, and lets every other update of an existing row through (archive, restore). |
 | `029_import_rows.sql` | Applied 2026-11-12: `import_rows`, each saved row of an activity import (school as typed, matched school, activity, visitors, optional `visitor_name`). Editors and admins only, for reading too (RLS on `can_edit()`); viewers and anon get no rows. `create_import_batch` (9 arguments) saves rows with the batch; `attach_import_rows` adds an older batch's rows from its original file (same SHA-256, once); archiving a batch archives its rows. |
+| `030_import_other_text.sql` | Applied 2026-11-13: `import_batches.activity_type_other` (with `require_other_text`), and one `create_import_batch` in place of the 022 and 029 forms: the same arguments plus optional `p_rows` and `p_activity_type_other`, the same checks and messages, the Other text saved on the batch and its activities. TEST A showed old and new give identical results. The next migration is 031. |
+
+## Open items (handoff, 2026-11-13)
+
+Known, decided not to build yet. Each needs an owner or a client decision.
+
+1. **Scraper: stop writing verification on existing schools.** `SCHOOL_SQL` in
+   `Scraper/helpers.py` (the `ON CONFLICT … DO UPDATE` list) still sets `is_verified` and
+   `last_verified_at`. Harmless since 027 (the trigger keeps both unless Verified is
+   switched), but it should go: delete those two assignments, keep them in the INSERT, and
+   add a check to `Scraper/tests/test_verified_rows_refresh.py` that a run leaves both
+   unchanged. Owner: Sean. No PR yet.
+2. **Open sign-up (025): confirm with the client.** Anyone who confirms an email can sign up
+   as a viewer and read every school and contact, staff emails and phones included.
+   Options: keep it, go back to SIUE-only sign-up (the 004 hook), or require an admin to
+   approve new accounts.
+3. **Run `verify:reports-sql` in CI.** It needs a Postgres; it only runs locally today
+   (`REPORTS_TEST_DATABASE_URL`). A Postgres service in `.github/workflows/ci.yml` would
+   cover it. CI also only runs on PRs into `main`.
+4. **Event Type "Not set" on existing events.** Event Type is saved since 028; every earlier
+   event (254 on 2026-11-12) shows "Not set" until edited. The client could set the IACAC
+   college fairs to "Outreach Fair" in one update, if they want.
+5. **PSAT events not marked as testing dates.** Two PSAT events ("PSAT NMSQT", "PSAT
+   Testing", Oct 28, 2026) have no `category = 'school_testing_date'`, so they count as
+   outreach and show in the event picker. Mark them (and teach the scraper's testing-dates
+   list their names) if they're testing days.
+6. **Priority tiers.** Every school is "standard", so tier orders nothing in Priorities
+   yet. The client sets High or Low on the school form when they want it to.
+7. **Large-chunk build warning.** `npm run build` warns that the main JavaScript chunk is
+   over 500 kB. Loading the larger pages on demand (route-level `lazy()`) would speed up
+   the first load. If that's done, add a "new version available, reload" notice for stale
+   chunks after a deploy (item 1 of the Nov 12 round explains why there's none today).
+8. **Old branches on GitHub.** Merged and safe to delete when convenient:
+   `bulk-activity-import`, `ci-and-hardening`, `client-requests-nov`,
+   `database-protections`, `demo-polish`, `reports-calculations`, `roles-and-bug-reports`,
+   `round-nov-12`, `scraper-fixes`, `scraper-part3`, `verified-and-last-updated`, and
+   `priorities-and-tables` (its work is in `main` through PR #11; only a later merge
+   commit makes it look unmerged). **Not merged:** `50-states` (Sean, 2026-10-21: "Added
+   50 states resolver and data integrity", "Stabilize scraper writes and event
+   handling"); ask Sean before touching it.
 
 ## Removing a visitor's name (029)
 

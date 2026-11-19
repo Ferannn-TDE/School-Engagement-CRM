@@ -180,3 +180,14 @@ select:not([multiple]):disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* Printing (the Meeting summary): the page alone, on Letter paper. */
+@media print {
+  @page { size: letter; margin: 0.5in; }
+  aside, .skip-nav, [data-print-hide] { display: none !important; }
+  #main-content { margin-left: 0 !important; padding-bottom: 0 !important; min-height: 0 !important; }
+  body, .min-h-screen { background: #fff !important; min-height: 0 !important; }
+  .meeting-summary { font-size: 11px; }
+  .meeting-summary h1 { font-size: 18px; }
+  .meeting-summary .text-2xl { font-size: 18px; line-height: 1.2; }
+}

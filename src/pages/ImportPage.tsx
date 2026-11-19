@@ -28,7 +28,8 @@ import {
   type ParsedRow,
 } from '../utils/importParsing';
 import { importContactsBulk } from '../services/contactsService';
-import { importSchoolsBulk } from '../services/schoolsService';
+import { getDistricts, importSchoolsBulk } from '../services/schoolsService';
+import { districtProblem, matchDistrict } from '../utils/districts';
 import { fetchArchivedLookup, restoreItem } from '../services/archiveService';
 import { ArchivedMatchesPanel } from '../components/imports/ArchivedMatchesPanel';
 import { ActivityImport } from '../components/imports/ActivityImport';
@@ -117,6 +118,35 @@ interface CombinedPreview {
   schoolSheetName: string;
   contactSheetName: string | null;
   warnings: string[];
+}
+
+/** The district a file names, matched to the district table (utils/districts); undefined
+ *  when blank, unknown or ambiguous. No district is ever created. */
+function districtIdFor(name: string | undefined, state: string | undefined): number | undefined {
+  const m = matchDistrict(name, state, getDistricts());
+  return m.kind === 'matched' ? m.id : undefined;
+}
+
+/** The preview's list of district names that couldn't be matched (the school is still saved). */
+function DistrictWarnings({ rows }: { rows: { row: number; school: string; district: string; state: string }[] }) {
+  const districts = getDistricts();
+  const problems = rows
+    .map((r) => ({ ...r, problem: districtProblem(matchDistrict(r.district, r.state, districts)) }))
+    .filter((r) => r.problem);
+  if (!problems.length) return null;
+  return (
+    <div role="status" className="mb-4 p-4 rounded-lg border border-warning/30 bg-warning/10 text-sm">
+      <p className="font-medium text-neutral-800 mb-1">
+        {problems.length} district name{problems.length === 1 ? '' : 's'} not matched. Those schools are saved without a district; no district is created.
+      </p>
+      <ul className="list-disc ml-5 text-neutral-700 space-y-0.5">
+        {problems.slice(0, 20).map((p) => (
+          <li key={p.row}>Row {p.row}: {p.school || '(no name)'} — “{p.district}” {p.state ? `(${p.state})` : ''}: {p.problem}</li>
+        ))}
+      </ul>
+      {problems.length > 20 && <p className="mt-1 text-neutral-600">…and {problems.length - 20} more.</p>}
+    </div>
+  );
 }
 
 export function ImportPage() {
@@ -274,7 +304,7 @@ export function ImportPage() {
           .filter((r, i) => keepSchool[i] && (r['name'] as string)?.trim())
           .map((r) => ({
             name: (r['name'] as string).trim(),
-            district: (r['district'] as string) || undefined,
+            districtId: districtIdFor(r['district'] as string, r['state'] as string),
             county: (r['county'] as string) || '',
             address: (r['address'] as string) || '',
             city: (r['city'] as string) || '',
@@ -608,7 +638,7 @@ export function ImportPage() {
             const mapped = mapRow(row);
             return {
               name: mapped.name || '',
-              district: mapped.district || undefined,
+              districtId: districtIdFor(mapped.district, mapped.state),
               county: mapped.county || '',
               address: mapped.address || '',
               city: mapped.city || '',
@@ -894,6 +924,10 @@ export function ImportPage() {
                   disabled={isImporting}
                 />
 
+                <DistrictWarnings
+                  rows={combinedPreview.schoolRows.map((r, i) => ({ row: i + 2, school: String(r['name'] ?? ''), district: String(r['district'] ?? ''), state: String(r['state'] ?? '') }))}
+                />
+
                 {/* Schools preview table */}
                 {combinedPreview.schoolRows.length > 0 && (
                   <div className="mb-4">
@@ -1154,6 +1188,12 @@ export function ImportPage() {
                   onChange={setArchivedDecisions}
                   disabled={isImporting}
                 />
+
+                {activeTab === 'schools' && (
+                  <DistrictWarnings
+                    rows={parsedData.map((r, i) => { const m = mapRow(r); return { row: i + 2, school: m.name ?? '', district: m.district ?? '', state: m.state ?? '' }; })}
+                  />
+                )}
 
                 {validationErrors.length > 0 && (
                   <div className="mb-4 p-4 bg-red-50 rounded-lg border border-red-100">

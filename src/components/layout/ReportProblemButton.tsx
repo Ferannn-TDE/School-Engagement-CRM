@@ -51,6 +51,7 @@ export function ReportProblemButton() {
   return (
     <>
       <button
+        data-print-hide
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Report a problem"

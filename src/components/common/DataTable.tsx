@@ -15,6 +15,8 @@ import { ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
 import { classNames } from '../../utils/helpers';
 import { Pagination } from './Pagination';
 import { useUrlState, useUrlStateBatch } from '../../hooks/useUrlState';
+import { ExportCsvButton } from './ExportCsvButton';
+import type { CsvColumn } from '../../utils/csv';
 
 interface DataTableProps<T> {
   data: T[];
@@ -37,6 +39,8 @@ interface DataTableProps<T> {
   /** Every row's height, so rows stay the same however long a value is. Cells cut long
    *  text to fit (see OneLine); room for two lines by default. */
   rowHeight?: string;
+  /** "Export CSV": exports every row of the current filtered, sorted view (all pages). */
+  exportCsv?: { name: string; columns: CsvColumn<T>[] };
 }
 
 const PAGE_SIZES = [25, 50, 100];
@@ -64,6 +68,7 @@ export function DataTable<T>({
   urlState = false,
   resetKey,
   rowHeight = '4rem',
+  exportCsv,
 }: DataTableProps<T>) {
   // Both stores always exist (hooks can't be conditional); urlState picks one.
   const [localSorting, setLocalSorting] = useState<SortingState>([]);
@@ -136,6 +141,12 @@ export function DataTable<T>({
 
   return (
     <div className="pb-4">
+      {exportCsv && (
+        <div className="flex justify-end mb-2 print:hidden">
+          <ExportCsvButton name={exportCsv.name} columns={exportCsv.columns}
+            rows={table.getPrePaginationRowModel().rows.map((r) => r.original)} />
+        </div>
+      )}
       <div className="overflow-x-auto rounded-lg border border-neutral-100">
         <table className={classNames('divide-y divide-neutral-100 table-fixed', columnWidths ? 'w-full' : 'min-w-full')} style={columnWidths ? { minWidth } : undefined}>
           {columnWidths && (

@@ -18,6 +18,7 @@ const PAGE_TABLES: [pattern: string, tables: DataTable[]][] = [
   ['/events', ['schools', 'events']],
   ['/generate', ['schools', 'contacts', 'events']],
   ['/reports', ['schools', 'contacts', 'events', 'activities']],
+  ['/reports/summary', ['schools', 'contacts', 'events', 'activities']],
   ['/counties', ALL],
   ['/counties/:countyName', ALL],
   ['/counties/:state/:countyName', ALL],

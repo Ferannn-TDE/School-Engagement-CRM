@@ -177,7 +177,7 @@ function RecentImports({ refreshKey, onChanged }: { refreshKey: number; onChange
       load();
       onChanged();
     } catch (err) {
-      toast.error(writeErrorMessage(err, `Couldn't restore: ${(err as { message?: string })?.message ?? err}`));
+      toast.error(writeErrorMessage(err, 'Couldn’t restore the batch'));
     }
   };
 
@@ -243,7 +243,7 @@ function RecentImports({ refreshKey, onChanged }: { refreshKey: number; onChange
           try {
             await archiveImportBatch(confirm.id);
           } catch (err) {
-            toast.error(writeErrorMessage(err, `Couldn't archive: ${(err as { message?: string })?.message ?? err}`));
+            toast.error(writeErrorMessage(err, 'Couldn’t archive the batch'));
             throw err;
           }
           toast.success(`Archived ${confirm.fileName}`);
@@ -470,7 +470,7 @@ export function ActivityImport() {
       await reload();
     } catch (err) {
       console.error('Activity import save failed:', err);
-      toast.error(writeErrorMessage(err, `Nothing was saved: ${(err as { message?: string })?.message ?? err}`));
+      toast.error(writeErrorMessage(err, 'Nothing was saved'));
     } finally {
       setSaving(false);
     }

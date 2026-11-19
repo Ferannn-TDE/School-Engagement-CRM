@@ -44,6 +44,8 @@ jobs:
         run: npm run verify:activity-import
       - name: Verify report figures
         run: npm run verify:reports
+      - name: Every failed save says why
+        run: npm run verify:errors
       - name: Verify no database deletes
         run: npm run verify:no-deletes
       - name: Visitors' names stay out of lists, exports and Reports

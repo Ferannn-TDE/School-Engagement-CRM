@@ -16,6 +16,7 @@ import {
   type BugReport,
 } from '../services/bugReportsService';
 import toast from 'react-hot-toast';
+import { writeErrorMessage } from '../utils/writeErrors';
 import { browserName } from '../utils/browserName';
 import { useConfirm } from '../hooks/useConfirm';
 
@@ -100,7 +101,7 @@ export function BugReportsPage() {
       toast.success(done);
       await load();
     } catch (err) {
-      toast.error(`Couldn’t update the report: ${(err as { message?: string })?.message ?? err}`);
+      toast.error(writeErrorMessage(err, 'Couldn’t update the report'));
     } finally {
       setBusy(null);
     }

@@ -18,7 +18,7 @@ import type { Contact } from '../types';
 import { ContactRole, ContactRoleLabels } from '../types';
 import { contactRoleLabel } from '../utils/contactRoles';
 import toast from 'react-hot-toast';
-import { FreshnessIcon } from '../components/common/FreshnessIcon';
+import { FreshnessIcon, FreshnessLegend } from '../components/common/FreshnessIcon';
 import { OneLine } from '../components/common/OneLine';
 import { contactFreshness } from '../utils/freshness';
 import { useRole } from '../context/useRole';
@@ -72,7 +72,7 @@ export function ContactsPage() {
           <div className="min-w-0">
             <div className="flex items-center gap-1.5 min-w-0">
               <OneLine className="font-medium text-neutral-800">{`${row.original.firstName} ${row.original.lastName}`.trim()}</OneLine>
-              <FreshnessIcon flags={contactFreshness(row.original)} />
+              <FreshnessIcon flags={contactFreshness(row.original)} name={`${row.original.firstName} ${row.original.lastName}`.trim()} />
             </div>
             {row.original.title && <OneLine className="text-xs text-neutral-500">{row.original.title}</OneLine>}
           </div>
@@ -306,6 +306,7 @@ export function ContactsPage() {
             description="Every contact record has been verified."
           />
         ) : (
+          <>
           <Card padding={false}>
             <DataTable
               data={filteredContacts}
@@ -332,6 +333,8 @@ export function ContactsPage() {
               emptyMessage="No contacts match your filters."
             />
           </Card>
+          <FreshnessLegend />
+          </>
         )}
       </div>
 

@@ -1,4 +1,4 @@
-import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { Info } from 'lucide-react';
 
@@ -8,7 +8,18 @@ import { Info } from 'lucide-react';
  * elsewhere or scrolling closes it. The text is drawn over the page, so a scrolling
  * table never cuts it off, and is the button's description for screen readers.
  */
-export function InfoTip({ text, label }: { text: string; label: string }) {
+export function InfoTip({ text, label, icon, content, buttonLabel, className }: {
+  text?: string;
+  label: string;
+  /** Replaces the (i), e.g. the amber warning icon. */
+  icon?: ReactNode;
+  /** Richer content than `text` (a list). */
+  content?: ReactNode;
+  /** The button's accessible name; defaults to "About <label>". */
+  buttonLabel?: string;
+  /** Colour classes for the button; defaults to grey. */
+  className?: string;
+}) {
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState<{ left: number; top: number; up: boolean } | null>(null);
   const button = useRef<HTMLButtonElement>(null);
@@ -48,7 +59,7 @@ export function InfoTip({ text, label }: { text: string; label: string }) {
       <button
         ref={button}
         type="button"
-        aria-label={`About ${label}`}
+        aria-label={buttonLabel ?? `About ${label}`}
         aria-describedby={id}
         aria-expanded={open}
         // Inside a sortable header: explaining a column never sorts it.
@@ -62,9 +73,9 @@ export function InfoTip({ text, label }: { text: string; label: string }) {
         onPointerLeave={(e) => { if (e.pointerType === 'mouse') setOpen(false); }}
         onFocus={(e) => { if (e.currentTarget.matches(':focus-visible')) setOpen(true); }}
         onBlur={() => setOpen(false)}
-        className="relative inline-flex shrink-0 items-center justify-center rounded-full text-neutral-400 hover:text-neutral-700 focus-visible:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-siue-red after:absolute after:-inset-3.5 after:content-['']"
+        className={`relative inline-flex shrink-0 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-siue-red after:absolute after:-inset-3.5 after:content-[''] ${className ?? 'text-neutral-400 hover:text-neutral-700 focus-visible:text-neutral-700'}`}
       >
-        <Info size={13} aria-hidden="true" />
+        {icon ?? <Info size={13} aria-hidden="true" />}
       </button>
       {/* Always in the page (hidden when closed) so aria-describedby has text to read. */}
       {createPortal(
@@ -75,7 +86,7 @@ export function InfoTip({ text, label }: { text: string; label: string }) {
           className="fixed z-50 w-72 max-w-[calc(100vw-1rem)] rounded-lg bg-neutral-800 px-3 py-2 text-xs font-normal normal-case tracking-normal leading-relaxed text-white shadow-lg whitespace-pre-line"
           style={pos ? { left: pos.left, top: pos.top, transform: pos.up ? 'translateY(-100%)' : undefined } : undefined}
         >
-          {text}
+          {content ?? text}
         </div>,
         document.body,
       )}

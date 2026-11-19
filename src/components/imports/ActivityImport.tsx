@@ -495,6 +495,12 @@ export function ActivityImport() {
         throw err;
       }
       setSaved({ activities: plan.length, rows: usedRows, fileName: preview.fileName });
+      // The typed event exists now: pick it, so a second file for the same event links to
+      // it instead of making the event again (and warning about itself).
+      if (madeEvent) {
+        const made = madeEvent;
+        setDetails((d) => ({ ...d, eventId: made, newEventName: '' }));
+      }
       toast.success(`Saved ${plan.length} activit${plan.length === 1 ? 'y' : 'ies'}`);
       reset();
       setRefreshKey((k) => k + 1);

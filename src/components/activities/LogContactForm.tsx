@@ -10,6 +10,7 @@ import { parseVisitors } from '../../utils/visitors';
 import { specifyError } from '../../utils/labels';
 import { activityDateError, futureDateNote, latestActivityDay } from '../../utils/activityDates';
 import toast from 'react-hot-toast';
+import { focusFirstProblem, MAX, textProblem } from '../../utils/formRules';
 import { writeErrorMessage } from '../../utils/writeErrors';
 
 interface LogContactFormProps {
@@ -39,11 +40,20 @@ export function LogContactForm({ schoolId, onClose }: LogContactFormProps) {
   // Only in-person types have visitors; a count typed before switching to a call is dropped.
   const inPerson = IN_PERSON_ACTIVITY_TYPES.includes(method);
   const visitors = inPerson ? parseVisitors(visitorsText) : { value: null, error: '' };
-  const otherError = specifyError(method, methodOther);
+  const otherError = method === 'other'
+    ? specifyError(method, methodOther) || textProblem(methodOther, '"Please specify"', { max: MAX.other })
+    : '';
+  const notesError = textProblem(notes, 'Notes', { max: MAX.notes });
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (dateError || visitors.error || otherError) return;
+    // Messages show under each field as you type; on Save, go to the first one.
+    if (!focusFirstProblem([
+      ['log-contact-date', dateError],
+      ['log-contact-method-other', otherError],
+      ['log-contact-visitors', visitors.error],
+      ['log-contact-notes', notesError],
+    ])) return;
     setSaving(true);
     setError('');
     try {
@@ -133,6 +143,7 @@ export function LogContactForm({ schoolId, onClose }: LogContactFormProps) {
         rows={3}
         placeholder="What was discussed, and any next step"
         value={notes}
+        error={notesError || undefined}
         onChange={(e) => setNotes(e.target.value)}
       />
       {error && (
@@ -144,7 +155,7 @@ export function LogContactForm({ schoolId, onClose }: LogContactFormProps) {
         <Button variant="ghost" type="button" onClick={onClose} disabled={saving}>
           Cancel
         </Button>
-        <Button type="submit" loading={saving} disabled={!!dateError || !!visitors.error || !!otherError}>
+        <Button type="submit" loading={saving}>
           Log contact
         </Button>
       </div>

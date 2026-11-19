@@ -36,6 +36,8 @@ import { countyLabel } from '../utils/counties';
 import { formatPhone, websiteHref, websiteLabel } from '../utils/helpers';
 import toast from 'react-hot-toast';
 import { useRole } from '../context/useRole';
+import { RowMenu } from '../components/common/RowActions';
+import { useContactActions } from '../components/contacts/useContactActions';
 
 export function SchoolDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -47,6 +49,7 @@ export function SchoolDetailPage() {
     loading,
   } = useAppContext();
   const { canEdit } = useRole();
+  const { menuItems: contactMenuItems, dialogs: contactDialogs } = useContactActions();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showArchiveConfirm, setShowArchiveConfirm] = useState(false);
   const [showUnverifyConfirm, setShowUnverifyConfirm] = useState(false);
@@ -337,30 +340,36 @@ export function SchoolDetailPage() {
           <h3 className="text-base font-semibold text-neutral-800 mb-4">Contact Roster</h3>
           {contacts.length > 0 ? (
             <div className="divide-y divide-neutral-50">
-              {contacts.map((contact) => (
-                <button
-                  key={contact.id}
-                  type="button"
-                  onClick={() => setOpenContact(contact)}
-                  aria-label={`Show phone and email for ${`${contact.firstName} ${contact.lastName}`.trim()}`}
-                  className="w-full flex items-center justify-between gap-3 py-3 px-2 -mx-2 rounded-lg text-left hover:bg-neutral-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-siue-red/30"
-                >
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium text-neutral-700">
-                      {contact.firstName} {contact.lastName}
-                    </p>
-                    <p className="text-xs text-neutral-500 truncate">
-                      {contact.email || (contact.phone ? formatPhone(contact.phone) : 'No email or phone')}
-                    </p>
+              {contacts.map((contact) => {
+                const name = `${contact.firstName} ${contact.lastName}`.trim();
+                return (
+                  <div key={contact.id} className="flex items-center gap-2 py-1">
+                    <button
+                      type="button"
+                      onClick={() => setOpenContact(contact)}
+                      aria-label={`Show phone and email for ${name}`}
+                      className="flex-1 min-w-0 flex items-center justify-between gap-3 py-2 px-2 -ml-2 rounded-lg text-left hover:bg-neutral-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-siue-red/30"
+                    >
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-neutral-700">
+                          {contact.firstName} {contact.lastName}
+                        </p>
+                        <p className="text-xs text-neutral-500 truncate">
+                          {contact.email || (contact.phone ? formatPhone(contact.phone) : 'No email or phone')}
+                        </p>
+                      </div>
+                      <div className="flex flex-wrap items-center justify-end gap-2 shrink-0">
+                        <Badge>{contactRoleLabel(contact)}</Badge>
+                        <Badge variant={contact.isActive ? 'success' : 'default'}>
+                          {contact.isActive ? 'Active' : 'Inactive'}
+                        </Badge>
+                      </div>
+                    </button>
+                    {/* The same menu as Contacts; viewers don't see it. */}
+                    {canEdit && <RowMenu name={name || 'this contact'} items={contactMenuItems(contact)} />}
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <Badge>{contactRoleLabel(contact)}</Badge>
-                    <Badge variant={contact.isActive ? 'success' : 'default'}>
-                      {contact.isActive ? 'Active' : 'Inactive'}
-                    </Badge>
-                  </div>
-                </button>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <p className="text-sm text-neutral-500 py-4 text-center">No contacts for this school.</p>
@@ -535,6 +544,7 @@ export function SchoolDetailPage() {
         <SchoolForm school={school} onClose={() => setShowEditModal(false)} />
       </Modal>
 
+      {contactDialogs}
       <Modal open={openContact !== null} onClose={() => setOpenContact(null)} title="Contact" size="sm">
         {openContact && <ContactDetails contact={openContact} schoolName={school.name} />}
       </Modal>

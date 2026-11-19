@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { type ColumnDef } from '@tanstack/react-table';
-import { Plus, Users, ShieldCheck, ShieldOff, CheckCircle, Pencil, UserX, UserCheck, Archive } from 'lucide-react';
+import { Plus, Users, ShieldCheck, ShieldOff } from 'lucide-react';
 import { Header } from '../components/layout/Header';
 import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
@@ -10,26 +10,24 @@ import { Badge } from '../components/common/Badge';
 import { DataTable } from '../components/common/DataTable';
 import { Modal } from '../components/common/Modal';
 import { EmptyState } from '../components/common/EmptyState';
-import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import { ContactForm } from '../components/contacts/ContactForm';
 import { useAppContext } from '../context/useAppContext';
 import { useUrlState } from '../hooks/useUrlState';
 import type { Contact } from '../types';
 import { ContactRole, ContactRoleLabels } from '../types';
 import { contactRoleLabel } from '../utils/contactRoles';
-import toast from 'react-hot-toast';
-import { FreshnessIcon } from '../components/common/FreshnessIcon';
+import { FreshnessIcon, FreshnessLegend } from '../components/common/FreshnessIcon';
 import { OneLine } from '../components/common/OneLine';
 import { contactFreshness } from '../utils/freshness';
 import { useRole } from '../context/useRole';
 import { RowMenu } from '../components/common/RowActions';
 import { Missing } from '../components/common/Missing';
-import { useConfirm } from '../hooks/useConfirm';
+import { useContactActions } from '../components/contacts/useContactActions';
 
 type VerifiedTab = 'all' | 'verified' | 'unverified';
 
 export function ContactsPage() {
-  const { state, getSchoolById, updateContact, archiveContact, verifyContact, unverifyContact } = useAppContext();
+  const { state, getSchoolById } = useAppContext();
   const { canEdit } = useRole();
   // Kept in the address so the view survives leaving the tab, a refresh and Back.
   const [search, setSearch] = useUrlState('q');
@@ -39,9 +37,7 @@ export function ContactsPage() {
   const [tabRaw, setVerifiedTab] = useUrlState('tab', 'all');
   const verifiedTab = (['all', 'verified', 'unverified'].includes(tabRaw) ? tabRaw : 'all') as VerifiedTab;
   const [showAddModal, setShowAddModal] = useState(false);
-  const [editingContact, setEditingContact] = useState<Contact | null>(null);
-  const [archivingContact, setArchivingContact] = useState<Contact | null>(null);
-  const { confirm, dialog } = useConfirm();
+  const { menuItems, dialogs } = useContactActions();
 
   const unverifiedCount = useMemo(
     () => state.contacts.filter((c) => !c.isVerified).length,
@@ -72,7 +68,7 @@ export function ContactsPage() {
           <div className="min-w-0">
             <div className="flex items-center gap-1.5 min-w-0">
               <OneLine className="font-medium text-neutral-800">{`${row.original.firstName} ${row.original.lastName}`.trim()}</OneLine>
-              <FreshnessIcon flags={contactFreshness(row.original)} />
+              <FreshnessIcon flags={contactFreshness(row.original)} name={`${row.original.firstName} ${row.original.lastName}`.trim()} />
             </div>
             {row.original.title && <OneLine className="text-xs text-neutral-500">{row.original.title}</OneLine>}
           </div>
@@ -149,52 +145,12 @@ export function ContactsPage() {
           const c = row.original;
           const name = `${c.firstName} ${c.lastName}`.trim() || 'this contact';
           return (
-            <RowMenu
-              name={name}
-              items={[
-                { icon: <Pencil size={14} />, label: 'Edit', onClick: () => setEditingContact(c) },
-                // Verified is an on/off switch; turning it off asks first.
-                c.isVerified
-                  ? {
-                    icon: <ShieldOff size={14} />,
-                    label: 'Unverify',
-                    onClick: () => confirm({
-                      title: `Unverify ${name}?`,
-                      message: `${name} goes back to the Unverified list. Nothing else changes. Your name and the time are recorded.`,
-                      confirmLabel: 'Unverify',
-                    }, () => unverifyContact(c.id)),
-                  }
-                  : { icon: <CheckCircle size={14} />, label: 'Verify', onClick: () => verifyContact(c.id) },
-                c.isActive
-                  ? {
-                    icon: <UserX size={14} />,
-                    label: 'Deactivate',
-                    tone: 'danger',
-                    onClick: () => confirm({
-                      title: `Deactivate ${name}?`,
-                      message: `${name} stays on file but is left out of email lists and active counts. You can activate them again at any time.`,
-                      confirmLabel: 'Deactivate',
-                    }, () => {
-                      updateContact({ ...c, isActive: false });
-                      toast.success('Contact deactivated');
-                    }),
-                  }
-                  : {
-                    icon: <UserCheck size={14} />,
-                    label: 'Activate',
-                    onClick: () => {
-                      updateContact({ ...c, isActive: true });
-                      toast.success('Contact activated');
-                    },
-                  },
-                { icon: <Archive size={14} />, label: 'Archive', tone: 'danger', onClick: () => setArchivingContact(c) },
-              ]}
-            />
+            <RowMenu name={name} items={menuItems(c)} />
           );
         },
       },
     ],
-    [getSchoolById, updateContact, verifyContact, unverifyContact, confirm]
+    [getSchoolById, menuItems]
   );
 
   const roleOptions = Object.values(ContactRole).map((role) => ({
@@ -306,6 +262,7 @@ export function ContactsPage() {
             description="Every contact record has been verified."
           />
         ) : (
+          <>
           <Card padding={false}>
             <DataTable
               data={filteredContacts}
@@ -332,6 +289,8 @@ export function ContactsPage() {
               emptyMessage="No contacts match your filters."
             />
           </Card>
+          <FreshnessLegend />
+          </>
         )}
       </div>
 
@@ -344,35 +303,7 @@ export function ContactsPage() {
         <ContactForm onClose={() => setShowAddModal(false)} />
       </Modal>
 
-      <Modal
-        open={!!editingContact}
-        onClose={() => setEditingContact(null)}
-        title="Edit Contact"
-        size="lg"
-      >
-        {editingContact && (
-          <ContactForm contact={editingContact} onClose={() => setEditingContact(null)} />
-        )}
-      </Modal>
-
-      <ConfirmDialog
-        open={!!archivingContact}
-        onClose={() => setArchivingContact(null)}
-        onConfirm={() => {
-          if (archivingContact) {
-            archiveContact(archivingContact.id);
-            toast.success('Contact archived');
-          }
-        }}
-        title="Archive Contact"
-        message={
-          archivingContact
-            ? `Archive "${archivingContact.firstName} ${archivingContact.lastName}"? They'll be hidden everywhere. You can restore them from Settings → Archived.`
-            : ''
-        }
-        confirmLabel="Archive Contact"
-      />
-      {dialog}
+      {dialogs}
     </div>
   );
 }

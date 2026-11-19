@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { MAX, optionalText, requiredChoice, requiredText, trimStrings } from '../../utils/formRules';
 import { Input } from '../common/Input';
 import { Select } from '../common/Select';
 import { Textarea } from '../common/Textarea';
@@ -9,12 +10,12 @@ import { ProgramCategoryLabels } from '../../types';
 import type { Program } from '../../types';
 
 const programSchema = z.object({
-  name: z.string().min(1, 'Program name is required'),
-  category: z.string().min(1, 'Category is required'),
-  description: z.string().optional(),
+  name: requiredText('Program name', MAX.name),
+  category: requiredChoice('Choose a category.'),
+  description: optionalText('Description', MAX.description),
   // Other: "Please specify" is required, and shown instead of "Other" (db/028).
-  categoryOther: z.string().optional(),
-}).refine((d) => d.category !== 'other' || !!d.categoryOther?.trim(), { path: ['categoryOther'], message: 'Please specify' });
+  categoryOther: optionalText('"Please specify"', MAX.other),
+}).refine((d) => d.category !== 'other' || !!d.categoryOther?.trim(), { path: ['categoryOther'], message: 'Say what kind of program it is.' });
 
 type ProgramFormData = z.infer<typeof programSchema>;
 
@@ -46,7 +47,8 @@ export function ProgramForm({ program, onSubmit, onCancel }: ProgramFormProps) {
       : {},
   });
 
-  const handleFormSubmit = (data: ProgramFormData) => {
+  const handleFormSubmit = (raw: ProgramFormData) => {
+    const data = trimStrings(raw);
     onSubmit({
       name: data.name,
       category: data.category as Program['category'],
@@ -91,6 +93,7 @@ export function ProgramForm({ program, onSubmit, onCancel }: ProgramFormProps) {
         label="Description"
         rows={3}
         placeholder="Optional — any relevant details about the program"
+        error={errors.description?.message}
         {...register('description')}
       />
       <div className="flex justify-end gap-3 pt-4 border-t border-neutral-100">

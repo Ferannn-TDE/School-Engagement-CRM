@@ -422,7 +422,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       });
 
   const updateEvent = (event: Event, changes?: Partial<Event>): void => {
-    dbUpdateEvent(event.id, changes ?? event)
+    dbUpdateEvent(event.id, changes ?? event, event.hostSchoolId)
       .then(() =>
         dispatch({
           type: 'UPDATE_EVENT',

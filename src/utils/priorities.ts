@@ -14,7 +14,7 @@
 import type { ActivityRecord, Contact, Event, School } from '../types';
 import { RECENT_CONTACT_DAYS } from '../constants/reportSettings';
 import { addDays, dayOf, daysBetween, type Day } from './reports';
-import { isTestingDate } from './events';
+import { eventSchoolIds, isTestingDate } from './events';
 
 export interface RecentItem {
   schoolId: string;
@@ -74,7 +74,7 @@ export function priorityLists(
     if (isTestingDate(e)) continue;
     const d = dayOf(e.date);
     if (d < today) continue;
-    for (const id of e.participatingSchools) {
+    for (const id of eventSchoolIds(e)) {
       const seen = upcoming.get(id);
       if (!seen || d < seen.day) upcoming.set(id, { eventId: e.id, day: d });
     }

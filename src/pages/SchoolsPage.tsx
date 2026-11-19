@@ -20,7 +20,7 @@ import { useUrlState } from '../hooks/useUrlState';
 import { countyOptions, inCounty } from '../utils/counties';
 import type { School as SchoolType } from '../types';
 import { formatSchoolType } from '../utils/helpers';
-import { FreshnessIcon } from '../components/common/FreshnessIcon';
+import { FreshnessIcon, FreshnessLegend } from '../components/common/FreshnessIcon';
 import { OneLine } from '../components/common/OneLine';
 import { lastUpdatedText, schoolFreshness } from '../utils/freshness';
 import { useRole } from '../context/useRole';
@@ -134,7 +134,7 @@ export function SchoolsPage() {
               >
                 {row.original.name}
               </Link>
-              <FreshnessIcon flags={schoolFreshness(row.original)} />
+              <FreshnessIcon flags={schoolFreshness(row.original)} name={row.original.name} />
             </div>
             {row.original.districtName && (
               <OneLine className="text-xs text-neutral-500">{row.original.districtName}</OneLine>
@@ -319,6 +319,7 @@ export function SchoolsPage() {
             description="Great work — every school record has been verified."
           />
         ) : (
+          <>
           <Card padding={false}>
             <DataTable
               data={filteredSchools}
@@ -349,6 +350,8 @@ export function SchoolsPage() {
               emptyMessage="No schools match your filters."
             />
           </Card>
+          <FreshnessLegend />
+          </>
         )}
       </div>
 

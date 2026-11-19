@@ -176,12 +176,14 @@ export interface Event {
   /** False for all-day events and events with no recorded time: show the date only. */
   hasTime?: boolean;
   /** Where the event came from: a school's calendar, IACAC, or entered in the app. */
-  source?: 'school_calendar' | 'iacac' | 'manual';
+  source?: 'school_calendar' | 'iacac' | 'manual' | 'import';
   /** events.category (db/007). 'school_testing_date' = a busy date, not outreach. */
   category?: string;
   endDate?: string;
   location: string;
   participatingSchools: string[];
+  /** The school whose calendar listed the event (events.schools_involved); not removable in the app. */
+  hostSchoolId?: string;
   attendeeCount?: number;
   notes?: string;
   createdAt: string;

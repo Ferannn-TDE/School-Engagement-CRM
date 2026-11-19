@@ -12,7 +12,7 @@
  * always passed in.
  */
 import type { ActivityRecord, Contact, Event, School } from '../types';
-import { isTestingDate } from './events';
+import { eventSchoolIds, isTestingDate } from './events';
 import {
   EVENT_ATTENDANCE_TYPE,
   FOLLOW_UP_DAYS,
@@ -428,7 +428,7 @@ export function eventSummary(events: Event[], range: DayRange, today: Day): Even
     pastIds: outreach.filter((e) => inRange(dayOf(e.date), range) && dayOf(e.date) < today).map((e) => e.id),
     upcomingIds: upcoming.map((e) => e.id),
     upcomingByMonth,
-    upcomingWithSchoolsIds: upcoming.filter((e) => e.participatingSchools.length > 0).map((e) => e.id),
+    upcomingWithSchoolsIds: upcoming.filter((e) => eventSchoolIds(e).length > 0).map((e) => e.id),
   };
 }
 

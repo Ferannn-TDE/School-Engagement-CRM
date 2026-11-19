@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { MAX, optionalPhone, optionalText, requiredChoice, requiredText, trimStrings, wholeNumber, zipCode } from '../../utils/formRules';
 import { Input } from '../common/Input';
 import { Select } from '../common/Select';
 import { Textarea } from '../common/Textarea';
@@ -12,17 +13,17 @@ import { DistrictPicker } from './DistrictPicker';
 import toast from 'react-hot-toast';
 
 const schoolSchema = z.object({
-  name: z.string().min(1, 'School name is required'),
-  county: z.string().min(1, 'County is required'),
-  address: z.string().min(1, 'Address is required'),
-  city: z.string().min(1, 'City is required'),
-  state: z.string().min(1, 'State is required'),
-  zipCode: z.string().min(5, 'Valid zip code required'),
-  phone: z.string().optional(),
+  name: requiredText('School name', MAX.name),
+  county: requiredChoice('Choose a county.'),
+  address: requiredText('Address', MAX.address),
+  city: requiredText('City', MAX.city),
+  state: requiredChoice('Choose a state.'),
+  zipCode: zipCode(),
+  phone: optionalPhone(),
   schoolType: z.enum(['high_school', 'middle_school']),
-  notes: z.string().optional(),
-  enrollment: z.string().optional(),
-  gradeRange: z.string().optional(),
+  notes: optionalText('Notes', MAX.notes),
+  enrollment: wholeNumber('Enrollment', { max: 100000 }),
+  gradeRange: optionalText('Grade range', MAX.gradeRange),
   priorityTier: z.string().optional(),
 });
 
@@ -55,7 +56,9 @@ export function SchoolForm({ school, onClose }: SchoolFormProps) {
           phone: school.phone || '',
           schoolType: school.schoolType,
           notes: school.notes || '',
-          enrollment: school.enrollment != null ? String(school.enrollment) : '',
+          // 106 schools (career and tech centers) have 0 stored, meaning not recorded: shown
+          // blank so the at-least-1 rule doesn't block editing them; unchanged, it isn't saved.
+          enrollment: school.enrollment ? String(school.enrollment) : '',
           gradeRange: school.gradeRange || '',
           priorityTier: school.priorityTier || 'standard',
         }
@@ -81,7 +84,8 @@ export function SchoolForm({ school, onClose }: SchoolFormProps) {
     return [...names].sort((a, b) => a.localeCompare(b)).map((c) => ({ value: c, label: c }));
   }, [appState.schools, selectedState, school?.county]);
 
-  const onSubmit = (data: SchoolFormData) => {
+  const onSubmit = (raw: SchoolFormData) => {
+    const data = trimStrings(raw);
     const enrollment = data.enrollment ? parseInt(data.enrollment, 10) : undefined;
     const gradeRange = data.gradeRange || undefined;
     const priorityTier = (data.priorityTier as 'high' | 'standard' | 'low' | undefined) || undefined;
@@ -206,7 +210,7 @@ export function SchoolForm({ school, onClose }: SchoolFormProps) {
         <Input
           label="Enrollment"
           type="number"
-          helpText="Total student population"
+          helpText="Total student population; leave blank if not known"
           error={errors.enrollment?.message}
           {...register('enrollment')}
         />
@@ -231,6 +235,7 @@ export function SchoolForm({ school, onClose }: SchoolFormProps) {
       <Textarea
         label="Notes"
         rows={3}
+        error={errors.notes?.message}
         {...register('notes')}
       />
       <div className="flex justify-end gap-3 pt-4 border-t border-neutral-100">

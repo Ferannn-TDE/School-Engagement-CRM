@@ -25,8 +25,11 @@ import {
 import { buildActivityTemplate, fileHash, planActivities, readActivityWorkbook } from '../../utils/activityImportFile';
 import { looksLikeSpreadsheet } from '../../utils/importParsing';
 import { parseVisitors, visitorsLabel } from '../../utils/visitors';
-import { EventPicker } from '../events/EventPicker';
+import { EventPicker, NEW_EVENT } from '../events/EventPicker';
+import { archiveEvent, createImportedEvent } from '../../services/eventsService';
+import { eventSourceLabel, similarEvents } from '../../utils/events';
 import { specifyError } from '../../utils/labels';
+import { MAX, textProblem } from '../../utils/formRules';
 import { AttachRowsButton, BatchRowsModal } from './ImportRows';
 import { useUrlState } from '../../hooks/useUrlState';
 import { activityDateError, futureDateNote, latestActivityDay } from '../../utils/activityDates';
@@ -80,6 +83,8 @@ interface Details {
   date: string;
   description: string;
   eventId: string;
+  /** The name typed for "Other: type an event name" (eventId is NEW_EVENT). */
+  newEventName: string;
 }
 
 interface Preview {
@@ -177,7 +182,7 @@ function RecentImports({ refreshKey, onChanged }: { refreshKey: number; onChange
       load();
       onChanged();
     } catch (err) {
-      toast.error(writeErrorMessage(err, `Couldn't restore: ${(err as { message?: string })?.message ?? err}`));
+      toast.error(writeErrorMessage(err, 'Couldn’t restore the batch'));
     }
   };
 
@@ -204,7 +209,7 @@ function RecentImports({ refreshKey, onChanged }: { refreshKey: number; onChange
                 </p>
                 <p className="text-xs text-neutral-500">
                   {b.activityType === 'other' && b.activityTypeOther ? b.activityTypeOther : IMPORT_ACTIVITY_TYPES[b.activityType] ?? b.activityType} on {format(new Date(`${b.activityDate}T12:00:00`), 'MMM d, yyyy')}
-                  {' · '}{b.activityCount} activit{b.activityCount === 1 ? 'y' : 'ies'} from {b.rowCount} rows
+                  {' · '}{b.activityCount} activit{b.activityCount === 1 ? 'y' : 'ies'} from {b.rowCount} row{b.rowCount === 1 ? '' : 's'}
                   {' · '}imported {format(new Date(b.createdAt), 'MMM d, yyyy h:mm a')}{b.createdBy ? ` by ${b.createdBy}` : ''}
                   {b.archived && b.archivedAt ? ` · archived ${format(new Date(b.archivedAt), 'MMM d, yyyy')}${b.archivedBy ? ` by ${b.archivedBy}` : ''}` : ''}
                 </p>
@@ -228,14 +233,14 @@ function RecentImports({ refreshKey, onChanged }: { refreshKey: number; onChange
         </ul>
       )}
       {batches !== null && !error && (
-        <Pagination pageIndex={page} pageSize={BATCHES_PER_PAGE} total={total} onPageChange={setPage} noun="batches" />
+        <Pagination pageIndex={page} pageSize={BATCHES_PER_PAGE} total={total} onPageChange={setPage} noun="batches" flush />
       )}
       {viewing && <BatchRowsModal batch={viewing} onClose={() => setBatchParam('')} />}
       <ConfirmDialog
         open={confirm !== null}
         onClose={() => setConfirm(null)}
         title="Archive this batch?"
-        message={confirm ? `The ${confirm.activityCount - confirm.archivedActivityCount} active activities from "${confirm.fileName}" leave the school pages and reports. Nothing is deleted: Restore here brings them back.` : ''}
+        message={confirm ? `The ${confirm.activityCount - confirm.archivedActivityCount} active activit${confirm.activityCount - confirm.archivedActivityCount === 1 ? 'y' : 'ies'} from "${confirm.fileName}" ${confirm.activityCount - confirm.archivedActivityCount === 1 ? 'leaves' : 'leave'} the school pages and reports. Nothing is deleted: Restore here brings them back.` : ''}
         confirmLabel="Archive batch"
         variant="secondary"
         onConfirm={async () => {
@@ -243,7 +248,7 @@ function RecentImports({ refreshKey, onChanged }: { refreshKey: number; onChange
           try {
             await archiveImportBatch(confirm.id);
           } catch (err) {
-            toast.error(writeErrorMessage(err, `Couldn't archive: ${(err as { message?: string })?.message ?? err}`));
+            toast.error(writeErrorMessage(err, 'Couldn’t archive the batch'));
             throw err;
           }
           toast.success(`Archived ${confirm.fileName}`);
@@ -258,7 +263,7 @@ function RecentImports({ refreshKey, onChanged }: { refreshKey: number; onChange
 export function ActivityImport() {
   const { state, reload } = useAppContext();
   const today = format(new Date(), 'yyyy-MM-dd');
-  const [details, setDetails] = useState<Details>({ activityType: 'event_participation', activityTypeOther: '', date: '', description: '', eventId: '' });
+  const [details, setDetails] = useState<Details>({ activityType: 'event_participation', activityTypeOther: '', date: '', description: '', eventId: '', newEventName: '' });
   const [preview, setPreview] = useState<Preview | null>(null);
   const [choices, setChoices] = useState<Record<number, string | null>>({});
   const [searching, setSearching] = useState<Record<number, boolean>>({});
@@ -275,8 +280,21 @@ export function ActivityImport() {
   const latestDay = latestActivityDay();
   const dateError = activityDateError(details.date);
   const isFuture = !!details.date && !dateError && details.date > today;
-  const otherError = specifyError(details.activityType, details.activityTypeOther);
-  const detailsReady = !!details.activityType && !dateError && !otherError;
+  const otherError = details.activityType === 'other'
+    ? specifyError(details.activityType, details.activityTypeOther) || textProblem(details.activityTypeOther, '"Please specify"', { max: MAX.other })
+    : '';
+  const descriptionError = textProblem(details.description, 'Description', { max: MAX.description });
+  // "Other: type an event name": the name is required, and events with a close name are
+  // offered first so the same event isn't made twice.
+  const typingEvent = details.eventId === NEW_EVENT;
+  const newEventError = typingEvent ? textProblem(details.newEventName, 'The event name', { required: true, max: MAX.name }) : '';
+  const lookalikes = useMemo(
+    () => (typingEvent && details.newEventName.trim().length >= 3
+      ? similarEvents(details.newEventName, state.events.filter((e) => e.id.startsWith('e_')), details.date)
+      : []),
+    [typingEvent, details.newEventName, details.date, state.events]
+  );
+  const detailsReady = !!details.activityType && !dateError && !otherError && !descriptionError && !newEventError;
 
   const schoolById = useMemo(() => new Map((preview?.schools ?? []).map((s) => [s.id, s])), [preview]);
 
@@ -442,6 +460,15 @@ export function ActivityImport() {
           await restoreItem('school', m.id);
         }
       }
+      // "Other: type an event name": make the minimal event now, and archive it again if
+      // the batch can't be saved, so a failed import leaves nothing behind.
+      let eventId = details.eventId || undefined;
+      let madeEvent: string | undefined;
+      if (details.eventId === NEW_EVENT) {
+        madeEvent = (await createImportedEvent(details.newEventName, details.date)).id;
+        eventId = madeEvent;
+      }
+      try {
       await createImportBatch({
         fileName: preview.fileName,
         fileHash: preview.hash,
@@ -450,7 +477,7 @@ export function ActivityImport() {
         activityTypeOther: details.activityType === 'other' ? details.activityTypeOther.trim() : undefined,
         activityDate: details.date,
         description: details.description.trim(),
-        eventId: details.eventId || undefined,
+        eventId,
         activities: plan,
         // The rows behind the activities (db/029), so the batch can be previewed later.
         rows: (preview.results ?? []).filter((r) => isUsed(r.row)).map((r) => ({
@@ -463,14 +490,24 @@ export function ActivityImport() {
           visitorName: r.visitorName?.trim() || null,
         })),
       });
+      } catch (err) {
+        if (madeEvent) await archiveEvent(madeEvent).catch(() => {});
+        throw err;
+      }
       setSaved({ activities: plan.length, rows: usedRows, fileName: preview.fileName });
-      toast.success(`Saved ${plan.length} activities`);
+      // The typed event exists now: pick it, so a second file for the same event links to
+      // it instead of making the event again (and warning about itself).
+      if (madeEvent) {
+        const made = madeEvent;
+        setDetails((d) => ({ ...d, eventId: made, newEventName: '' }));
+      }
+      toast.success(`Saved ${plan.length} activit${plan.length === 1 ? 'y' : 'ies'}`);
       reset();
       setRefreshKey((k) => k + 1);
       await reload();
     } catch (err) {
       console.error('Activity import save failed:', err);
-      toast.error(writeErrorMessage(err, `Nothing was saved: ${(err as { message?: string })?.message ?? err}`));
+      toast.error(writeErrorMessage(err, 'Nothing was saved'));
     } finally {
       setSaving(false);
     }
@@ -518,7 +555,7 @@ export function ActivityImport() {
 
           {saved && (
             <p role="status" className="mb-4 flex items-center gap-2 text-sm text-success">
-              <CheckCircle size={16} /> Saved {saved.activities} activities from {saved.rows} rows of “{saved.fileName}”. It’s listed under Recent imports.
+              <CheckCircle size={16} /> Saved {saved.activities} activit{saved.activities === 1 ? 'y' : 'ies'} from {saved.rows} row{saved.rows === 1 ? '' : 's'} of “{saved.fileName}”. It’s listed under Recent imports.
             </p>
           )}
 
@@ -547,6 +584,7 @@ export function ActivityImport() {
               value={details.eventId}
               near={details.date}
               allowCreate
+              allowTypedName
               onChange={(eventId, ev) => {
                 const evDay = ev?.date.slice(0, 10);
                 setDetails((d) => ({ ...d, eventId, date: !d.date && evDay && evDay <= latestDay ? evDay : d.date }));
@@ -555,6 +593,7 @@ export function ActivityImport() {
             <Input
               label="Description"
               value={details.description}
+              error={descriptionError || undefined}
               onChange={(e) => setDetails((d) => ({ ...d, description: e.target.value }))}
               placeholder="e.g. Students attended Engineering Day"
             />
@@ -571,6 +610,40 @@ export function ActivityImport() {
                 error={otherError || undefined}
                 onChange={(e) => setDetails((d) => ({ ...d, activityTypeOther: e.target.value }))}
               />
+            </div>
+          )}
+          {typingEvent && (
+            <div className="mb-4 space-y-2">
+              <Input
+                id="activity-import-new-event"
+                label="New event name"
+                required
+                placeholder="e.g. Alumni panel"
+                helpText={`Saved with the import as an event on ${details.date ? format(new Date(`${details.date}T12:00:00`), 'MMM d, yyyy') : 'the batch date'}, type Not set, marked “Added from an import”.`}
+                value={details.newEventName}
+                error={details.newEventName ? newEventError || undefined : undefined}
+                onChange={(e) => setDetails((d) => ({ ...d, newEventName: e.target.value }))}
+              />
+              {lookalikes.length > 0 && (
+                <div role="status" className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-neutral-800">
+                  <p className="font-medium">Is it one of these? {lookalikes.length === 1 ? 'An event' : 'Events'} with a similar name already {lookalikes.length === 1 ? 'exists' : 'exist'}:</p>
+                  <ul className="mt-1 space-y-1">
+                    {lookalikes.map((e) => (
+                      <li key={e.id} className="flex flex-wrap items-center justify-between gap-2">
+                        <span>{e.name} <span className="text-neutral-500">· {format(new Date(e.date), 'MMM d, yyyy')} · {eventSourceLabel(e)}</span></span>
+                        <button
+                          type="button"
+                          className="text-siue-red font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-siue-red rounded"
+                          onClick={() => setDetails((d) => ({ ...d, eventId: e.id, newEventName: '' }))}
+                        >
+                          Use this event
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-1 text-xs text-neutral-600">If none of them is it, carry on: a new event is made when you save.</p>
+                </div>
+              )}
             </div>
           )}
 
@@ -596,7 +669,7 @@ export function ActivityImport() {
             <input {...getInputProps()} aria-label="Upload a list of schools" />
             <Upload size={28} className="mx-auto mb-2 text-neutral-400" />
             <p className="text-sm font-medium text-neutral-700">
-              {!detailsReady ? (otherError ? 'Fill in “Please specify” for Other first' : 'Choose the activity type and date first') : parsing ? 'Reading the file…' : 'Drag and drop the list, or click to browse'}
+              {!detailsReady ? (otherError ? 'Fill in “Please specify” for Other first' : newEventError ? 'Type the new event’s name first' : descriptionError ? 'Shorten the description first' : 'Choose the activity type and date first') : parsing ? 'Reading the file…' : 'Drag and drop the list, or click to browse'}
             </p>
             <p className="text-xs text-neutral-500 mt-1">
               .xlsx, .xls or .csv, up to {formatBytes(MAX_UPLOAD_BYTES)}. Columns: school name, city, state, with or without a header.
@@ -612,7 +685,7 @@ export function ActivityImport() {
               <h2 className="text-lg font-semibold text-neutral-800">Preview: {preview.fileName}</h2>
               <p className="text-sm text-neutral-500 mt-1">
                 {details.activityType === 'other' ? details.activityTypeOther.trim() : IMPORT_ACTIVITY_TYPES[details.activityType]} on {format(new Date(`${details.date}T12:00:00`), 'MMM d, yyyy')}
-                {details.eventId && ` · ${state.events.find((e) => e.id === details.eventId)?.name ?? ''}`}. Nothing is saved until you choose Save.
+                {details.eventId && ` · ${typingEvent ? `${details.newEventName.trim()} (new event)` : state.events.find((e) => e.id === details.eventId)?.name ?? ''}`}. Nothing is saved until you choose Save.
               </p>
             </div>
             <Button size="sm" variant="ghost" onClick={reset} disabled={saving}>Cancel</Button>

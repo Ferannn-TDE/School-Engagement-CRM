@@ -25,6 +25,7 @@ export function eventSourceLabel(event: Event): string {
   if (isTestingDate(event)) return 'Testing date';
   if (event.source === 'iacac') return 'IACAC college fair';
   if (event.source === 'school_calendar') return 'School calendar';
+  if (event.source === 'import') return 'Added from an import';
   return 'Added in the app';
 }
 
@@ -32,7 +33,49 @@ export const EVENT_SOURCE_OPTIONS = [
   { value: 'iacac', label: 'IACAC college fairs' },
   { value: 'school_calendar', label: 'School calendars' },
   { value: 'manual', label: 'Added in the app' },
+  { value: 'import', label: 'Added from an import' },
 ];
+
+// Words that don't tell two event names apart.
+const FILLER = new Set(['the', 'and', 'of', 'at', 'for', 'a', 'an', 'in', 'on', 'to', 'with', 'event', 'night', 'day']);
+
+/** An event name's telling words: lower case, no punctuation, years and filler left out. */
+export function nameWords(name: string): string[] {
+  return name
+    .toLowerCase()
+    .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/&/g, ' and ')
+    .split(/[^a-z0-9]+/)
+    .filter((w) => w && !FILLER.has(w) && !/^(19|20)\d\d$/.test(w));
+}
+
+/**
+ * Events whose names are close to `name`, nearest to `nearDay` first: the same telling
+ * words, one name's words all inside the other's, or more than half of them shared.
+ * Used to warn before a new event is made from an import.
+ */
+export function similarEvents(name: string, events: Event[], nearDay: string, limit = 3): Event[] {
+  const words = new Set(nameWords(name));
+  if (!words.size) return [];
+  const anchor = new Date(`${nearDay || new Date().toISOString().slice(0, 10)}T12:00:00`).getTime();
+  return events
+    .filter((e) => !isTestingDate(e))
+    .map((e) => {
+      const other = new Set(nameWords(e.name));
+      if (!other.size) return null;
+      const shared = [...words].filter((w) => other.has(w)).length;
+      const inside = shared === Math.min(words.size, other.size);
+      const overlap = shared / Math.max(words.size, other.size);
+      return inside || overlap > 0.5 ? { e, overlap, inside } : null;
+    })
+    .filter((x): x is { e: Event; overlap: number; inside: boolean } => x !== null)
+    .sort((a, b) =>
+      Math.abs(new Date(`${a.e.date.slice(0, 10)}T12:00:00`).getTime() - anchor)
+      - Math.abs(new Date(`${b.e.date.slice(0, 10)}T12:00:00`).getTime() - anchor)
+      || b.overlap - a.overlap)
+    .slice(0, limit)
+    .map((x) => x.e);
+}
 
 /**
  * Who attended each event, from imported attendance: activities of type

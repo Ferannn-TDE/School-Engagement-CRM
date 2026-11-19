@@ -58,7 +58,9 @@ function rowToEvent(row: EventRow, listed: string[] = []): Event {
       ? 'school_calendar'
       : row.external_id?.startsWith('iacac:')
         ? 'iacac'
-        : 'manual',
+        : row.external_id?.startsWith('import:')
+          ? 'import'
+          : 'manual',
     category: row.category ?? undefined,
     endDate: undefined,
     location: row.location ?? '',
@@ -156,6 +158,29 @@ export async function createEvent(
     }
   }
   return rowToEvent(row, event.participatingSchools);
+}
+
+/**
+ * A minimal event made from Import Activities ("Other: type an event name"): the name,
+ * the batch's day as an all-day event, type Not set, and an external_id of
+ * "import:<uuid>" so it shows as "Added from an import". The scraper only writes its own
+ * "schoolreach:" and "iacac:" rows, and only where is_scraped is true.
+ */
+export async function createImportedEvent(name: string, day: string): Promise<Event> {
+  const { data, error } = await supabase
+    .from('events')
+    .insert({
+      fair_name: name.trim(),
+      date: day,
+      time: '00:00:00',
+      is_scraped: false,
+      event_type: null,
+      external_id: `import:${crypto.randomUUID()}`,
+    })
+    .select()
+    .single();
+  if (error) throw error;
+  return rowToEvent(data as EventRow);
 }
 
 export async function updateEvent(id: string, updates: Partial<Event>, hostSchoolId?: string): Promise<void> {

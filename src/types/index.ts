@@ -176,7 +176,7 @@ export interface Event {
   /** False for all-day events and events with no recorded time: show the date only. */
   hasTime?: boolean;
   /** Where the event came from: a school's calendar, IACAC, or entered in the app. */
-  source?: 'school_calendar' | 'iacac' | 'manual';
+  source?: 'school_calendar' | 'iacac' | 'manual' | 'import';
   /** events.category (db/007). 'school_testing_date' = a busy date, not outreach. */
   category?: string;
   endDate?: string;

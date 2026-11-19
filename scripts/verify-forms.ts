@@ -10,6 +10,8 @@ import {
   wholeNumber, wholeNumberProblem, zipProblem,
 } from '../src/utils/formRules.ts';
 import { PRIMARY_SHARE, sharedWidths, type ColumnSpec } from '../src/components/common/tableColumns.ts';
+import { nameWords, similarEvents } from '../src/utils/events.ts';
+import type { Event } from '../src/types/index.ts';
 
 let passed = 0;
 let failed = 0;
@@ -105,6 +107,35 @@ check('nothing to share with: no override', () => {
   assert.equal(sharedWidths(['primary', 'number'], 1200), undefined);
   assert.equal(sharedWidths(['text', 'number', 'date'], 1200), undefined);
   assert.equal(sharedWidths(schools, 0), undefined);
+});
+
+// --- Near-duplicate event names (Import → "Other: type an event name") ----
+const ev = (id: number, name: string, date: string, category?: string): Event => ({
+  id: `e_${id}`, name, date: `${date}T00:00:00`, location: '', participatingSchools: [], createdAt: '', updatedAt: '', category,
+});
+const list = [
+  ev(1, 'SIUE Alumni Panel', '2026-11-12'),
+  ev(2, 'Alumni Panel 2025', '2025-11-10'),
+  ev(3, 'Engineering Open House', '2026-11-18'),
+  ev(4, 'National ACT Test Date', '2026-12-12', 'school_testing_date'),
+  ev(5, 'Alumni and Friends Night', '2026-10-01'),
+];
+
+check('names compare on their telling words', () => {
+  assert.deepEqual(nameWords('The Alumni Panel — 2026!'), ['alumni', 'panel']);
+  assert.deepEqual(nameWords('Open House & Tour'), ['open', 'house', 'tour']);
+});
+
+check('similar names are found, nearest to the batch date first', () => {
+  const found = similarEvents('Alumni panel', list, '2026-11-19').map((e) => e.id);
+  assert.deepEqual(found.slice(0, 2), ['e_1', 'e_2'], 'same words; this year first');
+  assert.ok(!found.includes('e_3'));
+});
+
+check('testing dates and unrelated names are never offered', () => {
+  assert.deepEqual(similarEvents('ACT test', list, '2026-11-19'), []);
+  assert.deepEqual(similarEvents('Robotics workshop', list, '2026-11-19'), []);
+  assert.deepEqual(similarEvents('the', list, '2026-11-19'), []);
 });
 
 console.log(`\n${passed} passed, ${failed} failed`);

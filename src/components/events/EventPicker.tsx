@@ -20,6 +20,9 @@ interface EventPickerProps {
   near?: string;
   /** Offer "Create new event" (opens the event form and selects the new event). */
   allowCreate?: boolean;
+  /** Offer "Other: type an event name": the value becomes NEW_EVENT and the caller
+   *  asks for the name (Import makes a minimal event when the batch is saved). */
+  allowTypedName?: boolean;
   /** What "nothing chosen" is called: "No event" when linking, "All events" when filtering. */
   noneLabel?: string;
   /** Only events that can be linked to an activity: added in the app or scraped into the
@@ -29,12 +32,15 @@ interface EventPickerProps {
 
 const MAX_SHOWN = 60;
 
+/** The picker's value for "Other: type an event name". */
+export const NEW_EVENT = '__new__';
+
 /**
  * A searchable event picker: the events nearest a date first (past ones included),
  * filtered as you type by name or place, with "No event" at the top and, for editors,
  * "Create new event" at the bottom.
  */
-export function EventPicker({ id, label, value, onChange, near, allowCreate, noneLabel = 'No event', linkableOnly = true }: EventPickerProps) {
+export function EventPicker({ id, label, value, onChange, near, allowCreate, allowTypedName, noneLabel = 'No event', linkableOnly = true }: EventPickerProps) {
   const { state } = useAppContext();
   const { canEdit } = useRole();
   const [open, setOpen] = useState(false);
@@ -43,7 +49,7 @@ export function EventPicker({ id, label, value, onChange, near, allowCreate, non
   const box = useRef<HTMLDivElement>(null);
   const search = useRef<HTMLInputElement>(null);
 
-  const chosen = value ? state.events.find((e) => e.id === value) : undefined;
+  const chosen = value && value !== NEW_EVENT ? state.events.find((e) => e.id === value) : undefined;
   const anchor = new Date(`${near || format(new Date(), 'yyyy-MM-dd')}T12:00:00`).getTime();
 
   const options = useMemo(() => {
@@ -91,7 +97,7 @@ export function EventPicker({ id, label, value, onChange, near, allowCreate, non
           className="flex w-full items-center justify-between gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-2 text-left text-sm focus:outline-none focus:ring-2 focus:border-siue-red focus:ring-siue-red/30"
         >
           <span className={classNames('truncate', !chosen && 'text-neutral-500')}>
-            {chosen ? `${chosen.name} (${when(chosen)})` : value ? 'An event that is no longer listed' : noneLabel}
+            {chosen ? `${chosen.name} (${when(chosen)})` : value === NEW_EVENT ? 'Other: a new event (type its name below)' : value ? 'An event that is no longer listed' : noneLabel}
           </span>
           <ChevronDown size={16} className="shrink-0 text-neutral-400" />
         </button>
@@ -117,6 +123,14 @@ export function EventPicker({ id, label, value, onChange, near, allowCreate, non
                   <span className="text-neutral-600">{noneLabel}</span>
                 </button>
               </li>
+              {allowTypedName && canEdit && (
+                <li className="border-b border-neutral-100 pb-1 mb-1">
+                  <button type="button" role="option" aria-selected={value === NEW_EVENT} className={classNames(itemCls, 'font-medium text-neutral-800')} onClick={() => pick(NEW_EVENT)}>
+                    <span className="w-4 shrink-0">{value === NEW_EVENT && <Check size={14} className="text-siue-red" />}</span>
+                    Other: type an event name
+                  </button>
+                </li>
+              )}
               {options.slice(0, MAX_SHOWN).map((e) => (
                 <li key={e.id}>
                   <button type="button" role="option" aria-selected={e.id === value} className={itemCls} onClick={() => pick(e.id, e)}>

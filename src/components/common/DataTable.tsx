@@ -16,6 +16,7 @@ import { classNames } from '../../utils/helpers';
 import { Pagination } from './Pagination';
 import { useUrlState, useUrlStateBatch } from '../../hooks/useUrlState';
 import { ExportCsvButton } from './ExportCsvButton';
+import { InfoTip } from './InfoTip';
 import type { CsvColumn } from '../../utils/csv';
 import { ColGroup, cellClass, headClass, specKind, tableProps, type ColumnSpec } from './tableColumns';
 
@@ -171,6 +172,12 @@ export function DataTable<T>({
                     >
                       <div className={classNames('flex items-center gap-1', specKind(spec) === 'actions' && 'justify-end')}>
                         {flexRender(header.column.columnDef.header, header.getContext())}
+                        {header.column.columnDef.meta?.info && (
+                          <InfoTip
+                            label={typeof header.column.columnDef.header === 'string' ? header.column.columnDef.header : header.column.id}
+                            text={header.column.columnDef.meta.info}
+                          />
+                        )}
                         {header.column.getCanSort() && (
                           <span className="text-neutral-300">
                             {header.column.getIsSorted() === 'asc' ? (

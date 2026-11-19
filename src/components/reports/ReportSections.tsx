@@ -12,6 +12,8 @@ import type { Region } from '../../utils/region';
 import { Columns, Figure, Meter, Note, ReportSection, Tile, Tiles } from './ReportParts';
 import { Pagination } from '../common/Pagination';
 import { Missing } from '../common/Missing';
+import { HeaderWithInfo } from '../common/InfoTip';
+import { COLUMN_HELP } from '../../constants/columnHelp';
 import { ColGroup, cellClass, headClass, tableProps, type ColumnSpec } from '../common/tableColumns';
 
 export interface ReportModel {
@@ -57,9 +59,11 @@ function compare(now: number, before: number | null, comparison: Comparison) {
 
 const COUNTY_PAGE = 10;
 
-function CountyTable({ rows, cols, csv }: {
+function CountyTable({ rows, cols, csv, info = {} }: {
   rows: { key: string; name: string; cells: ReactNode[] }[];
   cols: string[];
+  /** Plain-language explanations for unclear column headers, by label. */
+  info?: Record<string, string>;
   /** "Export CSV": the same rows as plain values (every page). */
   csv?: { name: string; rows: (string | number)[][] };
 }) {
@@ -82,7 +86,7 @@ function CountyTable({ rows, cols, csv }: {
           <thead className="bg-neutral-50">
             <tr>
               <th className={headClass(specs[0])}>County</th>
-              {cols.map((c, i) => <th key={c} className={headClass(specs[i + 1])}>{c}</th>)}
+              {cols.map((c, i) => <th key={c} className={headClass(specs[i + 1])}>{info[c] ? <HeaderWithInfo label={c} info={info[c]} /> : c}</th>)}
             </tr>
           </thead>
           <tbody className="divide-y divide-neutral-50">
@@ -183,6 +187,7 @@ export function CoverageSection({ m }: { m: ReportModel }) {
         <p className="text-xs text-neutral-500">Counties, lowest share with a contact first</p>
         <CountyTable
           cols={['Schools', 'No contact']}
+          info={{ 'No contact': COLUMN_HELP.noContact }}
           csv={{ name: `contact-coverage-${slug(m.range.label)}`, rows: c.byCounty.map((x) => [`${x.county}, ${x.state}`, x.schoolIds.length, x.withoutIds.length]) }}
           rows={c.byCounty.map((x) => ({
             key: `${x.state}|${x.county}`, name: `${x.county}, ${x.state}`,
@@ -430,6 +435,7 @@ export function GapsSection({ m }: { m: ReportModel }) {
         <p className="text-xs text-neutral-500">Counties, lowest share contacted first (county names as stored)</p>
         <CountyTable
           cols={['Schools', 'Contacted']}
+          info={{ Contacted: COLUMN_HELP.contacted }}
           csv={{ name: `coverage-gaps-${slug(m.range.label)}`, rows: g.byCounty.map((x) => [`${x.county}, ${x.state}`, x.schoolIds.length, x.contactedIds.length]) }}
           rows={g.byCounty.map((x) => ({
             key: `${x.state}|${x.county}`, name: `${x.county}, ${x.state}`,
@@ -492,7 +498,7 @@ export function ImpactSection({ m }: { m: ReportModel }) {
                 <th className={headClass(IMPACT_COLUMNS[1])}>Date</th>
                 <th className={headClass(IMPACT_COLUMNS[2])}>Schools</th>
                 <th className={headClass(IMPACT_COLUMNS[3])}>Visitors</th>
-                <th className={headClass(IMPACT_COLUMNS[4])}>Followed up in {FOLLOW_UP_DAYS} days</th>
+                <th className={headClass(IMPACT_COLUMNS[4])}><HeaderWithInfo label={`Followed up in ${FOLLOW_UP_DAYS} days`} info={COLUMN_HELP.followedUp} /></th>
               </tr>
             </thead>
             <tbody>

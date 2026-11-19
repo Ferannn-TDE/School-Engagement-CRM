@@ -23,6 +23,7 @@ import { EVENT_SOURCE_OPTIONS, eventSourceLabel, isTestingDate } from '../utils/
 import { eventTypeLabel } from '../utils/labels';
 import toast from 'react-hot-toast';
 import { useRole } from '../context/useRole';
+import { COLUMN_HELP } from '../constants/columnHelp';
 
 export function EventsPage() {
   const { state, archiveEvent } = useAppContext();
@@ -84,7 +85,7 @@ export function EventsPage() {
         id: 'source',
         accessorFn: (row) => eventSourceLabel(row),
         header: 'Source',
-        meta: { kind: 'text' },
+        meta: { kind: 'text', info: COLUMN_HELP.eventSource },
         cell: ({ row }) =>
           isTestingDate(row.original) ? (
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium border border-dashed border-neutral-400 text-neutral-600">
@@ -114,7 +115,7 @@ export function EventsPage() {
       {
         id: 'schools',
         header: 'Schools',
-        meta: { kind: 'number' },
+        meta: { kind: 'number', info: COLUMN_HELP.eventSchools },
         cell: ({ row }) => (
           <div className="flex items-center gap-1">
             <Users size={14} className="text-neutral-400" />
@@ -125,7 +126,7 @@ export function EventsPage() {
       {
         accessorKey: 'attendeeCount',
         header: 'Attendees',
-        meta: { kind: 'number' },
+        meta: { kind: 'number', width: '8rem', info: COLUMN_HELP.eventAttendees },
         cell: ({ getValue }) => {
           const count = getValue() as number | undefined;
           return count ?? 0;

@@ -7,6 +7,8 @@ import { Modal } from '../common/Modal';
 import { Missing } from '../common/Missing';
 import { Pagination } from '../common/Pagination';
 import { ConfirmDialog } from '../common/ConfirmDialog';
+import { HeaderWithInfo } from '../common/InfoTip';
+import { COLUMN_HELP } from '../../constants/columnHelp';
 import { ColGroup, cellClass, headClass, tableProps, type ColumnSpec } from '../common/tableColumns';
 import { useAppContext } from '../../context/useAppContext';
 import { fileHash, readActivityWorkbook } from '../../utils/activityImportFile';
@@ -74,11 +76,11 @@ export function BatchRowsModal({ batch, onClose }: { batch: ImportBatch; onClose
               <thead className="bg-neutral-50 sticky top-0 z-10">
                 <tr>
                   <th className={th(0)}>Row</th>
-                  <th className={th(1)}>School as typed</th>
+                  <th className={th(1)}><HeaderWithInfo label="School as typed" info={COLUMN_HELP.schoolAsTyped} /></th>
                   <th className={th(2)}>City</th>
                   <th className={th(3)}>State</th>
-                  <th className={th(4)}>Matched school</th>
-                  <th className={th(5)}>Visitors</th>
+                  <th className={th(4)}><HeaderWithInfo label="Matched school" info={COLUMN_HELP.matchedSchool} /></th>
+                  <th className={th(5)}><HeaderWithInfo label="Visitors" info={COLUMN_HELP.visitors} /></th>
                   <th className={th(6)}>Name</th>
                 </tr>
               </thead>

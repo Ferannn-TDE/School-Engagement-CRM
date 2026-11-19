@@ -25,6 +25,7 @@ import { OneLine } from '../components/common/OneLine';
 import { lastUpdatedText, schoolFreshness } from '../utils/freshness';
 import { useRole } from '../context/useRole';
 import { happenedActivities } from '../utils/activityDates';
+import { COLUMN_HELP } from '../constants/columnHelp';
 
 type VerifiedTab = 'all' | 'verified' | 'unverified';
 
@@ -151,7 +152,7 @@ export function SchoolsPage() {
       {
         id: 'contacts',
         header: 'Contacts',
-        meta: { kind: 'number' },
+        meta: { kind: 'number', info: COLUMN_HELP.schoolContacts },
         accessorFn: (s) => getContactsBySchool(s.id).length,
         sortDescFirst: true,
         cell: ({ getValue }) => <span className="tabular-nums">{getValue() as number}</span>,
@@ -161,7 +162,7 @@ export function SchoolsPage() {
         // schools with none go last.
         id: 'activity',
         header: 'Activity',
-        meta: { kind: 'text', width: '13rem' },
+        meta: { kind: 'text', width: '13rem', info: COLUMN_HELP.schoolActivity },
         accessorFn: (s) => {
           const a = activityStats.get(s.id);
           return a ? `${a.last}|${String(a.count).padStart(5, '0')}` : undefined;

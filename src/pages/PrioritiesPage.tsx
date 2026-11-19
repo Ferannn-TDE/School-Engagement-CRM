@@ -22,6 +22,8 @@ import { useRole } from '../context/useRole';
 import { Pagination } from '../components/common/Pagination';
 import { RowMenu } from '../components/common/RowActions';
 import { Missing } from '../components/common/Missing';
+import { HeaderWithInfo } from '../components/common/InfoTip';
+import { COLUMN_HELP } from '../constants/columnHelp';
 import { ColGroup, cellClass, headClass, tableProps, type ColumnSpec } from '../components/common/tableColumns';
 import { RECENT_CONTACT_DAYS } from '../constants/reportSettings';
 
@@ -106,8 +108,11 @@ function WorkTable({
   onLog,
   page,
   onPageChange,
+  recent = false,
 }: {
   items: WorkItem[];
+  /** Recently in touch: Last contact also shows its type, and why the school stays. */
+  recent?: boolean;
   onLog?: (item: WorkItem) => void;
   /** Controlled by the page so each list's page number lives in the address. */
   page: number;
@@ -128,9 +133,9 @@ function WorkTable({
             <tr>
               <th className={`${headClass(WORK_COLUMNS[0])} pl-6`}>School</th>
               <th className={headClass(WORK_COLUMNS[1])}>County</th>
-              <th className={headClass(WORK_COLUMNS[2])}>Contacts</th>
-              <th className={headClass(WORK_COLUMNS[3])}>Last contact</th>
-              <th className={headClass(WORK_COLUMNS[4])}>Why it&rsquo;s here</th>
+              <th className={headClass(WORK_COLUMNS[2])}><HeaderWithInfo label="Contacts" info={COLUMN_HELP.activeContacts} /></th>
+              <th className={headClass(WORK_COLUMNS[3])}><HeaderWithInfo label="Last contact" info={recent ? COLUMN_HELP.recentLastContact : COLUMN_HELP.lastContact} /></th>
+              <th className={headClass(WORK_COLUMNS[4])}><HeaderWithInfo label={'Why it\u2019s here'} info={COLUMN_HELP.whyHere} /></th>
               <th className={headClass(WORK_COLUMNS[5])}>Actions</th>
             </tr>
           </thead>
@@ -322,7 +327,7 @@ export function PrioritiesPage() {
               <p className="text-sm font-medium text-success">Nothing here</p>
             </div>
           ) : list === 'recent' ? (
-            <WorkTable items={rows.recent} onLog={canEdit ? setLogFor : undefined} page={pageNum(recentPage)} onPageChange={(n) => setRecentPage(String(n))} />
+            <WorkTable recent items={rows.recent} onLog={canEdit ? setLogFor : undefined} page={pageNum(recentPage)} onPageChange={(n) => setRecentPage(String(n))} />
           ) : list === 'never' ? (
             <WorkTable items={rows.neverReached} onLog={canEdit ? setLogFor : undefined} page={pageNum(neverPage)} onPageChange={(n) => setNeverPage(String(n))} />
           ) : list === 'nocontact' ? (

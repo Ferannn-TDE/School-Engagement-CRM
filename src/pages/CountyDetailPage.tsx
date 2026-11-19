@@ -18,6 +18,8 @@ import { computeEngagementScore } from '../utils/engagementScore';
 import { countySummaryFromData, engagementRateFromData } from '../services/analyticsService';
 import { classNames, formatSchoolType } from '../utils/helpers';
 import { OneLine } from '../components/common/OneLine';
+import { HeaderWithInfo, InfoTip } from '../components/common/InfoTip';
+import { COLUMN_HELP } from '../constants/columnHelp';
 import { ColGroup, cellClass, headClass, tableProps, type ColumnSpec } from '../components/common/tableColumns';
 import { countyLabel, countyPath, mergeCountyRows, sameCounty } from '../utils/counties';
 import { attendanceByEvent, eventSourceLabel, outreachEvents, schoolsAtEvent, schoolsWithAttendance } from '../utils/events';
@@ -350,16 +352,18 @@ export function CountyDetailPage() {
                   <th className={classNames(headClass(SCHOOL_COLUMNS[2]), 'cursor-pointer select-none hover:text-neutral-700')} onClick={() => handleSort('contacts')}>
                     <span className="flex items-center gap-1">
                       Contacts
+                      <InfoTip label="Contacts" text={COLUMN_HELP.activeContacts} />
                       <SortIcon field="contacts" current={sortField} dir={sortDir} />
                     </span>
                   </th>
                   <th className={classNames(headClass(SCHOOL_COLUMNS[3]), 'cursor-pointer select-none hover:text-neutral-700')} onClick={() => handleSort('score')}>
                     <span className="flex items-center gap-1">
                       Score
+                      <InfoTip label="Score" text={COLUMN_HELP.score} />
                       <SortIcon field="score" current={sortField} dir={sortDir} />
                     </span>
                   </th>
-                  <th className={headClass(SCHOOL_COLUMNS[4])}>Tier</th>
+                  <th className={headClass(SCHOOL_COLUMNS[4])}><HeaderWithInfo label="Tier" info={COLUMN_HELP.engagement} /></th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-neutral-50">

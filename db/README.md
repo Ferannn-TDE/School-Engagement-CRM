@@ -79,16 +79,22 @@ Known, decided not to build yet. Each needs an owner or a client decision.
 
 ## Proposals (not built, 2026-11-19)
 
-Written up for a decision. Neither changes the database or the app yet.
+Written up for a decision. Neither is built yet.
 
 **A. Show matched visitors and total attendees separately.** Today an event's "visitors"
 is the sum of its activities' visitor counts, built from the rows (blank = 1) matched to a listed
 school. Rows that matched no school, or were left out on the Import screen, are not saved:
-the batch keeps only `import_batches.row_count`, so their visitor counts are lost. Proposed:
+the batch keeps only `import_batches.row_count`, so their visitor counts are lost. The
+database already accepts them: `insert_import_rows` (029, unchanged by 030) saves a row
+with `school_id` null and leaves its `activity_id` null (029 TEST 4, row 5). The Import
+screen just doesn't send them: `ActivityImport.tsx` sends only the rows it turns into
+activities (`isUsed`). Proposed:
 
-- Save every data row in `import_rows`, the unmatched and skipped ones too, with
-  `school_id` and `activity_id` left null (029 already allows both). No new column, and
-  no activity is created for them, so Reports, Priorities and the scores stay the same.
+- The Import screen sends every data row (not headers or blanks), the unmatched and
+  left-out ones with `school_id` null. No new column, and no activity is created for
+  them, so Reports, Priorities and the scores stay the same. Their Visitors value is
+  sent only when it's valid (a bad value sends null rather than blocking the save, since
+  the row isn't counted as a visit).
 - Matched visitors = the sum over rows with an `activity_id`, as today. Total attendees =
   the sum over every row in the batch. Reports → Event impact and the event's details show
   both, e.g. "38 visitors from listed schools · 52 attendees in total".
@@ -96,9 +102,10 @@ the batch keeps only `import_batches.row_count`, so their visitor counts are los
   rather than a false equal number. `attach_import_rows` (029) can't fill them in, because
   the batch already has rows; a second, file-hash-checked form that adds only the
   missing row numbers would.
-- Needs: a change to `create_import_batch` (031) so the unmatched rows are accepted, the
-  app change on Import, and a `verify:reports` check that matched ≤ total and that
-  matched equals today's figure.
+- Needs: no migration for new imports, only the app change on Import and the two
+  display changes, plus a `verify:reports` check that matched ≤ total and that matched
+  equals today's figure. A migration is needed only if old batches are to be filled in
+  (the second `attach_import_rows` form above), and that part is optional.
 
 **B. A logged "Change type or event" action for an import batch.** Today a batch saved
 with the wrong activity type or event can only be archived and imported again. Proposed:

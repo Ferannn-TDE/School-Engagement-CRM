@@ -27,7 +27,6 @@ const THING: Record<string, string> = {
   activities: 'logged contact',
   programs: 'program',
   import_batches: 'import',
-  import_rows: 'import row',
   district: 'district',
   county: 'county',
   state: 'state',

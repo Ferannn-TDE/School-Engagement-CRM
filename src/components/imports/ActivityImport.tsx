@@ -204,7 +204,7 @@ function RecentImports({ refreshKey, onChanged }: { refreshKey: number; onChange
                 </p>
                 <p className="text-xs text-neutral-500">
                   {b.activityType === 'other' && b.activityTypeOther ? b.activityTypeOther : IMPORT_ACTIVITY_TYPES[b.activityType] ?? b.activityType} on {format(new Date(`${b.activityDate}T12:00:00`), 'MMM d, yyyy')}
-                  {' · '}{b.activityCount} activit{b.activityCount === 1 ? 'y' : 'ies'} from {b.rowCount} rows
+                  {' · '}{b.activityCount} activit{b.activityCount === 1 ? 'y' : 'ies'} from {b.rowCount} row{b.rowCount === 1 ? '' : 's'}
                   {' · '}imported {format(new Date(b.createdAt), 'MMM d, yyyy h:mm a')}{b.createdBy ? ` by ${b.createdBy}` : ''}
                   {b.archived && b.archivedAt ? ` · archived ${format(new Date(b.archivedAt), 'MMM d, yyyy')}${b.archivedBy ? ` by ${b.archivedBy}` : ''}` : ''}
                 </p>
@@ -235,7 +235,7 @@ function RecentImports({ refreshKey, onChanged }: { refreshKey: number; onChange
         open={confirm !== null}
         onClose={() => setConfirm(null)}
         title="Archive this batch?"
-        message={confirm ? `The ${confirm.activityCount - confirm.archivedActivityCount} active activities from "${confirm.fileName}" leave the school pages and reports. Nothing is deleted: Restore here brings them back.` : ''}
+        message={confirm ? `The ${confirm.activityCount - confirm.archivedActivityCount} active activit${confirm.activityCount - confirm.archivedActivityCount === 1 ? 'y' : 'ies'} from "${confirm.fileName}" ${confirm.activityCount - confirm.archivedActivityCount === 1 ? 'leaves' : 'leave'} the school pages and reports. Nothing is deleted: Restore here brings them back.` : ''}
         confirmLabel="Archive batch"
         variant="secondary"
         onConfirm={async () => {
@@ -464,7 +464,7 @@ export function ActivityImport() {
         })),
       });
       setSaved({ activities: plan.length, rows: usedRows, fileName: preview.fileName });
-      toast.success(`Saved ${plan.length} activities`);
+      toast.success(`Saved ${plan.length} activit${plan.length === 1 ? 'y' : 'ies'}`);
       reset();
       setRefreshKey((k) => k + 1);
       await reload();
@@ -518,7 +518,7 @@ export function ActivityImport() {
 
           {saved && (
             <p role="status" className="mb-4 flex items-center gap-2 text-sm text-success">
-              <CheckCircle size={16} /> Saved {saved.activities} activities from {saved.rows} rows of “{saved.fileName}”. It’s listed under Recent imports.
+              <CheckCircle size={16} /> Saved {saved.activities} activit{saved.activities === 1 ? 'y' : 'ies'} from {saved.rows} row{saved.rows === 1 ? '' : 's'} of “{saved.fileName}”. It’s listed under Recent imports.
             </p>
           )}
 

@@ -3,17 +3,16 @@ import { happenedActivities } from '../utils/activityDates';
 import { useNavigate, Link } from 'react-router-dom';
 import {
   School, Users, Calendar, TrendingUp, Upload, ArrowRight,
-  AlertTriangle, List, Activity,
+  List, Activity,
 } from 'lucide-react';
 import { format, isAfter, subMonths } from 'date-fns';
 import { Header } from '../components/layout/Header';
 import { MetricCard, Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
-import { Badge } from '../components/common/Badge';
 import { useAppContext } from '../context/useAppContext';
 import { eventSourceLabel, outreachEvents } from '../utils/events';
 import { useRole } from '../context/useRole';
-import { contactCountsBySchool, contactCountsOf, hasNoContact } from '../utils/schoolCounts';
+import { contactCountsBySchool, hasNoContact } from '../utils/schoolCounts';
 
 const QUICK_ACTIONS = [
   { label: 'Import Contacts', description: 'Bulk import from CSV or Excel', icon: Upload, path: '/import', edits: true },
@@ -68,21 +67,8 @@ export function DashboardPage() {
 
     const avgContacts = total > 0 ? (activeTotal / total).toFixed(1) : '0.0';
 
-    const topAttention = state.schools
-      .map((s) => {
-        const contacts = contactCountsOf(contactCounts, s.id).active;
-        const lastActivity = activityMap.get(s.id) ?? null;
-        const issues: string[] = [];
-        if (contacts === 0) issues.push('No active contact');
-        if (!lastActivity) issues.push('No activity');
-        else if (!isAfter(lastActivity, sixMonthsAgo)) issues.push('Activity stale (6+ mo)');
-        return { id: s.id, name: s.name, county: s.county, contacts, issues };
-      })
-      .filter((s) => s.issues.length > 0)
-      .sort((a, b) => b.issues.length - a.issues.length || a.name.localeCompare(b.name))
-      .slice(0, 5);
 
-    return { total, withContacts, withRecentActivity, avgContacts, activeTotal, topAttention };
+    return { total, withContacts, withRecentActivity, avgContacts, activeTotal };
   }, [state.schools, state.contacts, state.activities]);
 
   const upcomingEvents = useMemo(
@@ -90,7 +76,7 @@ export function DashboardPage() {
       countedEvents
         .filter((e) => isAfter(new Date(e.date), new Date()))
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-        .slice(0, 6),
+        .slice(0, 8),
     [countedEvents]
   );
 
@@ -214,7 +200,7 @@ export function DashboardPage() {
         {/* ── Quick Actions + Upcoming Events ──────────────────────────────── */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Quick Actions */}
-          <Card>
+          <Card className="h-full">
             <h3 className="text-base font-semibold text-neutral-800 mb-4">Quick Actions</h3>
             <div className="space-y-2">
               {QUICK_ACTIONS.filter((a) => canEdit || !a.edits).map(({ label, description, icon: Icon, path }) => (
@@ -237,7 +223,7 @@ export function DashboardPage() {
           </Card>
 
           {/* Upcoming Events */}
-          <Card className="lg:col-span-2">
+          <Card className="lg:col-span-2 h-full">
             <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
               <h3 className="text-base font-semibold text-neutral-800">Upcoming Events</h3>
               <button
@@ -281,54 +267,6 @@ export function DashboardPage() {
           </Card>
         </div>
 
-        {/* ── Schools Needing Attention (Top 5) ────────────────────────────── */}
-        <Card>
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-            <div>
-              <h3 className="text-base font-semibold text-neutral-800 flex items-center gap-2">
-                <AlertTriangle size={15} className="text-warning" />
-                Schools Needing Attention
-              </h3>
-              <p className="text-xs text-neutral-500 mt-0.5">Top 5 highest-priority schools from your engagement data.</p>
-            </div>
-            <Link
-              to="/priorities"
-              className="text-sm text-siue-red hover:text-siue-maroon font-medium flex items-center gap-1 transition-colors shrink-0"
-            >
-              View all <ArrowRight size={14} />
-            </Link>
-          </div>
-          {dashboardComputed.topAttention.length > 0 ? (
-            <div className="divide-y divide-neutral-50">
-              {dashboardComputed.topAttention.map((school) => (
-                <div key={school.id} className="flex items-center justify-between py-3 gap-4">
-                  <div className="min-w-0 flex-1">
-                    <Link
-                      to={`/schools/${encodeURIComponent(school.id)}`}
-                      className="text-sm font-medium text-neutral-800 hover:text-siue-red transition-colors truncate block"
-                    >
-                      {school.name}
-                    </Link>
-                    <p className="text-xs text-neutral-500 mt-0.5">{school.county} County · {school.contacts} active contact{school.contacts !== 1 ? 's' : ''}</p>
-                  </div>
-                  <div className="flex flex-wrap gap-1 justify-end shrink-0">
-                    {school.issues.map((issue) => (
-                      <Badge key={issue} variant={school.issues.length >= 2 ? 'error' : 'warning'}>
-                        {issue}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="py-8 text-center">
-              <AlertTriangle size={28} className="mx-auto mb-3 text-success opacity-50" />
-              <p className="text-sm font-medium text-success">All schools are in good standing.</p>
-              <p className="text-xs text-neutral-500 mt-1">Every school has an active contact and recent activity.</p>
-            </div>
-          )}
-        </Card>
 
       </div>
     </div>

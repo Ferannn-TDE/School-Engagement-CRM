@@ -157,6 +157,7 @@ export function ReportsPage() {
             {' · '}{region === 'IL' ? 'Illinois only' : region === 'MO' ? 'Missouri only' : 'Illinois and Missouri'}
             {' · '}{comparison.kind === 'none' ? comparison.label : `compared with ${comparison.label}`}
           </p>
+          {comparison.note && <p className="text-xs text-neutral-500 mt-1">{comparison.note}</p>}
         </div>
 
         {isAdmin && <GettingStarted steps={steps} />}

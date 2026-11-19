@@ -113,6 +113,12 @@ check('with a year of logging, the same dates last year are used', () => {
   const c = comparisonFor(FALL, '2025-01-01');
   assert.deepEqual([c.kind, c.range], ['last-year', { start: '2025-08-24', end: '2025-10-27' }]);
   assert.equal(c.label, 'the same dates last year (Aug 24 – Oct 27, 2025)');
+  // Last year is before in-app logging (Sep 28, 2026): it holds imported lists only.
+  assert.equal(c.note, 'In-app logging started Sep 28, 2026; earlier years include imported lists only.');
+});
+check('no note when the compared period is all in-app logging', () => {
+  assert.equal(comparisonFor({ start: '2027-10-01', end: '2027-10-27' }, '2026-09-28').note, undefined);
+  assert.equal(comparisonFor(FALL, '2026-09-28').note, undefined);
 });
 check('with a few months of logging, the period just before is used', () => {
   const c = comparisonFor({ start: '2026-10-01', end: '2026-10-27' }, '2026-08-01');

@@ -53,6 +53,7 @@ function compare(now: number, before: number | null, comparison: Comparison) {
         {diff >= 0 ? '▲' : '▼'} {fmt(Math.abs(diff))}
       </span>{' '}
       vs {fmt(before)} in {comparison.label}
+      {comparison.note && <span className="block text-neutral-500">{comparison.note}</span>}
     </>
   );
 }

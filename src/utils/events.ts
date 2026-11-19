@@ -17,6 +17,19 @@ export function outreachEvents(events: Event[]): Event[] {
 }
 
 /**
+ * Every school on an event, each once: its host school (events.schools_involved, the
+ * school whose calendar listed it) plus the live event_schools rows (db/031). An archived
+ * event has none. The app only loads events that aren't archived and event_schools rows
+ * that aren't archived (eventsService.fetchEvents), so this is the whole rule. Every
+ * count or list of an event's schools goes through here; verify:event-schools checks
+ * nothing else reads participatingSchools or hostSchoolId for that.
+ */
+export function eventSchoolIds(event: Pick<Event, 'participatingSchools' | 'hostSchoolId'> & { archived?: boolean }): string[] {
+  if (event.archived) return [];
+  return [...new Set([...(event.hostSchoolId ? [event.hostSchoolId] : []), ...event.participatingSchools])];
+}
+
+/**
  * Where an event came from, as people say it. Events have no stored type: the old
  * "Outreach Fair" label only meant "found by the scraper", so it was on every
  * scraped event, information nights included. The source is what we really know.
@@ -99,10 +112,11 @@ export function attendanceByEvent(
 }
 
 /** The schools at an event: listed on it, or with imported attendance for it. */
-export function schoolsAtEvent(event: Pick<Event, 'id' | 'participatingSchools'>, attendance: Map<string, Set<string>>): string[] {
+export function schoolsAtEvent(event: Pick<Event, 'id' | 'participatingSchools' | 'hostSchoolId'>, attendance: Map<string, Set<string>>): string[] {
   const attended = attendance.get(event.id);
-  if (!attended?.size) return event.participatingSchools;
-  return [...new Set([...event.participatingSchools, ...attended])];
+  const listed = eventSchoolIds(event);
+  if (!attended?.size) return listed;
+  return [...new Set([...listed, ...attended])];
 }
 
 /**

@@ -48,6 +48,8 @@ jobs:
         run: npm run verify:errors
       - name: Form rules and table widths
         run: npm run verify:forms
+      - name: One rule for an event's schools
+        run: npm run verify:event-schools
       - name: Verify no database deletes
         run: npm run verify:no-deletes
       - name: Visitors' names stay out of lists, exports and Reports

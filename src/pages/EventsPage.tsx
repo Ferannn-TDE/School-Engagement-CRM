@@ -19,7 +19,7 @@ import { useAppContext } from '../context/useAppContext';
 import { useUrlState } from '../hooks/useUrlState';
 import type { Event } from '../types';
 import { classNames } from '../utils/helpers';
-import { EVENT_SOURCE_OPTIONS, eventSourceLabel, isTestingDate } from '../utils/events';
+import { EVENT_SOURCE_OPTIONS, eventSchoolIds, eventSourceLabel, isTestingDate } from '../utils/events';
 import { eventTypeLabel } from '../utils/labels';
 import toast from 'react-hot-toast';
 import { useRole } from '../context/useRole';
@@ -119,7 +119,7 @@ export function EventsPage() {
         cell: ({ row }) => (
           <div className="flex items-center gap-1">
             <Users size={14} className="text-neutral-400" />
-            <span>{row.original.participatingSchools.length}</span>
+            <span>{eventSchoolIds(row.original).length}</span>
           </div>
         ),
       },
@@ -260,7 +260,7 @@ export function EventsPage() {
                       { label: 'Date', value: (e) => e.date.slice(0, 10) },
                       { label: 'Time', value: (e) => (e.hasTime ? e.date.slice(11, 16) : '') },
                       { label: 'Location', value: (e) => e.location },
-                      { label: 'Schools listed', value: (e) => e.participatingSchools.length },
+                      { label: 'Schools listed', value: (e) => eventSchoolIds(e).length },
                       { label: 'Attendees', value: (e) => e.attendeeCount ?? '' },
                     ],
                   }}

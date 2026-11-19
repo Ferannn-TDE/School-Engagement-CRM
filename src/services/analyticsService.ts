@@ -1,3 +1,5 @@
+import { eventSchoolIds } from '../utils/events';
+
 
 export interface CountyEngagementRow {
   county_name: string | null;
@@ -31,13 +33,13 @@ export interface CountySchoolSummaryRow {
  */
 export function engagementRateFromData(
   schools: { id: string; county: string; state: string }[],
-  events: { participatingSchools: string[]; category?: string }[],
+  events: { participatingSchools: string[]; hostSchoolId?: string; category?: string }[],
   attended: Set<string> = new Set(),
 ): CountyEngagementRow[] {
   const listed = new Set<string>(attended);
   for (const e of events) {
     if (e.category === 'school_testing_date') continue;
-    for (const id of e.participatingSchools) listed.add(id);
+    for (const id of eventSchoolIds(e)) listed.add(id);
   }
   const rows = new Map<string, CountyEngagementRow>();
   for (const s of schools) {
@@ -72,7 +74,7 @@ export interface CountySummaryRow extends CountySchoolSummaryRow {
 export function countySummaryFromData(
   schools: { id: string; county: string; state: string; isVerified?: boolean }[],
   contacts: { schoolId: string; isActive: boolean }[],
-  events: { id: string; participatingSchools: string[]; category?: string }[],
+  events: { id: string; participatingSchools: string[]; hostSchoolId?: string; category?: string }[],
   activities: { id: string; schoolId: string; eventId?: string; activityType: string; date: string; importBatchId?: string }[],
   programs: { schoolId: string }[],
   today: string,
@@ -100,7 +102,7 @@ export function countySummaryFromData(
   for (const p of programs) { const row = rowOf(p.schoolId); if (row) row.total_programs++; }
   for (const e of events) {
     if (e.category === 'school_testing_date') continue;
-    for (const id of e.participatingSchools) rowOf(id)?.eventKeys.add(`e:${e.id}`);
+    for (const id of eventSchoolIds(e)) rowOf(id)?.eventKeys.add(`e:${e.id}`);
   }
   for (const a of activities) {
     if (a.activityType !== 'event_participation' || a.date.slice(0, 10) > today) continue;

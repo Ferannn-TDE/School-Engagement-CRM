@@ -5,6 +5,7 @@
  * so a list always has exactly as many rows as its number says.
  */
 import type { ActivityRecord, Contact, Event, School } from '../types';
+import { eventSchoolIds } from './events';
 import { ContactMethodLabels } from '../types';
 import { EVENT_ATTENDANCE_TYPE } from '../constants/reportSettings';
 import { dayOf, formatDay, type Day, type ReportInput } from './reports';
@@ -117,7 +118,7 @@ export function listBuilders(data: ReportInput, asOf: Day) {
         rows: ids.map((id) => events.get(id)).filter((e): e is Event => !!e).map((e) => ({
           cells: {
             date: formatDay(dayOf(e.date)), event: e.name, location: e.location,
-            schools: e.participatingSchools.map(schoolName).join('; '),
+            schools: eventSchoolIds(e).map(schoolName).join('; '),
           },
         })),
       };

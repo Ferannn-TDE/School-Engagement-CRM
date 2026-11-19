@@ -1,4 +1,5 @@
 import type { ActivityRecord, Contact, Event, Program, School } from '../types';
+import { eventSchoolIds } from './events';
 
 /** The states the CRM covers. '' means both (the "All" choice). */
 export type Region = '' | 'IL' | 'MO';
@@ -31,9 +32,9 @@ export function stateFromLocation(location: string | null | undefined): 'IL' | '
  * events with no school (e.g. IACAC college fairs), the state named in its
  * location. Empty means Unknown, which only the "All" choice shows.
  */
-export function eventStates(event: Pick<Event, 'participatingSchools' | 'location'>, schoolState: Map<string, string>): Set<string> {
+export function eventStates(event: Pick<Event, 'participatingSchools' | 'hostSchoolId' | 'location'>, schoolState: Map<string, string>): Set<string> {
   const states = new Set<string>();
-  for (const id of event.participatingSchools) {
+  for (const id of eventSchoolIds(event)) {
     const st = schoolState.get(id);
     if (st) states.add(st);
   }

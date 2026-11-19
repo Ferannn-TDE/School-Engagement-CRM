@@ -18,18 +18,18 @@ export function Pagination({ pageIndex, pageSize, total, onPageChange, onPageSiz
   if (pageCount <= 1) return null;
   const first = pageIndex * pageSize + 1;
   const last = Math.min((pageIndex + 1) * pageSize, total);
-  const button = 'px-3 py-1 rounded-lg border border-neutral-200 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed';
+  const button = 'px-3 py-1 pointer-coarse:min-h-10 rounded-lg border border-neutral-200 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed';
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 mt-4 px-4 text-sm">
       <p className="text-neutral-500">
         Showing {first.toLocaleString('en-US')}–{last.toLocaleString('en-US')} of {total.toLocaleString('en-US')}{noun ? ` ${noun}` : ''}
       </p>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {onPageSizeChange && (
           <select
             value={pageSize}
             onChange={(e) => onPageSizeChange(Number(e.target.value))}
-            className="border border-neutral-200 rounded-lg px-2 py-1 text-sm"
+            className="border border-neutral-200 rounded-lg px-2 py-1 pointer-coarse:min-h-10 text-sm"
             aria-label="Rows per page"
           >
             {pageSizes.map((size) => <option key={size} value={size}>{size} per page</option>)}

@@ -46,7 +46,7 @@ export function MeetingSummaryPage() {
   const back = `/reports${window.location.search}`;
 
   return (
-    <div className="p-8 print:p-0 max-w-5xl mx-auto meeting-summary">
+    <div className="p-4 sm:p-6 lg:p-8 print:p-0 max-w-5xl mx-auto meeting-summary">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6 print:hidden">
         <Link to={back} className="inline-flex items-center gap-1.5 text-sm text-neutral-600 hover:text-siue-red">
           <ArrowLeft size={14} /> Back to Reports

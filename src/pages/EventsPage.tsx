@@ -181,8 +181,8 @@ export function EventsPage() {
             : `${outreachCount} events`
         }
         actions={
-          <div className="flex gap-2">
-            <label className="flex items-center gap-2 px-3 py-1.5 text-sm text-neutral-600 border border-neutral-200 rounded-lg bg-white cursor-pointer select-none whitespace-nowrap">
+          <div className="flex flex-wrap gap-2">
+            <label className="flex items-center gap-2 px-3 py-1.5 pointer-coarse:min-h-10 text-sm text-neutral-600 border border-neutral-200 rounded-lg bg-white cursor-pointer select-none whitespace-nowrap">
               <input
                 type="checkbox"
                 checked={showTesting}
@@ -198,7 +198,7 @@ export function EventsPage() {
                 title="List view"
                 aria-pressed={view === 'list'}
                 className={classNames(
-                  'px-3 py-1.5 text-sm',
+                  'px-3 py-1.5 pointer-coarse:min-h-10 text-sm',
                   view === 'list' ? 'bg-siue-red text-white' : 'bg-white text-neutral-600 hover:bg-neutral-50'
                 )}
               >
@@ -210,7 +210,7 @@ export function EventsPage() {
                 title="Calendar view"
                 aria-pressed={view === 'calendar'}
                 className={classNames(
-                  'px-3 py-1.5 text-sm',
+                  'px-3 py-1.5 pointer-coarse:min-h-10 text-sm',
                   view === 'calendar' ? 'bg-siue-red text-white' : 'bg-white text-neutral-600 hover:bg-neutral-50'
                 )}
               >
@@ -226,7 +226,7 @@ export function EventsPage() {
           </div>
         }
       />
-      <div className="p-8 space-y-6">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6">
         {view === 'list' ? (
           <>
             <FilterBar
@@ -287,7 +287,9 @@ export function EventsPage() {
                 Next
               </Button>
             </div>
-            <div className="grid grid-cols-7 gap-px bg-neutral-100 rounded-lg overflow-hidden">
+            {/* Seven columns need about 42rem: narrower screens scroll the calendar, not the page. */}
+            <div className="overflow-x-auto">
+            <div className="grid min-w-[42rem] grid-cols-7 gap-px bg-neutral-100 rounded-lg overflow-hidden">
               {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
                 <div key={day} className="bg-neutral-50 p-2 text-center text-xs font-semibold text-neutral-500">
                   {day}
@@ -338,6 +340,7 @@ export function EventsPage() {
                   </div>
                 );
               })}
+            </div>
             </div>
           </Card>
         )}

@@ -75,7 +75,7 @@ export function SettingsPage() {
         title="Settings"
         subtitle="Database management and application settings"
       />
-      <div className="p-8">
+      <div className="p-4 sm:p-6 lg:p-8">
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           <SettingsCard
             icon={<Download size={20} />}

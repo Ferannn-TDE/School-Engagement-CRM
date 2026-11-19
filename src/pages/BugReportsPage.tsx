@@ -113,7 +113,7 @@ export function BugReportsPage() {
         title="Problem reports"
         subtitle="Sent with the Report a problem button on every page. Nothing is deleted: archive what's done with."
       />
-      <div className="p-8 space-y-6">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6">
         {reports === null ? (
           <LoadingSpinner />
         ) : error ? (
@@ -127,14 +127,14 @@ export function BugReportsPage() {
                 You’re seeing only the reports you sent. Admins see every report and mark them resolved.
               </p>
             )}
-            <div className="flex border-b border-neutral-200" role="tablist">
+            <div className="flex overflow-x-auto border-b border-neutral-200" role="tablist">
               {VIEWS.map((v) => (
                 <button
                   key={v.key}
                   role="tab"
                   aria-selected={view === v.key}
                   onClick={() => setView(v.key)}
-                  className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                  className={`shrink-0 whitespace-nowrap px-4 py-2 pointer-coarse:min-h-10 text-sm font-medium border-b-2 transition-colors ${
                     view === v.key ? 'border-siue-red text-siue-red' : 'border-transparent text-neutral-500 hover:text-neutral-700'
                   }`}
                 >

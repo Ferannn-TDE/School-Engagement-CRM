@@ -126,13 +126,14 @@ export function ReportsPage() {
           </Link>
         }
       />
-      <div className="p-4 sm:p-8 space-y-6">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6">
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-3">
-            <div className="inline-flex rounded-lg border border-neutral-200 bg-white overflow-hidden" role="group" aria-label="Date range">
+            {/* Two by two on a phone (four in a row don't fit 375px), one row from 640px. */}
+            <div className="grid grid-cols-2 sm:inline-flex rounded-lg border border-neutral-200 bg-white overflow-hidden" role="group" aria-label="Date range">
               {PRESETS.map((p, i) => (
                 <button key={p.value} type="button" onClick={() => choose(p.value)} aria-pressed={preset === p.value}
-                  className={classNames('px-3 py-1.5 text-sm', i > 0 && 'border-l border-neutral-200',
+                  className={classNames('px-3 py-1.5 text-sm pointer-coarse:min-h-10 border-neutral-200', i % 2 === 1 ? 'border-l' : i > 0 && 'sm:border-l', i >= 2 && 'border-t sm:border-t-0',
                     preset === p.value ? 'bg-siue-red/10 text-siue-maroon font-semibold' : 'text-neutral-600 hover:bg-neutral-50')}>
                   {p.label}
                 </button>

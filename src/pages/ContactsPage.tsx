@@ -225,7 +225,7 @@ export function ContactsPage() {
           </Button>
         }
       />
-      <div className="p-8 space-y-6">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6">
 
         {/* Verified / Unverified tabs */}
         <div className="flex gap-1 bg-neutral-100 p-1 rounded-lg w-fit">
@@ -238,7 +238,7 @@ export function ContactsPage() {
               key={key}
               onClick={() => setVerifiedTab(key)}
               className={
-                'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ' +
+                'flex items-center gap-1.5 px-3 py-1.5 pointer-coarse:min-h-10 rounded-md text-xs font-medium transition-colors ' +
                 (verifiedTab === key
                   ? 'bg-white text-neutral-800 shadow-sm'
                   : 'text-neutral-500 hover:text-neutral-700')

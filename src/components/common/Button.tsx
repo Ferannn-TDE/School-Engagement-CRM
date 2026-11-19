@@ -22,8 +22,9 @@ const variantStyles: Record<Variant, string> = {
 };
 
 const sizeStyles: Record<Size, string> = {
-  sm: 'px-3 py-1.5 text-sm',
-  md: 'px-4 py-2 text-sm',
+  // On touch screens every button is at least 40px tall, so it's easy to tap.
+  sm: 'px-3 py-1.5 text-sm pointer-coarse:min-h-10',
+  md: 'px-4 py-2 text-sm pointer-coarse:min-h-10',
   lg: 'px-6 py-3 text-base',
 };
 

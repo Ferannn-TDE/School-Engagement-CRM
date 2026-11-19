@@ -169,7 +169,7 @@ export function CountiesPage() {
               (realCountyCount < counties.length ? ', plus state-run schools' : '')
         }
       />
-      <div className="p-8">
+      <div className="p-4 sm:p-6 lg:p-8">
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" aria-busy="true" aria-label="Loading counties">
             {Array.from({ length: 9 }).map((_, i) => (
@@ -295,16 +295,16 @@ export function CountiesPage() {
                 <div className="space-y-2.5">
                   {engagementRateByCounty.map((c) => (
                     <div key={c.county} className="flex items-center gap-3">
-                      <span className="w-28 text-sm text-neutral-700 truncate shrink-0">
+                      <span className="w-24 sm:w-28 text-sm text-neutral-700 truncate shrink-0" title={c.county}>
                         {c.county}
                       </span>
-                      <div className="flex-1 h-2 bg-neutral-100 rounded-full overflow-hidden">
+                      <div className="flex-1 min-w-8 h-2 bg-neutral-100 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-siue-red rounded-full"
                           style={{ width: `${Math.round(c.rate * 100)}%` }}
                         />
                       </div>
-                      <span className="text-xs text-neutral-500 w-40 text-right shrink-0">
+                      <span className="text-xs text-neutral-500 sm:w-40 text-right shrink-0 whitespace-nowrap">
                         {c.engaged}/{c.total} {c.label} ={' '}
                         <span className="font-medium text-neutral-700">
                           {Math.round(c.rate * 100)}%

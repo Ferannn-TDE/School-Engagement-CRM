@@ -238,7 +238,7 @@ export function TeamPage() {
     <div>
       <Breadcrumb crumbs={[{ label: 'Settings', href: '/settings' }, { label: 'Team' }]} />
       <Header title="Team" subtitle="Who can do what: admins manage the team, editors change data, viewers read." />
-      <div className="p-8 space-y-6">{body()}</div>
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6">{body()}</div>
       {dialog}
     </div>
   );

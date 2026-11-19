@@ -43,7 +43,7 @@ export function AppLayout() {
           Skip to main content
         </a>
         <Sidebar />
-        <main id="main-content" className="lg:ml-64 min-h-screen pb-16">
+        <main id="main-content" className="lg:ml-64 min-w-0 min-h-screen pb-16">
           {loading ? (
             <LoadingSpinner />
           ) : missingHere.length > 0 ? (

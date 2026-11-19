@@ -276,7 +276,7 @@ export function PrioritiesPage() {
   return (
     <div>
       <Header title="Priorities" subtitle="Schools waiting on you, most urgent first" />
-      <div className="p-8 space-y-6">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6">
 
         <div className="grid grid-cols-1 md:grid-cols-2 auto-rows-fr gap-5">
           {tiles.map((t) => (

@@ -746,7 +746,7 @@ export function ImportPage() {
     return (
       <div>
         <Header title="Import Data" subtitle="Import contacts, schools and activities from spreadsheets" />
-        <div className="p-8">
+        <div className="p-4 sm:p-6 lg:p-8">
           <Card>
             <p className="text-sm text-neutral-700">{NO_EDIT_ACCESS}</p>
           </Card>
@@ -760,7 +760,7 @@ export function ImportPage() {
         title="Import Data"
         subtitle="Import contacts, schools and activities from spreadsheets"
       />
-      <div className="p-8 space-y-6">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6">
         {/* Tabs */}
         <div className="flex border-b border-neutral-200" role="tablist">
           {([
@@ -865,7 +865,7 @@ export function ImportPage() {
 
             {combinedStep === 'preview' && combinedPreview && (
               <Card>
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
                   <div>
                     <h2 className="text-lg font-semibold text-neutral-800">Import Preview</h2>
                     <p className="text-sm text-neutral-500 flex items-center gap-2 mt-1">
@@ -1100,7 +1100,7 @@ export function ImportPage() {
           <>
             {step === 'upload' && (
               <Card>
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                   <h2 className="text-lg font-semibold text-neutral-800">
                     Upload {activeTab === 'contacts' ? 'Contact' : 'School'} File
                   </h2>
@@ -1132,7 +1132,7 @@ export function ImportPage() {
 
             {step === 'mapping' && (
               <Card>
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
                   <div>
                     <h2 className="text-lg font-semibold text-neutral-800">Map Columns</h2>
                     <p className="text-sm text-neutral-500 flex items-center gap-2 mt-1">
@@ -1147,11 +1147,11 @@ export function ImportPage() {
                 </div>
                 <div className="space-y-3">
                   {headers.map((header) => (
-                    <div key={header} className="flex items-center gap-4">
-                      <span className="text-sm text-neutral-600 w-48 truncate font-mono bg-neutral-50 px-3 py-2 rounded">
+                    <div key={header} className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+                      <span className="text-sm text-neutral-600 w-full sm:w-48 truncate font-mono bg-neutral-50 px-3 py-2 rounded" title={header}>
                         {header}
                       </span>
-                      <span className="text-neutral-400">→</span>
+                      <span className="hidden sm:inline text-neutral-400" aria-hidden="true">→</span>
                       <Select
                         options={fieldOptions.map((f) => ({ value: f.value, label: f.label }))}
                         placeholder="Skip this column"
@@ -1159,7 +1159,7 @@ export function ImportPage() {
                         onChange={(e) =>
                           setColumnMapping((prev) => ({ ...prev, [header]: e.target.value }))
                         }
-                        className="w-64"
+                        className="w-full sm:w-64"
                       />
                     </div>
                   ))}
@@ -1173,7 +1173,7 @@ export function ImportPage() {
 
             {step === 'preview' && (
               <Card>
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
                   <div>
                     <h2 className="text-lg font-semibold text-neutral-800">Import Preview</h2>
                     <div className="flex gap-4 mt-1">

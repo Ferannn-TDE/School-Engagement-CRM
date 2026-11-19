@@ -55,21 +55,21 @@ export function Modal({ open, onClose, title, children, size = 'md' }: ModalProp
       <div
         ref={contentRef}
         tabIndex={-1}
-        className={`${sizeClasses[size]} w-full bg-white rounded-xl shadow-xl max-h-[90vh] flex flex-col outline-none animate-slide-up`}
+        className={`${sizeClasses[size]} w-full bg-white rounded-xl shadow-xl max-h-[90dvh] flex flex-col outline-none animate-slide-up`}
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100">
-          <h2 id="modal-title" className="text-lg font-semibold text-neutral-800">
+        <div className="flex items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 border-b border-neutral-100">
+          <h2 id="modal-title" className="min-w-0 break-words text-lg font-semibold text-neutral-800">
             {title}
           </h2>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg hover:bg-neutral-100 transition-colors text-neutral-400 hover:text-neutral-600"
+            className="shrink-0 p-2 -mr-2 rounded-lg hover:bg-neutral-100 transition-colors text-neutral-400 hover:text-neutral-600"
             aria-label="Close dialog"
           >
             <X size={20} />
           </button>
         </div>
-        <div className="px-6 py-4 overflow-y-auto flex-1">{children}</div>
+        <div className="px-4 sm:px-6 py-4 overflow-y-auto overscroll-contain flex-1 min-h-0">{children}</div>
       </div>
     </div>
   );

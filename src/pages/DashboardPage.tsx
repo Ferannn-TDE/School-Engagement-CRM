@@ -107,7 +107,7 @@ export function DashboardPage() {
           )
         }
       />
-      <div className="p-8 space-y-8">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-8">
 
         {/* ── Metric Cards ──────────────────────────────────────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -237,7 +237,7 @@ export function DashboardPage() {
 
           {/* Upcoming Events */}
           <Card className="lg:col-span-2">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
               <h3 className="text-base font-semibold text-neutral-800">Upcoming Events</h3>
               <button
                 onClick={() => navigate('/events')}
@@ -282,7 +282,7 @@ export function DashboardPage() {
 
         {/* ── Schools Needing Attention (Top 5) ────────────────────────────── */}
         <Card>
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
             <div>
               <h3 className="text-base font-semibold text-neutral-800 flex items-center gap-2">
                 <AlertTriangle size={15} className="text-warning" />

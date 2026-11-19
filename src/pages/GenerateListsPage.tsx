@@ -199,7 +199,7 @@ export function GenerateListsPage() {
         title="Generate Lists"
         subtitle="Build filtered mailing and email lists"
       />
-      <div className="p-8 space-y-6">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Filter Builder */}
           <Card className="lg:col-span-1">
@@ -299,11 +299,11 @@ export function GenerateListsPage() {
           {/* Preview */}
           <Card className="lg:col-span-2" padding={false}>
             <div className="px-6 py-4 border-b border-neutral-100">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <h3 className="text-base font-semibold text-neutral-800">
                   Preview ({filteredContacts.length.toLocaleString()} contacts)
                 </h3>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   {limitIds && (
                     <span className="inline-flex items-center gap-1 rounded-full bg-siue-red/10 pl-2.5 pr-1 py-0.5 text-xs font-medium text-siue-red">
                       From Priorities: {limit?.label} ({limitIds.size.toLocaleString()} schools)

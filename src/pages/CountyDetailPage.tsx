@@ -287,7 +287,7 @@ export function CountyDetailPage() {
         subtitle={`${countySchools.length.toLocaleString()} schools · ${engagementPct}% engagement rate`}
       />
 
-      <div className="p-8 space-y-6">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6">
         {/* ── Section 1: Summary metrics ───────────────────────────────────────── */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           <MetricCard

@@ -144,7 +144,7 @@ export function SchoolForm({ school, onClose }: SchoolFormProps) {
         state={selectedState ?? ''}
         onChange={(id, name) => setDistrict({ id, name })}
       />
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Select
           label="County"
           required
@@ -170,7 +170,7 @@ export function SchoolForm({ school, onClose }: SchoolFormProps) {
         error={errors.address?.message}
         {...register('address')}
       />
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Input
           label="City"
           required
@@ -202,7 +202,7 @@ export function SchoolForm({ school, onClose }: SchoolFormProps) {
         error={errors.phone?.message}
         {...register('phone')}
       />
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Input
           label="Enrollment"
           type="number"

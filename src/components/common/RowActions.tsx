@@ -34,7 +34,7 @@ export function RowAction({ icon, label, onClick, tone = 'default', disabled, ti
       disabled={disabled}
       title={title ?? label}
       className={classNames(
-        'inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium transition-colors',
+        'inline-flex items-center gap-1 rounded-md px-2 py-1 pointer-coarse:min-h-10 text-xs font-medium transition-colors',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-siue-red disabled:cursor-default disabled:text-neutral-400 disabled:hover:bg-transparent',
         TONES[tone],
       )}
@@ -105,7 +105,7 @@ export function RowMenu({ items, label = 'Actions', name }: { items: RowMenuItem
         aria-expanded={open}
         aria-label={name ? `Actions for ${name}` : label}
         onClick={() => setOpen((o) => !o)}
-        className="inline-flex items-center gap-1 rounded-md border border-neutral-200 bg-white px-2.5 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-siue-red"
+        className="inline-flex items-center gap-1 rounded-md border border-neutral-200 bg-white px-2.5 py-1 pointer-coarse:min-h-10 text-xs font-medium text-neutral-700 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-siue-red"
       >
         {label}
         <ChevronDown size={13} className={classNames('transition-transform', open && 'rotate-180')} />
@@ -125,7 +125,7 @@ export function RowMenu({ items, label = 'Actions', name }: { items: RowMenuItem
               disabled={item.disabled}
               onClick={() => { setOpen(false); item.onClick(); }}
               className={classNames(
-                'flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors',
+                'flex w-full items-center gap-2 px-3 py-2 pointer-coarse:min-h-11 text-left text-sm transition-colors',
                 'focus-visible:outline-none focus-visible:bg-neutral-100 disabled:cursor-default disabled:text-neutral-400 disabled:hover:bg-transparent',
                 item.tone === 'danger' ? 'text-neutral-700 hover:bg-error/10 hover:text-error' : 'text-neutral-700 hover:bg-neutral-100',
               )}

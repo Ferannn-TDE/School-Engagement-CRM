@@ -80,7 +80,7 @@ export function ArchivedPage() {
         title="Archived"
         subtitle="Nothing is deleted. Archived items are hidden everywhere else and can be restored here."
       />
-      <div className="p-8 space-y-6">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6">
         {items === null ? (
           <LoadingSpinner />
         ) : items.length === 0 ? (

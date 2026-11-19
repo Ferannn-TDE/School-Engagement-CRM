@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { Search, X } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { endAfterStartProblem, MAX, optionalText, requiredChoice, requiredText, trimStrings, wholeNumber } from '../../utils/formRules';
 import { Input } from '../common/Input';
 import { Select } from '../common/Select';
 import { Textarea } from '../common/Textarea';
@@ -14,20 +15,25 @@ import toast from 'react-hot-toast';
 
 // Keep attendeeCount as a string in the form; convert to number on submit
 const eventSchema = z.object({
-  name: z.string().min(1, 'Event name is required'),
+  name: requiredText('Event name', MAX.name),
   // Starts blank and must be chosen, so no event is saved as "Outreach Fair" by default.
-  type: z.string().min(1, 'Choose an event type'),
-  date: z.string().min(1, 'Date is required'),
+  type: requiredChoice('Choose an event type.'),
+  date: requiredChoice('Choose the start date and time.'),
   endDate: z.string().optional(),
   // Optional: 25 events from school calendars have no location, and requiring one
   // made them impossible to save.
-  location: z.string().optional(),
-  attendeeCountStr: z.string().optional(),
-  notes: z.string().optional(),
-  participatingSchools: z.array(z.string()),
+  location: optionalText('Location', MAX.location),
+  attendeeCountStr: wholeNumber('Attendee count', { max: 100000 }),
+  notes: optionalText('Notes', MAX.notes),
+  participatingSchools: z.array(z.string()).max(2000, 'An event can list at most 2,000 schools.'),
   // Other: "Please specify" is required, and shown instead of "Other" (db/028).
-  typeOther: z.string().optional(),
-}).refine((d) => d.type !== 'other' || !!d.typeOther?.trim(), { path: ['typeOther'], message: 'Please specify' });
+  typeOther: optionalText('"Please specify"', MAX.other),
+})
+  .refine((d) => d.type !== 'other' || !!d.typeOther?.trim(), { path: ['typeOther'], message: 'Say what kind of event it is.' })
+  .superRefine((d, ctx) => {
+    const message = endAfterStartProblem(d.date, d.endDate);
+    if (message) ctx.addIssue({ code: 'custom', path: ['endDate'], message });
+  });
 
 type EventFormData = z.infer<typeof eventSchema>;
 
@@ -92,7 +98,8 @@ export function EventForm({ event, onClose, onCreated, initialDate }: EventFormP
     });
   }, [pickableSchools, schoolQuery]);
 
-  const onSubmit = async (data: EventFormData) => {
+  const onSubmit = async (raw: EventFormData) => {
+    const data = trimStrings(raw);
     const attendeeCount =
       data.attendeeCountStr && data.attendeeCountStr !== ''
         ? parseInt(data.attendeeCountStr, 10)
@@ -189,9 +196,10 @@ export function EventForm({ event, onClose, onCreated, initialDate }: EventFormP
       </div>
       <Input
         label="Attendee Count"
-        type="number"
-        min={0}
-        placeholder="0"
+        type="text"
+        inputMode="numeric"
+        placeholder="Leave blank if not counted"
+        error={errors.attendeeCountStr?.message}
         {...register('attendeeCountStr')}
       />
 
@@ -229,6 +237,9 @@ export function EventForm({ event, onClose, onCreated, initialDate }: EventFormP
               );
             })}
           </ul>
+        )}
+        {errors.participatingSchools?.message && (
+          <p role="alert" className="mb-2 text-sm text-error">{errors.participatingSchools.message}</p>
         )}
         <div className="relative mb-2">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
@@ -268,6 +279,7 @@ export function EventForm({ event, onClose, onCreated, initialDate }: EventFormP
       <Textarea
         label="Notes"
         rows={3}
+        error={errors.notes?.message}
         {...register('notes')}
       />
       <div className="flex justify-end gap-3 pt-4 border-t border-neutral-100">

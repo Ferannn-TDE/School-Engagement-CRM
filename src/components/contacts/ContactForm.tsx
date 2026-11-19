@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { MAX, optionalEmail, optionalPhone, optionalText, requiredChoice, requiredText, trimStrings } from '../../utils/formRules';
 import { Input } from '../common/Input';
 import { Select } from '../common/Select';
 import { Textarea } from '../common/Textarea';
@@ -12,14 +13,14 @@ import { roleFromTitle } from '../../utils/contactRoles';
 import toast from 'react-hot-toast';
 
 const contactSchema = z.object({
-  firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().optional(),
+  firstName: requiredText('First name', MAX.personName),
+  lastName: optionalText('Last name', MAX.personName),
   // 1,833 scraped contacts have no email; requiring one made them impossible to edit.
-  email: z.string().email('Invalid email address').or(z.literal('')),
-  phone: z.string().optional(),
-  title: z.string().optional(),
-  schoolId: z.string().min(1, 'School is required'),
-  notes: z.string().optional(),
+  email: optionalEmail(),
+  phone: optionalPhone(),
+  title: optionalText('Job title', MAX.title),
+  schoolId: requiredChoice('Choose a school.'),
+  notes: optionalText('Notes', MAX.notes),
 });
 
 type ContactFormData = z.infer<typeof contactSchema>;
@@ -55,7 +56,8 @@ export function ContactForm({ contact, onClose }: ContactFormProps) {
 
   const category = roleFromTitle(watch('title'));
 
-  const onSubmit = (data: ContactFormData) => {
+  const onSubmit = (raw: ContactFormData) => {
+    const data = trimStrings(raw);
     const edited: Partial<Contact> = {
       ...data,
       lastName: data.lastName || '',
@@ -145,6 +147,7 @@ export function ContactForm({ contact, onClose }: ContactFormProps) {
       <Textarea
         label="Notes"
         rows={3}
+        error={errors.notes?.message}
         {...register('notes')}
       />
       <div className="flex justify-end gap-3 pt-4 border-t border-neutral-100">

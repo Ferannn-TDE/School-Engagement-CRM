@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { format } from 'date-fns';
 import { Archive, Pencil } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { focusFirstProblem, MAX, textProblem } from '../../utils/formRules';
 import { Input } from '../common/Input';
 import { Select } from '../common/Select';
 import { Textarea } from '../common/Textarea';
@@ -193,7 +194,10 @@ function ActivityEditForm({ activity, onCancel, onSaved, save }: {
   const isFuture = !dateError && date > today;
   const inPerson = IN_PERSON_ACTIVITY_TYPES.includes(type);
   const visitors = inPerson ? parseVisitors(visitorsText) : { value: null, error: '' };
-  const otherError = specifyError(type, typeOther);
+  const otherError = type === 'other'
+    ? specifyError(type, typeOther) || textProblem(typeOther, '"Please specify"', { max: MAX.other })
+    : '';
+  const notesError = textProblem(notes, 'Description', { max: MAX.description });
 
   const typeOptions = [...new Set([...ACTIVITY_TYPES, activity.activityType])]
     .map((t) => ({ value: t, label: activityTypeLabel(t) }));
@@ -204,7 +208,13 @@ function ActivityEditForm({ activity, onCancel, onSaved, save }: {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (dateError || visitors.error || otherError) return;
+    // Messages show under each field as you type; on Save, go to the first one.
+    if (!focusFirstProblem([
+      ['activity-edit-date', dateError],
+      ['activity-edit-type-other', otherError],
+      ['activity-edit-visitors', visitors.error],
+      ['activity-edit-notes', notesError],
+    ])) return;
     setSaving(true);
     setError('');
     try {
@@ -285,7 +295,7 @@ function ActivityEditForm({ activity, onCancel, onSaved, save }: {
           onChange={(id) => setEventId(id)}
         />
       </div>
-      <Textarea id="activity-edit-notes" label="Description" rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} />
+      <Textarea id="activity-edit-notes" label="Description" rows={3} value={notes} error={notesError || undefined} onChange={(e) => setNotes(e.target.value)} />
       {activity.importBatchId && (
         <p className="text-xs text-neutral-500">
           This activity came from an import. Editing it changes only this activity; archiving the import still includes it.
@@ -294,7 +304,7 @@ function ActivityEditForm({ activity, onCancel, onSaved, save }: {
       {error && <p role="alert" className="text-sm text-error">{error}</p>}
       <div className="flex justify-end gap-3 pt-4 border-t border-neutral-100">
         <Button variant="ghost" type="button" onClick={onCancel} disabled={saving}>Cancel</Button>
-        <Button type="submit" loading={saving} disabled={!!dateError || !!visitors.error || !!otherError}>Save changes</Button>
+        <Button type="submit" loading={saving}>Save changes</Button>
       </div>
     </form>
   );

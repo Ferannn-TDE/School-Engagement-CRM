@@ -1,3 +1,5 @@
+import { focusFirstProblem, MAX, textProblem } from '../../utils/formRules';
+import { writeErrorMessage } from '../../utils/writeErrors';
 import { useCallback, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Bug, CheckCircle } from 'lucide-react';
@@ -19,6 +21,9 @@ export function ReportProblemButton() {
   const [error, setError] = useState('');
   const [sentId, setSentId] = useState<string | null>(null);
   const page = `${pathname}${search}`;
+  // Shown once Send is pressed, so an empty box isn't red before anyone types.
+  const [touched, setTouched] = useState(false);
+  const descriptionError = textProblem(description, 'A description', { required: true, max: MAX.report });
 
   // Stable while typing: Modal refocuses itself whenever onClose changes.
   const close = useCallback(() => {
@@ -33,16 +38,15 @@ export function ReportProblemButton() {
 
   const send = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!description.trim()) return;
+    setTouched(true);
+    if (!focusFirstProblem([['report-problem-text', descriptionError]])) return;
     setSending(true);
     setError('');
     try {
-      setSentId(await submitBugReport(page, description));
+      setSentId(await submitBugReport(page, description.trim()));
     } catch (err) {
       console.error('submitBugReport failed:', err);
-      setError(
-        `Couldn’t send the report (${(err as { message?: string })?.message ?? 'unknown error'}). Your text is still here; try again in a moment.`
-      );
+      setError(writeErrorMessage(err, 'Couldn’t send the report (your text is still here)'));
     } finally {
       setSending(false);
     }
@@ -82,10 +86,11 @@ export function ReportProblemButton() {
         ) : (
           <form onSubmit={send} className="space-y-4">
             <Textarea
+              id="report-problem-text"
               label="What went wrong?"
               required
               rows={5}
-              maxLength={5000}
+              error={touched ? descriptionError || undefined : undefined}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="What you were doing, what you expected, and what happened instead."

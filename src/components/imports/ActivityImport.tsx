@@ -27,6 +27,7 @@ import { looksLikeSpreadsheet } from '../../utils/importParsing';
 import { parseVisitors, visitorsLabel } from '../../utils/visitors';
 import { EventPicker } from '../events/EventPicker';
 import { specifyError } from '../../utils/labels';
+import { MAX, textProblem } from '../../utils/formRules';
 import { AttachRowsButton, BatchRowsModal } from './ImportRows';
 import { useUrlState } from '../../hooks/useUrlState';
 import { activityDateError, futureDateNote, latestActivityDay } from '../../utils/activityDates';
@@ -275,8 +276,11 @@ export function ActivityImport() {
   const latestDay = latestActivityDay();
   const dateError = activityDateError(details.date);
   const isFuture = !!details.date && !dateError && details.date > today;
-  const otherError = specifyError(details.activityType, details.activityTypeOther);
-  const detailsReady = !!details.activityType && !dateError && !otherError;
+  const otherError = details.activityType === 'other'
+    ? specifyError(details.activityType, details.activityTypeOther) || textProblem(details.activityTypeOther, '"Please specify"', { max: MAX.other })
+    : '';
+  const descriptionError = textProblem(details.description, 'Description', { max: MAX.description });
+  const detailsReady = !!details.activityType && !dateError && !otherError && !descriptionError;
 
   const schoolById = useMemo(() => new Map((preview?.schools ?? []).map((s) => [s.id, s])), [preview]);
 
@@ -555,6 +559,7 @@ export function ActivityImport() {
             <Input
               label="Description"
               value={details.description}
+              error={descriptionError || undefined}
               onChange={(e) => setDetails((d) => ({ ...d, description: e.target.value }))}
               placeholder="e.g. Students attended Engineering Day"
             />
@@ -596,7 +601,7 @@ export function ActivityImport() {
             <input {...getInputProps()} aria-label="Upload a list of schools" />
             <Upload size={28} className="mx-auto mb-2 text-neutral-400" />
             <p className="text-sm font-medium text-neutral-700">
-              {!detailsReady ? (otherError ? 'Fill in “Please specify” for Other first' : 'Choose the activity type and date first') : parsing ? 'Reading the file…' : 'Drag and drop the list, or click to browse'}
+              {!detailsReady ? (otherError ? 'Fill in “Please specify” for Other first' : descriptionError ? 'Shorten the description first' : 'Choose the activity type and date first') : parsing ? 'Reading the file…' : 'Drag and drop the list, or click to browse'}
             </p>
             <p className="text-xs text-neutral-500 mt-1">
               .xlsx, .xls or .csv, up to {formatBytes(MAX_UPLOAD_BYTES)}. Columns: school name, city, state, with or without a header.

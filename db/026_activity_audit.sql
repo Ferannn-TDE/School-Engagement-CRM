@@ -1,7 +1,6 @@
 -- 026 — Who logged an activity, and who last edited it
 --
--- DRAFT, NOT APPLIED. Run the BEFORE APPLYING checks, apply in the SQL Editor, then run
--- TEST 1–3 and paste the outputs into "Checked before applying" at the bottom.
+-- APPLIED 2026-11-11 in the Supabase SQL Editor (results recorded at the bottom of this file).
 --
 -- Why: the visit details panel on a school's Activity History shows who logged an
 -- activity and who last edited it, and when. The activities table has no such columns:

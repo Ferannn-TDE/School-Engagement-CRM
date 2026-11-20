@@ -1,7 +1,6 @@
 -- 023 — Roles: admin, editor, viewer
 --
--- DRAFT, NOT APPLIED. Review, run the BEFORE APPLYING checks, then apply in the SQL
--- Editor and run the verification below.
+-- APPLIED 2026-10-27 in the Supabase SQL Editor (results recorded at the bottom of this file).
 --
 -- Why: until now every signed-in @siue.edu account could change everything. From here:
 --   * admin  — everything, including managing roles (Settings → Team) and reading every

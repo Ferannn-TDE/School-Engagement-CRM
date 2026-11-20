@@ -1,8 +1,6 @@
 -- 030 — Activity imports can be "Other" with their "Please specify" text
 --
--- DRAFT, NOT APPLIED. Run BEFORE APPLYING (including TEST A, which works on the old
--- functions too), apply in the SQL Editor, then run TEST 1, TEST A again and TEST B, and
--- paste the outputs into "Checked before applying" at the bottom.
+-- APPLIED 2026-11-13 in the Supabase SQL Editor (results recorded at the bottom of this file).
 --
 -- Why: Import Activities is getting "Other" with a required "Please specify" box (as Log
 -- contact has since 028). The import functions can't save that text: 022's

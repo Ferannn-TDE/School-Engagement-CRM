@@ -1,7 +1,6 @@
 -- 029 — Each activity import's rows, with optional visitor names (editors and admins only)
 --
--- DRAFT, NOT APPLIED. Run the BEFORE APPLYING checks, apply in the SQL Editor, then run
--- TEST 1–4 and paste the outputs into "Checked before applying" at the bottom.
+-- APPLIED 2026-11-12 in the Supabase SQL Editor (results recorded at the bottom of this file).
 --
 -- Why: Recent imports gets "View rows" (what each row said, which school it matched,
 -- its visitor count and an optional name), and the activity details panel lists the

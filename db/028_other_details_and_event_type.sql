@@ -1,7 +1,6 @@
 -- 028 — "Other: please specify" for program category, activity type and event type; save Event Type
 --
--- DRAFT, NOT APPLIED. Run the BEFORE APPLYING checks, apply in the SQL Editor, then run
--- TEST 1–3 and paste the outputs into "Checked before applying" at the bottom.
+-- APPLIED 2026-11-12 in the Supabase SQL Editor (results recorded at the bottom of this file).
 --
 -- Why: wherever a choice has "Other" (program category, event type, and now activity
 -- type), choosing it asks "Please specify", and that text is shown instead of "Other".

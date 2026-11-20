@@ -1,7 +1,6 @@
 -- 027 — "Last updated" that means a real change, and who/when for Verify and Unverify
 --
--- DRAFT, NOT APPLIED. Run the BEFORE APPLYING checks, apply in the SQL Editor, then run
--- TEST 1–3 and paste the outputs into "Checked before applying" at the bottom.
+-- APPLIED 2026-11-12 in the Supabase SQL Editor (results recorded at the bottom of this file).
 --
 -- Why: the app will show "Last updated <date>" on schools and contacts and flag records
 -- not updated in over 12 months (replacing "Not verified in 6+ months"). Today

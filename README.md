@@ -1,407 +1,244 @@
-# Cougar Connection — SIUE School of Engineering Engagement CRM
+# SIUE Engineering Outreach CRM
 
-A web-based Customer Relationship Management system built for the **SIUE School of Engineering** to track K–12 outreach engagement. Manage school relationships, contacts, events, programs, and county-level analytics — all backed by a live Supabase cloud database.
+A web app for the **SIUE School of Engineering** K–12 outreach team. It keeps track of
+the high schools in Illinois and Missouri, the people who work there, the college fairs
+and school events SIUE takes part in, and every visit, call, email or event a school has
+had with SIUE. Reports show which schools and counties are being reached and which are
+not.
 
----
+**Who uses it:** the outreach staff in the School of Engineering (they log activities,
+import attendance lists, keep contacts up to date and read the reports), and the
+student developers and maintainers who look after the code, the database and the
+monthly scraper.
 
-## Tech Stack
-
-| Layer | Technology | Version |
-|---|---|---|
-| Frontend Framework | React | 19.2.0 |
-| Language | TypeScript | 5.9.3 |
-| Build Tool | Vite | 7.3.1 |
-| Styling | Tailwind CSS v4 | 4.1.18 |
-| Routing | React Router | 7.6.2 |
-| Backend / Auth | Supabase | 2.101.0 |
-| Table UI | TanStack Table | 8.21.3 |
-| Charts | Recharts | 2.15.3 |
-| Forms | React Hook Form + Zod | 7.56.1 + 3.24.2 |
-| CSV Parsing | PapaParse | 5.5.3 |
-| Excel Parsing | SheetJS (xlsx) | 0.18.5 |
-| Date Utilities | date-fns | 4.1.0 |
-| Icons | Lucide React | 0.511.0 |
-| Notifications | react-hot-toast | 2.5.2 |
+- Live site: built by Vercel from `main`.
+- Database and sign-in: Supabase (PostgreSQL).
+- Database change log, open items and proposals: [`db/README.md`](db/README.md).
 
 ---
 
-## Features
+## Stack
 
-### Schools
-- Full directory of K–12 schools with contact info, type (high school / middle school), county, address, priority tier, and verification status
-- School detail pages with tabbed views: contacts, events, programs, and activity log
-- Sortable, filterable, and paginated school table powered by TanStack Table
-- Inline school name links to detail pages from every table in the app
-
-### Contacts
-- Staff directory linked to schools via a junction table
-- Role classification: Teachers, Counselors, Administrators, STEM Coordinators, and more
-- Verification status tracking; active/inactive toggle
-- School links from every contact row for fast cross-navigation
-
-### Events
-- Monthly calendar view with today highlighted in blue
-- List/table view with upcoming-first sort and filtering
-- Event details include type, date, location, and list of participating schools
-- Scraped events (from external sources) surfaced alongside manually-created events
-
-### Programs
-- Track SIUE outreach programs tied to schools and contacts
-- Program types with start/end dates and descriptions
-
-### Counties
-- County-level overview cards showing schools, contacts, events, and programs per county
-- Engagement rate badge (green ≥ 30%, amber ≥ 10%, red < 10%)
-- County detail drill-down page with school table and full engagement breakdown
-- Schools with no county data are excluded from county analytics with a visible data quality banner
-
-### Analytics
-- Dashboard metrics: total schools, contacts, events, programs
-- Charts: engagement rate by county, county comparison, program coverage, contact role distribution
-- Upcoming follow-ups panel with overdue/due-soon highlighting
-- Powered by Supabase analytics views for accurate, query-efficient aggregation
-
-### Generate Lists
-- Filter contacts by county, role, school type, and event participation
-- Export options: copy emails to clipboard, download full CSV, or generate mailing labels (.txt)
-- Live preview table showing filtered contacts before export
-
-### Import
-- Bulk import schools and contacts from CSV or Excel files
-- Column mapping UI to align source columns with CRM fields
-- PapaParse (CSV) and SheetJS (Excel) for client-side parsing — no upload required
-
-### Settings
-- Export the full database to a JSON snapshot
-- Import from a previously exported JSON backup
-- Account section with sign-out and current user display
-
----
-
-## Project Structure
-
-```
-School-Engagement-CRM/
-├── public/                      # Static assets
-├── Scraper/                     # Python K-12 data pipeline
-│   ├── main.py                  # Pipeline entry point
-│   ├── scraper.py               # Page fetch + contact extraction
-│   ├── resolver.py              # School/district identity resolution
-│   ├── sources.py               # Source registry and seeding
-│   ├── helpers.py               # Shared utilities + SQL constants
-│   ├── models.py                # Dataclasses for schools/contacts/events
-│   ├── database.py              # Direct Postgres writer (psycopg, DATABASE_URL)
-│   ├── district_contacts.py     # District-level contact pass
-│   ├── iacac_events.py          # IACAC event ingestion
-│   ├── contact_quality.py       # Contact scoring / filtering
-│   ├── tests/
-│   └── requirements.txt
-├── src/
-│   ├── components/
-│   │   ├── common/              # Reusable UI primitives
-│   │   │   ├── Badge.tsx
-│   │   │   ├── Breadcrumb.tsx   # Parent > child nav (drill-down pages only)
-│   │   │   ├── Button.tsx
-│   │   │   ├── Card.tsx         # Card + MetricCard
-│   │   │   ├── ConfirmDialog.tsx
-│   │   │   ├── DataTable.tsx    # TanStack Table wrapper
-│   │   │   ├── EmptyState.tsx
-│   │   │   ├── Input.tsx
-│   │   │   ├── LoadingSpinner.tsx
-│   │   │   ├── Modal.tsx
-│   │   │   └── Select.tsx
-│   │   ├── layout/
-│   │   │   ├── AppLayout.tsx    # Root layout shell
-│   │   │   ├── Header.tsx       # Global search + breadcrumb header
-│   │   │   └── Sidebar.tsx      # Nav links + SIUE branding
-│   │   ├── schools/             # School-specific form components
-│   │   ├── contacts/            # Contact form + detail panels
-│   │   ├── events/              # Event form + calendar cells
-│   │   └── programs/            # Program form components
-│   ├── constants/               # Report settings, chart colours, column help
-│   ├── context/
-│   │   ├── AppContext.tsx        # Global state — useReducer + Supabase fetch
-│   │   └── AuthContext.tsx       # Supabase Auth session + AuthGuard
-│   ├── hooks/                    # Custom React hooks
-│   ├── pages/
-│   │   ├── DashboardPage.tsx
-│   │   ├── SchoolsPage.tsx
-│   │   ├── SchoolDetailPage.tsx  # Breadcrumb: Schools > {name}
-│   │   ├── ContactsPage.tsx
-│   │   ├── EventsPage.tsx
-│   │   ├── CountiesPage.tsx
-│   │   ├── CountyDetailPage.tsx  # Breadcrumb: Counties > {county}
-│   │   ├── AnalyticsPage.tsx
-│   │   ├── GenerateListsPage.tsx
-│   │   ├── ImportPage.tsx
-│   │   └── SettingsPage.tsx
-│   ├── services/                 # Supabase data access layer
-│   │   ├── supabase.ts           # Supabase client init
-│   │   ├── schoolsService.ts
-│   │   ├── contactsService.ts
-│   │   ├── eventsService.ts
-│   │   ├── programsService.ts
-│   │   ├── activitiesService.ts
-│   │   └── analyticsService.ts   # Views + aggregation queries
-│   ├── types/                    # TypeScript interfaces and enums
-│   ├── utils/
-│   │   ├── helpers.ts            # CSV export, date helpers
-│   │   └── storage.ts            # JSON import/export utilities
-│   ├── App.tsx                   # Route definitions
-│   └── index.css                 # Tailwind v4 theme + SIUE brand tokens
-├── .env                          # Local env vars (git-ignored)
-├── .env.example
-├── index.html
-├── package.json
-├── tsconfig.app.json
-└── vite.config.ts
-```
-
----
-
-## Database Schema
-
-All tables live in Supabase (PostgreSQL). The frontend service layer handles the mapping between database column names and frontend TypeScript field names.
-
-### `schools`
-| Column | Type | Notes |
-|---|---|---|
-| facility_key | text | Primary key — may contain slashes; always URL-encoded in links |
-| name | text | School display name |
-| school_type | text | `high_school` or `middle_school` |
-| address | text | Street address |
-| city | text | |
-| state | text | |
-| zip_code | text | |
-| county | text | Used for county-level analytics; null excluded from aggregations |
-| phone | text | |
-| website | text | |
-| is_verified | boolean | |
-| priority_tier | text | `high`, `medium`, or `low` |
-| notes | text | |
-| created_at | timestamptz | |
-| updated_at | timestamptz | |
-
-### `staff` (contacts — person data)
-| Column | Type | Notes |
-|---|---|---|
-| staff_id | integer | PK; cast to string for frontend `id` field |
-| first_name | text | |
-| last_name | text | |
-| email | text | |
-| phone | text | |
-| role | text | Maps to `ContactRole` enum |
-| is_active | boolean | |
-| is_verified | boolean | |
-| notes | text | |
-| created_at | timestamptz | |
-
-### `contacts` (junction — staff ↔ school)
-| Column | Type | Notes |
-|---|---|---|
-| id | integer | PK |
-| staff_id | integer | FK → staff.staff_id |
-| facility_key | text | FK → schools.facility_key |
-| is_primary | boolean | |
-| created_at | timestamptz | |
-
-### `events`
-| Column | Type | Notes |
-|---|---|---|
-| id | integer | PK; frontend ID prefixed `e_<id>` |
-| name | text | |
-| event_type | text | Maps to `EventType` enum |
-| date | date | |
-| end_date | date | Optional |
-| location | text | |
-| description | text | |
-| participating_schools | text[] | Array of facility_key values |
-| created_at | timestamptz | |
-
-### `programs`
-| Column | Type | Notes |
-|---|---|---|
-| id | integer | PK |
-| name | text | |
-| program_type | text | |
-| school_id | text | FK → schools.facility_key |
-| contact_id | text | FK → staff.staff_id (as string) |
-| start_date | date | |
-| end_date | date | Optional |
-| description | text | |
-| created_at | timestamptz | |
-
-### `activities`
-| Column | Type | Notes |
-|---|---|---|
-| id | uuid | PK |
-| school_id | text | FK → schools.facility_key |
-| type | text | Activity category |
-| description | text | |
-| date | date | |
-| created_by | text | User email |
-| created_at | timestamptz | |
-
-### Analytics Views
-| View | Purpose |
+| Part | What we use |
 |---|---|
-| `county_school_summary` | Per-county counts: schools, verified schools, contacts, events, programs |
-| `county_engagement_rate` | Per-county: engaged school count + engagement percentage |
-| `school_engagement_summary` | Per-school: event count, program count, last activity date |
+| App | React 19, TypeScript, Vite 7 |
+| Styling | Tailwind CSS v4 |
+| Routing, state | React Router v7; React Context with `useReducer` (`src/context/AppContext.tsx`) |
+| Tables, charts, forms | TanStack Table v8, Recharts v3, React Hook Form with Zod v4 |
+| Spreadsheets | SheetJS (`xlsx`) and PapaParse for imports and exports |
+| Backend | Supabase: PostgreSQL with row-level security, Auth (password plus authenticator app) |
+| Hosting | Vercel (`vercel.json` sends every path to `index.html`) |
+| Scraper | Python 3.11 in `Scraper/`, run monthly by GitHub Actions |
 
----
+## Folder layout
 
-## Getting Started
+```
+src/
+  pages/        one file per screen (Dashboard, Schools, Contacts, Events, Import,
+                Reports, Priorities, Counties, Generate Lists, Settings, Team, Archived …)
+  components/   screen parts, grouped by area (schools, contacts, events, imports,
+                reports, layout, common …)
+  services/     every Supabase read and write; database column names are turned into
+                app field names here and nowhere else
+  context/      signed-in user, role, and the loaded data (AppContext)
+  utils/        rules shared by screens and tests: reports, priorities, form rules,
+                import matching, plain-English save errors
+  hooks/, constants/, types/
+db/             numbered SQL migrations (001–031), db/README.md, db/checks/
+scripts/        the verify scripts and their fixtures
+Scraper/        the Python scraper and its tests
+.github/workflows/
+  ci.yml                App CI: lint, typecheck, build and every verify script
+  monthly-scraper.yml   the monthly scraper run
+  scraper-tests.yml     the scraper's unit tests
+```
 
-### Prerequisites
-- Node.js 18+
-- A Supabase project with the schema above applied
+## Run it locally
 
-### Setup
+You need Node 24 (CI uses 24) and npm.
 
 ```bash
-# 1. Clone the repository
-git clone <repo-url>
-cd School-Engagement-CRM
-
-# 2. Install dependencies
 npm install
-
-# 3. Configure environment variables
-cp .env.example .env
-# Edit .env and fill in your Supabase credentials (see Environment Variables)
-
-# 4. Start the development server
-npm run dev
-# App available at http://localhost:5173
-
-# 5. Build for production
-npm run build
+npm run dev        # http://localhost:5173, or the next free port if it's taken
 ```
 
----
+Create a `.env` file in the project root with these two variables. Ask a current
+maintainer for the values, or copy them from Supabase → Project Settings → API. Never
+commit `.env`.
 
-## Data Pipeline — Web Scraper
+| Variable | What it is |
+|---|---|
+| `VITE_SUPABASE_URL` | The Supabase project address |
+| `VITE_SUPABASE_ANON_KEY` | The Supabase public (anon) key. It ships to every browser; it is safe only because every table has row-level security |
 
-The `scraper/` directory contains a standalone Python pipeline for seeding the CRM with real school and staff data from public sources.
+Local development uses the **live** database. Anything you save locally is saved for
+real, so use a name like `TEST - delete me` for trial records and archive them after.
 
-### Architecture
-
-```
-Target URLs (settings.json)
-       ↓
-scraper.py — Selenium + BeautifulSoup
-  • Headless Chrome crawls school directory pages
-  • Extracts raw HTML blocks per school
-       ↓
-nlp_processor.py — spaCy NLP
-  • Named Entity Recognition for PERSON, ORG, GPE
-  • Role classification via pattern matching on job title text
-  • Produces structured {name, email, phone, role, school} records
-       ↓
-db_writer.py — Supabase Insert
-  • Upserts schools by facility_key
-  • Upserts staff records
-  • Creates/updates contacts junction rows
-```
-
-### Running the Scraper
+Other commands:
 
 ```bash
-cd scraper
-pip install -r requirements.txt
-python -m spacy download en_core_web_sm
-
-# Configure target URLs and run options in settings.json
-python scraper.py
+npm run build      # typecheck and production build into dist/
+npm run preview    # serve the built dist/ locally
+npm run lint       # ESLint
 ```
 
-> The scraper writes directly to Supabase. Always run against a non-production project first.
+## Deploys
 
----
+- **Live site:** Vercel builds and deploys `main` on every merge.
+- **Previews:** Vercel builds a preview for every pull request (and every pushed
+  branch) and posts its link on the PR.
+- **Branch protection:** `main` takes changes only through a pull request with **App
+  CI** passing. Open a branch, open a PR into `main`, wait for App CI and the Vercel
+  preview, check the preview, then merge.
+- The build needs no secrets: the two `VITE_` variables are set in the Vercel project
+  settings.
 
-## Deployment
+## Roles and sign-in
 
-The app is a standard Vite SPA and deploys to any static host.
+| Role | Can do |
+|---|---|
+| **viewer** | Read everything. Cannot change anything. |
+| **editor** | Read and change data: schools, contacts, events, activities, imports. |
+| **admin** | Everything an editor can, plus Settings → Team (change roles) and every problem report. |
 
-### Vercel (recommended)
+- **New sign-ups start as viewers.** An admin raises them in Settings → Team. Every role
+  change is logged there.
+- **Editors and admins need an authenticator app** (two-factor sign-in). The first time
+  they sign in they are asked to set one up (`/mfa/enroll`), and after that they enter
+  its code each time (`/mfa/verify`). Viewers sign in with a password only.
+- The database enforces roles, not just the screens: a viewer's save is refused by
+  row-level security, and the app explains why.
+- Handing over admin to a new maintainer, step by step: `db/README.md` → "Roles".
+
+## How the data is protected
+
+- **Archive instead of delete.** Nothing in the app deletes. Archiving hides a record
+  from every list, count and report and keeps it in the database; Settings → Archived
+  brings it back. Signed-in users have no delete permission at all, and
+  `npm run verify:no-deletes` fails CI if code tries one.
+- **Row-level security** on every table: signed-in users only, editors and admins for
+  changes, and the authenticator step for editors and admins.
+- **Bulk-delete guard.** A single delete of more than 100 rows is refused at the
+  database (002), as a second layer.
+- **Edit locks on scraped fields.** When a person edits a school or contact field the
+  scraper also fills (phone, address, title …), that field is locked: the scraper never
+  overwrites it. If the website later shows a different value, the school page asks
+  "keep yours or use this?" (006, 012).
+- **Who and when stamps.** Records show who last changed them and when, who verified
+  them, who logged each activity, who imported each batch, and who archived what
+  (009, 026, 027).
+- Visitors' names from attendance lists are student data: editors and admins only, never
+  in lists, exports or Reports (`npm run verify:no-names`). How to remove one:
+  `db/README.md` → "Removing a visitor's name".
+
+## Applying a database migration
+
+Every database change is a numbered file in `db/` (`001_…sql` to `031_…sql`; the next
+is **032**). Nothing is changed by hand in the Supabase dashboard. Changes are
+expand/contract: stop using a column in one release, drop it in a later migration.
+
+1. Write the migration as the next number. Each file has a **BEFORE APPLYING** section
+   (read-only checks), the migration itself, **TEST** blocks, and a **REVERSE** section.
+2. Open Supabase → SQL Editor. Run each BEFORE APPLYING query **one at a time** and
+   check the result matches what the file expects. Stop if it doesn't.
+3. Run the migration.
+4. Run each TEST block one at a time and check every result.
+5. Record the results in the file (the date, and what each check returned), and add or
+   update its row in the table in `db/README.md` with its status. Commit both through a
+   pull request.
+
+Queries in the SQL Editor run as the database owner, which row-level security and the
+edit locks treat like the scraper. `db/README.md` → "Edit locks" explains how to change
+a locked field from there.
+
+## The monthly scraper
+
+The scraper keeps the school and staff lists current. Each run:
+
+- downloads the official school directories (Illinois State Board of Education,
+  Missouri DESE) and adds or updates schools;
+- reads school websites for staff and school-calendar events, and the IACAC college
+  fair list;
+- snapshots the tables into the database's `backup` schema first, and saves a list of
+  every value it changed as a downloadable file on the run;
+- never overwrites a field a person has edited (the edit locks above).
+
+It runs on the 1st of each month at 2:00 AM Central (`.github/workflows/monthly-scraper.yml`)
+and can be started by hand from GitHub → Actions → Monthly School Scraper. The code is
+in `Scraper/`, its tests in `Scraper/tests/` (run by the Scraper Tests workflow). It
+connects straight to Postgres with the `DATABASE_URL` repository secret, not through the
+app. **Sean owns the scraper**: ask him before changing it or the `50-states` branch.
+
+Scraper environment variable names (values live in GitHub secrets or your shell, never
+in the repo): `DATABASE_URL`, and for the IACAC events `IACAC_EVENTS_API_URL`,
+`IACAC_KNACK_APP_ID`, `IACAC_KNACK_SCENE`, `IACAC_KNACK_VIEW`.
+
+## Verify scripts and CI
+
+App CI (`.github/workflows/ci.yml`) runs on every pull request into `main` and every
+push to `main`: install, lint, typecheck, build, then the verify scripts below. None of
+them needs a database or any secret.
+
+| Command | What it checks |
+|---|---|
+| `npm run verify:import` | Reading uploaded spreadsheets: sheet and column detection, empty and wrong files |
+| `npm run verify:activity-import` | Matching an attendance list's school names to schools, against a made-up fixture |
+| `npm run verify:reports` | Every Reports figure against values worked out by hand |
+| `npm run verify:errors` | Every failed save explains why in plain words |
+| `npm run verify:forms` | The shared form rules (required, email, phone, zip, numbers, dates) and table widths |
+| `npm run verify:event-schools` | An event's schools are counted one way everywhere (host plus participants, once each) |
+| `npm run verify:no-deletes` | No code under `src/` deletes from the database |
+| `npm run verify:no-names` | Visitors' names can't reach lists, exports or Reports |
+| `npm run verify:reports-sql` | The SQL in `db/checks/reports_checks.sql` gives the same figures as the app. Not in CI: it needs a throwaway Postgres, set in `REPORTS_TEST_DATABASE_URL` |
+
+Run all the CI checks locally before opening a pull request:
 
 ```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy
-vercel --prod
+npm run lint && npm run build && npm run verify:import && npm run verify:activity-import \
+  && npm run verify:reports && npm run verify:errors && npm run verify:forms \
+  && npm run verify:event-schools && npm run verify:no-deletes && npm run verify:no-names
 ```
 
-Set the following environment variables in the Vercel dashboard (Project → Settings → Environment Variables):
+## Open items and proposals
 
-| Variable | Value |
-|---|---|
-| `VITE_SUPABASE_URL` | Your Supabase project URL |
-| `VITE_SUPABASE_ANON_KEY` | Your Supabase anon/public key |
-
-Add a `vercel.json` to handle client-side routing:
-
-```json
-{
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
-}
-```
+Known issues that need an owner or a decision, and written-up proposals that aren't
+built yet, are in [`db/README.md`](db/README.md) under **Open items** and **Proposals**,
+next to the migration log.
 
 ---
 
-## Environment Variables
+## For staff
 
-| Variable | Required | Description |
-|---|---|---|
-| `VITE_SUPABASE_URL` | Yes | Supabase project URL — e.g. `https://xyz.supabase.co` |
-| `VITE_SUPABASE_ANON_KEY` | Yes | Supabase publishable (anon) key. It ships inside the client bundle and is readable by anyone who loads the app. It is safe to expose **only because Row Level Security is enabled on every table in `public`** and access is granted to the `authenticated` role. If RLS is ever turned off, this key grants full read/write to the whole database without a login. |
+This part is for the people who use the app day to day.
 
-Create a `.env` file in the project root:
+**Importing activities (for example an event's attendance list)**
 
-```env
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key-here
-```
+1. Go to **Import data → Activities** and click **Download template** if you need one.
+   It has columns for school name, city and state, plus an optional Visitors count.
+2. Choose the **activity type** and the **date** first. Pick the event if it's in the
+   list, or choose "Other: type an event name" to add it.
+3. Drop in your file (.xlsx, .xls or .csv). The app matches each row to a school.
+4. **Review the matches** before saving: check the schools it found; for rows it was
+   unsure about or couldn't match, search for the right school or leave them skipped;
+   and decide about any archived schools it lists.
+5. Save. The whole upload becomes one **batch** under Recent imports.
 
-### Scraper environment variables
+**Rolling back a bad import:** under Import data → Activities → Recent imports, find
+the batch and click **Archive this batch**. Its activities leave the school pages and
+Reports at once. Nothing is deleted: **Restore** on the same batch brings it back.
 
-The Python pipeline in `Scraper/` is configured separately from the frontend. It does **not**
-use the Supabase REST API or any Supabase key — it connects straight to Postgres.
+**Restoring something archived:** Settings → **Archived** lists archived schools,
+contacts, events, programs and logged contacts, each with a Restore button. Archived
+import batches are restored from Recent imports, as above.
 
-| Variable | Required | Description |
-|---|---|---|
-| `DATABASE_URL` | Yes, to upload | Postgres connection string, used by `Scraper/database.py` via `psycopg`. Must connect as the table **owner** — the owner bypasses Row Level Security, which is what lets the scraper write to tables the app's `authenticated` policies otherwise govern. A lesser role will be blocked by RLS. Never commit this. |
-| `IACAC_EVENTS_API_URL` | For event ingest | Knack API endpoint for IACAC event data. |
-| `IACAC_KNACK_APP_ID` | For event ingest | Knack application ID. |
-| `IACAC_KNACK_SCENE` | For event ingest | Knack scene identifier. |
-| `IACAC_KNACK_VIEW` | For event ingest | Knack view identifier. |
+**Reporting a problem:** click **Report a problem** at the bottom right of any page,
+say what happened, and send. It records the page and your browser for us. Admins
+read the reports in Settings → Problem reports.
 
-If `DATABASE_URL` is unset the pipeline still runs; it simply skips the upload step
-(`Scraper/main.py:279`).
+**Who to contact:**
 
----
-
-## Roadmap
-
-- [ ] Email integration — send outreach emails directly from contact pages
-- [ ] Activity reminders — scheduled follow-up notifications
-- [ ] Multi-user roles — admin vs. read-only staff accounts
-- [ ] Map view — geographic visualization of school locations and engagement
-- [ ] Bulk event creation — add multiple schools to an event at once
-- [ ] Contact deduplication — merge duplicate staff records from scraper runs
-- [ ] Dashboard customization — user-configurable metric widgets
-- [ ] Export to Google Sheets — direct Sheets API integration
-
----
-
-## Contributors
-
-| Name | Role |
-|---|---|
-| SIUE School of Engineering | Product Owner |
-
----
-
-*Built for SIUE School of Engineering — K-12 Outreach Program*
+- **Access and roles** (for example becoming an editor): Dr. Christopher Gordon
+  (cgordon@siue.edu), or any admin listed under Settings → Team.
+- **Problems:** the **Report a problem** button on any page.
+- **Maintainer:** Oluwaferanmi Odedairo (oodedai@siue.edu) until handoff.
+- **Maintainer after handoff: _TO FILL IN: name and email of the person SIUE assigns._**

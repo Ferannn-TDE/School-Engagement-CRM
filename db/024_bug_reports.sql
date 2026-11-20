@@ -1,7 +1,6 @@
 -- 024 — Report a problem: bug_reports
 --
--- DRAFT, NOT APPLIED. Apply after 023 (roles), which this needs for is_admin(). Review,
--- run the BEFORE APPLYING checks, then apply in the SQL Editor and run the verification.
+-- APPLIED 2026-10-27 in the Supabase SQL Editor (results recorded at the bottom of this file).
 --
 -- Why: the "Report a problem" button on every page saves what went wrong, with the
 -- page, the user, the browser, the app version and the time, so an admin can find it
